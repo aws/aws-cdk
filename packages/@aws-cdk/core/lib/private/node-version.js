@@ -1,0 +1,19 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.patch = exports.minor = exports.major = void 0;
+const process = require("process");
+// process.versions.node is like "12.3.1"
+const [strMajor, strMinor, strPatch] = process.versions.node.split('.');
+/**
+ * The major version of the node runtime.
+ */
+exports.major = Number(strMajor);
+/**
+ * The minor version of the node runtime.
+ */
+exports.minor = Number(strMinor);
+/**
+ * The revision of the node runtime.
+ */
+exports.patch = Number(strPatch);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibm9kZS12ZXJzaW9uLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsibm9kZS12ZXJzaW9uLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUFBLG1DQUFtQztBQUVuQyx5Q0FBeUM7QUFDekMsTUFBTSxDQUFDLFFBQVEsRUFBRSxRQUFRLEVBQUUsUUFBUSxDQUFDLEdBQUcsT0FBTyxDQUFDLFFBQVEsQ0FBQyxJQUFJLENBQUMsS0FBSyxDQUFDLEdBQUcsQ0FBQyxDQUFDO0FBRXhFOztHQUVHO0FBQ1UsUUFBQSxLQUFLLEdBQUcsTUFBTSxDQUFDLFFBQVEsQ0FBQyxDQUFDO0FBRXRDOztHQUVHO0FBQ1UsUUFBQSxLQUFLLEdBQUcsTUFBTSxDQUFDLFFBQVEsQ0FBQyxDQUFDO0FBRXRDOztHQUVHO0FBQ1UsUUFBQSxLQUFLLEdBQUcsTUFBTSxDQUFDLFFBQVEsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICogYXMgcHJvY2VzcyBmcm9tICdwcm9jZXNzJztcblxuLy8gcHJvY2Vzcy52ZXJzaW9ucy5ub2RlIGlzIGxpa2UgXCIxMi4zLjFcIlxuY29uc3QgW3N0ck1ham9yLCBzdHJNaW5vciwgc3RyUGF0Y2hdID0gcHJvY2Vzcy52ZXJzaW9ucy5ub2RlLnNwbGl0KCcuJyk7XG5cbi8qKlxuICogVGhlIG1ham9yIHZlcnNpb24gb2YgdGhlIG5vZGUgcnVudGltZS5cbiAqL1xuZXhwb3J0IGNvbnN0IG1ham9yID0gTnVtYmVyKHN0ck1ham9yKTtcblxuLyoqXG4gKiBUaGUgbWlub3IgdmVyc2lvbiBvZiB0aGUgbm9kZSBydW50aW1lLlxuICovXG5leHBvcnQgY29uc3QgbWlub3IgPSBOdW1iZXIoc3RyTWlub3IpO1xuXG4vKipcbiAqIFRoZSByZXZpc2lvbiBvZiB0aGUgbm9kZSBydW50aW1lLlxuICovXG5leHBvcnQgY29uc3QgcGF0Y2ggPSBOdW1iZXIoc3RyUGF0Y2gpO1xuIl19

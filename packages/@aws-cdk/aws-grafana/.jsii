@@ -1,0 +1,1671 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::Grafana Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::Grafana",
+    "aws-grafana"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-grafana",
+  "readme": {
+    "markdown": "# AWS::Grafana Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as grafana from '@aws-cdk/aws-grafana';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for Grafana construct libraries](https://constructs.dev/search?q=grafana)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Grafana resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Grafana.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Grafana](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Grafana.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-grafana",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Grafana",
+      "packageId": "Amazon.CDK.AWS.Grafana",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "grafana",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.grafana"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-grafana"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-grafana",
+      "module": "aws_cdk.aws_grafana"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-grafana.CfnWorkspace": {
+      "assembly": "@aws-cdk/aws-grafana",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Grafana::Workspace",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html"
+        },
+        "remarks": "Specifies a *workspace* . In a workspace, you can create Grafana dashboards and visualizations to analyze your metrics, logs, and traces. You don't have to build, package, or deploy any hardware to run the Grafana server.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Grafana::Workspace`."
+      },
+      "fqn": "@aws-cdk/aws-grafana.CfnWorkspace",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Grafana::Workspace`."
+        },
+        "locationInModule": {
+          "filename": "lib/grafana.generated.ts",
+          "line": 421
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-grafana.CfnWorkspaceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/grafana.generated.ts",
+        "line": 219
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 454
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 478
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnWorkspace",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 223
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationTimestamp"
+            },
+            "remarks": "Type: Timestamp",
+            "stability": "external",
+            "summary": "The date that the workspace was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 250
+          },
+          "name": "attrCreationTimestamp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Endpoint"
+            },
+            "remarks": "Type: String",
+            "stability": "external",
+            "summary": "The URL that users can use to access the Grafana console in the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 258
+          },
+          "name": "attrEndpoint",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "GrafanaVersion"
+            },
+            "remarks": "Type: String",
+            "stability": "external",
+            "summary": "The version of Grafana supported in this workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 266
+          },
+          "name": "attrGrafanaVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Id"
+            },
+            "remarks": "Type: String",
+            "stability": "external",
+            "summary": "The unique ID of this workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 274
+          },
+          "name": "attrId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ModificationTimestamp"
+            },
+            "remarks": "Type: Timestamp",
+            "stability": "external",
+            "summary": "The most recent date that the workspace was modified."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 282
+          },
+          "name": "attrModificationTimestamp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SamlConfigurationStatus"
+            },
+            "remarks": "Valid values: `CONFIGURED | NOT_CONFIGURED`\n\nType: String",
+            "stability": "external",
+            "summary": "Specifies whether the workspace's SAML configuration is complete."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 292
+          },
+          "name": "attrSamlConfigurationStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SsoClientId"
+            },
+            "remarks": "Type: String",
+            "stability": "external",
+            "summary": "The ID of the IAM Identity Center-managed application that is created by Amazon Managed Grafana ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 300
+          },
+          "name": "attrSsoClientId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "remarks": "Valid values: `ACTIVE | CREATING | DELETING | FAILED | UPDATING | UPGRADING | DELETION_FAILED | CREATION_FAILED | UPDATE_FAILED | UPGRADE_FAILED | LICENSE_REMOVAL_FAILED`\n\nType: String",
+            "stability": "external",
+            "summary": "The current status of the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 310
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 459
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-accountaccesstype"
+            },
+            "remarks": "If this is `ORGANIZATION` , the `workspaceOrganizationalUnits` parameter specifies which organizational units the workspace can access.",
+            "stability": "external",
+            "summary": "Specifies whether the workspace can access AWS resources in this AWS account only, or whether it can also access AWS resources in other accounts in the same organization."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 317
+          },
+          "name": "accountAccessType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-authenticationproviders"
+            },
+            "stability": "external",
+            "summary": "Specifies whether this workspace uses SAML 2.0, AWS IAM Identity Center (successor to AWS Single Sign-On) , or both to authenticate users for using the Grafana console within a workspace. For more information, see [User authentication in Amazon Managed Grafana](https://docs.aws.amazon.com/grafana/latest/userguide/authentication-in-AMG.html) ."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 324
+          },
+          "name": "authenticationProviders",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-clienttoken"
+            },
+            "stability": "external",
+            "summary": "A unique, case-sensitive, user-provided identifier to ensure the idempotency of the request."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 331
+          },
+          "name": "clientToken",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-datasources"
+            },
+            "stability": "external",
+            "summary": "Specifies the AWS data sources that have been configured to have IAM roles and permissions created to allow Amazon Managed Grafana to read data from these sources."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 338
+          },
+          "name": "dataSources",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-description"
+            },
+            "stability": "external",
+            "summary": "The user-defined description of the workspace."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 345
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-name"
+            },
+            "stability": "external",
+            "summary": "The name of the workspace."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 352
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-notificationdestinations"
+            },
+            "stability": "external",
+            "summary": "The AWS notification channels that Amazon Managed Grafana can automatically create IAM roles and permissions for, to allow Amazon Managed Grafana to use these channels."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 359
+          },
+          "name": "notificationDestinations",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-organizationalunits"
+            },
+            "stability": "external",
+            "summary": "Specifies the organizational units that this workspace is allowed to use data sources from, if this workspace is in an account that is part of an organization."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 366
+          },
+          "name": "organizationalUnits",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-organizationrolename"
+            },
+            "stability": "external",
+            "summary": "The name of the IAM role that is used to access resources through Organizations ."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 373
+          },
+          "name": "organizationRoleName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-permissiontype"
+            },
+            "remarks": "If this is `CUSTOMER_MANAGED` , you manage those roles and permissions yourself. If you are creating this workspace in a member account of an organization and that account is not a delegated administrator account, and you want the workspace to access data sources in other AWS accounts in the organization, you must choose `CUSTOMER_MANAGED` .\n\nFor more information, see [Amazon Managed Grafana permissions and policies for AWS data sources and notification channels](https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-permissions.html)",
+            "stability": "external",
+            "summary": "If this is `Service Managed` , Amazon Managed Grafana automatically creates the IAM roles and provisions the permissions that the workspace needs to use AWS data sources and notification channels."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 384
+          },
+          "name": "permissionType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-rolearn"
+            },
+            "remarks": "This role must already exist.",
+            "stability": "external",
+            "summary": "The IAM role that grants permissions to the AWS resources that the workspace will view data from."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 391
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-samlconfiguration"
+            },
+            "stability": "external",
+            "summary": "If the workspace uses SAML, use this structure to map SAML assertion attributes to workspace user information and define which groups in the assertion attribute are to have the `Admin` and `Editor` roles in the workspace."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 398
+          },
+          "name": "samlConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-grafana.CfnWorkspace.SamlConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-stacksetname"
+            },
+            "stability": "external",
+            "summary": "The name of the AWS CloudFormation stack set that is used to generate IAM roles to be used for this workspace."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 405
+          },
+          "name": "stackSetName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-vpcconfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration for connecting to data sources in a private VPC ( Amazon Virtual Private Cloud )."
+          },
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 412
+          },
+          "name": "vpcConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-grafana.CfnWorkspace.VpcConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/grafana.generated:CfnWorkspace"
+    },
+    "@aws-cdk/aws-grafana.CfnWorkspace.AssertionAttributesProperty": {
+      "assembly": "@aws-cdk/aws-grafana",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-assertionattributes.html"
+        },
+        "stability": "external",
+        "summary": "A structure that defines which attributes in the IdP assertion are to be used to define information about the users authenticated by the IdP to use the workspace."
+      },
+      "fqn": "@aws-cdk/aws-grafana.CfnWorkspace.AssertionAttributesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/grafana.generated.ts",
+        "line": 492
+      },
+      "name": "AssertionAttributesProperty",
+      "namespace": "CfnWorkspace",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-assertionattributes.html#cfn-grafana-workspace-assertionattributes-email"
+            },
+            "stability": "external",
+            "summary": "The name of the attribute within the SAML assertion to use as the email names for SAML users."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 498
+          },
+          "name": "email",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-assertionattributes.html#cfn-grafana-workspace-assertionattributes-groups"
+            },
+            "stability": "external",
+            "summary": "The name of the attribute within the SAML assertion to use as the user full \"friendly\" names for user groups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 504
+          },
+          "name": "groups",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-assertionattributes.html#cfn-grafana-workspace-assertionattributes-login"
+            },
+            "stability": "external",
+            "summary": "The name of the attribute within the SAML assertion to use as the login names for SAML users."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 510
+          },
+          "name": "login",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-assertionattributes.html#cfn-grafana-workspace-assertionattributes-name"
+            },
+            "stability": "external",
+            "summary": "The name of the attribute within the SAML assertion to use as the user full \"friendly\" names for SAML users."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 516
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-assertionattributes.html#cfn-grafana-workspace-assertionattributes-org"
+            },
+            "stability": "external",
+            "summary": "The name of the attribute within the SAML assertion to use as the user full \"friendly\" names for the users' organizations."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 522
+          },
+          "name": "org",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-assertionattributes.html#cfn-grafana-workspace-assertionattributes-role"
+            },
+            "stability": "external",
+            "summary": "The name of the attribute within the SAML assertion to use as the user roles."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 528
+          },
+          "name": "role",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/grafana.generated:CfnWorkspace.AssertionAttributesProperty"
+    },
+    "@aws-cdk/aws-grafana.CfnWorkspace.IdpMetadataProperty": {
+      "assembly": "@aws-cdk/aws-grafana",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-idpmetadata.html"
+        },
+        "remarks": "You can specify the metadata either by providing a URL to its location in the `url` parameter, or by specifying the full metadata in XML format in the `xml` parameter. Specifying both will cause an error.",
+        "stability": "external",
+        "summary": "A structure containing the identity provider (IdP) metadata used to integrate the identity provider with this workspace."
+      },
+      "fqn": "@aws-cdk/aws-grafana.CfnWorkspace.IdpMetadataProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/grafana.generated.ts",
+        "line": 604
+      },
+      "name": "IdpMetadataProperty",
+      "namespace": "CfnWorkspace",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-idpmetadata.html#cfn-grafana-workspace-idpmetadata-url"
+            },
+            "stability": "external",
+            "summary": "The URL of the location containing the IdP metadata."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 610
+          },
+          "name": "url",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-idpmetadata.html#cfn-grafana-workspace-idpmetadata-xml"
+            },
+            "stability": "external",
+            "summary": "The full IdP metadata, in XML format."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 616
+          },
+          "name": "xml",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/grafana.generated:CfnWorkspace.IdpMetadataProperty"
+    },
+    "@aws-cdk/aws-grafana.CfnWorkspace.RoleValuesProperty": {
+      "assembly": "@aws-cdk/aws-grafana",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-rolevalues.html"
+        },
+        "remarks": "SAML authenticated users not part of `Admin` or `Editor` role groups have `Viewer` permission over the workspace.",
+        "stability": "external",
+        "summary": "This structure defines which groups defined in the SAML assertion attribute are to be mapped to the Grafana `Admin` and `Editor` roles in the workspace."
+      },
+      "fqn": "@aws-cdk/aws-grafana.CfnWorkspace.RoleValuesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/grafana.generated.ts",
+        "line": 680
+      },
+      "name": "RoleValuesProperty",
+      "namespace": "CfnWorkspace",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-rolevalues.html#cfn-grafana-workspace-rolevalues-admin"
+            },
+            "stability": "external",
+            "summary": "A list of groups from the SAML assertion attribute to grant the Grafana `Admin` role to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 686
+          },
+          "name": "admin",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-rolevalues.html#cfn-grafana-workspace-rolevalues-editor"
+            },
+            "stability": "external",
+            "summary": "A list of groups from the SAML assertion attribute to grant the Grafana `Editor` role to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 692
+          },
+          "name": "editor",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/grafana.generated:CfnWorkspace.RoleValuesProperty"
+    },
+    "@aws-cdk/aws-grafana.CfnWorkspace.SamlConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-grafana",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-samlconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "A structure containing information about how this workspace works with SAML."
+      },
+      "fqn": "@aws-cdk/aws-grafana.CfnWorkspace.SamlConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/grafana.generated.ts",
+        "line": 756
+      },
+      "name": "SamlConfigurationProperty",
+      "namespace": "CfnWorkspace",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-samlconfiguration.html#cfn-grafana-workspace-samlconfiguration-idpmetadata"
+            },
+            "stability": "external",
+            "summary": "A structure containing the identity provider (IdP) metadata used to integrate the identity provider with this workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 774
+          },
+          "name": "idpMetadata",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-grafana.CfnWorkspace.IdpMetadataProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-samlconfiguration.html#cfn-grafana-workspace-samlconfiguration-allowedorganizations"
+            },
+            "remarks": "If this is empty, all organizations in the assertion attribute have access.",
+            "stability": "external",
+            "summary": "Lists which organizations defined in the SAML assertion are allowed to use the Amazon Managed Grafana workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 762
+          },
+          "name": "allowedOrganizations",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-samlconfiguration.html#cfn-grafana-workspace-samlconfiguration-assertionattributes"
+            },
+            "stability": "external",
+            "summary": "A structure that defines which attributes in the SAML assertion are to be used to define information about the users authenticated by that IdP to use the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 768
+          },
+          "name": "assertionAttributes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-grafana.CfnWorkspace.AssertionAttributesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-samlconfiguration.html#cfn-grafana-workspace-samlconfiguration-loginvalidityduration"
+            },
+            "stability": "external",
+            "summary": "How long a sign-on session by a SAML user is valid, before the user has to sign on again."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 780
+          },
+          "name": "loginValidityDuration",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-samlconfiguration.html#cfn-grafana-workspace-samlconfiguration-rolevalues"
+            },
+            "stability": "external",
+            "summary": "A structure containing arrays that map group names in the SAML assertion to the Grafana `Admin` and `Editor` roles in the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 786
+          },
+          "name": "roleValues",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-grafana.CfnWorkspace.RoleValuesProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/grafana.generated:CfnWorkspace.SamlConfigurationProperty"
+    },
+    "@aws-cdk/aws-grafana.CfnWorkspace.VpcConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-grafana",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-vpcconfiguration.html"
+        },
+        "remarks": "> Provided `securityGroupIds` and `subnetIds` must be part of the same VPC.",
+        "stability": "external",
+        "summary": "The configuration settings for an Amazon VPC that contains data sources for your Grafana workspace to connect to."
+      },
+      "fqn": "@aws-cdk/aws-grafana.CfnWorkspace.VpcConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/grafana.generated.ts",
+        "line": 862
+      },
+      "name": "VpcConfigurationProperty",
+      "namespace": "CfnWorkspace",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-vpcconfiguration.html#cfn-grafana-workspace-vpcconfiguration-securitygroupids"
+            },
+            "remarks": "Duplicates not allowed.\n\n*Array Members* : Minimum number of 1 items. Maximum number of 5 items.\n\n*Length* : Minimum length of 0. Maximum length of 255.",
+            "stability": "external",
+            "summary": "The list of Amazon EC2 security group IDs attached to the Amazon VPC for your Grafana workspace to connect."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 872
+          },
+          "name": "securityGroupIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-grafana-workspace-vpcconfiguration.html#cfn-grafana-workspace-vpcconfiguration-subnetids"
+            },
+            "remarks": "Duplicates not allowed.\n\n*Array Members* : Minimum number of 2 items. Maximum number of 6 items.\n\n*Length* : Minimum length of 0. Maximum length of 255.",
+            "stability": "external",
+            "summary": "The list of Amazon EC2 subnet IDs created in the Amazon VPC for your Grafana workspace to connect."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 882
+          },
+          "name": "subnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/grafana.generated:CfnWorkspace.VpcConfigurationProperty"
+    },
+    "@aws-cdk/aws-grafana.CfnWorkspaceProps": {
+      "assembly": "@aws-cdk/aws-grafana",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnWorkspace`."
+      },
+      "fqn": "@aws-cdk/aws-grafana.CfnWorkspaceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/grafana.generated.ts",
+        "line": 20
+      },
+      "name": "CfnWorkspaceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-accountaccesstype"
+            },
+            "remarks": "If this is `ORGANIZATION` , the `workspaceOrganizationalUnits` parameter specifies which organizational units the workspace can access.",
+            "stability": "external",
+            "summary": "Specifies whether the workspace can access AWS resources in this AWS account only, or whether it can also access AWS resources in other accounts in the same organization."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 27
+          },
+          "name": "accountAccessType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-authenticationproviders"
+            },
+            "stability": "external",
+            "summary": "Specifies whether this workspace uses SAML 2.0, AWS IAM Identity Center (successor to AWS Single Sign-On) , or both to authenticate users for using the Grafana console within a workspace. For more information, see [User authentication in Amazon Managed Grafana](https://docs.aws.amazon.com/grafana/latest/userguide/authentication-in-AMG.html) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 34
+          },
+          "name": "authenticationProviders",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-clienttoken"
+            },
+            "stability": "external",
+            "summary": "A unique, case-sensitive, user-provided identifier to ensure the idempotency of the request."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 41
+          },
+          "name": "clientToken",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-datasources"
+            },
+            "stability": "external",
+            "summary": "Specifies the AWS data sources that have been configured to have IAM roles and permissions created to allow Amazon Managed Grafana to read data from these sources."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 48
+          },
+          "name": "dataSources",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-description"
+            },
+            "stability": "external",
+            "summary": "The user-defined description of the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 55
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-name"
+            },
+            "stability": "external",
+            "summary": "The name of the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 62
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-notificationdestinations"
+            },
+            "stability": "external",
+            "summary": "The AWS notification channels that Amazon Managed Grafana can automatically create IAM roles and permissions for, to allow Amazon Managed Grafana to use these channels."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 69
+          },
+          "name": "notificationDestinations",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-organizationalunits"
+            },
+            "stability": "external",
+            "summary": "Specifies the organizational units that this workspace is allowed to use data sources from, if this workspace is in an account that is part of an organization."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 76
+          },
+          "name": "organizationalUnits",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-organizationrolename"
+            },
+            "stability": "external",
+            "summary": "The name of the IAM role that is used to access resources through Organizations ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 83
+          },
+          "name": "organizationRoleName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-permissiontype"
+            },
+            "remarks": "If this is `CUSTOMER_MANAGED` , you manage those roles and permissions yourself. If you are creating this workspace in a member account of an organization and that account is not a delegated administrator account, and you want the workspace to access data sources in other AWS accounts in the organization, you must choose `CUSTOMER_MANAGED` .\n\nFor more information, see [Amazon Managed Grafana permissions and policies for AWS data sources and notification channels](https://docs.aws.amazon.com/grafana/latest/userguide/AMG-manage-permissions.html)",
+            "stability": "external",
+            "summary": "If this is `Service Managed` , Amazon Managed Grafana automatically creates the IAM roles and provisions the permissions that the workspace needs to use AWS data sources and notification channels."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 94
+          },
+          "name": "permissionType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-rolearn"
+            },
+            "remarks": "This role must already exist.",
+            "stability": "external",
+            "summary": "The IAM role that grants permissions to the AWS resources that the workspace will view data from."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 101
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-samlconfiguration"
+            },
+            "stability": "external",
+            "summary": "If the workspace uses SAML, use this structure to map SAML assertion attributes to workspace user information and define which groups in the assertion attribute are to have the `Admin` and `Editor` roles in the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 108
+          },
+          "name": "samlConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-grafana.CfnWorkspace.SamlConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-stacksetname"
+            },
+            "stability": "external",
+            "summary": "The name of the AWS CloudFormation stack set that is used to generate IAM roles to be used for this workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 115
+          },
+          "name": "stackSetName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-grafana-workspace.html#cfn-grafana-workspace-vpcconfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration for connecting to data sources in a private VPC ( Amazon Virtual Private Cloud )."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/grafana.generated.ts",
+            "line": 122
+          },
+          "name": "vpcConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-grafana.CfnWorkspace.VpcConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/grafana.generated:CfnWorkspaceProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "iSTnnWAgrqqC/E4LOaPslAVwnzwha15eDIYKs7wueq4="
+}

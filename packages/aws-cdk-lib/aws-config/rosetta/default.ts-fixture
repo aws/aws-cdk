@@ -1,0 +1,14 @@
+// Fixture with packages imported, but nothing else
+import { Stack } from '@aws-cdk/core';
+import { Construct } from 'constructs';
+import * as config from '@aws-cdk/aws-config';
+import * as targets from '@aws-cdk/aws-events-targets';
+import * as sns from '@aws-cdk/aws-sns';
+import * as lambda from '@aws-cdk/aws-lambda';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// here
+  }
+}

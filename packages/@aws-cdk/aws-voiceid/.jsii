@@ -1,0 +1,630 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::VoiceID Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::VoiceID",
+    "aws-voiceid"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-voiceid",
+  "readme": {
+    "markdown": "# AWS::VoiceID Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as voiceid from '@aws-cdk/aws-voiceid';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for VoiceID construct libraries](https://constructs.dev/search?q=voiceid)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::VoiceID resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_VoiceID.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::VoiceID](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_VoiceID.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-voiceid",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.VoiceID",
+      "packageId": "Amazon.CDK.AWS.VoiceID",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "voiceid",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.voiceid"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-voiceid"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-voiceid",
+      "module": "aws_cdk.aws_voiceid"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-voiceid.CfnDomain": {
+      "assembly": "@aws-cdk/aws-voiceid",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::VoiceID::Domain",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-voiceid-domain.html"
+        },
+        "remarks": "Creates a domain that contains all Amazon Connect Voice ID data, such as speakers, fraudsters, customer audio, and voiceprints.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::VoiceID::Domain`."
+      },
+      "fqn": "@aws-cdk/aws-voiceid.CfnDomain",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::VoiceID::Domain`."
+        },
+        "locationInModule": {
+          "filename": "lib/voiceid.generated.ts",
+          "line": 183
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-voiceid.CfnDomainProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/voiceid.generated.ts",
+        "line": 117
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 201
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 215
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDomain",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 121
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DomainId"
+            },
+            "stability": "external",
+            "summary": "The identifier of the domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 146
+          },
+          "name": "attrDomainId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 206
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-voiceid-domain.html#cfn-voiceid-domain-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 174
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-voiceid-domain.html#cfn-voiceid-domain-name"
+            },
+            "stability": "external",
+            "summary": "The client-provided name for the domain."
+          },
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 153
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-voiceid-domain.html#cfn-voiceid-domain-serversideencryptionconfiguration"
+            },
+            "stability": "external",
+            "summary": "The server-side encryption configuration containing the KMS key identifier you want Voice ID to use to encrypt your data."
+          },
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 160
+          },
+          "name": "serverSideEncryptionConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-voiceid.CfnDomain.ServerSideEncryptionConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-voiceid-domain.html#cfn-voiceid-domain-description"
+            },
+            "stability": "external",
+            "summary": "The client-provided description of the domain."
+          },
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 167
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/voiceid.generated:CfnDomain"
+    },
+    "@aws-cdk/aws-voiceid.CfnDomain.ServerSideEncryptionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-voiceid",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-voiceid-domain-serversideencryptionconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The configuration containing information about the customer managed key used for encrypting customer data."
+      },
+      "fqn": "@aws-cdk/aws-voiceid.CfnDomain.ServerSideEncryptionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/voiceid.generated.ts",
+        "line": 229
+      },
+      "name": "ServerSideEncryptionConfigurationProperty",
+      "namespace": "CfnDomain",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-voiceid-domain-serversideencryptionconfiguration.html#cfn-voiceid-domain-serversideencryptionconfiguration-kmskeyid"
+            },
+            "remarks": "Voice ID doesn't support asymmetric customer managed keys .",
+            "stability": "external",
+            "summary": "The identifier of the KMS key to use to encrypt data stored by Voice ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 235
+          },
+          "name": "kmsKeyId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/voiceid.generated:CfnDomain.ServerSideEncryptionConfigurationProperty"
+    },
+    "@aws-cdk/aws-voiceid.CfnDomainProps": {
+      "assembly": "@aws-cdk/aws-voiceid",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-voiceid-domain.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDomain`."
+      },
+      "fqn": "@aws-cdk/aws-voiceid.CfnDomainProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/voiceid.generated.ts",
+        "line": 20
+      },
+      "name": "CfnDomainProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-voiceid-domain.html#cfn-voiceid-domain-name"
+            },
+            "stability": "external",
+            "summary": "The client-provided name for the domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 27
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-voiceid-domain.html#cfn-voiceid-domain-serversideencryptionconfiguration"
+            },
+            "stability": "external",
+            "summary": "The server-side encryption configuration containing the KMS key identifier you want Voice ID to use to encrypt your data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 34
+          },
+          "name": "serverSideEncryptionConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-voiceid.CfnDomain.ServerSideEncryptionConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-voiceid-domain.html#cfn-voiceid-domain-description"
+            },
+            "stability": "external",
+            "summary": "The client-provided description of the domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 41
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-voiceid-domain.html#cfn-voiceid-domain-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/voiceid.generated.ts",
+            "line": 48
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/voiceid.generated:CfnDomainProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "o7NCrntUyzAhBwMCSeXJBPgpkYWKIF8fd2e4JVtdS50="
+}

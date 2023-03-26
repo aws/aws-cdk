@@ -1,0 +1,539 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      }
+    },
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "Common implementation package for @aws-cdk/aws-autoscaling and @aws-cdk/aws-applicationautoscaling",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.77.0 (build 3e5fa88)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "s3"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-autoscaling-common",
+  "readme": {
+    "markdown": "# AWS AutoScaling Common Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis is a sister package to `@aws-cdk/aws-autoscaling` and\n`@aws-cdk/aws-applicationautoscaling`. It contains shared implementation\ndetails between them.\n\nIt does not need to be used directly.\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-autoscaling-common",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
+      "packageId": "Amazon.CDK.AWS.AutoScaling.Common"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "autoscaling-common",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.autoscaling.common"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-autoscaling-common"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-autoscaling-common",
+      "module": "aws_cdk.aws_autoscaling_common"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-autoscaling-common.Alarms": {
+      "assembly": "@aws-cdk/aws-autoscaling-common",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/aws-autoscaling-common.Alarms",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/interval-utils.ts",
+        "line": 199
+      },
+      "name": "Alarms",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/interval-utils.ts",
+            "line": 200
+          },
+          "name": "lowerAlarmIntervalIndex",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/interval-utils.ts",
+            "line": 201
+          },
+          "name": "upperAlarmIntervalIndex",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/interval-utils:Alarms"
+    },
+    "@aws-cdk/aws-autoscaling-common.ArbitraryIntervals": {
+      "assembly": "@aws-cdk/aws-autoscaling-common",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/aws-autoscaling-common.ArbitraryIntervals",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/test-utils.ts",
+        "line": 99
+      },
+      "name": "ArbitraryIntervals",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/test-utils.ts",
+            "line": 100
+          },
+          "name": "absolute",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/test-utils.ts",
+            "line": 101
+          },
+          "name": "intervals",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-autoscaling-common.ScalingInterval"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/test-utils:ArbitraryIntervals"
+    },
+    "@aws-cdk/aws-autoscaling-common.CompleteScalingInterval": {
+      "assembly": "@aws-cdk/aws-autoscaling-common",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/aws-autoscaling-common.CompleteScalingInterval",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/interval-utils.ts",
+        "line": 3
+      },
+      "name": "CompleteScalingInterval",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/interval-utils.ts",
+            "line": 4
+          },
+          "name": "lower",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/interval-utils.ts",
+            "line": 5
+          },
+          "name": "upper",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/interval-utils.ts",
+            "line": 6
+          },
+          "name": "change",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/interval-utils:CompleteScalingInterval"
+    },
+    "@aws-cdk/aws-autoscaling-common.IRandomGenerator": {
+      "assembly": "@aws-cdk/aws-autoscaling-common",
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/aws-autoscaling-common.IRandomGenerator",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/test-utils.ts",
+        "line": 94
+      },
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "locationInModule": {
+            "filename": "lib/test-utils.ts",
+            "line": 95
+          },
+          "name": "nextBoolean",
+          "returns": {
+            "type": {
+              "primitive": "boolean"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "locationInModule": {
+            "filename": "lib/test-utils.ts",
+            "line": 96
+          },
+          "name": "nextInt",
+          "parameters": [
+            {
+              "name": "min",
+              "type": {
+                "primitive": "number"
+              }
+            },
+            {
+              "name": "max",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "number"
+            }
+          }
+        }
+      ],
+      "name": "IRandomGenerator",
+      "symbolId": "lib/test-utils:IRandomGenerator"
+    },
+    "@aws-cdk/aws-autoscaling-common.ScalingInterval": {
+      "assembly": "@aws-cdk/aws-autoscaling-common",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "A range of metric values in which to apply a certain scaling operation."
+      },
+      "fqn": "@aws-cdk/aws-autoscaling-common.ScalingInterval",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/types.ts",
+        "line": 4
+      },
+      "name": "ScalingInterval",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The number is interpreted differently based on AdjustmentType:\n\n- ChangeInCapacity: add the adjustment to the current capacity.\n  The number can be positive or negative.\n- PercentChangeInCapacity: add or remove the given percentage of the current\n   capacity to itself. The number can be in the range [-100..100].\n- ExactCapacity: set the capacity to this number. The number must\n   be positive.",
+            "stability": "stable",
+            "summary": "The capacity adjustment to apply in this interval."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/types.ts",
+            "line": 35
+          },
+          "name": "change",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Threshold automatically derived from neighbouring intervals",
+            "remarks": "The scaling adjustment will be applied if the metric is higher than this value.",
+            "stability": "stable",
+            "summary": "The lower bound of the interval."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/types.ts",
+            "line": 12
+          },
+          "name": "lower",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Threshold automatically derived from neighbouring intervals",
+            "remarks": "The scaling adjustment will be applied if the metric is lower than this value.",
+            "stability": "stable",
+            "summary": "The upper bound of the interval."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/types.ts",
+            "line": 21
+          },
+          "name": "upper",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/types:ScalingInterval"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "tMkgWPo30ES1lNYXXNSZfJJbJsIgMdIFyyazC/DaA8I="
+}

@@ -1,0 +1,752 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::EMRContainers",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::EMRContainers",
+    "aws-emrcontainers"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-emrcontainers",
+  "readme": {
+    "markdown": "# AWS::EMRContainers Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as emrcontainers from '@aws-cdk/aws-emrcontainers';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for EMRContainers construct libraries](https://constructs.dev/search?q=emrcontainers)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::EMRContainers resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_EMRContainers.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::EMRContainers](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_EMRContainers.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-emrcontainers",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.EMRContainers",
+      "packageId": "Amazon.CDK.AWS.EMRContainers",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "emrcontainers",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.emrcontainers"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-emrcontainers"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-emrcontainers",
+      "module": "aws_cdk.aws_emrcontainers"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-emrcontainers.CfnVirtualCluster": {
+      "assembly": "@aws-cdk/aws-emrcontainers",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::EMRContainers::VirtualCluster",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrcontainers-virtualcluster.html"
+        },
+        "remarks": "The `AWS::EMRContainers::VirtualCluster` resource specifies a virtual cluster. A virtual cluster is a managed entity on Amazon EMR on EKS. You can create, describe, list, and delete virtual clusters. They do not consume any additional resources in your system. A single virtual cluster maps to a single Kubernetes namespace. Given this relationship, you can model virtual clusters the same way you model Kubernetes namespaces to meet your requirements.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::EMRContainers::VirtualCluster`."
+      },
+      "fqn": "@aws-cdk/aws-emrcontainers.CfnVirtualCluster",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::EMRContainers::VirtualCluster`."
+        },
+        "locationInModule": {
+          "filename": "lib/emrcontainers.generated.ts",
+          "line": 176
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-emrcontainers.CfnVirtualClusterProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/emrcontainers.generated.ts",
+        "line": 109
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 194
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 207
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnVirtualCluster",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 113
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the project, such as `arn:aws:emr-containers:us-east-1:123456789012:/virtualclusters/ab4rp1abcs8xz47n3x0example` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 138
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Id"
+            },
+            "stability": "external",
+            "summary": "The ID of the virtual cluster, such as `ab4rp1abcs8xz47n3x0example` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 144
+          },
+          "name": "attrId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 199
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrcontainers-virtualcluster.html#cfn-emrcontainers-virtualcluster-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 167
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrcontainers-virtualcluster.html#cfn-emrcontainers-virtualcluster-containerprovider"
+            },
+            "stability": "external",
+            "summary": "The container provider of the virtual cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 151
+          },
+          "name": "containerProvider",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-emrcontainers.CfnVirtualCluster.ContainerProviderProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrcontainers-virtualcluster.html#cfn-emrcontainers-virtualcluster-name"
+            },
+            "stability": "external",
+            "summary": "The name of the virtual cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 158
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/emrcontainers.generated:CfnVirtualCluster"
+    },
+    "@aws-cdk/aws-emrcontainers.CfnVirtualCluster.ContainerInfoProperty": {
+      "assembly": "@aws-cdk/aws-emrcontainers",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrcontainers-virtualcluster-containerinfo.html"
+        },
+        "stability": "external",
+        "summary": "The information about the container used for a job run or a managed endpoint."
+      },
+      "fqn": "@aws-cdk/aws-emrcontainers.CfnVirtualCluster.ContainerInfoProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/emrcontainers.generated.ts",
+        "line": 221
+      },
+      "name": "ContainerInfoProperty",
+      "namespace": "CfnVirtualCluster",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrcontainers-virtualcluster-containerinfo.html#cfn-emrcontainers-virtualcluster-containerinfo-eksinfo"
+            },
+            "stability": "external",
+            "summary": "The information about the Amazon EKS cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 227
+          },
+          "name": "eksInfo",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-emrcontainers.CfnVirtualCluster.EksInfoProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/emrcontainers.generated:CfnVirtualCluster.ContainerInfoProperty"
+    },
+    "@aws-cdk/aws-emrcontainers.CfnVirtualCluster.ContainerProviderProperty": {
+      "assembly": "@aws-cdk/aws-emrcontainers",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrcontainers-virtualcluster-containerprovider.html"
+        },
+        "stability": "external",
+        "summary": "The information about the container provider."
+      },
+      "fqn": "@aws-cdk/aws-emrcontainers.CfnVirtualCluster.ContainerProviderProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/emrcontainers.generated.ts",
+        "line": 289
+      },
+      "name": "ContainerProviderProperty",
+      "namespace": "CfnVirtualCluster",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrcontainers-virtualcluster-containerprovider.html#cfn-emrcontainers-virtualcluster-containerprovider-id"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 100\n\n*Pattern* : `^[0-9A-Za-z][A-Za-z0-9\\-_]*`",
+            "stability": "external",
+            "summary": "The ID of the container cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 301
+          },
+          "name": "id",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrcontainers-virtualcluster-containerprovider.html#cfn-emrcontainers-virtualcluster-containerprovider-info"
+            },
+            "stability": "external",
+            "summary": "The information about the container cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 307
+          },
+          "name": "info",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-emrcontainers.CfnVirtualCluster.ContainerInfoProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrcontainers-virtualcluster-containerprovider.html#cfn-emrcontainers-virtualcluster-containerprovider-type"
+            },
+            "remarks": "Amazon EKS is the only supported type as of now.",
+            "stability": "external",
+            "summary": "The type of the container provider."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 313
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/emrcontainers.generated:CfnVirtualCluster.ContainerProviderProperty"
+    },
+    "@aws-cdk/aws-emrcontainers.CfnVirtualCluster.EksInfoProperty": {
+      "assembly": "@aws-cdk/aws-emrcontainers",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrcontainers-virtualcluster-eksinfo.html"
+        },
+        "stability": "external",
+        "summary": "The information about the Amazon EKS cluster."
+      },
+      "fqn": "@aws-cdk/aws-emrcontainers.CfnVirtualCluster.EksInfoProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/emrcontainers.generated.ts",
+        "line": 383
+      },
+      "name": "EksInfoProperty",
+      "namespace": "CfnVirtualCluster",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrcontainers-virtualcluster-eksinfo.html#cfn-emrcontainers-virtualcluster-eksinfo-namespace"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 63\n\n*Pattern* : `[a-z0-9]([-a-z0-9]*[a-z0-9])?`",
+            "stability": "external",
+            "summary": "The namespaces of the EKS cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 395
+          },
+          "name": "namespace",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/emrcontainers.generated:CfnVirtualCluster.EksInfoProperty"
+    },
+    "@aws-cdk/aws-emrcontainers.CfnVirtualClusterProps": {
+      "assembly": "@aws-cdk/aws-emrcontainers",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrcontainers-virtualcluster.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnVirtualCluster`."
+      },
+      "fqn": "@aws-cdk/aws-emrcontainers.CfnVirtualClusterProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/emrcontainers.generated.ts",
+        "line": 20
+      },
+      "name": "CfnVirtualClusterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrcontainers-virtualcluster.html#cfn-emrcontainers-virtualcluster-containerprovider"
+            },
+            "stability": "external",
+            "summary": "The container provider of the virtual cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 27
+          },
+          "name": "containerProvider",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-emrcontainers.CfnVirtualCluster.ContainerProviderProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrcontainers-virtualcluster.html#cfn-emrcontainers-virtualcluster-name"
+            },
+            "stability": "external",
+            "summary": "The name of the virtual cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 34
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrcontainers-virtualcluster.html#cfn-emrcontainers-virtualcluster-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrcontainers.generated.ts",
+            "line": 43
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/emrcontainers.generated:CfnVirtualClusterProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "/qCsS4UVHZBaNfi3TouTtSP7rxZ4Si6epBoA8X5Z65c="
+}

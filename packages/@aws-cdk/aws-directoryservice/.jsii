@@ -1,0 +1,1497 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::DirectoryService",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "directoryservice"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-directoryservice",
+  "readme": {
+    "markdown": "# AWS Directory Service Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as directoryservice from '@aws-cdk/aws-directoryservice';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for DirectoryService construct libraries](https://constructs.dev/search?q=directoryservice)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::DirectoryService resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DirectoryService.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::DirectoryService](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DirectoryService.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-directoryservice",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.DirectoryService",
+      "packageId": "Amazon.CDK.AWS.DirectoryService"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "directoryservice",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.directoryservice"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-directoryservice"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-directoryservice",
+      "module": "aws_cdk.aws_directoryservice"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-directoryservice.CfnMicrosoftAD": {
+      "assembly": "@aws-cdk/aws-directoryservice",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::DirectoryService::MicrosoftAD",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html"
+        },
+        "remarks": "The `AWS::DirectoryService::MicrosoftAD` resource specifies a Microsoft Active Directory in AWS so that your directory users and groups can access the AWS Management Console and AWS applications using their existing credentials. For more information, see [AWS Managed Microsoft AD](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_microsoft_ad.html) in the *AWS Directory Service Admin Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::DirectoryService::MicrosoftAD`."
+      },
+      "fqn": "@aws-cdk/aws-directoryservice.CfnMicrosoftAD",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::DirectoryService::MicrosoftAD`."
+        },
+        "locationInModule": {
+          "filename": "lib/directoryservice.generated.ts",
+          "line": 249
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-directoryservice.CfnMicrosoftADProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/directoryservice.generated.ts",
+        "line": 152
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 272
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 289
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnMicrosoftAD",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 156
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Alias"
+            },
+            "remarks": "For example: `d-12373a053a` or `alias4-mydirectory-12345abcgmzsk` (if you have the `CreateAlias` property set to true).",
+            "stability": "external",
+            "summary": "The alias for a directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 181
+          },
+          "name": "attrAlias",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DnsIpAddresses"
+            },
+            "stability": "external",
+            "summary": "The IP addresses of the DNS servers for the directory, such as `[ \"192.0.2.1\", \"192.0.2.2\" ]` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 187
+          },
+          "name": "attrDnsIpAddresses",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 277
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-name"
+            },
+            "stability": "external",
+            "summary": "The fully qualified domain name for the AWS Managed Microsoft AD directory, such as `corp.example.com` . This name will resolve inside your VPC only. It does not need to be publicly resolvable."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 194
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-password"
+            },
+            "remarks": "If you need to change the password for the administrator account, see the [ResetUserPassword](https://docs.aws.amazon.com/directoryservice/latest/devguide/API_ResetUserPassword.html) API call in the *AWS Directory Service API Reference* .",
+            "stability": "external",
+            "summary": "The password for the default administrative user named `Admin` ."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 203
+          },
+          "name": "password",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-vpcsettings"
+            },
+            "stability": "external",
+            "summary": "Specifies the VPC settings of the Microsoft AD directory server in AWS ."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 210
+          },
+          "name": "vpcSettings",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-directoryservice.CfnMicrosoftAD.VpcSettingsProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-createalias"
+            },
+            "remarks": "The alias is used to construct the access URL for the directory, such as `http://<alias>.awsapps.com` . By default, AWS CloudFormation does not create an alias.\n\n> After an alias has been created, it cannot be deleted or reused, so this operation should only be used when absolutely necessary.",
+            "stability": "external",
+            "summary": "Specifies an alias for a directory and assigns the alias to the directory."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 219
+          },
+          "name": "createAlias",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-edition"
+            },
+            "remarks": "`Enterprise` is the default.",
+            "stability": "external",
+            "summary": "AWS Managed Microsoft AD is available in two editions: `Standard` and `Enterprise` ."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 226
+          },
+          "name": "edition",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-enablesso"
+            },
+            "remarks": "Single sign-on allows users in your directory to access certain AWS services from a computer joined to the directory without having to enter their credentials separately. If you don't specify a value, AWS CloudFormation disables single sign-on by default.",
+            "stability": "external",
+            "summary": "Whether to enable single sign-on for a Microsoft Active Directory in AWS ."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 233
+          },
+          "name": "enableSso",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-shortname"
+            },
+            "remarks": "If you don't specify a NetBIOS name, it will default to the first part of your directory DNS. For example, `CORP` for the directory DNS `corp.example.com` .",
+            "stability": "external",
+            "summary": "The NetBIOS name for your domain, such as `CORP` ."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 240
+          },
+          "name": "shortName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/directoryservice.generated:CfnMicrosoftAD"
+    },
+    "@aws-cdk/aws-directoryservice.CfnMicrosoftAD.VpcSettingsProperty": {
+      "assembly": "@aws-cdk/aws-directoryservice",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-directoryservice-microsoftad-vpcsettings.html"
+        },
+        "stability": "external",
+        "summary": "Contains VPC information for the [CreateDirectory](https://docs.aws.amazon.com/directoryservice/latest/devguide/API_CreateDirectory.html) or [CreateMicrosoftAD](https://docs.aws.amazon.com/directoryservice/latest/devguide/API_CreateMicrosoftAD.html) operation."
+      },
+      "fqn": "@aws-cdk/aws-directoryservice.CfnMicrosoftAD.VpcSettingsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/directoryservice.generated.ts",
+        "line": 303
+      },
+      "name": "VpcSettingsProperty",
+      "namespace": "CfnMicrosoftAD",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-directoryservice-microsoftad-vpcsettings.html#cfn-directoryservice-microsoftad-vpcsettings-subnetids"
+            },
+            "remarks": "The two subnets must be in different Availability Zones. AWS Directory Service specifies a directory server and a DNS server in each of these subnets.",
+            "stability": "external",
+            "summary": "The identifiers of the subnets for the directory servers."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 309
+          },
+          "name": "subnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-directoryservice-microsoftad-vpcsettings.html#cfn-directoryservice-microsoftad-vpcsettings-vpcid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the VPC in which to create the directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 315
+          },
+          "name": "vpcId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/directoryservice.generated:CfnMicrosoftAD.VpcSettingsProperty"
+    },
+    "@aws-cdk/aws-directoryservice.CfnMicrosoftADProps": {
+      "assembly": "@aws-cdk/aws-directoryservice",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnMicrosoftAD`."
+      },
+      "fqn": "@aws-cdk/aws-directoryservice.CfnMicrosoftADProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/directoryservice.generated.ts",
+        "line": 20
+      },
+      "name": "CfnMicrosoftADProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-name"
+            },
+            "stability": "external",
+            "summary": "The fully qualified domain name for the AWS Managed Microsoft AD directory, such as `corp.example.com` . This name will resolve inside your VPC only. It does not need to be publicly resolvable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 27
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-password"
+            },
+            "remarks": "If you need to change the password for the administrator account, see the [ResetUserPassword](https://docs.aws.amazon.com/directoryservice/latest/devguide/API_ResetUserPassword.html) API call in the *AWS Directory Service API Reference* .",
+            "stability": "external",
+            "summary": "The password for the default administrative user named `Admin` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 36
+          },
+          "name": "password",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-vpcsettings"
+            },
+            "stability": "external",
+            "summary": "Specifies the VPC settings of the Microsoft AD directory server in AWS ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 43
+          },
+          "name": "vpcSettings",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-directoryservice.CfnMicrosoftAD.VpcSettingsProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-createalias"
+            },
+            "remarks": "The alias is used to construct the access URL for the directory, such as `http://<alias>.awsapps.com` . By default, AWS CloudFormation does not create an alias.\n\n> After an alias has been created, it cannot be deleted or reused, so this operation should only be used when absolutely necessary.",
+            "stability": "external",
+            "summary": "Specifies an alias for a directory and assigns the alias to the directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 52
+          },
+          "name": "createAlias",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-edition"
+            },
+            "remarks": "`Enterprise` is the default.",
+            "stability": "external",
+            "summary": "AWS Managed Microsoft AD is available in two editions: `Standard` and `Enterprise` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 59
+          },
+          "name": "edition",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-enablesso"
+            },
+            "remarks": "Single sign-on allows users in your directory to access certain AWS services from a computer joined to the directory without having to enter their credentials separately. If you don't specify a value, AWS CloudFormation disables single sign-on by default.",
+            "stability": "external",
+            "summary": "Whether to enable single sign-on for a Microsoft Active Directory in AWS ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 66
+          },
+          "name": "enableSso",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-microsoftad.html#cfn-directoryservice-microsoftad-shortname"
+            },
+            "remarks": "If you don't specify a NetBIOS name, it will default to the first part of your directory DNS. For example, `CORP` for the directory DNS `corp.example.com` .",
+            "stability": "external",
+            "summary": "The NetBIOS name for your domain, such as `CORP` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 73
+          },
+          "name": "shortName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/directoryservice.generated:CfnMicrosoftADProps"
+    },
+    "@aws-cdk/aws-directoryservice.CfnSimpleAD": {
+      "assembly": "@aws-cdk/aws-directoryservice",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::DirectoryService::SimpleAD",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html"
+        },
+        "remarks": "The `AWS::DirectoryService::SimpleAD` resource specifies an AWS Directory Service Simple Active Directory ( Simple AD ) in AWS so that your directory users and groups can access the AWS Management Console and AWS applications using their existing credentials. Simple AD is a Microsoft Active Directory–compatible directory. For more information, see [Simple Active Directory](https://docs.aws.amazon.com/directoryservice/latest/admin-guide/directory_simple_ad.html) in the *AWS Directory Service Admin Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::DirectoryService::SimpleAD`."
+      },
+      "fqn": "@aws-cdk/aws-directoryservice.CfnSimpleAD",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::DirectoryService::SimpleAD`."
+        },
+        "locationInModule": {
+          "filename": "lib/directoryservice.generated.ts",
+          "line": 632
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-directoryservice.CfnSimpleADProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/directoryservice.generated.ts",
+        "line": 522
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 657
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 675
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSimpleAD",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 526
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Alias"
+            },
+            "remarks": "For example: `d-12373a053a` or `alias4-mydirectory-12345abcgmzsk` (if you have the `CreateAlias` property set to true).",
+            "stability": "external",
+            "summary": "The alias for a directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 551
+          },
+          "name": "attrAlias",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DirectoryId"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 557
+          },
+          "name": "attrDirectoryId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DnsIpAddresses"
+            },
+            "stability": "external",
+            "summary": "The IP addresses of the DNS servers for the directory, such as `[ \"172.31.3.154\", \"172.31.63.203\" ]` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 563
+          },
+          "name": "attrDnsIpAddresses",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 662
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-name"
+            },
+            "stability": "external",
+            "summary": "The fully qualified name for the directory, such as `corp.example.com` ."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 570
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-size"
+            },
+            "remarks": "For valid values, see [CreateDirectory](https://docs.aws.amazon.com/directoryservice/latest/devguide/API_CreateDirectory.html) in the *AWS Directory Service API Reference* .",
+            "stability": "external",
+            "summary": "The size of the directory."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 577
+          },
+          "name": "size",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-vpcsettings"
+            },
+            "stability": "external",
+            "summary": "A [DirectoryVpcSettings](https://docs.aws.amazon.com/directoryservice/latest/devguide/API_DirectoryVpcSettings.html) object that contains additional information for the operation."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 584
+          },
+          "name": "vpcSettings",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-directoryservice.CfnSimpleAD.VpcSettingsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-createalias"
+            },
+            "remarks": "The alias is used to construct the access URL for the directory, such as `http://<alias>.awsapps.com` . By default, this property is set to `false` .\n\n> After an alias has been created, it cannot be deleted or reused, so this operation should only be used when absolutely necessary.",
+            "stability": "external",
+            "summary": "If set to `true` , specifies an alias for a directory and assigns the alias to the directory."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 593
+          },
+          "name": "createAlias",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-description"
+            },
+            "stability": "external",
+            "summary": "A description for the directory."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 600
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-enablesso"
+            },
+            "remarks": "If you don't specify a value, AWS CloudFormation disables single sign-on by default.",
+            "stability": "external",
+            "summary": "Whether to enable single sign-on for a directory."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 607
+          },
+          "name": "enableSso",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-password"
+            },
+            "remarks": "The directory creation process creates a directory administrator account with the user name `Administrator` and this password.\n\nIf you need to change the password for the administrator account, see the [ResetUserPassword](https://docs.aws.amazon.com/directoryservice/latest/devguide/API_ResetUserPassword.html) API call in the *AWS Directory Service API Reference* .",
+            "stability": "external",
+            "summary": "The password for the directory administrator."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 616
+          },
+          "name": "password",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-shortname"
+            },
+            "stability": "external",
+            "summary": "The NetBIOS name of the directory, such as `CORP` ."
+          },
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 623
+          },
+          "name": "shortName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/directoryservice.generated:CfnSimpleAD"
+    },
+    "@aws-cdk/aws-directoryservice.CfnSimpleAD.VpcSettingsProperty": {
+      "assembly": "@aws-cdk/aws-directoryservice",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-directoryservice-simplead-vpcsettings.html"
+        },
+        "stability": "external",
+        "summary": "Contains VPC information for the [CreateDirectory](https://docs.aws.amazon.com/directoryservice/latest/devguide/API_CreateDirectory.html) or [CreateMicrosoftAD](https://docs.aws.amazon.com/directoryservice/latest/devguide/API_CreateMicrosoftAD.html) operation."
+      },
+      "fqn": "@aws-cdk/aws-directoryservice.CfnSimpleAD.VpcSettingsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/directoryservice.generated.ts",
+        "line": 689
+      },
+      "name": "VpcSettingsProperty",
+      "namespace": "CfnSimpleAD",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-directoryservice-simplead-vpcsettings.html#cfn-directoryservice-simplead-vpcsettings-subnetids"
+            },
+            "remarks": "The two subnets must be in different Availability Zones. AWS Directory Service specifies a directory server and a DNS server in each of these subnets.",
+            "stability": "external",
+            "summary": "The identifiers of the subnets for the directory servers."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 695
+          },
+          "name": "subnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-directoryservice-simplead-vpcsettings.html#cfn-directoryservice-simplead-vpcsettings-vpcid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the VPC in which to create the directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 701
+          },
+          "name": "vpcId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/directoryservice.generated:CfnSimpleAD.VpcSettingsProperty"
+    },
+    "@aws-cdk/aws-directoryservice.CfnSimpleADProps": {
+      "assembly": "@aws-cdk/aws-directoryservice",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSimpleAD`."
+      },
+      "fqn": "@aws-cdk/aws-directoryservice.CfnSimpleADProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/directoryservice.generated.ts",
+        "line": 380
+      },
+      "name": "CfnSimpleADProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-name"
+            },
+            "stability": "external",
+            "summary": "The fully qualified name for the directory, such as `corp.example.com` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 387
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-size"
+            },
+            "remarks": "For valid values, see [CreateDirectory](https://docs.aws.amazon.com/directoryservice/latest/devguide/API_CreateDirectory.html) in the *AWS Directory Service API Reference* .",
+            "stability": "external",
+            "summary": "The size of the directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 394
+          },
+          "name": "size",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-vpcsettings"
+            },
+            "stability": "external",
+            "summary": "A [DirectoryVpcSettings](https://docs.aws.amazon.com/directoryservice/latest/devguide/API_DirectoryVpcSettings.html) object that contains additional information for the operation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 401
+          },
+          "name": "vpcSettings",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-directoryservice.CfnSimpleAD.VpcSettingsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-createalias"
+            },
+            "remarks": "The alias is used to construct the access URL for the directory, such as `http://<alias>.awsapps.com` . By default, this property is set to `false` .\n\n> After an alias has been created, it cannot be deleted or reused, so this operation should only be used when absolutely necessary.",
+            "stability": "external",
+            "summary": "If set to `true` , specifies an alias for a directory and assigns the alias to the directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 410
+          },
+          "name": "createAlias",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-description"
+            },
+            "stability": "external",
+            "summary": "A description for the directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 417
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-enablesso"
+            },
+            "remarks": "If you don't specify a value, AWS CloudFormation disables single sign-on by default.",
+            "stability": "external",
+            "summary": "Whether to enable single sign-on for a directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 424
+          },
+          "name": "enableSso",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-password"
+            },
+            "remarks": "The directory creation process creates a directory administrator account with the user name `Administrator` and this password.\n\nIf you need to change the password for the administrator account, see the [ResetUserPassword](https://docs.aws.amazon.com/directoryservice/latest/devguide/API_ResetUserPassword.html) API call in the *AWS Directory Service API Reference* .",
+            "stability": "external",
+            "summary": "The password for the directory administrator."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 433
+          },
+          "name": "password",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-directoryservice-simplead.html#cfn-directoryservice-simplead-shortname"
+            },
+            "stability": "external",
+            "summary": "The NetBIOS name of the directory, such as `CORP` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/directoryservice.generated.ts",
+            "line": 440
+          },
+          "name": "shortName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/directoryservice.generated:CfnSimpleADProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "wZWZlsta8+PYMmObxGp1BhCZCxXevlNCWcuK4FTA8bk="
+}

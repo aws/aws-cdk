@@ -1,0 +1,802 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for Alexa::ASK",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "alexa-ask"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/alexa-ask",
+  "readme": {
+    "markdown": "# Alexa Skills Kit Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as alexa_ask from '@aws-cdk/alexa-ask';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for ASK construct libraries](https://constructs.dev/search?q=ask)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation Alexa::ASK resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Alexa_ASK.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for Alexa::ASK](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/Alexa_ASK.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/alexa-ask",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.Alexa.Ask",
+      "packageId": "Amazon.CDK.Alexa.Ask"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "alexa-ask",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.alexa.ask"
+    },
+    "js": {
+      "npm": "@aws-cdk/alexa-ask"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.alexa-ask",
+      "module": "aws_cdk.alexa_ask"
+    }
+  },
+  "types": {
+    "@aws-cdk/alexa-ask.CfnSkill": {
+      "assembly": "@aws-cdk/alexa-ask",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "Alexa::ASK::Skill",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ask-skill.html"
+        },
+        "remarks": "The `Alexa::ASK::Skill` resource creates an Alexa skill that enables customers to access new abilities. For more information about developing a skill, see the  .",
+        "stability": "external",
+        "summary": "A CloudFormation `Alexa::ASK::Skill`."
+      },
+      "fqn": "@aws-cdk/alexa-ask.CfnSkill",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `Alexa::ASK::Skill`."
+        },
+        "locationInModule": {
+          "filename": "lib/ask.generated.ts",
+          "line": 161
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/alexa-ask.CfnSkillProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ask.generated.ts",
+        "line": 108
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 178
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 191
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSkill",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 112
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 183
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ask-skill.html#cfn-ask-skill-authenticationconfiguration"
+            },
+            "remarks": "Only Login with Amazon clients created through the  are supported. The client ID, client secret, and refresh token are required.",
+            "stability": "external",
+            "summary": "Login with Amazon (LWA) configuration used to authenticate with the Alexa service."
+          },
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 138
+          },
+          "name": "authenticationConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/alexa-ask.CfnSkill.AuthenticationConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ask-skill.html#cfn-ask-skill-skillpackage"
+            },
+            "remarks": "Skill packages are retrieved from an Amazon S3 bucket and key and used to create and update the skill. For more information about the skill package format, see the  .",
+            "stability": "external",
+            "summary": "Configuration for the skill package that contains the components of the Alexa skill."
+          },
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 145
+          },
+          "name": "skillPackage",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/alexa-ask.CfnSkill.SkillPackageProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ask-skill.html#cfn-ask-skill-vendorid"
+            },
+            "remarks": "Details for retrieving the vendor ID are in  . The provided LWA credentials must be linked to the developer account associated with this vendor ID.",
+            "stability": "external",
+            "summary": "The vendor ID associated with the Amazon developer account that will host the skill."
+          },
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 152
+          },
+          "name": "vendorId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ask.generated:CfnSkill"
+    },
+    "@aws-cdk/alexa-ask.CfnSkill.AuthenticationConfigurationProperty": {
+      "assembly": "@aws-cdk/alexa-ask",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ask-skill-authenticationconfiguration.html"
+        },
+        "remarks": "Only Login with Amazon security profiles created through the  are supported for authentication. A client ID, client secret, and refresh token are required. You can generate a client ID and client secret by creating a new  on the Amazon Developer Portal or you can retrieve them from an existing profile. You can then retrieve the refresh token using the Alexa Skills Kit CLI. For instructions, see  in the  .\n\n`AuthenticationConfiguration` is a property of the `Alexa::ASK::Skill` resource.",
+        "stability": "external",
+        "summary": "The `AuthenticationConfiguration` property type specifies the Login with Amazon (LWA) configuration used to authenticate with the Alexa service."
+      },
+      "fqn": "@aws-cdk/alexa-ask.CfnSkill.AuthenticationConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ask.generated.ts",
+        "line": 207
+      },
+      "name": "AuthenticationConfigurationProperty",
+      "namespace": "CfnSkill",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ask-skill-authenticationconfiguration.html#cfn-ask-skill-authenticationconfiguration-clientid"
+            },
+            "stability": "external",
+            "summary": "Client ID from Login with Amazon (LWA)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 213
+          },
+          "name": "clientId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ask-skill-authenticationconfiguration.html#cfn-ask-skill-authenticationconfiguration-clientsecret"
+            },
+            "stability": "external",
+            "summary": "Client secret from Login with Amazon (LWA)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 219
+          },
+          "name": "clientSecret",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ask-skill-authenticationconfiguration.html#cfn-ask-skill-authenticationconfiguration-refreshtoken"
+            },
+            "remarks": "This token is secret.",
+            "stability": "external",
+            "summary": "Refresh token from Login with Amazon (LWA)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 225
+          },
+          "name": "refreshToken",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ask.generated:CfnSkill.AuthenticationConfigurationProperty"
+    },
+    "@aws-cdk/alexa-ask.CfnSkill.OverridesProperty": {
+      "assembly": "@aws-cdk/alexa-ask",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ask-skill-overrides.html"
+        },
+        "remarks": "Values provided here do not modify the contents of the original skill package. Currently, only overriding values inside of the skill manifest component of the package is supported.\n\n`Overrides` is a property of the `Alexa::ASK::Skill SkillPackage` property type.",
+        "stability": "external",
+        "summary": "The `Overrides` property type provides overrides to the skill package to apply when creating or updating the skill."
+      },
+      "fqn": "@aws-cdk/alexa-ask.CfnSkill.OverridesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ask.generated.ts",
+        "line": 297
+      },
+      "name": "OverridesProperty",
+      "namespace": "CfnSkill",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ask-skill-overrides.html#cfn-ask-skill-overrides-manifest"
+            },
+            "remarks": "The skill manifest contains metadata about the skill. For more information, see  .",
+            "stability": "external",
+            "summary": "Overrides to apply to the skill manifest inside of the skill package."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 303
+          },
+          "name": "manifest",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/ask.generated:CfnSkill.OverridesProperty"
+    },
+    "@aws-cdk/alexa-ask.CfnSkill.SkillPackageProperty": {
+      "assembly": "@aws-cdk/alexa-ask",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ask-skill-skillpackage.html"
+        },
+        "remarks": "Skill packages are retrieved from an Amazon S3 bucket and key and used to create and update the skill. More details about the skill package format are located in the  .\n\n`SkillPackage` is a property of the `Alexa::ASK::Skill` resource.",
+        "stability": "external",
+        "summary": "The `SkillPackage` property type contains configuration details for the skill package that contains the components of the Alexa skill."
+      },
+      "fqn": "@aws-cdk/alexa-ask.CfnSkill.SkillPackageProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ask.generated.ts",
+        "line": 366
+      },
+      "name": "SkillPackageProperty",
+      "namespace": "CfnSkill",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ask-skill-skillpackage.html#cfn-ask-skill-skillpackage-s3bucket"
+            },
+            "stability": "external",
+            "summary": "The name of the Amazon S3 bucket where the .zip file that contains the skill package is stored."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 378
+          },
+          "name": "s3Bucket",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ask-skill-skillpackage.html#cfn-ask-skill-skillpackage-s3key"
+            },
+            "stability": "external",
+            "summary": "The location and name of the skill package .zip file."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 390
+          },
+          "name": "s3Key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ask-skill-skillpackage.html#cfn-ask-skill-skillpackage-overrides"
+            },
+            "remarks": "Values provided here do not modify the contents of the original skill package. Currently, only overriding values inside of the skill manifest component of the package is supported.",
+            "stability": "external",
+            "summary": "Overrides to the skill package to apply when creating or updating the skill."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 372
+          },
+          "name": "overrides",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/alexa-ask.CfnSkill.OverridesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ask-skill-skillpackage.html#cfn-ask-skill-skillpackage-s3bucketrole"
+            },
+            "stability": "external",
+            "summary": "ARN of the IAM role that grants the Alexa service ( `alexa-appkit.amazon.com` ) permission to access the bucket and retrieve the skill package. This property is optional. If you do not provide it, the bucket must be publicly accessible or configured with a policy that allows this access. Otherwise, AWS CloudFormation cannot create the skill."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 384
+          },
+          "name": "s3BucketRole",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ask-skill-skillpackage.html#cfn-ask-skill-skillpackage-s3objectversion"
+            },
+            "stability": "external",
+            "summary": "If you have S3 versioning enabled, the version ID of the skill package.zip file."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 396
+          },
+          "name": "s3ObjectVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ask.generated:CfnSkill.SkillPackageProperty"
+    },
+    "@aws-cdk/alexa-ask.CfnSkillProps": {
+      "assembly": "@aws-cdk/alexa-ask",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ask-skill.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSkill`."
+      },
+      "fqn": "@aws-cdk/alexa-ask.CfnSkillProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ask.generated.ts",
+        "line": 20
+      },
+      "name": "CfnSkillProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ask-skill.html#cfn-ask-skill-authenticationconfiguration"
+            },
+            "remarks": "Only Login with Amazon clients created through the  are supported. The client ID, client secret, and refresh token are required.",
+            "stability": "external",
+            "summary": "Login with Amazon (LWA) configuration used to authenticate with the Alexa service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 27
+          },
+          "name": "authenticationConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/alexa-ask.CfnSkill.AuthenticationConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ask-skill.html#cfn-ask-skill-skillpackage"
+            },
+            "remarks": "Skill packages are retrieved from an Amazon S3 bucket and key and used to create and update the skill. For more information about the skill package format, see the  .",
+            "stability": "external",
+            "summary": "Configuration for the skill package that contains the components of the Alexa skill."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 34
+          },
+          "name": "skillPackage",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/alexa-ask.CfnSkill.SkillPackageProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ask-skill.html#cfn-ask-skill-vendorid"
+            },
+            "remarks": "Details for retrieving the vendor ID are in  . The provided LWA credentials must be linked to the developer account associated with this vendor ID.",
+            "stability": "external",
+            "summary": "The vendor ID associated with the Amazon developer account that will host the skill."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ask.generated.ts",
+            "line": 41
+          },
+          "name": "vendorId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ask.generated:CfnSkillProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "dXtCd1W5c0enoh/WB/ezNddyYt3qqp6R67ry7NzveEI="
+}

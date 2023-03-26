@@ -1,0 +1,1882 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::Wisdom",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::Wisdom",
+    "aws-wisdom"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-wisdom",
+  "readme": {
+    "markdown": "# AWS::Wisdom Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as wisdom from '@aws-cdk/aws-wisdom';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for Wisdom construct libraries](https://constructs.dev/search?q=wisdom)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Wisdom resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Wisdom.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Wisdom](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Wisdom.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-wisdom",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Wisdom",
+      "packageId": "Amazon.CDK.AWS.Wisdom",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "wisdom",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.wisdom"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-wisdom"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-wisdom",
+      "module": "aws_cdk.aws_wisdom"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-wisdom.CfnAssistant": {
+      "assembly": "@aws-cdk/aws-wisdom",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Wisdom::Assistant",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistant.html"
+        },
+        "remarks": "Specifies an Amazon Connect Wisdom assistant.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Wisdom::Assistant`."
+      },
+      "fqn": "@aws-cdk/aws-wisdom.CfnAssistant",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Wisdom::Assistant`."
+        },
+        "locationInModule": {
+          "filename": "lib/wisdom.generated.ts",
+          "line": 206
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-wisdom.CfnAssistantProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/wisdom.generated.ts",
+        "line": 127
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 226
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 241
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnAssistant",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 131
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AssistantArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the assistant."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 156
+          },
+          "name": "attrAssistantArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AssistantId"
+            },
+            "stability": "external",
+            "summary": "The ID of the Wisdom assistant."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 162
+          },
+          "name": "attrAssistantId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 231
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistant.html#cfn-wisdom-assistant-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 197
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistant.html#cfn-wisdom-assistant-name"
+            },
+            "stability": "external",
+            "summary": "The name of the assistant."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 169
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistant.html#cfn-wisdom-assistant-type"
+            },
+            "stability": "external",
+            "summary": "The type of assistant."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 176
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistant.html#cfn-wisdom-assistant-description"
+            },
+            "stability": "external",
+            "summary": "The description of the assistant."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 183
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistant.html#cfn-wisdom-assistant-serversideencryptionconfiguration"
+            },
+            "stability": "external",
+            "summary": "The KMS key used for encryption."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 190
+          },
+          "name": "serverSideEncryptionConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-wisdom.CfnAssistant.ServerSideEncryptionConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/wisdom.generated:CfnAssistant"
+    },
+    "@aws-cdk/aws-wisdom.CfnAssistant.ServerSideEncryptionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-wisdom",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-assistant-serversideencryptionconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The KMS key used for encryption."
+      },
+      "fqn": "@aws-cdk/aws-wisdom.CfnAssistant.ServerSideEncryptionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/wisdom.generated.ts",
+        "line": 255
+      },
+      "name": "ServerSideEncryptionConfigurationProperty",
+      "namespace": "CfnAssistant",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-assistant-serversideencryptionconfiguration.html#cfn-wisdom-assistant-serversideencryptionconfiguration-kmskeyid"
+            },
+            "remarks": "For information about valid ID values, see [Key identifiers (KeyId)](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-id) .",
+            "stability": "external",
+            "summary": "The KMS key ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 261
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/wisdom.generated:CfnAssistant.ServerSideEncryptionConfigurationProperty"
+    },
+    "@aws-cdk/aws-wisdom.CfnAssistantAssociation": {
+      "assembly": "@aws-cdk/aws-wisdom",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Wisdom::AssistantAssociation",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistantassociation.html"
+        },
+        "remarks": "Specifies an association between an Amazon Connect Wisdom assistant and another resource. Currently, the only supported association is with a knowledge base. An assistant can have only a single association.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Wisdom::AssistantAssociation`."
+      },
+      "fqn": "@aws-cdk/aws-wisdom.CfnAssistantAssociation",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Wisdom::AssistantAssociation`."
+        },
+        "locationInModule": {
+          "filename": "lib/wisdom.generated.ts",
+          "line": 497
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-wisdom.CfnAssistantAssociationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/wisdom.generated.ts",
+        "line": 419
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 518
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 532
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnAssistantAssociation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 423
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AssistantArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the Wisdom assistant."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 448
+          },
+          "name": "attrAssistantArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AssistantAssociationArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the assistant association."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 454
+          },
+          "name": "attrAssistantAssociationArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AssistantAssociationId"
+            },
+            "stability": "external",
+            "summary": "The ID of the association."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 460
+          },
+          "name": "attrAssistantAssociationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 523
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistantassociation.html#cfn-wisdom-assistantassociation-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 488
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistantassociation.html#cfn-wisdom-assistantassociation-assistantid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the Wisdom assistant."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 467
+          },
+          "name": "assistantId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistantassociation.html#cfn-wisdom-assistantassociation-association"
+            },
+            "stability": "external",
+            "summary": "The identifier of the associated resource."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 474
+          },
+          "name": "association",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wisdom.CfnAssistantAssociation.AssociationDataProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistantassociation.html#cfn-wisdom-assistantassociation-associationtype"
+            },
+            "stability": "external",
+            "summary": "The type of association."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 481
+          },
+          "name": "associationType",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/wisdom.generated:CfnAssistantAssociation"
+    },
+    "@aws-cdk/aws-wisdom.CfnAssistantAssociation.AssociationDataProperty": {
+      "assembly": "@aws-cdk/aws-wisdom",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-assistantassociation-associationdata.html"
+        },
+        "stability": "external",
+        "summary": "A union type that currently has a single argument, which is the knowledge base ID."
+      },
+      "fqn": "@aws-cdk/aws-wisdom.CfnAssistantAssociation.AssociationDataProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/wisdom.generated.ts",
+        "line": 546
+      },
+      "name": "AssociationDataProperty",
+      "namespace": "CfnAssistantAssociation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-assistantassociation-associationdata.html#cfn-wisdom-assistantassociation-associationdata-knowledgebaseid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the knowledge base."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 552
+          },
+          "name": "knowledgeBaseId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/wisdom.generated:CfnAssistantAssociation.AssociationDataProperty"
+    },
+    "@aws-cdk/aws-wisdom.CfnAssistantAssociationProps": {
+      "assembly": "@aws-cdk/aws-wisdom",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistantassociation.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnAssistantAssociation`."
+      },
+      "fqn": "@aws-cdk/aws-wisdom.CfnAssistantAssociationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/wisdom.generated.ts",
+        "line": 321
+      },
+      "name": "CfnAssistantAssociationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistantassociation.html#cfn-wisdom-assistantassociation-assistantid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the Wisdom assistant."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 328
+          },
+          "name": "assistantId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistantassociation.html#cfn-wisdom-assistantassociation-association"
+            },
+            "stability": "external",
+            "summary": "The identifier of the associated resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 335
+          },
+          "name": "association",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wisdom.CfnAssistantAssociation.AssociationDataProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistantassociation.html#cfn-wisdom-assistantassociation-associationtype"
+            },
+            "stability": "external",
+            "summary": "The type of association."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 342
+          },
+          "name": "associationType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistantassociation.html#cfn-wisdom-assistantassociation-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 349
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/wisdom.generated:CfnAssistantAssociationProps"
+    },
+    "@aws-cdk/aws-wisdom.CfnAssistantProps": {
+      "assembly": "@aws-cdk/aws-wisdom",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistant.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnAssistant`."
+      },
+      "fqn": "@aws-cdk/aws-wisdom.CfnAssistantProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/wisdom.generated.ts",
+        "line": 20
+      },
+      "name": "CfnAssistantProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistant.html#cfn-wisdom-assistant-name"
+            },
+            "stability": "external",
+            "summary": "The name of the assistant."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 27
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistant.html#cfn-wisdom-assistant-type"
+            },
+            "stability": "external",
+            "summary": "The type of assistant."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 34
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistant.html#cfn-wisdom-assistant-description"
+            },
+            "stability": "external",
+            "summary": "The description of the assistant."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 41
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistant.html#cfn-wisdom-assistant-serversideencryptionconfiguration"
+            },
+            "stability": "external",
+            "summary": "The KMS key used for encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 48
+          },
+          "name": "serverSideEncryptionConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-wisdom.CfnAssistant.ServerSideEncryptionConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-assistant.html#cfn-wisdom-assistant-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 55
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/wisdom.generated:CfnAssistantProps"
+    },
+    "@aws-cdk/aws-wisdom.CfnKnowledgeBase": {
+      "assembly": "@aws-cdk/aws-wisdom",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Wisdom::KnowledgeBase",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html"
+        },
+        "remarks": "Specifies a knowledge base.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Wisdom::KnowledgeBase`."
+      },
+      "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBase",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Wisdom::KnowledgeBase`."
+        },
+        "locationInModule": {
+          "filename": "lib/wisdom.generated.ts",
+          "line": 833
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBaseProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/wisdom.generated.ts",
+        "line": 740
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 855
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 872
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnKnowledgeBase",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 744
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "KnowledgeBaseArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the knowledge base."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 769
+          },
+          "name": "attrKnowledgeBaseArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "KnowledgeBaseId"
+            },
+            "stability": "external",
+            "summary": "The ID of the knowledge base."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 775
+          },
+          "name": "attrKnowledgeBaseId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 860
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 824
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-knowledgebasetype"
+            },
+            "remarks": "Only CUSTOM knowledge bases allow you to upload your own content. EXTERNAL knowledge bases support integrations with third-party systems whose content is synchronized automatically.",
+            "stability": "external",
+            "summary": "The type of knowledge base."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 782
+          },
+          "name": "knowledgeBaseType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-name"
+            },
+            "stability": "external",
+            "summary": "The name of the knowledge base."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 789
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-description"
+            },
+            "stability": "external",
+            "summary": "The description."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 796
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-renderingconfiguration"
+            },
+            "stability": "external",
+            "summary": "Information about how to render the content."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 803
+          },
+          "name": "renderingConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBase.RenderingConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-serversideencryptionconfiguration"
+            },
+            "stability": "external",
+            "summary": "The KMS key used for encryption."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 810
+          },
+          "name": "serverSideEncryptionConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBase.ServerSideEncryptionConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-sourceconfiguration"
+            },
+            "remarks": "Only set this argument for EXTERNAL knowledge bases.",
+            "stability": "external",
+            "summary": "The source of the knowledge base content."
+          },
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 817
+          },
+          "name": "sourceConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBase.SourceConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/wisdom.generated:CfnKnowledgeBase"
+    },
+    "@aws-cdk/aws-wisdom.CfnKnowledgeBase.AppIntegrationsConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-wisdom",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-knowledgebase-appintegrationsconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Configuration information for Amazon AppIntegrations to automatically ingest content."
+      },
+      "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBase.AppIntegrationsConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/wisdom.generated.ts",
+        "line": 886
+      },
+      "name": "AppIntegrationsConfigurationProperty",
+      "namespace": "CfnKnowledgeBase",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-knowledgebase-appintegrationsconfiguration.html#cfn-wisdom-knowledgebase-appintegrationsconfiguration-appintegrationarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the AppIntegrations DataIntegration to use for ingesting content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 892
+          },
+          "name": "appIntegrationArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-knowledgebase-appintegrationsconfiguration.html#cfn-wisdom-knowledgebase-appintegrationsconfiguration-objectfields"
+            },
+            "remarks": "- For [Salesforce](https://docs.aws.amazon.com/https://developer.salesforce.com/docs/atlas.en-us.knowledge_dev.meta/knowledge_dev/sforce_api_objects_knowledge__kav.htm) , you must include at least `Id` , `ArticleNumber` , `VersionNumber` , `Title` , `PublishStatus` , and `IsDeleted` .\n- For [ServiceNow](https://docs.aws.amazon.com/https://developer.servicenow.com/dev.do#!/reference/api/rome/rest/knowledge-management-api) , you must include at least `number` , `short_description` , `sys_mod_count` , `workflow_state` , and `active` .\n\nMake sure to include additional fields. These fields are indexed and used to source recommendations.",
+            "stability": "external",
+            "summary": "The fields from the source that are made available to your agents in Wisdom."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 903
+          },
+          "name": "objectFields",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/wisdom.generated:CfnKnowledgeBase.AppIntegrationsConfigurationProperty"
+    },
+    "@aws-cdk/aws-wisdom.CfnKnowledgeBase.RenderingConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-wisdom",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-knowledgebase-renderingconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Information about how to render the content."
+      },
+      "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBase.RenderingConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/wisdom.generated.ts",
+        "line": 969
+      },
+      "name": "RenderingConfigurationProperty",
+      "namespace": "CfnKnowledgeBase",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-knowledgebase-renderingconfiguration.html#cfn-wisdom-knowledgebase-renderingconfiguration-templateuri"
+            },
+            "remarks": "This can only be set for `EXTERNAL` knowledge bases. For Salesforce and ServiceNow, the variable must be one of the following:\n\n- Salesforce: `Id` , `ArticleNumber` , `VersionNumber` , `Title` , `PublishStatus` , or `IsDeleted`\n- ServiceNow: `number` , `short_description` , `sys_mod_count` , `workflow_state` , or `active`\n\nThe variable is replaced with the actual value for a piece of content when calling [GetContent](https://docs.aws.amazon.com/wisdom/latest/APIReference/API_GetContent.html) .",
+            "stability": "external",
+            "summary": "A URI template containing exactly one variable in `${variableName}` format."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 980
+          },
+          "name": "templateUri",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/wisdom.generated:CfnKnowledgeBase.RenderingConfigurationProperty"
+    },
+    "@aws-cdk/aws-wisdom.CfnKnowledgeBase.ServerSideEncryptionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-wisdom",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-knowledgebase-serversideencryptionconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The KMS key used for encryption."
+      },
+      "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBase.ServerSideEncryptionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/wisdom.generated.ts",
+        "line": 1041
+      },
+      "name": "ServerSideEncryptionConfigurationProperty",
+      "namespace": "CfnKnowledgeBase",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-knowledgebase-serversideencryptionconfiguration.html#cfn-wisdom-knowledgebase-serversideencryptionconfiguration-kmskeyid"
+            },
+            "remarks": "For information about valid ID values, see [Key identifiers (KeyId)](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-id) .",
+            "stability": "external",
+            "summary": "The KMS key ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 1047
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/wisdom.generated:CfnKnowledgeBase.ServerSideEncryptionConfigurationProperty"
+    },
+    "@aws-cdk/aws-wisdom.CfnKnowledgeBase.SourceConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-wisdom",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-knowledgebase-sourceconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Configuration information about the external data source."
+      },
+      "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBase.SourceConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/wisdom.generated.ts",
+        "line": 1108
+      },
+      "name": "SourceConfigurationProperty",
+      "namespace": "CfnKnowledgeBase",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-knowledgebase-sourceconfiguration.html#cfn-wisdom-knowledgebase-sourceconfiguration-appintegrations"
+            },
+            "stability": "external",
+            "summary": "Configuration information for Amazon AppIntegrations to automatically ingest content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 1114
+          },
+          "name": "appIntegrations",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBase.AppIntegrationsConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/wisdom.generated:CfnKnowledgeBase.SourceConfigurationProperty"
+    },
+    "@aws-cdk/aws-wisdom.CfnKnowledgeBaseProps": {
+      "assembly": "@aws-cdk/aws-wisdom",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnKnowledgeBase`."
+      },
+      "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBaseProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/wisdom.generated.ts",
+        "line": 613
+      },
+      "name": "CfnKnowledgeBaseProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-knowledgebasetype"
+            },
+            "remarks": "Only CUSTOM knowledge bases allow you to upload your own content. EXTERNAL knowledge bases support integrations with third-party systems whose content is synchronized automatically.",
+            "stability": "external",
+            "summary": "The type of knowledge base."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 620
+          },
+          "name": "knowledgeBaseType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-name"
+            },
+            "stability": "external",
+            "summary": "The name of the knowledge base."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 627
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-description"
+            },
+            "stability": "external",
+            "summary": "The description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 634
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-renderingconfiguration"
+            },
+            "stability": "external",
+            "summary": "Information about how to render the content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 641
+          },
+          "name": "renderingConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBase.RenderingConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-serversideencryptionconfiguration"
+            },
+            "stability": "external",
+            "summary": "The KMS key used for encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 648
+          },
+          "name": "serverSideEncryptionConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBase.ServerSideEncryptionConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-sourceconfiguration"
+            },
+            "remarks": "Only set this argument for EXTERNAL knowledge bases.",
+            "stability": "external",
+            "summary": "The source of the knowledge base content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 655
+          },
+          "name": "sourceConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-wisdom.CfnKnowledgeBase.SourceConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-wisdom-knowledgebase.html#cfn-wisdom-knowledgebase-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/wisdom.generated.ts",
+            "line": 662
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/wisdom.generated:CfnKnowledgeBaseProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "J28Ba5LvEZ9n6Hc74YMXQd7jbClhXuwUu/7UFr44Gsc="
+}

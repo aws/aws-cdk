@@ -1,0 +1,5516 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::IoTTwinMaker Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::IoTTwinMaker",
+    "aws-iottwinmaker"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-iottwinmaker",
+  "readme": {
+    "markdown": "# AWS::IoTTwinMaker Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as iottwinmaker from '@aws-cdk/aws-iottwinmaker';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for IoTTwinMaker construct libraries](https://constructs.dev/search?q=iottwinmaker)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::IoTTwinMaker resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_IoTTwinMaker.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::IoTTwinMaker](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_IoTTwinMaker.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-iottwinmaker",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.IoTTwinMaker",
+      "packageId": "Amazon.CDK.AWS.IoTTwinMaker",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "iottwinmaker",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.iottwinmaker"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-iottwinmaker"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-iottwinmaker",
+      "module": "aws_cdk.aws_iottwinmaker"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-iottwinmaker.CfnComponentType": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::IoTTwinMaker::ComponentType",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html"
+        },
+        "remarks": "Use the `AWS::IoTTwinMaker::ComponentType` resource to declare a component type.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::IoTTwinMaker::ComponentType`."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::IoTTwinMaker::ComponentType`."
+        },
+        "locationInModule": {
+          "filename": "lib/iottwinmaker.generated.ts",
+          "line": 318
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentTypeProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 171
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 348
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 367
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnComponentType",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 175
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the component type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 200
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationDateTime"
+            },
+            "stability": "external",
+            "summary": "The date and time when the component type was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 206
+          },
+          "name": "attrCreationDateTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "IsAbstract"
+            },
+            "stability": "external",
+            "summary": "A boolean value that specifies whether the component type is abstract."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 212
+          },
+          "name": "attrIsAbstract",
+          "type": {
+            "fqn": "@aws-cdk/core.IResolvable"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "IsSchemaInitialized"
+            },
+            "stability": "external",
+            "summary": "A boolean value that specifies whether the component type has a schema initializer and that the schema initializer has run."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 218
+          },
+          "name": "attrIsSchemaInitialized",
+          "type": {
+            "fqn": "@aws-cdk/core.IResolvable"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status.Error.Code"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 224
+          },
+          "name": "attrStatusErrorCode",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status.Error.Message"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 230
+          },
+          "name": "attrStatusErrorMessage",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status.State"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 236
+          },
+          "name": "attrStatusState",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "UpdateDateTime"
+            },
+            "stability": "external",
+            "summary": "The component type the update time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 242
+          },
+          "name": "attrUpdateDateTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 353
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-tags"
+            },
+            "stability": "external",
+            "summary": "The ComponentType tags."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 309
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-componenttypeid"
+            },
+            "stability": "external",
+            "summary": "The ID of the component type."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 249
+          },
+          "name": "componentTypeId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-workspaceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the workspace."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 256
+          },
+          "name": "workspaceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-description"
+            },
+            "stability": "external",
+            "summary": "The description of the component type."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 263
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-extendsfrom"
+            },
+            "stability": "external",
+            "summary": "The name of the parent component type that this component type extends."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 270
+          },
+          "name": "extendsFrom",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-functions"
+            },
+            "remarks": "Each string in the mapping must be unique to this object.\n\nFor information on the FunctionResponse object see the [FunctionResponse](https://docs.aws.amazon.com//iot-twinmaker/latest/apireference/API_FunctionResponse.html) API reference.",
+            "stability": "external",
+            "summary": "An object that maps strings to the functions in the component type."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 279
+          },
+          "name": "functions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.FunctionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-issingleton"
+            },
+            "stability": "external",
+            "summary": "A boolean value that specifies whether an entity can have more than one component of this type."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 286
+          },
+          "name": "isSingleton",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-propertydefinitions"
+            },
+            "remarks": "Each string in the mapping must be unique to this object.\n\nFor information about the PropertyDefinitionResponse object, see the [PropertyDefinitionResponse](https://docs.aws.amazon.com//iot-twinmaker/latest/apireference/API_PropertyDefinitionResponse.html) API reference.",
+            "stability": "external",
+            "summary": "An object that maps strings to the property definitions in the component type."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 295
+          },
+          "name": "propertyDefinitions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.PropertyDefinitionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-propertygroups"
+            },
+            "remarks": "Each string in the mapping must be unique to this object.",
+            "stability": "external",
+            "summary": "An object that maps strings to the property groups in the component type."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 302
+          },
+          "name": "propertyGroups",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.PropertyGroupProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentType"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataConnectorProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-dataconnector.html"
+        },
+        "stability": "external",
+        "summary": "The data connector."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataConnectorProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 381
+      },
+      "name": "DataConnectorProperty",
+      "namespace": "CfnComponentType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-dataconnector.html#cfn-iottwinmaker-componenttype-dataconnector-isnative"
+            },
+            "stability": "external",
+            "summary": "A boolean value that specifies whether the data connector is native to IoT TwinMaker."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 387
+          },
+          "name": "isNative",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-dataconnector.html#cfn-iottwinmaker-componenttype-dataconnector-lambda"
+            },
+            "stability": "external",
+            "summary": "The Lambda function associated with the data connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 393
+          },
+          "name": "lambda",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.LambdaFunctionProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentType.DataConnectorProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataTypeProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datatype.html"
+        },
+        "stability": "external",
+        "summary": "An object that specifies the data type of a property."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataTypeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 457
+      },
+      "name": "DataTypeProperty",
+      "namespace": "CfnComponentType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datatype.html#cfn-iottwinmaker-componenttype-datatype-type"
+            },
+            "remarks": "Valid Values: `RELATIONSHIP | STRING | LONG | BOOLEAN | INTEGER | DOUBLE | LIST | MAP`",
+            "stability": "external",
+            "summary": "The underlying type of the data type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 483
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datatype.html#cfn-iottwinmaker-componenttype-datatype-allowedvalues"
+            },
+            "stability": "external",
+            "summary": "The allowed values for this data type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 463
+          },
+          "name": "allowedValues",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataValueProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datatype.html#cfn-iottwinmaker-componenttype-datatype-nestedtype"
+            },
+            "stability": "external",
+            "summary": "The nested type in the data type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 469
+          },
+          "name": "nestedType",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataTypeProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datatype.html#cfn-iottwinmaker-componenttype-datatype-relationship"
+            },
+            "stability": "external",
+            "summary": "A relationship that associates a component with another component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 475
+          },
+          "name": "relationship",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.RelationshipProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datatype.html#cfn-iottwinmaker-componenttype-datatype-unitofmeasure"
+            },
+            "stability": "external",
+            "summary": "The unit of measure used in this data type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 489
+          },
+          "name": "unitOfMeasure",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentType.DataTypeProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataValueProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datavalue.html"
+        },
+        "stability": "external",
+        "summary": "An object that specifies a value for a property."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataValueProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 563
+      },
+      "name": "DataValueProperty",
+      "namespace": "CfnComponentType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datavalue.html#cfn-iottwinmaker-componenttype-datavalue-booleanvalue"
+            },
+            "stability": "external",
+            "summary": "A boolean value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 569
+          },
+          "name": "booleanValue",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datavalue.html#cfn-iottwinmaker-componenttype-datavalue-doublevalue"
+            },
+            "stability": "external",
+            "summary": "A double value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 575
+          },
+          "name": "doubleValue",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datavalue.html#cfn-iottwinmaker-componenttype-datavalue-expression"
+            },
+            "stability": "external",
+            "summary": "An expression that produces the value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 581
+          },
+          "name": "expression",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datavalue.html#cfn-iottwinmaker-componenttype-datavalue-integervalue"
+            },
+            "stability": "external",
+            "summary": "An integer value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 587
+          },
+          "name": "integerValue",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datavalue.html#cfn-iottwinmaker-componenttype-datavalue-listvalue"
+            },
+            "stability": "external",
+            "summary": "A list of multiple values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 593
+          },
+          "name": "listValue",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataValueProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datavalue.html#cfn-iottwinmaker-componenttype-datavalue-longvalue"
+            },
+            "stability": "external",
+            "summary": "A long value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 599
+          },
+          "name": "longValue",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datavalue.html#cfn-iottwinmaker-componenttype-datavalue-mapvalue"
+            },
+            "stability": "external",
+            "summary": "An object that maps strings to multiple `DataValue` objects."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 605
+          },
+          "name": "mapValue",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataValueProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datavalue.html#cfn-iottwinmaker-componenttype-datavalue-relationshipvalue"
+            },
+            "stability": "external",
+            "summary": "A value that relates a component to another component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 611
+          },
+          "name": "relationshipValue",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-datavalue.html#cfn-iottwinmaker-componenttype-datavalue-stringvalue"
+            },
+            "stability": "external",
+            "summary": "A string value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 617
+          },
+          "name": "stringValue",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentType.DataValueProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnComponentType.ErrorProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-error.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.ErrorProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 702
+      },
+      "name": "ErrorProperty",
+      "namespace": "CfnComponentType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-error.html#cfn-iottwinmaker-componenttype-error-code"
+            },
+            "stability": "external",
+            "summary": "`CfnComponentType.ErrorProperty.Code`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 708
+          },
+          "name": "code",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-error.html#cfn-iottwinmaker-componenttype-error-message"
+            },
+            "stability": "external",
+            "summary": "`CfnComponentType.ErrorProperty.Message`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 714
+          },
+          "name": "message",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentType.ErrorProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnComponentType.FunctionProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-function.html"
+        },
+        "stability": "external",
+        "summary": "The function body."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.FunctionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 778
+      },
+      "name": "FunctionProperty",
+      "namespace": "CfnComponentType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-function.html#cfn-iottwinmaker-componenttype-function-implementedby"
+            },
+            "stability": "external",
+            "summary": "The data connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 784
+          },
+          "name": "implementedBy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataConnectorProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-function.html#cfn-iottwinmaker-componenttype-function-requiredproperties"
+            },
+            "stability": "external",
+            "summary": "The required properties of the function."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 790
+          },
+          "name": "requiredProperties",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-function.html#cfn-iottwinmaker-componenttype-function-scope"
+            },
+            "stability": "external",
+            "summary": "The scope of the function."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 796
+          },
+          "name": "scope",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentType.FunctionProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnComponentType.LambdaFunctionProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-lambdafunction.html"
+        },
+        "stability": "external",
+        "summary": "The Lambda function."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.LambdaFunctionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 863
+      },
+      "name": "LambdaFunctionProperty",
+      "namespace": "CfnComponentType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-lambdafunction.html#cfn-iottwinmaker-componenttype-lambdafunction-arn"
+            },
+            "stability": "external",
+            "summary": "The Lambda function ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 869
+          },
+          "name": "arn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentType.LambdaFunctionProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnComponentType.PropertyDefinitionProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-propertydefinition.html"
+        },
+        "stability": "external",
+        "summary": "PropertyDefinition is an object that maps strings to the property definitions in the component type."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.PropertyDefinitionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 931
+      },
+      "name": "PropertyDefinitionProperty",
+      "namespace": "CfnComponentType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-propertydefinition.html#cfn-iottwinmaker-componenttype-propertydefinition-configurations"
+            },
+            "stability": "external",
+            "summary": "A mapping that specifies configuration information about the property."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 937
+          },
+          "name": "configurations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-propertydefinition.html#cfn-iottwinmaker-componenttype-propertydefinition-datatype"
+            },
+            "stability": "external",
+            "summary": "`CfnComponentType.PropertyDefinitionProperty.DataType`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 943
+          },
+          "name": "dataType",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataTypeProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-propertydefinition.html#cfn-iottwinmaker-componenttype-propertydefinition-defaultvalue"
+            },
+            "stability": "external",
+            "summary": "A boolean value that specifies whether the property ID comes from an external data store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 949
+          },
+          "name": "defaultValue",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.DataValueProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-propertydefinition.html#cfn-iottwinmaker-componenttype-propertydefinition-isexternalid"
+            },
+            "stability": "external",
+            "summary": "A boolean value that specifies whether the property ID comes from an external data store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 955
+          },
+          "name": "isExternalId",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-propertydefinition.html#cfn-iottwinmaker-componenttype-propertydefinition-isrequiredinentity"
+            },
+            "stability": "external",
+            "summary": "A boolean value that specifies whether the property is required in an entity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 961
+          },
+          "name": "isRequiredInEntity",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-propertydefinition.html#cfn-iottwinmaker-componenttype-propertydefinition-isstoredexternally"
+            },
+            "stability": "external",
+            "summary": "A boolean value that specifies whether the property is stored externally."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 967
+          },
+          "name": "isStoredExternally",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-propertydefinition.html#cfn-iottwinmaker-componenttype-propertydefinition-istimeseries"
+            },
+            "stability": "external",
+            "summary": "A boolean value that specifies whether the property consists of time series data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 973
+          },
+          "name": "isTimeSeries",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentType.PropertyDefinitionProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnComponentType.PropertyGroupProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-propertygroup.html"
+        },
+        "stability": "external",
+        "summary": "The property group."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.PropertyGroupProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 1052
+      },
+      "name": "PropertyGroupProperty",
+      "namespace": "CfnComponentType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-propertygroup.html#cfn-iottwinmaker-componenttype-propertygroup-grouptype"
+            },
+            "stability": "external",
+            "summary": "The group type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1058
+          },
+          "name": "groupType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-propertygroup.html#cfn-iottwinmaker-componenttype-propertygroup-propertynames"
+            },
+            "stability": "external",
+            "summary": "The property names."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1064
+          },
+          "name": "propertyNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentType.PropertyGroupProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnComponentType.RelationshipProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-relationship.html"
+        },
+        "stability": "external",
+        "summary": "An object that specifies a relationship with another component type."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.RelationshipProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 1128
+      },
+      "name": "RelationshipProperty",
+      "namespace": "CfnComponentType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-relationship.html#cfn-iottwinmaker-componenttype-relationship-relationshiptype"
+            },
+            "stability": "external",
+            "summary": "The type of the relationship."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1134
+          },
+          "name": "relationshipType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-relationship.html#cfn-iottwinmaker-componenttype-relationship-targetcomponenttypeid"
+            },
+            "stability": "external",
+            "summary": "The ID of the target component type associated with this relationship."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1140
+          },
+          "name": "targetComponentTypeId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentType.RelationshipProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnComponentType.RelationshipValueProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-relationshipvalue.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.RelationshipValueProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 1204
+      },
+      "name": "RelationshipValueProperty",
+      "namespace": "CfnComponentType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-relationshipvalue.html#cfn-iottwinmaker-componenttype-relationshipvalue-targetcomponentname"
+            },
+            "stability": "external",
+            "summary": "`CfnComponentType.RelationshipValueProperty.TargetComponentName`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1210
+          },
+          "name": "targetComponentName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-relationshipvalue.html#cfn-iottwinmaker-componenttype-relationshipvalue-targetentityid"
+            },
+            "stability": "external",
+            "summary": "`CfnComponentType.RelationshipValueProperty.TargetEntityId`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1216
+          },
+          "name": "targetEntityId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentType.RelationshipValueProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnComponentType.StatusProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-status.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.StatusProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 1280
+      },
+      "name": "StatusProperty",
+      "namespace": "CfnComponentType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-status.html#cfn-iottwinmaker-componenttype-status-error"
+            },
+            "stability": "external",
+            "summary": "`CfnComponentType.StatusProperty.Error`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1286
+          },
+          "name": "error",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.ErrorProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-componenttype-status.html#cfn-iottwinmaker-componenttype-status-state"
+            },
+            "stability": "external",
+            "summary": "`CfnComponentType.StatusProperty.State`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1292
+          },
+          "name": "state",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentType.StatusProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnComponentTypeProps": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnComponentType`."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentTypeProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 20
+      },
+      "name": "CfnComponentTypeProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-componenttypeid"
+            },
+            "stability": "external",
+            "summary": "The ID of the component type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 27
+          },
+          "name": "componentTypeId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-workspaceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 34
+          },
+          "name": "workspaceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-description"
+            },
+            "stability": "external",
+            "summary": "The description of the component type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 41
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-extendsfrom"
+            },
+            "stability": "external",
+            "summary": "The name of the parent component type that this component type extends."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 48
+          },
+          "name": "extendsFrom",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-functions"
+            },
+            "remarks": "Each string in the mapping must be unique to this object.\n\nFor information on the FunctionResponse object see the [FunctionResponse](https://docs.aws.amazon.com//iot-twinmaker/latest/apireference/API_FunctionResponse.html) API reference.",
+            "stability": "external",
+            "summary": "An object that maps strings to the functions in the component type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 57
+          },
+          "name": "functions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.FunctionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-issingleton"
+            },
+            "stability": "external",
+            "summary": "A boolean value that specifies whether an entity can have more than one component of this type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 64
+          },
+          "name": "isSingleton",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-propertydefinitions"
+            },
+            "remarks": "Each string in the mapping must be unique to this object.\n\nFor information about the PropertyDefinitionResponse object, see the [PropertyDefinitionResponse](https://docs.aws.amazon.com//iot-twinmaker/latest/apireference/API_PropertyDefinitionResponse.html) API reference.",
+            "stability": "external",
+            "summary": "An object that maps strings to the property definitions in the component type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 73
+          },
+          "name": "propertyDefinitions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.PropertyDefinitionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-propertygroups"
+            },
+            "remarks": "Each string in the mapping must be unique to this object.",
+            "stability": "external",
+            "summary": "An object that maps strings to the property groups in the component type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 80
+          },
+          "name": "propertyGroups",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnComponentType.PropertyGroupProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-componenttype.html#cfn-iottwinmaker-componenttype-tags"
+            },
+            "stability": "external",
+            "summary": "The ComponentType tags."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 87
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnComponentTypeProps"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnEntity": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::IoTTwinMaker::Entity",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html"
+        },
+        "remarks": "Use the `AWS::IoTTwinMaker::Entity` resource to declare an entity.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::IoTTwinMaker::Entity`."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::IoTTwinMaker::Entity`."
+        },
+        "locationInModule": {
+          "filename": "lib/iottwinmaker.generated.ts",
+          "line": 1609
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntityProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 1484
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1636
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1653
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnEntity",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1488
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The entity ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1513
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationDateTime"
+            },
+            "stability": "external",
+            "summary": "The date and time the entity was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1519
+          },
+          "name": "attrCreationDateTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "HasChildEntities"
+            },
+            "stability": "external",
+            "summary": "A boolean value that specifies whether the entity has child entities or not."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1525
+          },
+          "name": "attrHasChildEntities",
+          "type": {
+            "fqn": "@aws-cdk/core.IResolvable"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status.Error.Code"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1531
+          },
+          "name": "attrStatusErrorCode",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status.Error.Message"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1537
+          },
+          "name": "attrStatusErrorMessage",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status.State"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1543
+          },
+          "name": "attrStatusState",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "UpdateDateTime"
+            },
+            "stability": "external",
+            "summary": "The date and time when the component type was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1549
+          },
+          "name": "attrUpdateDateTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1641
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-tags"
+            },
+            "stability": "external",
+            "summary": "Metadata that you can use to manage the entity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1600
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-entityname"
+            },
+            "stability": "external",
+            "summary": "The entity name."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1556
+          },
+          "name": "entityName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-workspaceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the workspace."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1563
+          },
+          "name": "workspaceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-components"
+            },
+            "remarks": "Each string in the mapping must be unique to this object.\n\nFor information on the component object see the [component](https://docs.aws.amazon.com//iot-twinmaker/latest/apireference/API_ComponentResponse.html) API reference.",
+            "stability": "external",
+            "summary": "An object that maps strings to the components in the entity."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1572
+          },
+          "name": "components",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.ComponentProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-description"
+            },
+            "stability": "external",
+            "summary": "The description of the entity."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1579
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-entityid"
+            },
+            "stability": "external",
+            "summary": "The entity ID."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1586
+          },
+          "name": "entityId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-parententityid"
+            },
+            "stability": "external",
+            "summary": "The ID of the parent entity."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1593
+          },
+          "name": "parentEntityId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnEntity"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnEntity.ComponentProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-component.html"
+        },
+        "stability": "external",
+        "summary": "The entity component."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.ComponentProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 1667
+      },
+      "name": "ComponentProperty",
+      "namespace": "CfnEntity",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-component.html#cfn-iottwinmaker-entity-component-componentname"
+            },
+            "stability": "external",
+            "summary": "The name of the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1673
+          },
+          "name": "componentName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-component.html#cfn-iottwinmaker-entity-component-componenttypeid"
+            },
+            "stability": "external",
+            "summary": "The ID of the ComponentType."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1679
+          },
+          "name": "componentTypeId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-component.html#cfn-iottwinmaker-entity-component-definedin"
+            },
+            "stability": "external",
+            "summary": "The name of the property definition set in the request."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1685
+          },
+          "name": "definedIn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-component.html#cfn-iottwinmaker-entity-component-description"
+            },
+            "stability": "external",
+            "summary": "The description of the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1691
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-component.html#cfn-iottwinmaker-entity-component-properties"
+            },
+            "remarks": "Each string in the mapping must be unique to this object.",
+            "stability": "external",
+            "summary": "An object that maps strings to the properties to set in the component type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1697
+          },
+          "name": "properties",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.PropertyProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-component.html#cfn-iottwinmaker-entity-component-propertygroups"
+            },
+            "remarks": "Each string in the mapping must be unique to this object.",
+            "stability": "external",
+            "summary": "An object that maps strings to the property groups in the component type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1703
+          },
+          "name": "propertyGroups",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.PropertyGroupProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-component.html#cfn-iottwinmaker-entity-component-status"
+            },
+            "stability": "external",
+            "summary": "The status of the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1709
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.StatusProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnEntity.ComponentProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnEntity.DataTypeProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datatype.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.DataTypeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 1788
+      },
+      "name": "DataTypeProperty",
+      "namespace": "CfnEntity",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datatype.html#cfn-iottwinmaker-entity-datatype-allowedvalues"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DataTypeProperty.AllowedValues`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1794
+          },
+          "name": "allowedValues",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.DataValueProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datatype.html#cfn-iottwinmaker-entity-datatype-nestedtype"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DataTypeProperty.NestedType`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1800
+          },
+          "name": "nestedType",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.DataTypeProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datatype.html#cfn-iottwinmaker-entity-datatype-relationship"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DataTypeProperty.Relationship`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1806
+          },
+          "name": "relationship",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.RelationshipProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datatype.html#cfn-iottwinmaker-entity-datatype-type"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DataTypeProperty.Type`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1812
+          },
+          "name": "type",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datatype.html#cfn-iottwinmaker-entity-datatype-unitofmeasure"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DataTypeProperty.UnitOfMeasure`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1818
+          },
+          "name": "unitOfMeasure",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnEntity.DataTypeProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnEntity.DataValueProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datavalue.html"
+        },
+        "stability": "external",
+        "summary": "An object that specifies a value for a property."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.DataValueProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 1891
+      },
+      "name": "DataValueProperty",
+      "namespace": "CfnEntity",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datavalue.html#cfn-iottwinmaker-entity-datavalue-booleanvalue"
+            },
+            "stability": "external",
+            "summary": "A boolean value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1897
+          },
+          "name": "booleanValue",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datavalue.html#cfn-iottwinmaker-entity-datavalue-doublevalue"
+            },
+            "stability": "external",
+            "summary": "A double value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1903
+          },
+          "name": "doubleValue",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datavalue.html#cfn-iottwinmaker-entity-datavalue-expression"
+            },
+            "stability": "external",
+            "summary": "An expression that produces the value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1909
+          },
+          "name": "expression",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datavalue.html#cfn-iottwinmaker-entity-datavalue-integervalue"
+            },
+            "stability": "external",
+            "summary": "An integer value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1915
+          },
+          "name": "integerValue",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datavalue.html#cfn-iottwinmaker-entity-datavalue-listvalue"
+            },
+            "stability": "external",
+            "summary": "A list of multiple values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1921
+          },
+          "name": "listValue",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.DataValueProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datavalue.html#cfn-iottwinmaker-entity-datavalue-longvalue"
+            },
+            "stability": "external",
+            "summary": "A long value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1927
+          },
+          "name": "longValue",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datavalue.html#cfn-iottwinmaker-entity-datavalue-mapvalue"
+            },
+            "stability": "external",
+            "summary": "An object that maps strings to multiple DataValue objects."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1933
+          },
+          "name": "mapValue",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.DataValueProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datavalue.html#cfn-iottwinmaker-entity-datavalue-relationshipvalue"
+            },
+            "stability": "external",
+            "summary": "A value that relates a component to another component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1939
+          },
+          "name": "relationshipValue",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-datavalue.html#cfn-iottwinmaker-entity-datavalue-stringvalue"
+            },
+            "stability": "external",
+            "summary": "A string value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1945
+          },
+          "name": "stringValue",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnEntity.DataValueProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnEntity.DefinitionProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-definition.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.DefinitionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 2030
+      },
+      "name": "DefinitionProperty",
+      "namespace": "CfnEntity",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-definition.html#cfn-iottwinmaker-entity-definition-configuration"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DefinitionProperty.Configuration`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2036
+          },
+          "name": "configuration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-definition.html#cfn-iottwinmaker-entity-definition-datatype"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DefinitionProperty.DataType`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2042
+          },
+          "name": "dataType",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.DataTypeProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-definition.html#cfn-iottwinmaker-entity-definition-defaultvalue"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DefinitionProperty.DefaultValue`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2048
+          },
+          "name": "defaultValue",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.DataValueProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-definition.html#cfn-iottwinmaker-entity-definition-isexternalid"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DefinitionProperty.IsExternalId`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2054
+          },
+          "name": "isExternalId",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-definition.html#cfn-iottwinmaker-entity-definition-isfinal"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DefinitionProperty.IsFinal`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2060
+          },
+          "name": "isFinal",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-definition.html#cfn-iottwinmaker-entity-definition-isimported"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DefinitionProperty.IsImported`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2066
+          },
+          "name": "isImported",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-definition.html#cfn-iottwinmaker-entity-definition-isinherited"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DefinitionProperty.IsInherited`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2072
+          },
+          "name": "isInherited",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-definition.html#cfn-iottwinmaker-entity-definition-isrequiredinentity"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DefinitionProperty.IsRequiredInEntity`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2078
+          },
+          "name": "isRequiredInEntity",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-definition.html#cfn-iottwinmaker-entity-definition-isstoredexternally"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DefinitionProperty.IsStoredExternally`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2084
+          },
+          "name": "isStoredExternally",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-definition.html#cfn-iottwinmaker-entity-definition-istimeseries"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.DefinitionProperty.IsTimeSeries`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2090
+          },
+          "name": "isTimeSeries",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnEntity.DefinitionProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnEntity.ErrorProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-error.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.ErrorProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 2178
+      },
+      "name": "ErrorProperty",
+      "namespace": "CfnEntity",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-error.html#cfn-iottwinmaker-entity-error-code"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.ErrorProperty.Code`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2184
+          },
+          "name": "code",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-error.html#cfn-iottwinmaker-entity-error-message"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.ErrorProperty.Message`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2190
+          },
+          "name": "message",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnEntity.ErrorProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnEntity.PropertyGroupProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-propertygroup.html"
+        },
+        "stability": "external",
+        "summary": "The property group."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.PropertyGroupProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 2330
+      },
+      "name": "PropertyGroupProperty",
+      "namespace": "CfnEntity",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-propertygroup.html#cfn-iottwinmaker-entity-propertygroup-grouptype"
+            },
+            "stability": "external",
+            "summary": "The group type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2336
+          },
+          "name": "groupType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-propertygroup.html#cfn-iottwinmaker-entity-propertygroup-propertynames"
+            },
+            "stability": "external",
+            "summary": "The property names."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2342
+          },
+          "name": "propertyNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnEntity.PropertyGroupProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnEntity.PropertyProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-property.html"
+        },
+        "stability": "external",
+        "summary": "An object that sets information about a property."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.PropertyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 2254
+      },
+      "name": "PropertyProperty",
+      "namespace": "CfnEntity",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-property.html#cfn-iottwinmaker-entity-property-definition"
+            },
+            "stability": "external",
+            "summary": "An object that specifies information about a property."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2260
+          },
+          "name": "definition",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-property.html#cfn-iottwinmaker-entity-property-value"
+            },
+            "stability": "external",
+            "summary": "An object that contains information about a value for a time series property."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2266
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.DataValueProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnEntity.PropertyProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnEntity.RelationshipProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-relationship.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.RelationshipProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 2406
+      },
+      "name": "RelationshipProperty",
+      "namespace": "CfnEntity",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-relationship.html#cfn-iottwinmaker-entity-relationship-relationshiptype"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.RelationshipProperty.RelationshipType`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2412
+          },
+          "name": "relationshipType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-relationship.html#cfn-iottwinmaker-entity-relationship-targetcomponenttypeid"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.RelationshipProperty.TargetComponentTypeId`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2418
+          },
+          "name": "targetComponentTypeId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnEntity.RelationshipProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnEntity.RelationshipValueProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-relationshipvalue.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.RelationshipValueProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 2482
+      },
+      "name": "RelationshipValueProperty",
+      "namespace": "CfnEntity",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-relationshipvalue.html#cfn-iottwinmaker-entity-relationshipvalue-targetcomponentname"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.RelationshipValueProperty.TargetComponentName`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2488
+          },
+          "name": "targetComponentName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-relationshipvalue.html#cfn-iottwinmaker-entity-relationshipvalue-targetentityid"
+            },
+            "stability": "external",
+            "summary": "`CfnEntity.RelationshipValueProperty.TargetEntityId`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2494
+          },
+          "name": "targetEntityId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnEntity.RelationshipValueProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnEntity.StatusProperty": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-status.html"
+        },
+        "stability": "external",
+        "summary": "The current status of the entity."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.StatusProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 2558
+      },
+      "name": "StatusProperty",
+      "namespace": "CfnEntity",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-status.html#cfn-iottwinmaker-entity-status-error"
+            },
+            "stability": "external",
+            "summary": "The error message."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2564
+          },
+          "name": "error",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iottwinmaker-entity-status.html#cfn-iottwinmaker-entity-status-state"
+            },
+            "remarks": "Valid Values: `CREATING | UPDATING | DELETING | ACTIVE | ERROR`",
+            "stability": "external",
+            "summary": "The current state of the entity, component, component type, or workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2572
+          },
+          "name": "state",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnEntity.StatusProperty"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnEntityProps": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnEntity`."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntityProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 1355
+      },
+      "name": "CfnEntityProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-entityname"
+            },
+            "stability": "external",
+            "summary": "The entity name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1362
+          },
+          "name": "entityName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-workspaceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1369
+          },
+          "name": "workspaceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-components"
+            },
+            "remarks": "Each string in the mapping must be unique to this object.\n\nFor information on the component object see the [component](https://docs.aws.amazon.com//iot-twinmaker/latest/apireference/API_ComponentResponse.html) API reference.",
+            "stability": "external",
+            "summary": "An object that maps strings to the components in the entity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1378
+          },
+          "name": "components",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iottwinmaker.CfnEntity.ComponentProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-description"
+            },
+            "stability": "external",
+            "summary": "The description of the entity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1385
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-entityid"
+            },
+            "stability": "external",
+            "summary": "The entity ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1392
+          },
+          "name": "entityId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-parententityid"
+            },
+            "stability": "external",
+            "summary": "The ID of the parent entity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1399
+          },
+          "name": "parentEntityId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-entity.html#cfn-iottwinmaker-entity-tags"
+            },
+            "stability": "external",
+            "summary": "Metadata that you can use to manage the entity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 1406
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnEntityProps"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnScene": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::IoTTwinMaker::Scene",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html"
+        },
+        "remarks": "Use the `AWS::IoTTwinMaker::Scene` resource to declare a scene.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::IoTTwinMaker::Scene`."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnScene",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::IoTTwinMaker::Scene`."
+        },
+        "locationInModule": {
+          "filename": "lib/iottwinmaker.generated.ts",
+          "line": 2845
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-iottwinmaker.CfnSceneProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 2753
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2868
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2884
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnScene",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2757
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The scene ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2782
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationDateTime"
+            },
+            "stability": "external",
+            "summary": "The date and time when the scene was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2788
+          },
+          "name": "attrCreationDateTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "UpdateDateTime"
+            },
+            "stability": "external",
+            "summary": "The scene the update time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2794
+          },
+          "name": "attrUpdateDateTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2873
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html#cfn-iottwinmaker-scene-tags"
+            },
+            "stability": "external",
+            "summary": "The ComponentType tags."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2836
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html#cfn-iottwinmaker-scene-contentlocation"
+            },
+            "stability": "external",
+            "summary": "The relative path that specifies the location of the content definition file."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2801
+          },
+          "name": "contentLocation",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html#cfn-iottwinmaker-scene-sceneid"
+            },
+            "stability": "external",
+            "summary": "The scene ID."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2808
+          },
+          "name": "sceneId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html#cfn-iottwinmaker-scene-workspaceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the workspace."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2815
+          },
+          "name": "workspaceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html#cfn-iottwinmaker-scene-capabilities"
+            },
+            "stability": "external",
+            "summary": "A list of capabilities that the scene uses to render."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2822
+          },
+          "name": "capabilities",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html#cfn-iottwinmaker-scene-description"
+            },
+            "stability": "external",
+            "summary": "The description of this scene."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2829
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnScene"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnSceneProps": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnScene`."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnSceneProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 2635
+      },
+      "name": "CfnSceneProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html#cfn-iottwinmaker-scene-contentlocation"
+            },
+            "stability": "external",
+            "summary": "The relative path that specifies the location of the content definition file."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2642
+          },
+          "name": "contentLocation",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html#cfn-iottwinmaker-scene-sceneid"
+            },
+            "stability": "external",
+            "summary": "The scene ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2649
+          },
+          "name": "sceneId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html#cfn-iottwinmaker-scene-workspaceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2656
+          },
+          "name": "workspaceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html#cfn-iottwinmaker-scene-capabilities"
+            },
+            "stability": "external",
+            "summary": "A list of capabilities that the scene uses to render."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2663
+          },
+          "name": "capabilities",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html#cfn-iottwinmaker-scene-description"
+            },
+            "stability": "external",
+            "summary": "The description of this scene."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2670
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-scene.html#cfn-iottwinmaker-scene-tags"
+            },
+            "stability": "external",
+            "summary": "The ComponentType tags."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2677
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnSceneProps"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnSyncJob": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::IoTTwinMaker::SyncJob",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-syncjob.html"
+        },
+        "remarks": "The SyncJob.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::IoTTwinMaker::SyncJob`."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnSyncJob",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::IoTTwinMaker::SyncJob`."
+        },
+        "locationInModule": {
+          "filename": "lib/iottwinmaker.generated.ts",
+          "line": 3083
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-iottwinmaker.CfnSyncJobProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 2997
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3105
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3119
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSyncJob",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3001
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The SyncJob ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3026
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationDateTime"
+            },
+            "stability": "external",
+            "summary": "The creation date and time of the SyncJob."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3032
+          },
+          "name": "attrCreationDateTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "State"
+            },
+            "stability": "external",
+            "summary": "The SyncJob's state."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3038
+          },
+          "name": "attrState",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "UpdateDateTime"
+            },
+            "stability": "external",
+            "summary": "The update date and time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3044
+          },
+          "name": "attrUpdateDateTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3110
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-syncjob.html#cfn-iottwinmaker-syncjob-tags"
+            },
+            "stability": "external",
+            "summary": "Metadata you can use to manage the SyncJob."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3074
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-syncjob.html#cfn-iottwinmaker-syncjob-syncrole"
+            },
+            "remarks": "This IAM role is used by the sync job to read from the syncSource, and create, update or delete the corresponding resources.",
+            "stability": "external",
+            "summary": "The SyncJob IAM role."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3051
+          },
+          "name": "syncRole",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-syncjob.html#cfn-iottwinmaker-syncjob-syncsource"
+            },
+            "remarks": "> Currently the only supported syncSoucre is `SITEWISE` .",
+            "stability": "external",
+            "summary": "The sync source."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3060
+          },
+          "name": "syncSource",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-syncjob.html#cfn-iottwinmaker-syncjob-workspaceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the workspace that contains the sync job."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3067
+          },
+          "name": "workspaceId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnSyncJob"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnSyncJobProps": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-syncjob.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSyncJob`."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnSyncJobProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 2897
+      },
+      "name": "CfnSyncJobProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-syncjob.html#cfn-iottwinmaker-syncjob-syncrole"
+            },
+            "remarks": "This IAM role is used by the sync job to read from the syncSource, and create, update or delete the corresponding resources.",
+            "stability": "external",
+            "summary": "The SyncJob IAM role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2904
+          },
+          "name": "syncRole",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-syncjob.html#cfn-iottwinmaker-syncjob-syncsource"
+            },
+            "remarks": "> Currently the only supported syncSoucre is `SITEWISE` .",
+            "stability": "external",
+            "summary": "The sync source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2913
+          },
+          "name": "syncSource",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-syncjob.html#cfn-iottwinmaker-syncjob-workspaceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the workspace that contains the sync job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2920
+          },
+          "name": "workspaceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-syncjob.html#cfn-iottwinmaker-syncjob-tags"
+            },
+            "stability": "external",
+            "summary": "Metadata you can use to manage the SyncJob."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 2927
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnSyncJobProps"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnWorkspace": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::IoTTwinMaker::Workspace",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-workspace.html"
+        },
+        "remarks": "Use the `AWS::IoTTwinMaker::Workspace` resource to declare a workspace.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::IoTTwinMaker::Workspace`."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnWorkspace",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::IoTTwinMaker::Workspace`."
+        },
+        "locationInModule": {
+          "filename": "lib/iottwinmaker.generated.ts",
+          "line": 3325
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-iottwinmaker.CfnWorkspaceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 3240
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3347
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3362
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnWorkspace",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3244
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The workspace ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3269
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationDateTime"
+            },
+            "stability": "external",
+            "summary": "The date and time the workspace was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3275
+          },
+          "name": "attrCreationDateTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "UpdateDateTime"
+            },
+            "stability": "external",
+            "summary": "The date and time the workspace was updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3281
+          },
+          "name": "attrUpdateDateTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3352
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-workspace.html#cfn-iottwinmaker-workspace-tags"
+            },
+            "stability": "external",
+            "summary": "Metadata that you can use to manage the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3316
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-workspace.html#cfn-iottwinmaker-workspace-role"
+            },
+            "stability": "external",
+            "summary": "The ARN of the execution role associated with the workspace."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3288
+          },
+          "name": "role",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-workspace.html#cfn-iottwinmaker-workspace-s3location"
+            },
+            "stability": "external",
+            "summary": "The ARN of the S3 bucket where resources associated with the workspace are stored."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3295
+          },
+          "name": "s3Location",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-workspace.html#cfn-iottwinmaker-workspace-workspaceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the workspace."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3302
+          },
+          "name": "workspaceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-workspace.html#cfn-iottwinmaker-workspace-description"
+            },
+            "stability": "external",
+            "summary": "The description of the workspace."
+          },
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3309
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnWorkspace"
+    },
+    "@aws-cdk/aws-iottwinmaker.CfnWorkspaceProps": {
+      "assembly": "@aws-cdk/aws-iottwinmaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-workspace.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnWorkspace`."
+      },
+      "fqn": "@aws-cdk/aws-iottwinmaker.CfnWorkspaceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iottwinmaker.generated.ts",
+        "line": 3132
+      },
+      "name": "CfnWorkspaceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-workspace.html#cfn-iottwinmaker-workspace-role"
+            },
+            "stability": "external",
+            "summary": "The ARN of the execution role associated with the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3139
+          },
+          "name": "role",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-workspace.html#cfn-iottwinmaker-workspace-s3location"
+            },
+            "stability": "external",
+            "summary": "The ARN of the S3 bucket where resources associated with the workspace are stored."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3146
+          },
+          "name": "s3Location",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-workspace.html#cfn-iottwinmaker-workspace-workspaceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3153
+          },
+          "name": "workspaceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-workspace.html#cfn-iottwinmaker-workspace-description"
+            },
+            "stability": "external",
+            "summary": "The description of the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3160
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iottwinmaker-workspace.html#cfn-iottwinmaker-workspace-tags"
+            },
+            "stability": "external",
+            "summary": "Metadata that you can use to manage the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iottwinmaker.generated.ts",
+            "line": 3167
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iottwinmaker.generated:CfnWorkspaceProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "NGyMmHi9oJRNbfo0242c/NRDifhDol/Smrwc2NIqsqI="
+}

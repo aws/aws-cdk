@@ -1,0 +1,5167 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::FraudDetector",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::FraudDetector",
+    "aws-frauddetector"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-frauddetector",
+  "readme": {
+    "markdown": "# AWS::FraudDetector Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as frauddetector from '@aws-cdk/aws-frauddetector';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for FraudDetector construct libraries](https://constructs.dev/search?q=frauddetector)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::FraudDetector resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_FraudDetector.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::FraudDetector](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_FraudDetector.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-frauddetector",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.FraudDetector",
+      "packageId": "Amazon.CDK.AWS.FraudDetector",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "frauddetector",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.frauddetector"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-frauddetector"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-frauddetector",
+      "module": "aws_cdk.aws_frauddetector"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-frauddetector.CfnDetector": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::FraudDetector::Detector",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html"
+        },
+        "remarks": "Manages a detector and associated detector versions.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::FraudDetector::Detector`."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnDetector",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::FraudDetector::Detector`."
+        },
+        "locationInModule": {
+          "filename": "lib/frauddetector.generated.ts",
+          "line": 312
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-frauddetector.CfnDetectorProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 170
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 341
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 359
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDetector",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 174
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The detector ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 199
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedTime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when detector was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 205
+          },
+          "name": "attrCreatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DetectorVersionId"
+            },
+            "stability": "external",
+            "summary": "The name of the detector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 211
+          },
+          "name": "attrDetectorVersionId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EventType.Arn"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 217
+          },
+          "name": "attrEventTypeArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EventType.CreatedTime"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 223
+          },
+          "name": "attrEventTypeCreatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EventType.LastUpdatedTime"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 229
+          },
+          "name": "attrEventTypeLastUpdatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastUpdatedTime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when detector was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 235
+          },
+          "name": "attrLastUpdatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 346
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 303
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-detectorid"
+            },
+            "stability": "external",
+            "summary": "The name of the detector."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 242
+          },
+          "name": "detectorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-eventtype"
+            },
+            "stability": "external",
+            "summary": "The event type associated with this detector."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 249
+          },
+          "name": "eventType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.EventTypeProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-rules"
+            },
+            "stability": "external",
+            "summary": "The rules to include in the detector version."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 256
+          },
+          "name": "rules",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.RuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-associatedmodels"
+            },
+            "remarks": "You must provide the ARNs of all the models you want to associate.",
+            "stability": "external",
+            "summary": "The models to associate with this detector."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 263
+          },
+          "name": "associatedModels",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.ModelProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-description"
+            },
+            "stability": "external",
+            "summary": "The detector description."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 270
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-detectorversionstatus"
+            },
+            "remarks": "If a value is not provided for this property, AWS CloudFormation assumes `DRAFT` status.\n\nValid values: `ACTIVE | DRAFT`",
+            "stability": "external",
+            "summary": "The status of the detector version."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 279
+          },
+          "name": "detectorVersionStatus",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-ruleexecutionmode"
+            },
+            "remarks": "Valid values: `FIRST_MATCHED | ALL_MATCHED` Default value: `FIRST_MATCHED`\n\nYou can define and edit the rule mode at the detector version level, when it is in draft status.\n\nIf you specify `FIRST_MATCHED` , Amazon Fraud Detector evaluates rules sequentially, first to last, stopping at the first matched rule. Amazon Fraud dectector then provides the outcomes for that single rule.\n\nIf you specifiy `ALL_MATCHED` , Amazon Fraud Detector evaluates all rules and returns the outcomes for all matched rules.",
+            "stability": "external",
+            "summary": "The rule execution mode for the rules included in the detector version."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 294
+          },
+          "name": "ruleExecutionMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnDetector"
+    },
+    "@aws-cdk/aws-frauddetector.CfnDetector.EntityTypeProperty": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-entitytype.html"
+        },
+        "stability": "external",
+        "summary": "The entity type details."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.EntityTypeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 373
+      },
+      "name": "EntityTypeProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-entitytype.html#cfn-frauddetector-detector-entitytype-arn"
+            },
+            "stability": "external",
+            "summary": "The entity type ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 379
+          },
+          "name": "arn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-entitytype.html#cfn-frauddetector-detector-entitytype-createdtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when the entity type was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 385
+          },
+          "name": "createdTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-entitytype.html#cfn-frauddetector-detector-entitytype-description"
+            },
+            "stability": "external",
+            "summary": "The entity type description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 391
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-entitytype.html#cfn-frauddetector-detector-entitytype-inline"
+            },
+            "remarks": "If the value is `true` , CloudFormation will create/update/delete the resource when creating/updating/deleting the stack. If the value is `false` , CloudFormation will validate that the object exists and then use it within the resource without making changes to the object.\n\nFor example, when creating `AWS::FraudDetector::Detector` you must define at least two variables. You can set `Inline=true` for these Variables and CloudFormation will create/update/delete the variables as part of stack operations. However, if you set `Inline=false` , CloudFormation will associate the variables to your detector but not execute any changes to the variables.",
+            "stability": "external",
+            "summary": "Indicates whether the resource is defined within this CloudFormation template and impacts the create, update, and delete behavior of the stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 399
+          },
+          "name": "inline",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-entitytype.html#cfn-frauddetector-detector-entitytype-lastupdatedtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when the entity type was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 405
+          },
+          "name": "lastUpdatedTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-entitytype.html#cfn-frauddetector-detector-entitytype-name"
+            },
+            "stability": "external",
+            "summary": "The entity type name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 411
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-entitytype.html#cfn-frauddetector-detector-entitytype-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 419
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnDetector.EntityTypeProperty"
+    },
+    "@aws-cdk/aws-frauddetector.CfnDetector.EventTypeProperty": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventtype.html"
+        },
+        "stability": "external",
+        "summary": "The event type details."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.EventTypeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 498
+      },
+      "name": "EventTypeProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventtype.html#cfn-frauddetector-detector-eventtype-arn"
+            },
+            "stability": "external",
+            "summary": "The entity type ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 504
+          },
+          "name": "arn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventtype.html#cfn-frauddetector-detector-eventtype-createdtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when the event type was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 510
+          },
+          "name": "createdTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventtype.html#cfn-frauddetector-detector-eventtype-description"
+            },
+            "stability": "external",
+            "summary": "The event type description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 516
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventtype.html#cfn-frauddetector-detector-eventtype-entitytypes"
+            },
+            "stability": "external",
+            "summary": "The event type entity types."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 522
+          },
+          "name": "entityTypes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.EntityTypeProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventtype.html#cfn-frauddetector-detector-eventtype-eventvariables"
+            },
+            "stability": "external",
+            "summary": "The event type event variables."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 528
+          },
+          "name": "eventVariables",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.EventVariableProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventtype.html#cfn-frauddetector-detector-eventtype-inline"
+            },
+            "remarks": "If the value is `true` , CloudFormation will create/update/delete the resource when creating/updating/deleting the stack. If the value is `false` , CloudFormation will validate that the object exists and then use it within the resource without making changes to the object.\n\nFor example, when creating `AWS::FraudDetector::Detector` you must define at least two variables. You can set `Inline=true` for these variables and CloudFormation will create/update/delete the Variables as part of stack operations. However, if you set `Inline=false` , CloudFormation will associate the variables to your detector but not execute any changes to the variables.",
+            "stability": "external",
+            "summary": "Indicates whether the resource is defined within this CloudFormation template and impacts the create, update, and delete behavior of the stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 536
+          },
+          "name": "inline",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventtype.html#cfn-frauddetector-detector-eventtype-labels"
+            },
+            "stability": "external",
+            "summary": "The event type labels."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 542
+          },
+          "name": "labels",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.LabelProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventtype.html#cfn-frauddetector-detector-eventtype-lastupdatedtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when the event type was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 548
+          },
+          "name": "lastUpdatedTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventtype.html#cfn-frauddetector-detector-eventtype-name"
+            },
+            "stability": "external",
+            "summary": "The event type name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 554
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventtype.html#cfn-frauddetector-detector-eventtype-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 562
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnDetector.EventTypeProperty"
+    },
+    "@aws-cdk/aws-frauddetector.CfnDetector.EventVariableProperty": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventvariable.html"
+        },
+        "stability": "external",
+        "summary": "The event type variable for the detector."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.EventVariableProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 650
+      },
+      "name": "EventVariableProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventvariable.html#cfn-frauddetector-detector-eventvariable-arn"
+            },
+            "stability": "external",
+            "summary": "The event variable ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 656
+          },
+          "name": "arn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventvariable.html#cfn-frauddetector-detector-eventvariable-createdtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp for when the event variable was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 662
+          },
+          "name": "createdTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventvariable.html#cfn-frauddetector-detector-eventvariable-datasource"
+            },
+            "remarks": "Valid values: `EVENT | EXTERNAL_MODEL_SCORE`\n\nWhen defining a variable within a detector, you can only use the `EVENT` value for DataSource when the *Inline* property is set to true. If the *Inline* property is set false, you can use either `EVENT` or `MODEL_SCORE` for DataSource.",
+            "stability": "external",
+            "summary": "The data source of the event variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 672
+          },
+          "name": "dataSource",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventvariable.html#cfn-frauddetector-detector-eventvariable-datatype"
+            },
+            "remarks": "Valid values: `STRING | INTEGER | BOOLEAN | FLOAT`",
+            "stability": "external",
+            "summary": "The data type of the event variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 680
+          },
+          "name": "dataType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventvariable.html#cfn-frauddetector-detector-eventvariable-defaultvalue"
+            },
+            "remarks": "This is required if you are providing the details of your variables instead of the ARN.",
+            "stability": "external",
+            "summary": "The default value of the event variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 686
+          },
+          "name": "defaultValue",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventvariable.html#cfn-frauddetector-detector-eventvariable-description"
+            },
+            "stability": "external",
+            "summary": "The description of the event variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 692
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventvariable.html#cfn-frauddetector-detector-eventvariable-inline"
+            },
+            "remarks": "If the value is `true` , CloudFormation will create/update/delete the resource when creating/updating/deleting the stack. If the value is `false` , CloudFormation will validate that the object exists and then use it within the resource without making changes to the object.\n\nFor example, when creating `AWS::FraudDetector::Detector` you must define at least two variables. You can set `Inline=true` for these variables and CloudFormation will create/update/delete the variables as part of stack operations. However, if you set `Inline=false` , CloudFormation will associate the variables to your detector but not execute any changes to the variables.",
+            "stability": "external",
+            "summary": "Indicates whether the resource is defined within this CloudFormation template and impacts the create, update, and delete behavior of the stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 700
+          },
+          "name": "inline",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventvariable.html#cfn-frauddetector-detector-eventvariable-lastupdatedtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp for when the event variable was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 706
+          },
+          "name": "lastUpdatedTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventvariable.html#cfn-frauddetector-detector-eventvariable-name"
+            },
+            "stability": "external",
+            "summary": "The name of the event variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 712
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventvariable.html#cfn-frauddetector-detector-eventvariable-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 720
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-eventvariable.html#cfn-frauddetector-detector-eventvariable-variabletype"
+            },
+            "remarks": "For more information, see [Variable types](https://docs.aws.amazon.com/frauddetector/latest/ug/create-a-variable.html#variable-types) .",
+            "stability": "external",
+            "summary": "The type of event variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 726
+          },
+          "name": "variableType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnDetector.EventVariableProperty"
+    },
+    "@aws-cdk/aws-frauddetector.CfnDetector.LabelProperty": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-label.html"
+        },
+        "stability": "external",
+        "summary": "The label details."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.LabelProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 817
+      },
+      "name": "LabelProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-label.html#cfn-frauddetector-detector-label-arn"
+            },
+            "stability": "external",
+            "summary": "The label ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 823
+          },
+          "name": "arn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-label.html#cfn-frauddetector-detector-label-createdtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when the event type was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 829
+          },
+          "name": "createdTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-label.html#cfn-frauddetector-detector-label-description"
+            },
+            "stability": "external",
+            "summary": "The label description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 835
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-label.html#cfn-frauddetector-detector-label-inline"
+            },
+            "remarks": "If the value is `true` , CloudFormation will create/update/delete the resource when creating/updating/deleting the stack. If the value is `false` , CloudFormation will validate that the object exists and then use it within the resource without making changes to the object.\n\nFor example, when creating `AWS::FraudDetector::Detector` you must define at least two variables. You can set `Inline=true` for these variables and CloudFormation will create/update/delete the variables as part of stack operations. However, if you set `Inline=false` , CloudFormation will associate the variables to your detector but not execute any changes to the variables.",
+            "stability": "external",
+            "summary": "Indicates whether the resource is defined within this CloudFormation template and impacts the create, update, and delete behavior of the stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 843
+          },
+          "name": "inline",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-label.html#cfn-frauddetector-detector-label-lastupdatedtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when the label was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 849
+          },
+          "name": "lastUpdatedTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-label.html#cfn-frauddetector-detector-label-name"
+            },
+            "stability": "external",
+            "summary": "The label name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 855
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-label.html#cfn-frauddetector-detector-label-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 863
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnDetector.LabelProperty"
+    },
+    "@aws-cdk/aws-frauddetector.CfnDetector.ModelProperty": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-model.html"
+        },
+        "stability": "external",
+        "summary": "The model."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.ModelProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 942
+      },
+      "name": "ModelProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-model.html#cfn-frauddetector-detector-model-arn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the model."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 948
+          },
+          "name": "arn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnDetector.ModelProperty"
+    },
+    "@aws-cdk/aws-frauddetector.CfnDetector.OutcomeProperty": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-outcome.html"
+        },
+        "stability": "external",
+        "summary": "The outcome."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.OutcomeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 1009
+      },
+      "name": "OutcomeProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-outcome.html#cfn-frauddetector-detector-outcome-arn"
+            },
+            "stability": "external",
+            "summary": "The outcome ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1015
+          },
+          "name": "arn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-outcome.html#cfn-frauddetector-detector-outcome-createdtime"
+            },
+            "stability": "external",
+            "summary": "The timestamp when the outcome was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1021
+          },
+          "name": "createdTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-outcome.html#cfn-frauddetector-detector-outcome-description"
+            },
+            "stability": "external",
+            "summary": "The outcome description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1027
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-outcome.html#cfn-frauddetector-detector-outcome-inline"
+            },
+            "remarks": "If the value is `true` , CloudFormation will create/update/delete the resource when creating/updating/deleting the stack. If the value is `false` , CloudFormation will validate that the object exists and then use it within the resource without making changes to the object.\n\nFor example, when creating `AWS::FraudDetector::Detector` you must define at least two variables. You can set `Inline=true` for these variables and CloudFormation will create/update/delete the variables as part of stack operations. However, if you set `Inline=false` , CloudFormation will associate the variables to your detector but not execute any changes to the variables.",
+            "stability": "external",
+            "summary": "Indicates whether the resource is defined within this CloudFormation template and impacts the create, update, and delete behavior of the stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1035
+          },
+          "name": "inline",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-outcome.html#cfn-frauddetector-detector-outcome-lastupdatedtime"
+            },
+            "stability": "external",
+            "summary": "The timestamp when the outcome was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1041
+          },
+          "name": "lastUpdatedTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-outcome.html#cfn-frauddetector-detector-outcome-name"
+            },
+            "stability": "external",
+            "summary": "The outcome name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1047
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-outcome.html#cfn-frauddetector-detector-outcome-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1055
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnDetector.OutcomeProperty"
+    },
+    "@aws-cdk/aws-frauddetector.CfnDetector.RuleProperty": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-rule.html"
+        },
+        "remarks": "Rule is a condition that tells Amazon Fraud Detector how to interpret variables values during a fraud prediction.",
+        "stability": "external",
+        "summary": "A rule."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.RuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 1134
+      },
+      "name": "RuleProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-rule.html#cfn-frauddetector-detector-rule-arn"
+            },
+            "stability": "external",
+            "summary": "The rule ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1140
+          },
+          "name": "arn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-rule.html#cfn-frauddetector-detector-rule-createdtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp for when the rule was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1146
+          },
+          "name": "createdTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-rule.html#cfn-frauddetector-detector-rule-description"
+            },
+            "stability": "external",
+            "summary": "The rule description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1152
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-rule.html#cfn-frauddetector-detector-rule-detectorid"
+            },
+            "stability": "external",
+            "summary": "The detector for which the rule is associated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1158
+          },
+          "name": "detectorId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-rule.html#cfn-frauddetector-detector-rule-expression"
+            },
+            "remarks": "A rule expression captures the business logic. For more information, see [Rule language reference](https://docs.aws.amazon.com/frauddetector/latest/ug/rule-language-reference.html) .",
+            "stability": "external",
+            "summary": "The rule expression."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1164
+          },
+          "name": "expression",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-rule.html#cfn-frauddetector-detector-rule-language"
+            },
+            "stability": "external",
+            "summary": "The rule language."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1170
+          },
+          "name": "language",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-rule.html#cfn-frauddetector-detector-rule-lastupdatedtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp for when the rule was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1176
+          },
+          "name": "lastUpdatedTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-rule.html#cfn-frauddetector-detector-rule-outcomes"
+            },
+            "stability": "external",
+            "summary": "The rule outcome."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1182
+          },
+          "name": "outcomes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.OutcomeProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-rule.html#cfn-frauddetector-detector-rule-ruleid"
+            },
+            "stability": "external",
+            "summary": "The rule ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1188
+          },
+          "name": "ruleId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-rule.html#cfn-frauddetector-detector-rule-ruleversion"
+            },
+            "stability": "external",
+            "summary": "The rule version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1194
+          },
+          "name": "ruleVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-detector-rule.html#cfn-frauddetector-detector-rule-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1202
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnDetector.RuleProperty"
+    },
+    "@aws-cdk/aws-frauddetector.CfnDetectorProps": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDetector`."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnDetectorProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 20
+      },
+      "name": "CfnDetectorProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-detectorid"
+            },
+            "stability": "external",
+            "summary": "The name of the detector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 27
+          },
+          "name": "detectorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-eventtype"
+            },
+            "stability": "external",
+            "summary": "The event type associated with this detector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 34
+          },
+          "name": "eventType",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.EventTypeProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-rules"
+            },
+            "stability": "external",
+            "summary": "The rules to include in the detector version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 41
+          },
+          "name": "rules",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.RuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-associatedmodels"
+            },
+            "remarks": "You must provide the ARNs of all the models you want to associate.",
+            "stability": "external",
+            "summary": "The models to associate with this detector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 48
+          },
+          "name": "associatedModels",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnDetector.ModelProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-description"
+            },
+            "stability": "external",
+            "summary": "The detector description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 55
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-detectorversionstatus"
+            },
+            "remarks": "If a value is not provided for this property, AWS CloudFormation assumes `DRAFT` status.\n\nValid values: `ACTIVE | DRAFT`",
+            "stability": "external",
+            "summary": "The status of the detector version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 64
+          },
+          "name": "detectorVersionStatus",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-ruleexecutionmode"
+            },
+            "remarks": "Valid values: `FIRST_MATCHED | ALL_MATCHED` Default value: `FIRST_MATCHED`\n\nYou can define and edit the rule mode at the detector version level, when it is in draft status.\n\nIf you specify `FIRST_MATCHED` , Amazon Fraud Detector evaluates rules sequentially, first to last, stopping at the first matched rule. Amazon Fraud dectector then provides the outcomes for that single rule.\n\nIf you specifiy `ALL_MATCHED` , Amazon Fraud Detector evaluates all rules and returns the outcomes for all matched rules.",
+            "stability": "external",
+            "summary": "The rule execution mode for the rules included in the detector version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 79
+          },
+          "name": "ruleExecutionMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-detector.html#cfn-frauddetector-detector-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 88
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnDetectorProps"
+    },
+    "@aws-cdk/aws-frauddetector.CfnEntityType": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::FraudDetector::EntityType",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-entitytype.html"
+        },
+        "remarks": "Manages an entity type. An entity represents who is performing the event. As part of a fraud prediction, you pass the entity ID to indicate the specific entity who performed the event. An entity type classifies the entity. Example classifications include customer, merchant, or account.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::FraudDetector::EntityType`."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnEntityType",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::FraudDetector::EntityType`."
+        },
+        "locationInModule": {
+          "filename": "lib/frauddetector.generated.ts",
+          "line": 1453
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-frauddetector.CfnEntityTypeProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 1380
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1471
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1484
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnEntityType",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1384
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The entity type ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1409
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedTime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when entity type was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1415
+          },
+          "name": "attrCreatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastUpdatedTime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when entity type was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1421
+          },
+          "name": "attrLastUpdatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1476
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-entitytype.html#cfn-frauddetector-entitytype-tags"
+            },
+            "stability": "external",
+            "summary": "A key and value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1444
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-entitytype.html#cfn-frauddetector-entitytype-name"
+            },
+            "remarks": "Pattern: `^[0-9a-z_-]+$`",
+            "stability": "external",
+            "summary": "The entity type name."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1430
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-entitytype.html#cfn-frauddetector-entitytype-description"
+            },
+            "stability": "external",
+            "summary": "The entity type description."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1437
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnEntityType"
+    },
+    "@aws-cdk/aws-frauddetector.CfnEntityTypeProps": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-entitytype.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnEntityType`."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnEntityTypeProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 1292
+      },
+      "name": "CfnEntityTypeProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-entitytype.html#cfn-frauddetector-entitytype-name"
+            },
+            "remarks": "Pattern: `^[0-9a-z_-]+$`",
+            "stability": "external",
+            "summary": "The entity type name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1301
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-entitytype.html#cfn-frauddetector-entitytype-description"
+            },
+            "stability": "external",
+            "summary": "The entity type description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1308
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-entitytype.html#cfn-frauddetector-entitytype-tags"
+            },
+            "stability": "external",
+            "summary": "A key and value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1315
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnEntityTypeProps"
+    },
+    "@aws-cdk/aws-frauddetector.CfnEventType": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::FraudDetector::EventType",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html"
+        },
+        "remarks": "Manages an event type. An event is a business activity that is evaluated for fraud risk. With Amazon Fraud Detector, you generate fraud predictions for events. An event type defines the structure for an event sent to Amazon Fraud Detector. This includes the variables sent as part of the event, the entity performing the event (such as a customer), and the labels that classify the event. Example event types include online payment transactions, account registrations, and authentications.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::FraudDetector::EventType`."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnEventType",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::FraudDetector::EventType`."
+        },
+        "locationInModule": {
+          "filename": "lib/frauddetector.generated.ts",
+          "line": 1716
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-frauddetector.CfnEventTypeProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 1620
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1740
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1756
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnEventType",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1624
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The event type ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1649
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedTime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when event type was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1655
+          },
+          "name": "attrCreatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastUpdatedTime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when event type was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1661
+          },
+          "name": "attrLastUpdatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1745
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html#cfn-frauddetector-eventtype-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1707
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html#cfn-frauddetector-eventtype-entitytypes"
+            },
+            "stability": "external",
+            "summary": "The event type entity types."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1668
+          },
+          "name": "entityTypes",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnEventType.EntityTypeProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html#cfn-frauddetector-eventtype-eventvariables"
+            },
+            "stability": "external",
+            "summary": "The event type event variables."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1675
+          },
+          "name": "eventVariables",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnEventType.EventVariableProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html#cfn-frauddetector-eventtype-labels"
+            },
+            "stability": "external",
+            "summary": "The event type labels."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1682
+          },
+          "name": "labels",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnEventType.LabelProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html#cfn-frauddetector-eventtype-name"
+            },
+            "remarks": "Pattern : `^[0-9a-z_-]+$`",
+            "stability": "external",
+            "summary": "The event type name."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1691
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html#cfn-frauddetector-eventtype-description"
+            },
+            "stability": "external",
+            "summary": "The event type description."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1698
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnEventType"
+    },
+    "@aws-cdk/aws-frauddetector.CfnEventType.EntityTypeProperty": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-entitytype.html"
+        },
+        "stability": "external",
+        "summary": "The entity type details."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnEventType.EntityTypeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 1770
+      },
+      "name": "EntityTypeProperty",
+      "namespace": "CfnEventType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-entitytype.html#cfn-frauddetector-eventtype-entitytype-arn"
+            },
+            "stability": "external",
+            "summary": "The entity type ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1776
+          },
+          "name": "arn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-entitytype.html#cfn-frauddetector-eventtype-entitytype-createdtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when the entity type was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1782
+          },
+          "name": "createdTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-entitytype.html#cfn-frauddetector-eventtype-entitytype-description"
+            },
+            "stability": "external",
+            "summary": "The entity type description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1788
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-entitytype.html#cfn-frauddetector-eventtype-entitytype-inline"
+            },
+            "remarks": "If the value is `true` , CloudFormation will create/update/delete the resource when creating/updating/deleting the stack. If the value is `false` , CloudFormation will validate that the object exists and then use it within the resource without making changes to the object.\n\nFor example, when creating `AWS::FraudDetector::EventType` you must define at least two variables. You can set `Inline=true` for these variables and CloudFormation will create/update/delete the variables as part of stack operations. However, if you set `Inline=false` , CloudFormation will associate the variables to your event type but not execute any changes to the variables.",
+            "stability": "external",
+            "summary": "Indicates whether the resource is defined within this CloudFormation template and impacts the create, update, and delete behavior of the stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1796
+          },
+          "name": "inline",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-entitytype.html#cfn-frauddetector-eventtype-entitytype-lastupdatedtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when the entity type was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1802
+          },
+          "name": "lastUpdatedTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-entitytype.html#cfn-frauddetector-eventtype-entitytype-name"
+            },
+            "remarks": "`^[0-9a-z_-]+$`",
+            "stability": "external",
+            "summary": "The entity type name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1810
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-entitytype.html#cfn-frauddetector-eventtype-entitytype-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1818
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnEventType.EntityTypeProperty"
+    },
+    "@aws-cdk/aws-frauddetector.CfnEventType.EventVariableProperty": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-eventvariable.html"
+        },
+        "stability": "external",
+        "summary": "The variables associated with this event type."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnEventType.EventVariableProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 1897
+      },
+      "name": "EventVariableProperty",
+      "namespace": "CfnEventType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-eventvariable.html#cfn-frauddetector-eventtype-eventvariable-arn"
+            },
+            "stability": "external",
+            "summary": "The event variable ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1903
+          },
+          "name": "arn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-eventvariable.html#cfn-frauddetector-eventtype-eventvariable-createdtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp for when event variable was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1909
+          },
+          "name": "createdTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-eventvariable.html#cfn-frauddetector-eventtype-eventvariable-datasource"
+            },
+            "remarks": "Valid values: `EVENT | EXTERNAL_MODEL_SCORE`\n\nWhen defining a variable within a event type, you can only use the `EVENT` value for DataSource when the *Inline* property is set to true. If the *Inline* property is set false, you can use either `EVENT` or `MODEL_SCORE` for DataSource.",
+            "stability": "external",
+            "summary": "The source of the event variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1919
+          },
+          "name": "dataSource",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-eventvariable.html#cfn-frauddetector-eventtype-eventvariable-datatype"
+            },
+            "stability": "external",
+            "summary": "The data type of the event variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1925
+          },
+          "name": "dataType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-eventvariable.html#cfn-frauddetector-eventtype-eventvariable-defaultvalue"
+            },
+            "stability": "external",
+            "summary": "The default value of the event variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1931
+          },
+          "name": "defaultValue",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-eventvariable.html#cfn-frauddetector-eventtype-eventvariable-description"
+            },
+            "stability": "external",
+            "summary": "The event variable description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1937
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-eventvariable.html#cfn-frauddetector-eventtype-eventvariable-inline"
+            },
+            "remarks": "If the value is `true` , CloudFormation will create/update/delete the resource when creating/updating/deleting the stack. If the value is `false` , CloudFormation will validate that the object exists and then use it within the resource without making changes to the object.\n\nFor example, when creating `AWS::FraudDetector::EventType` you must define at least two variables. You can set `Inline=true` for these variables and CloudFormation will create/update/delete the Variables as part of stack operations. However, if you set `Inline=false` , CloudFormation will associate the variables to your event type but not execute any changes to the variables.",
+            "stability": "external",
+            "summary": "Indicates whether the resource is defined within this CloudFormation template and impacts the create, update, and delete behavior of the stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1945
+          },
+          "name": "inline",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-eventvariable.html#cfn-frauddetector-eventtype-eventvariable-lastupdatedtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp for when the event variable was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1951
+          },
+          "name": "lastUpdatedTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-eventvariable.html#cfn-frauddetector-eventtype-eventvariable-name"
+            },
+            "stability": "external",
+            "summary": "The name of the event variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1957
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-eventvariable.html#cfn-frauddetector-eventtype-eventvariable-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1965
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-eventvariable.html#cfn-frauddetector-eventtype-eventvariable-variabletype"
+            },
+            "remarks": "For more information, see [Variable types](https://docs.aws.amazon.com/frauddetector/latest/ug/create-a-variable.html#variable-types) .",
+            "stability": "external",
+            "summary": "The type of event variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1971
+          },
+          "name": "variableType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnEventType.EventVariableProperty"
+    },
+    "@aws-cdk/aws-frauddetector.CfnEventType.LabelProperty": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-label.html"
+        },
+        "stability": "external",
+        "summary": "The label associated with the event type."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnEventType.LabelProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 2062
+      },
+      "name": "LabelProperty",
+      "namespace": "CfnEventType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-label.html#cfn-frauddetector-eventtype-label-arn"
+            },
+            "stability": "external",
+            "summary": "The label ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2068
+          },
+          "name": "arn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-label.html#cfn-frauddetector-eventtype-label-createdtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when the event type was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2074
+          },
+          "name": "createdTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-label.html#cfn-frauddetector-eventtype-label-description"
+            },
+            "stability": "external",
+            "summary": "The label description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2080
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-label.html#cfn-frauddetector-eventtype-label-inline"
+            },
+            "remarks": "If the value is `true` , CloudFormation will create/update/delete the resource when creating/updating/deleting the stack. If the value is `false` , CloudFormation will validate that the object exists and then use it within the resource without making changes to the object.\n\nFor example, when creating `AWS::FraudDetector::EventType` you must define at least two variables. You can set `Inline=true` for these variables and CloudFormation will create/update/delete the variables as part of stack operations. However, if you set `Inline=false` , CloudFormation will associate the variables to your EventType but not execute any changes to the variables.",
+            "stability": "external",
+            "summary": "Indicates whether the resource is defined within this CloudFormation template and impacts the create, update, and delete behavior of the stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2088
+          },
+          "name": "inline",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-label.html#cfn-frauddetector-eventtype-label-lastupdatedtime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when the label was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2094
+          },
+          "name": "lastUpdatedTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-label.html#cfn-frauddetector-eventtype-label-name"
+            },
+            "stability": "external",
+            "summary": "The label name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2100
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-frauddetector-eventtype-label.html#cfn-frauddetector-eventtype-label-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2108
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnEventType.LabelProperty"
+    },
+    "@aws-cdk/aws-frauddetector.CfnEventTypeProps": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnEventType`."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnEventTypeProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 1497
+      },
+      "name": "CfnEventTypeProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html#cfn-frauddetector-eventtype-entitytypes"
+            },
+            "stability": "external",
+            "summary": "The event type entity types."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1504
+          },
+          "name": "entityTypes",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnEventType.EntityTypeProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html#cfn-frauddetector-eventtype-eventvariables"
+            },
+            "stability": "external",
+            "summary": "The event type event variables."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1511
+          },
+          "name": "eventVariables",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnEventType.EventVariableProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html#cfn-frauddetector-eventtype-labels"
+            },
+            "stability": "external",
+            "summary": "The event type labels."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1518
+          },
+          "name": "labels",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-frauddetector.CfnEventType.LabelProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html#cfn-frauddetector-eventtype-name"
+            },
+            "remarks": "Pattern : `^[0-9a-z_-]+$`",
+            "stability": "external",
+            "summary": "The event type name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1527
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html#cfn-frauddetector-eventtype-description"
+            },
+            "stability": "external",
+            "summary": "The event type description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1534
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-eventtype.html#cfn-frauddetector-eventtype-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 1543
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnEventTypeProps"
+    },
+    "@aws-cdk/aws-frauddetector.CfnLabel": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::FraudDetector::Label",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-label.html"
+        },
+        "remarks": "Creates or updates label. A label classifies an event as fraudulent or legitimate. Labels are associated with event types and used to train supervised machine learning models in Amazon Fraud Detector.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::FraudDetector::Label`."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnLabel",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::FraudDetector::Label`."
+        },
+        "locationInModule": {
+          "filename": "lib/frauddetector.generated.ts",
+          "line": 2351
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-frauddetector.CfnLabelProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 2276
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2369
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2382
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnLabel",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2280
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the label."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2305
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedTime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when label was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2311
+          },
+          "name": "attrCreatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastUpdatedTime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when label was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2317
+          },
+          "name": "attrLastUpdatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2374
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-label.html#cfn-frauddetector-label-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2342
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-label.html#cfn-frauddetector-label-name"
+            },
+            "remarks": "Pattern: `^[0-9a-z_-]+$`",
+            "stability": "external",
+            "summary": "The label name."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2326
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-label.html#cfn-frauddetector-label-description"
+            },
+            "stability": "external",
+            "summary": "The label description."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2333
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnLabel"
+    },
+    "@aws-cdk/aws-frauddetector.CfnLabelProps": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-label.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnLabel`."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnLabelProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 2186
+      },
+      "name": "CfnLabelProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-label.html#cfn-frauddetector-label-name"
+            },
+            "remarks": "Pattern: `^[0-9a-z_-]+$`",
+            "stability": "external",
+            "summary": "The label name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2195
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-label.html#cfn-frauddetector-label-description"
+            },
+            "stability": "external",
+            "summary": "The label description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2202
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-label.html#cfn-frauddetector-label-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2211
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnLabelProps"
+    },
+    "@aws-cdk/aws-frauddetector.CfnOutcome": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::FraudDetector::Outcome",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-outcome.html"
+        },
+        "remarks": "Creates or updates an outcome.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::FraudDetector::Outcome`."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnOutcome",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::FraudDetector::Outcome`."
+        },
+        "locationInModule": {
+          "filename": "lib/frauddetector.generated.ts",
+          "line": 2556
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-frauddetector.CfnOutcomeProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 2483
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2574
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2587
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnOutcome",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2487
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the outcome."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2512
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedTime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when outcome was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2518
+          },
+          "name": "attrCreatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastUpdatedTime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when outcome was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2524
+          },
+          "name": "attrLastUpdatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2579
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-outcome.html#cfn-frauddetector-outcome-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2547
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-outcome.html#cfn-frauddetector-outcome-name"
+            },
+            "stability": "external",
+            "summary": "The outcome name."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2531
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-outcome.html#cfn-frauddetector-outcome-description"
+            },
+            "stability": "external",
+            "summary": "The outcome description."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2538
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnOutcome"
+    },
+    "@aws-cdk/aws-frauddetector.CfnOutcomeProps": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-outcome.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnOutcome`."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnOutcomeProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 2395
+      },
+      "name": "CfnOutcomeProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-outcome.html#cfn-frauddetector-outcome-name"
+            },
+            "stability": "external",
+            "summary": "The outcome name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2402
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-outcome.html#cfn-frauddetector-outcome-description"
+            },
+            "stability": "external",
+            "summary": "The outcome description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2409
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-outcome.html#cfn-frauddetector-outcome-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2418
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnOutcomeProps"
+    },
+    "@aws-cdk/aws-frauddetector.CfnVariable": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::FraudDetector::Variable",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html"
+        },
+        "remarks": "Manages a variable.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::FraudDetector::Variable`."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnVariable",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::FraudDetector::Variable`."
+        },
+        "locationInModule": {
+          "filename": "lib/frauddetector.generated.ts",
+          "line": 2852
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-frauddetector.CfnVariableProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 2741
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2877
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2894
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnVariable",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2745
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2770
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedTime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when variable was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2776
+          },
+          "name": "attrCreatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastUpdatedTime"
+            },
+            "stability": "external",
+            "summary": "Timestamp of when variable was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2782
+          },
+          "name": "attrLastUpdatedTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2882
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2834
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-datasource"
+            },
+            "remarks": "Valid values: `EVENT | EXTERNAL_MODEL_SCORE`\n\nWhen defining a variable within a detector, you can only use the `EVENT` value for DataSource when the *Inline* property is set to true. If the *Inline* property is set false, you can use either `EVENT` or `MODEL_SCORE` for DataSource.",
+            "stability": "external",
+            "summary": "The data source of the variable."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2793
+          },
+          "name": "dataSource",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-datatype"
+            },
+            "remarks": "Valid data types: `STRING | INTEGER | BOOLEAN | FLOAT`",
+            "stability": "external",
+            "summary": "The data type of the variable."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2802
+          },
+          "name": "dataType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-defaultvalue"
+            },
+            "stability": "external",
+            "summary": "The default value of the variable."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2809
+          },
+          "name": "defaultValue",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-name"
+            },
+            "remarks": "Pattern: `^[0-9a-z_-]+$`",
+            "stability": "external",
+            "summary": "The name of the variable."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2818
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-description"
+            },
+            "stability": "external",
+            "summary": "The description of the variable."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2825
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-variabletype"
+            },
+            "remarks": "Valid Values: `AUTH_CODE | AVS | BILLING_ADDRESS_L1 | BILLING_ADDRESS_L2 | BILLING_CITY | BILLING_COUNTRY | BILLING_NAME | BILLING_PHONE | BILLING_STATE | BILLING_ZIP | CARD_BIN | CATEGORICAL | CURRENCY_CODE | EMAIL_ADDRESS | FINGERPRINT | FRAUD_LABEL | FREE_FORM_TEXT | IP_ADDRESS | NUMERIC | ORDER_ID | PAYMENT_TYPE | PHONE_NUMBER | PRICE | PRODUCT_CATEGORY | SHIPPING_ADDRESS_L1 | SHIPPING_ADDRESS_L2 | SHIPPING_CITY | SHIPPING_COUNTRY | SHIPPING_NAME | SHIPPING_PHONE | SHIPPING_STATE | SHIPPING_ZIP | USERAGENT`",
+            "stability": "external",
+            "summary": "The type of the variable. For more information see [Variable types](https://docs.aws.amazon.com/frauddetector/latest/ug/create-a-variable.html#variable-types) ."
+          },
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2843
+          },
+          "name": "variableType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnVariable"
+    },
+    "@aws-cdk/aws-frauddetector.CfnVariableProps": {
+      "assembly": "@aws-cdk/aws-frauddetector",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnVariable`."
+      },
+      "fqn": "@aws-cdk/aws-frauddetector.CfnVariableProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/frauddetector.generated.ts",
+        "line": 2600
+      },
+      "name": "CfnVariableProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-datasource"
+            },
+            "remarks": "Valid values: `EVENT | EXTERNAL_MODEL_SCORE`\n\nWhen defining a variable within a detector, you can only use the `EVENT` value for DataSource when the *Inline* property is set to true. If the *Inline* property is set false, you can use either `EVENT` or `MODEL_SCORE` for DataSource.",
+            "stability": "external",
+            "summary": "The data source of the variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2611
+          },
+          "name": "dataSource",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-datatype"
+            },
+            "remarks": "Valid data types: `STRING | INTEGER | BOOLEAN | FLOAT`",
+            "stability": "external",
+            "summary": "The data type of the variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2620
+          },
+          "name": "dataType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-defaultvalue"
+            },
+            "stability": "external",
+            "summary": "The default value of the variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2627
+          },
+          "name": "defaultValue",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-name"
+            },
+            "remarks": "Pattern: `^[0-9a-z_-]+$`",
+            "stability": "external",
+            "summary": "The name of the variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2636
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-description"
+            },
+            "stability": "external",
+            "summary": "The description of the variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2643
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2652
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-frauddetector-variable.html#cfn-frauddetector-variable-variabletype"
+            },
+            "remarks": "Valid Values: `AUTH_CODE | AVS | BILLING_ADDRESS_L1 | BILLING_ADDRESS_L2 | BILLING_CITY | BILLING_COUNTRY | BILLING_NAME | BILLING_PHONE | BILLING_STATE | BILLING_ZIP | CARD_BIN | CATEGORICAL | CURRENCY_CODE | EMAIL_ADDRESS | FINGERPRINT | FRAUD_LABEL | FREE_FORM_TEXT | IP_ADDRESS | NUMERIC | ORDER_ID | PAYMENT_TYPE | PHONE_NUMBER | PRICE | PRODUCT_CATEGORY | SHIPPING_ADDRESS_L1 | SHIPPING_ADDRESS_L2 | SHIPPING_CITY | SHIPPING_COUNTRY | SHIPPING_NAME | SHIPPING_PHONE | SHIPPING_STATE | SHIPPING_ZIP | USERAGENT`",
+            "stability": "external",
+            "summary": "The type of the variable. For more information see [Variable types](https://docs.aws.amazon.com/frauddetector/latest/ug/create-a-variable.html#variable-types) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/frauddetector.generated.ts",
+            "line": 2661
+          },
+          "name": "variableType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/frauddetector.generated:CfnVariableProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "45GPpI46zNNOEdA3acd4O2eYAk6YAzBy5Fyw/ckNTso="
+}

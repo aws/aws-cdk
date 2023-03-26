@@ -1,0 +1,3094 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::GroundStation",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::GroundStation",
+    "aws-groundstation"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-groundstation",
+  "readme": {
+    "markdown": "# AWS::GroundStation Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as groundstation from '@aws-cdk/aws-groundstation';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for GroundStation construct libraries](https://constructs.dev/search?q=groundstation)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::GroundStation resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_GroundStation.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::GroundStation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_GroundStation.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-groundstation",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.GroundStation",
+      "packageId": "Amazon.CDK.AWS.GroundStation",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "groundstation",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.groundstation"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-groundstation"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-groundstation",
+      "module": "aws_cdk.aws_groundstation"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-groundstation.CfnConfig": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::GroundStation::Config",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-config.html"
+        },
+        "remarks": "Creates a `Config` with the specified parameters.\n\nConfig objects provide Ground Station with the details necessary in order to schedule and execute satellite contacts.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::GroundStation::Config`."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::GroundStation::Config`."
+        },
+        "locationInModule": {
+          "filename": "lib/groundstation.generated.ts",
+          "line": 180
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-groundstation.CfnConfigProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 109
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 199
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 212
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnConfig",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 113
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the config, such as `arn:aws:groundstation:us-east-2:1234567890:config/tracking/9940bf3b-d2ba-427e-9906-842b5e5d2296` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 138
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Id"
+            },
+            "stability": "external",
+            "summary": "The ID of the config, such as `9940bf3b-d2ba-427e-9906-842b5e5d2296` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 144
+          },
+          "name": "attrId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Type"
+            },
+            "stability": "external",
+            "summary": "The type of the config, such as `tracking` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 150
+          },
+          "name": "attrType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 204
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-config.html#cfn-groundstation-config-tags"
+            },
+            "stability": "external",
+            "summary": "Tags assigned to a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 171
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-config.html#cfn-groundstation-config-configdata"
+            },
+            "remarks": "Only one subtype may be specified per config. See the subtype definitions for a description of each config subtype.",
+            "stability": "external",
+            "summary": "Object containing the parameters of a config."
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 157
+          },
+          "name": "configData",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.ConfigDataProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-config.html#cfn-groundstation-config-name"
+            },
+            "stability": "external",
+            "summary": "The name of the config object."
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 164
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.AntennaDownlinkConfigProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-antennadownlinkconfig.html"
+        },
+        "remarks": "Use an antenna downlink config in a mission profile to receive the downlink data in raw DigIF format.",
+        "stability": "external",
+        "summary": "Provides information about how AWS Ground Station should configure an antenna for downlink during a contact."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.AntennaDownlinkConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 226
+      },
+      "name": "AntennaDownlinkConfigProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-antennadownlinkconfig.html#cfn-groundstation-config-antennadownlinkconfig-spectrumconfig"
+            },
+            "stability": "external",
+            "summary": "Defines the spectrum configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 232
+          },
+          "name": "spectrumConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.SpectrumConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.AntennaDownlinkConfigProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.AntennaDownlinkDemodDecodeConfigProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-antennadownlinkdemoddecodeconfig.html"
+        },
+        "remarks": "Use an antenna downlink demod decode config in a mission profile to receive the downlink data that has been demodulated and decoded.",
+        "stability": "external",
+        "summary": "Provides information about how AWS Ground Station should configure an antenna for downlink during a contact."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.AntennaDownlinkDemodDecodeConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 293
+      },
+      "name": "AntennaDownlinkDemodDecodeConfigProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-antennadownlinkdemoddecodeconfig.html#cfn-groundstation-config-antennadownlinkdemoddecodeconfig-decodeconfig"
+            },
+            "stability": "external",
+            "summary": "Defines how the RF signal will be decoded."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 299
+          },
+          "name": "decodeConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.DecodeConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-antennadownlinkdemoddecodeconfig.html#cfn-groundstation-config-antennadownlinkdemoddecodeconfig-demodulationconfig"
+            },
+            "stability": "external",
+            "summary": "Defines how the RF signal will be demodulated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 305
+          },
+          "name": "demodulationConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.DemodulationConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-antennadownlinkdemoddecodeconfig.html#cfn-groundstation-config-antennadownlinkdemoddecodeconfig-spectrumconfig"
+            },
+            "stability": "external",
+            "summary": "Defines the spectrum configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 311
+          },
+          "name": "spectrumConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.SpectrumConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.AntennaDownlinkDemodDecodeConfigProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.AntennaUplinkConfigProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-antennauplinkconfig.html"
+        },
+        "stability": "external",
+        "summary": "Provides information about how AWS Ground Station should configure an antenna for uplink during a contact."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.AntennaUplinkConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 378
+      },
+      "name": "AntennaUplinkConfigProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-antennauplinkconfig.html#cfn-groundstation-config-antennauplinkconfig-spectrumconfig"
+            },
+            "stability": "external",
+            "summary": "Defines the spectrum configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 384
+          },
+          "name": "spectrumConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.UplinkSpectrumConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-antennauplinkconfig.html#cfn-groundstation-config-antennauplinkconfig-targeteirp"
+            },
+            "remarks": "Valid values are between 20.0 to 50.0 dBW.",
+            "stability": "external",
+            "summary": "The equivalent isotropically radiated power (EIRP) to use for uplink transmissions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 390
+          },
+          "name": "targetEirp",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.EirpProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-antennauplinkconfig.html#cfn-groundstation-config-antennauplinkconfig-transmitdisabled"
+            },
+            "stability": "external",
+            "summary": "Whether or not uplink transmit is disabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 396
+          },
+          "name": "transmitDisabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.AntennaUplinkConfigProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.ConfigDataProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-configdata.html"
+        },
+        "stability": "external",
+        "summary": "Config objects provide information to Ground Station about how to configure the antenna and how data flows during a contact."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.ConfigDataProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 463
+      },
+      "name": "ConfigDataProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-configdata.html#cfn-groundstation-config-configdata-antennadownlinkconfig"
+            },
+            "remarks": "Antenna downlink config objects are used to provide parameters for downlinks where no demodulation or decoding is performed by Ground Station (RF over IP downlinks).",
+            "stability": "external",
+            "summary": "Provides information for an antenna downlink config object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 469
+          },
+          "name": "antennaDownlinkConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.AntennaDownlinkConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-configdata.html#cfn-groundstation-config-configdata-antennadownlinkdemoddecodeconfig"
+            },
+            "remarks": "Downlink demod decode config objects are used to provide parameters for downlinks where the Ground Station service will demodulate and decode the downlinked data.",
+            "stability": "external",
+            "summary": "Provides information for a downlink demod decode config object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 475
+          },
+          "name": "antennaDownlinkDemodDecodeConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.AntennaDownlinkDemodDecodeConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-configdata.html#cfn-groundstation-config-configdata-antennauplinkconfig"
+            },
+            "remarks": "Uplink config objects are used to provide parameters for uplink contacts.",
+            "stability": "external",
+            "summary": "Provides information for an uplink config object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 481
+          },
+          "name": "antennaUplinkConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.AntennaUplinkConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-configdata.html#cfn-groundstation-config-configdata-dataflowendpointconfig"
+            },
+            "remarks": "Dataflow endpoint config objects are used to provide parameters about which IP endpoint(s) to use during a contact. Dataflow endpoints are where Ground Station sends data during a downlink contact and where Ground Station receives data to send to the satellite during an uplink contact.",
+            "stability": "external",
+            "summary": "Provides information for a dataflow endpoint config object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 487
+          },
+          "name": "dataflowEndpointConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.DataflowEndpointConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-configdata.html#cfn-groundstation-config-configdata-s3recordingconfig"
+            },
+            "remarks": "S3 recording config objects are used to provide parameters for S3 recording during downlink contacts.",
+            "stability": "external",
+            "summary": "Provides information for an S3 recording config object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 493
+          },
+          "name": "s3RecordingConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.S3RecordingConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-configdata.html#cfn-groundstation-config-configdata-trackingconfig"
+            },
+            "remarks": "Tracking config objects are used to provide parameters about how to track the satellite through the sky during a contact.",
+            "stability": "external",
+            "summary": "Provides information for a tracking config object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 499
+          },
+          "name": "trackingConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.TrackingConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-configdata.html#cfn-groundstation-config-configdata-uplinkechoconfig"
+            },
+            "remarks": "Uplink echo config objects are used to provide parameters for uplink echo during uplink contacts.",
+            "stability": "external",
+            "summary": "Provides information for an uplink echo config object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 505
+          },
+          "name": "uplinkEchoConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.UplinkEchoConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.ConfigDataProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.DataflowEndpointConfigProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-dataflowendpointconfig.html"
+        },
+        "stability": "external",
+        "summary": "Provides information to AWS Ground Station about which IP endpoints to use during a contact."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.DataflowEndpointConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 584
+      },
+      "name": "DataflowEndpointConfigProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-dataflowendpointconfig.html#cfn-groundstation-config-dataflowendpointconfig-dataflowendpointname"
+            },
+            "stability": "external",
+            "summary": "The name of the dataflow endpoint to use during contacts."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 590
+          },
+          "name": "dataflowEndpointName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-dataflowendpointconfig.html#cfn-groundstation-config-dataflowendpointconfig-dataflowendpointregion"
+            },
+            "remarks": "When omitted, Ground Station will use the region of the contact.",
+            "stability": "external",
+            "summary": "The region of the dataflow endpoint to use during contacts."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 596
+          },
+          "name": "dataflowEndpointRegion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.DataflowEndpointConfigProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.DecodeConfigProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-decodeconfig.html"
+        },
+        "stability": "external",
+        "summary": "Defines decoding settings."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.DecodeConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 660
+      },
+      "name": "DecodeConfigProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-decodeconfig.html#cfn-groundstation-config-decodeconfig-unvalidatedjson"
+            },
+            "stability": "external",
+            "summary": "The decoding settings are in JSON format and define a set of steps to perform to decode the data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 666
+          },
+          "name": "unvalidatedJson",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.DecodeConfigProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.DemodulationConfigProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-demodulationconfig.html"
+        },
+        "stability": "external",
+        "summary": "Defines demodulation settings."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.DemodulationConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 727
+      },
+      "name": "DemodulationConfigProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-demodulationconfig.html#cfn-groundstation-config-demodulationconfig-unvalidatedjson"
+            },
+            "stability": "external",
+            "summary": "The demodulation settings are in JSON format and define parameters for demodulation, for example which modulation scheme (e.g. PSK, QPSK, etc.) and matched filter to use."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 733
+          },
+          "name": "unvalidatedJson",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.DemodulationConfigProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.EirpProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-eirp.html"
+        },
+        "stability": "external",
+        "summary": "Defines an equivalent isotropically radiated power (EIRP)."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.EirpProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 794
+      },
+      "name": "EirpProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-eirp.html#cfn-groundstation-config-eirp-units"
+            },
+            "stability": "external",
+            "summary": "The units of the EIRP."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 800
+          },
+          "name": "units",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-eirp.html#cfn-groundstation-config-eirp-value"
+            },
+            "remarks": "Valid values are between 20.0 to 50.0 dBW.",
+            "stability": "external",
+            "summary": "The value of the EIRP."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 806
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.EirpProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.FrequencyBandwidthProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-frequencybandwidth.html"
+        },
+        "stability": "external",
+        "summary": "Defines a bandwidth."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.FrequencyBandwidthProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 946
+      },
+      "name": "FrequencyBandwidthProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-frequencybandwidth.html#cfn-groundstation-config-frequencybandwidth-units"
+            },
+            "stability": "external",
+            "summary": "The units of the bandwidth."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 952
+          },
+          "name": "units",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-frequencybandwidth.html#cfn-groundstation-config-frequencybandwidth-value"
+            },
+            "remarks": "- For `AntennaDownlinkDemodDecodeconfig` , valid values are between 125 kHz to 650 MHz.\n- For `AntennaDownlinkconfig` , valid values are between 10 kHz to 54 MHz.\n- For `AntennaUplinkConfig` , valid values are between 10 kHz to 54 MHz.",
+            "stability": "external",
+            "summary": "The value of the bandwidth. AWS Ground Station currently has the following bandwidth limitations:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 962
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.FrequencyBandwidthProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.FrequencyProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-frequency.html"
+        },
+        "stability": "external",
+        "summary": "Defines a frequency."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.FrequencyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 870
+      },
+      "name": "FrequencyProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-frequency.html#cfn-groundstation-config-frequency-units"
+            },
+            "stability": "external",
+            "summary": "The units of the frequency."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 876
+          },
+          "name": "units",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-frequency.html#cfn-groundstation-config-frequency-value"
+            },
+            "remarks": "Valid values are between 2200 to 2300 MHz and 7750 to 8400 MHz for downlink and 2025 to 2120 MHz for uplink.",
+            "stability": "external",
+            "summary": "The value of the frequency."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 882
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.FrequencyProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.S3RecordingConfigProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-s3recordingconfig.html"
+        },
+        "stability": "external",
+        "summary": "Provides information about how AWS Ground Station should save downlink data to S3."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.S3RecordingConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 1026
+      },
+      "name": "S3RecordingConfigProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-s3recordingconfig.html#cfn-groundstation-config-s3recordingconfig-bucketarn"
+            },
+            "remarks": "The name of the S3 Bucket provided must begin with `aws-groundstation` .",
+            "stability": "external",
+            "summary": "S3 Bucket where the data is written."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1032
+          },
+          "name": "bucketArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-s3recordingconfig.html#cfn-groundstation-config-s3recordingconfig-prefix"
+            },
+            "remarks": "If you choose to use any optional keys for substitution, these values will be replaced with the corresponding information from your contact details. For example, a prefix of `{satellite_id}/{year}/{month}/{day}/` will replaced with `fake_satellite_id/2021/01/10/`\n\n*Optional keys for substitution* : `{satellite_id}` | `{config-name}` | `{config-id}` | `{year}` | `{month}` | `{day}`",
+            "stability": "external",
+            "summary": "The prefix of the S3 data object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1040
+          },
+          "name": "prefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-s3recordingconfig.html#cfn-groundstation-config-s3recordingconfig-rolearn"
+            },
+            "stability": "external",
+            "summary": "Defines the ARN of the role assumed for putting archives to S3."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1046
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.S3RecordingConfigProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.SpectrumConfigProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-spectrumconfig.html"
+        },
+        "stability": "external",
+        "summary": "Defines a spectrum."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.SpectrumConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 1113
+      },
+      "name": "SpectrumConfigProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-spectrumconfig.html#cfn-groundstation-config-spectrumconfig-bandwidth"
+            },
+            "remarks": "- For `AntennaDownlinkDemodDecodeconfig` , valid values are between 125 kHz to 650 MHz.\n- For `AntennaDownlinkconfig` , valid values are between 10 kHz to 54 MHz.\n- For `AntennaUplinkConfig` , valid values are between 10 kHz to 54 MHz.",
+            "stability": "external",
+            "summary": "The bandwidth of the spectrum. AWS Ground Station currently has the following bandwidth limitations:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1123
+          },
+          "name": "bandwidth",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.FrequencyBandwidthProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-spectrumconfig.html#cfn-groundstation-config-spectrumconfig-centerfrequency"
+            },
+            "remarks": "Valid values are between 2200 to 2300 MHz and 7750 to 8400 MHz for downlink and 2025 to 2120 MHz for uplink.",
+            "stability": "external",
+            "summary": "The center frequency of the spectrum."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1129
+          },
+          "name": "centerFrequency",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.FrequencyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-spectrumconfig.html#cfn-groundstation-config-spectrumconfig-polarization"
+            },
+            "remarks": "Valid values are `\"RIGHT_HAND\"` and `\"LEFT_HAND\"` . Capturing both `\"RIGHT_HAND\"` and `\"LEFT_HAND\"` polarization requires two separate configs.",
+            "stability": "external",
+            "summary": "The polarization of the spectrum."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1135
+          },
+          "name": "polarization",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.SpectrumConfigProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.TrackingConfigProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-trackingconfig.html"
+        },
+        "stability": "external",
+        "summary": "Provides information about how AWS Ground Station should track the satellite through the sky during a contact."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.TrackingConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 1202
+      },
+      "name": "TrackingConfigProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-trackingconfig.html#cfn-groundstation-config-trackingconfig-autotrack"
+            },
+            "remarks": "`REMOVED` specifies that program track should only be used during the contact. `PREFERRED` specifies that autotracking is preferred during the contact but fallback to program track if the signal is lost. `REQUIRED` specifies that autotracking is required during the contact and not to use program track if the signal is lost.",
+            "stability": "external",
+            "summary": "Specifies whether or not to use autotrack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1208
+          },
+          "name": "autotrack",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.TrackingConfigProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.UplinkEchoConfigProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-uplinkechoconfig.html"
+        },
+        "stability": "external",
+        "summary": "Provides information about how AWS Ground Station should echo back uplink transmissions to a dataflow endpoint."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.UplinkEchoConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 1269
+      },
+      "name": "UplinkEchoConfigProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-uplinkechoconfig.html#cfn-groundstation-config-uplinkechoconfig-antennauplinkconfigarn"
+            },
+            "stability": "external",
+            "summary": "Defines the ARN of the uplink config to echo back to a dataflow endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1275
+          },
+          "name": "antennaUplinkConfigArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-uplinkechoconfig.html#cfn-groundstation-config-uplinkechoconfig-enabled"
+            },
+            "stability": "external",
+            "summary": "Whether or not uplink echo is enabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1281
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.UplinkEchoConfigProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfig.UplinkSpectrumConfigProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-uplinkspectrumconfig.html"
+        },
+        "stability": "external",
+        "summary": "Defines a uplink spectrum."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfig.UplinkSpectrumConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 1345
+      },
+      "name": "UplinkSpectrumConfigProperty",
+      "namespace": "CfnConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-uplinkspectrumconfig.html#cfn-groundstation-config-uplinkspectrumconfig-centerfrequency"
+            },
+            "remarks": "Valid values are between 2200 to 2300 MHz and 7750 to 8400 MHz for downlink and 2025 to 2120 MHz for uplink.",
+            "stability": "external",
+            "summary": "The center frequency of the spectrum."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1351
+          },
+          "name": "centerFrequency",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.FrequencyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-config-uplinkspectrumconfig.html#cfn-groundstation-config-uplinkspectrumconfig-polarization"
+            },
+            "remarks": "Valid values are `\"RIGHT_HAND\"` and `\"LEFT_HAND\"` .",
+            "stability": "external",
+            "summary": "The polarization of the spectrum."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1357
+          },
+          "name": "polarization",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfig.UplinkSpectrumConfigProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnConfigProps": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-config.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnConfig`."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnConfigProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 20
+      },
+      "name": "CfnConfigProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-config.html#cfn-groundstation-config-configdata"
+            },
+            "remarks": "Only one subtype may be specified per config. See the subtype definitions for a description of each config subtype.",
+            "stability": "external",
+            "summary": "Object containing the parameters of a config."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 27
+          },
+          "name": "configData",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnConfig.ConfigDataProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-config.html#cfn-groundstation-config-name"
+            },
+            "stability": "external",
+            "summary": "The name of the config object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 34
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-config.html#cfn-groundstation-config-tags"
+            },
+            "stability": "external",
+            "summary": "Tags assigned to a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 41
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnConfigProps"
+    },
+    "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::GroundStation::DataflowEndpointGroup",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-dataflowendpointgroup.html"
+        },
+        "remarks": "Creates a Dataflow Endpoint Group request.\n\nDataflow endpoint groups contain a list of endpoints. When the name of a dataflow endpoint group is specified in a mission profile, the Ground Station service will connect to the endpoints and flow data during a contact.\n\nFor more information about dataflow endpoint groups, see [Dataflow Endpoint Groups](https://docs.aws.amazon.com/ground-station/latest/ug/dataflowendpointgroups.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::GroundStation::DataflowEndpointGroup`."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::GroundStation::DataflowEndpointGroup`."
+        },
+        "locationInModule": {
+          "filename": "lib/groundstation.generated.ts",
+          "line": 1558
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 1500
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1574
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1586
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDataflowEndpointGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1504
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the dataflow endpoint group, such as `arn:aws:groundstation:us-east-2:1234567890:dataflow-endpoint-group/9940bf3b-d2ba-427e-9906-842b5e5d2296` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1529
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Id"
+            },
+            "stability": "external",
+            "summary": "UUID of a dataflow endpoint group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1535
+          },
+          "name": "attrId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1579
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-dataflowendpointgroup.html#cfn-groundstation-dataflowendpointgroup-tags"
+            },
+            "stability": "external",
+            "summary": "Tags assigned to a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1549
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-dataflowendpointgroup.html#cfn-groundstation-dataflowendpointgroup-endpointdetails"
+            },
+            "stability": "external",
+            "summary": "List of Endpoint Details, containing address and port for each endpoint."
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1542
+          },
+          "name": "endpointDetails",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.EndpointDetailsProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnDataflowEndpointGroup"
+    },
+    "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.DataflowEndpointProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-dataflowendpoint.html"
+        },
+        "stability": "external",
+        "summary": "Contains information such as socket address and name that defines an endpoint."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.DataflowEndpointProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 1600
+      },
+      "name": "DataflowEndpointProperty",
+      "namespace": "CfnDataflowEndpointGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-dataflowendpoint.html#cfn-groundstation-dataflowendpointgroup-dataflowendpoint-address"
+            },
+            "stability": "external",
+            "summary": "The address and port of an endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1606
+          },
+          "name": "address",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.SocketAddressProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-dataflowendpoint.html#cfn-groundstation-dataflowendpointgroup-dataflowendpoint-mtu"
+            },
+            "remarks": "Valid values are between 1400 and 1500. A default value of 1500 is used if not set.",
+            "stability": "external",
+            "summary": "Maximum transmission unit (MTU) size in bytes of a dataflow endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1612
+          },
+          "name": "mtu",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-dataflowendpoint.html#cfn-groundstation-dataflowendpointgroup-dataflowendpoint-name"
+            },
+            "remarks": "When listing available contacts for a satellite, Ground Station searches for a dataflow endpoint whose name matches the value specified by the dataflow endpoint config of the selected mission profile. If no matching dataflow endpoints are found then Ground Station will not display any available contacts for the satellite.",
+            "stability": "external",
+            "summary": "The endpoint name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1620
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnDataflowEndpointGroup.DataflowEndpointProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.EndpointDetailsProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-endpointdetails.html"
+        },
+        "stability": "external",
+        "summary": "The security details and endpoint information."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.EndpointDetailsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 1687
+      },
+      "name": "EndpointDetailsProperty",
+      "namespace": "CfnDataflowEndpointGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-endpointdetails.html#cfn-groundstation-dataflowendpointgroup-endpointdetails-endpoint"
+            },
+            "stability": "external",
+            "summary": "Information about the endpoint such as name and the endpoint address."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1693
+          },
+          "name": "endpoint",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.DataflowEndpointProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-endpointdetails.html#cfn-groundstation-dataflowendpointgroup-endpointdetails-securitydetails"
+            },
+            "stability": "external",
+            "summary": "The role ARN, and IDs for security groups and subnets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1699
+          },
+          "name": "securityDetails",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.SecurityDetailsProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnDataflowEndpointGroup.EndpointDetailsProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.SecurityDetailsProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-securitydetails.html"
+        },
+        "stability": "external",
+        "summary": "Information about IAM roles, subnets, and security groups needed for this DataflowEndpointGroup."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.SecurityDetailsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 1763
+      },
+      "name": "SecurityDetailsProperty",
+      "namespace": "CfnDataflowEndpointGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-securitydetails.html#cfn-groundstation-dataflowendpointgroup-securitydetails-rolearn"
+            },
+            "remarks": "Ground Station will assume this role and create an ENI in your VPC on the specified subnet upon creation of a dataflow endpoint group. This ENI is used as the ingress/egress point for data streamed during a satellite contact.",
+            "stability": "external",
+            "summary": "The ARN of a role which Ground Station has permission to assume, such as `arn:aws:iam::1234567890:role/DataDeliveryServiceRole` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1771
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-securitydetails.html#cfn-groundstation-dataflowendpointgroup-securitydetails-securitygroupids"
+            },
+            "stability": "external",
+            "summary": "The security group Ids of the security role, such as `sg-1234567890abcdef0` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1777
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-securitydetails.html#cfn-groundstation-dataflowendpointgroup-securitydetails-subnetids"
+            },
+            "stability": "external",
+            "summary": "The subnet Ids of the security details, such as `subnet-12345678` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1783
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnDataflowEndpointGroup.SecurityDetailsProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.SocketAddressProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-socketaddress.html"
+        },
+        "stability": "external",
+        "summary": "The address of the endpoint, such as `192.168.1.1` ."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.SocketAddressProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 1850
+      },
+      "name": "SocketAddressProperty",
+      "namespace": "CfnDataflowEndpointGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-socketaddress.html#cfn-groundstation-dataflowendpointgroup-socketaddress-name"
+            },
+            "stability": "external",
+            "summary": "The name of the endpoint, such as `Endpoint 1` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1856
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-dataflowendpointgroup-socketaddress.html#cfn-groundstation-dataflowendpointgroup-socketaddress-port"
+            },
+            "stability": "external",
+            "summary": "The port of the endpoint, such as `55888` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1862
+          },
+          "name": "port",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnDataflowEndpointGroup.SocketAddressProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroupProps": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-dataflowendpointgroup.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDataflowEndpointGroup`."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroupProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 1420
+      },
+      "name": "CfnDataflowEndpointGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-dataflowendpointgroup.html#cfn-groundstation-dataflowendpointgroup-endpointdetails"
+            },
+            "stability": "external",
+            "summary": "List of Endpoint Details, containing address and port for each endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1427
+          },
+          "name": "endpointDetails",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-groundstation.CfnDataflowEndpointGroup.EndpointDetailsProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-dataflowendpointgroup.html#cfn-groundstation-dataflowendpointgroup-tags"
+            },
+            "stability": "external",
+            "summary": "Tags assigned to a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1434
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnDataflowEndpointGroupProps"
+    },
+    "@aws-cdk/aws-groundstation.CfnMissionProfile": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::GroundStation::MissionProfile",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html"
+        },
+        "remarks": "Mission profiles specify parameters and provide references to config objects to define how Ground Station lists and executes contacts.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::GroundStation::MissionProfile`."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnMissionProfile",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::GroundStation::MissionProfile`."
+        },
+        "locationInModule": {
+          "filename": "lib/groundstation.generated.ts",
+          "line": 2153
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-groundstation.CfnMissionProfileProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 2054
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2178
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2195
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnMissionProfile",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2058
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the mission profile, such as `arn:aws:groundstation:us-east-2:1234567890:mission-profile/9940bf3b-d2ba-427e-9906-842b5e5d2296` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2083
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Id"
+            },
+            "stability": "external",
+            "summary": "The ID of the mission profile, such as `9940bf3b-d2ba-427e-9906-842b5e5d2296` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2089
+          },
+          "name": "attrId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Region"
+            },
+            "stability": "external",
+            "summary": "The region of the mission profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2095
+          },
+          "name": "attrRegion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2183
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-tags"
+            },
+            "stability": "external",
+            "summary": "Tags assigned to the mission profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2144
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-dataflowedges"
+            },
+            "remarks": "Each list of config ARNs is an edge, with a \"from\" config and a \"to\" config.",
+            "stability": "external",
+            "summary": "A list containing lists of config ARNs."
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2102
+          },
+          "name": "dataflowEdges",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-groundstation.CfnMissionProfile.DataflowEdgeProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-minimumviablecontactdurationseconds"
+            },
+            "remarks": "Ground Station will not return contacts shorter than this duration.",
+            "stability": "external",
+            "summary": "Minimum length of a contact in seconds that Ground Station will return when listing contacts."
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2109
+          },
+          "name": "minimumViableContactDurationSeconds",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-name"
+            },
+            "stability": "external",
+            "summary": "The name of the mission profile."
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2116
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-trackingconfigarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of a tracking config objects that defines how to track the satellite through the sky during a contact."
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2123
+          },
+          "name": "trackingConfigArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-contactpostpassdurationseconds"
+            },
+            "remarks": "For more information on CloudWatch Events, see the [What Is CloudWatch Events?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/WhatIsCloudWatchEvents.html)",
+            "stability": "external",
+            "summary": "Amount of time in seconds after a contact ends that you’d like to receive a CloudWatch Event indicating the pass has finished."
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2130
+          },
+          "name": "contactPostPassDurationSeconds",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-contactprepassdurationseconds"
+            },
+            "remarks": "For more information on CloudWatch Events, see the [What Is CloudWatch Events?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/WhatIsCloudWatchEvents.html)",
+            "stability": "external",
+            "summary": "Amount of time in seconds prior to contact start that you'd like to receive a CloudWatch Event indicating an upcoming pass."
+          },
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2137
+          },
+          "name": "contactPrePassDurationSeconds",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnMissionProfile"
+    },
+    "@aws-cdk/aws-groundstation.CfnMissionProfile.DataflowEdgeProperty": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-missionprofile-dataflowedge.html"
+        },
+        "stability": "external",
+        "summary": "A dataflow edge defines from where and to where data will flow during a contact."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnMissionProfile.DataflowEdgeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 2209
+      },
+      "name": "DataflowEdgeProperty",
+      "namespace": "CfnMissionProfile",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-missionprofile-dataflowedge.html#cfn-groundstation-missionprofile-dataflowedge-destination"
+            },
+            "remarks": "For example, specify the ARN of a dataflow endpoint config for a downlink edge or an antenna uplink config for an uplink edge.",
+            "stability": "external",
+            "summary": "The ARN of the destination for this dataflow edge."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2215
+          },
+          "name": "destination",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-groundstation-missionprofile-dataflowedge.html#cfn-groundstation-missionprofile-dataflowedge-source"
+            },
+            "remarks": "For example, specify the ARN of an antenna downlink config for a downlink edge or a dataflow endpoint config for an uplink edge.",
+            "stability": "external",
+            "summary": "The ARN of the source for this dataflow edge."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 2221
+          },
+          "name": "source",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnMissionProfile.DataflowEdgeProperty"
+    },
+    "@aws-cdk/aws-groundstation.CfnMissionProfileProps": {
+      "assembly": "@aws-cdk/aws-groundstation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnMissionProfile`."
+      },
+      "fqn": "@aws-cdk/aws-groundstation.CfnMissionProfileProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/groundstation.generated.ts",
+        "line": 1925
+      },
+      "name": "CfnMissionProfileProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-dataflowedges"
+            },
+            "remarks": "Each list of config ARNs is an edge, with a \"from\" config and a \"to\" config.",
+            "stability": "external",
+            "summary": "A list containing lists of config ARNs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1932
+          },
+          "name": "dataflowEdges",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-groundstation.CfnMissionProfile.DataflowEdgeProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-minimumviablecontactdurationseconds"
+            },
+            "remarks": "Ground Station will not return contacts shorter than this duration.",
+            "stability": "external",
+            "summary": "Minimum length of a contact in seconds that Ground Station will return when listing contacts."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1939
+          },
+          "name": "minimumViableContactDurationSeconds",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-name"
+            },
+            "stability": "external",
+            "summary": "The name of the mission profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1946
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-trackingconfigarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of a tracking config objects that defines how to track the satellite through the sky during a contact."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1953
+          },
+          "name": "trackingConfigArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-contactpostpassdurationseconds"
+            },
+            "remarks": "For more information on CloudWatch Events, see the [What Is CloudWatch Events?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/WhatIsCloudWatchEvents.html)",
+            "stability": "external",
+            "summary": "Amount of time in seconds after a contact ends that you’d like to receive a CloudWatch Event indicating the pass has finished."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1960
+          },
+          "name": "contactPostPassDurationSeconds",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-contactprepassdurationseconds"
+            },
+            "remarks": "For more information on CloudWatch Events, see the [What Is CloudWatch Events?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/WhatIsCloudWatchEvents.html)",
+            "stability": "external",
+            "summary": "Amount of time in seconds prior to contact start that you'd like to receive a CloudWatch Event indicating an upcoming pass."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1967
+          },
+          "name": "contactPrePassDurationSeconds",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-groundstation-missionprofile.html#cfn-groundstation-missionprofile-tags"
+            },
+            "stability": "external",
+            "summary": "Tags assigned to the mission profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/groundstation.generated.ts",
+            "line": 1974
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/groundstation.generated:CfnMissionProfileProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "SvH0ukdhiotPXmunu4t2PckMuqEtVLEVfSl3ZHQB5wg="
+}

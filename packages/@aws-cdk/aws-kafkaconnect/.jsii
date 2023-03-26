@@ -1,0 +1,2236 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::KafkaConnect Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::KafkaConnect",
+    "aws-kafkaconnect"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-kafkaconnect",
+  "readme": {
+    "markdown": "# AWS::KafkaConnect Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as kafkaconnect from '@aws-cdk/aws-kafkaconnect';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for KafkaConnect construct libraries](https://constructs.dev/search?q=kafkaconnect)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::KafkaConnect resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_KafkaConnect.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::KafkaConnect](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_KafkaConnect.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-kafkaconnect",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.KafkaConnect",
+      "packageId": "Amazon.CDK.AWS.KafkaConnect",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "kafkaconnect",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.kafkaconnect"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-kafkaconnect"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-kafkaconnect",
+      "module": "aws_cdk.aws_kafkaconnect"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-kafkaconnect.CfnConnector": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::KafkaConnect::Connector",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html"
+        },
+        "remarks": "Creates a connector using the specified properties.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::KafkaConnect::Connector`."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::KafkaConnect::Connector`."
+        },
+        "locationInModule": {
+          "filename": "lib/kafkaconnect.generated.ts",
+          "line": 326
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnectorProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 204
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 359
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 381
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnConnector",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 208
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ConnectorArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the newly created connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 233
+          },
+          "name": "attrConnectorArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 364
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-capacity"
+            },
+            "stability": "external",
+            "summary": "The connector's compute capacity settings."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 240
+          },
+          "name": "capacity",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.CapacityProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-connectorconfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration of the connector."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 247
+          },
+          "name": "connectorConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-connectorname"
+            },
+            "stability": "external",
+            "summary": "The name of the connector."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 254
+          },
+          "name": "connectorName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-kafkacluster"
+            },
+            "stability": "external",
+            "summary": "The details of the Apache Kafka cluster to which the connector is connected."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 261
+          },
+          "name": "kafkaCluster",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.KafkaClusterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-kafkaclusterclientauthentication"
+            },
+            "remarks": "The value is NONE when no client authentication is used.",
+            "stability": "external",
+            "summary": "The type of client authentication used to connect to the Apache Kafka cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 268
+          },
+          "name": "kafkaClusterClientAuthentication",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.KafkaClusterClientAuthenticationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-kafkaclusterencryptionintransit"
+            },
+            "stability": "external",
+            "summary": "Details of encryption in transit to the Apache Kafka cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 275
+          },
+          "name": "kafkaClusterEncryptionInTransit",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.KafkaClusterEncryptionInTransitProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-kafkaconnectversion"
+            },
+            "remarks": "It has to be compatible with both the Apache Kafka cluster's version and the plugins.",
+            "stability": "external",
+            "summary": "The version of Kafka Connect."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 282
+          },
+          "name": "kafkaConnectVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-plugins"
+            },
+            "remarks": "You must specify a single-element list. Amazon MSK Connect does not currently support specifying multiple plugins.",
+            "stability": "external",
+            "summary": "Specifies which plugin to use for the connector."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 289
+          },
+          "name": "plugins",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.PluginProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-serviceexecutionrolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role used by the connector to access Amazon Web Services resources."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 296
+          },
+          "name": "serviceExecutionRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-connectordescription"
+            },
+            "stability": "external",
+            "summary": "The description of the connector."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 303
+          },
+          "name": "connectorDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-logdelivery"
+            },
+            "stability": "external",
+            "summary": "The settings for delivering connector logs to Amazon CloudWatch Logs."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 310
+          },
+          "name": "logDelivery",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.LogDeliveryProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-workerconfiguration"
+            },
+            "stability": "external",
+            "summary": "The worker configurations that are in use with the connector."
+          },
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 317
+          },
+          "name": "workerConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.WorkerConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.ApacheKafkaClusterProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-apachekafkacluster.html"
+        },
+        "stability": "external",
+        "summary": "The details of the Apache Kafka cluster to which the connector is connected."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.ApacheKafkaClusterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 395
+      },
+      "name": "ApacheKafkaClusterProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-apachekafkacluster.html#cfn-kafkaconnect-connector-apachekafkacluster-bootstrapservers"
+            },
+            "stability": "external",
+            "summary": "The bootstrap servers of the cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 401
+          },
+          "name": "bootstrapServers",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-apachekafkacluster.html#cfn-kafkaconnect-connector-apachekafkacluster-vpc"
+            },
+            "stability": "external",
+            "summary": "Details of an Amazon VPC which has network connectivity to the Apache Kafka cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 407
+          },
+          "name": "vpc",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.VpcProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.ApacheKafkaClusterProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.AutoScalingProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-autoscaling.html"
+        },
+        "stability": "external",
+        "summary": "Specifies how the connector scales."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.AutoScalingProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 473
+      },
+      "name": "AutoScalingProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-autoscaling.html#cfn-kafkaconnect-connector-autoscaling-maxworkercount"
+            },
+            "stability": "external",
+            "summary": "The maximum number of workers allocated to the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 479
+          },
+          "name": "maxWorkerCount",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-autoscaling.html#cfn-kafkaconnect-connector-autoscaling-mcucount"
+            },
+            "remarks": "The valid values are 1,2,4,8.",
+            "stability": "external",
+            "summary": "The number of microcontroller units (MCUs) allocated to each connector worker."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 485
+          },
+          "name": "mcuCount",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-autoscaling.html#cfn-kafkaconnect-connector-autoscaling-minworkercount"
+            },
+            "stability": "external",
+            "summary": "The minimum number of workers allocated to the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 491
+          },
+          "name": "minWorkerCount",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-autoscaling.html#cfn-kafkaconnect-connector-autoscaling-scaleinpolicy"
+            },
+            "stability": "external",
+            "summary": "The sacle-in policy for the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 497
+          },
+          "name": "scaleInPolicy",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.ScaleInPolicyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-autoscaling.html#cfn-kafkaconnect-connector-autoscaling-scaleoutpolicy"
+            },
+            "stability": "external",
+            "summary": "The sacle-out policy for the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 503
+          },
+          "name": "scaleOutPolicy",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.ScaleOutPolicyProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.AutoScalingProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.CapacityProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-capacity.html"
+        },
+        "stability": "external",
+        "summary": "Information about the capacity of the connector, whether it is auto scaled or provisioned."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.CapacityProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 581
+      },
+      "name": "CapacityProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-capacity.html#cfn-kafkaconnect-connector-capacity-autoscaling"
+            },
+            "stability": "external",
+            "summary": "Information about the auto scaling parameters for the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 587
+          },
+          "name": "autoScaling",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.AutoScalingProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-capacity.html#cfn-kafkaconnect-connector-capacity-provisionedcapacity"
+            },
+            "stability": "external",
+            "summary": "Details about a fixed capacity allocated to a connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 593
+          },
+          "name": "provisionedCapacity",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.ProvisionedCapacityProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.CapacityProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.CloudWatchLogsLogDeliveryProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-cloudwatchlogslogdelivery.html"
+        },
+        "stability": "external",
+        "summary": "The settings for delivering connector logs to Amazon CloudWatch Logs."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.CloudWatchLogsLogDeliveryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 657
+      },
+      "name": "CloudWatchLogsLogDeliveryProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-cloudwatchlogslogdelivery.html#cfn-kafkaconnect-connector-cloudwatchlogslogdelivery-enabled"
+            },
+            "stability": "external",
+            "summary": "Whether log delivery to Amazon CloudWatch Logs is enabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 663
+          },
+          "name": "enabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-cloudwatchlogslogdelivery.html#cfn-kafkaconnect-connector-cloudwatchlogslogdelivery-loggroup"
+            },
+            "stability": "external",
+            "summary": "The name of the CloudWatch log group that is the destination for log delivery."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 669
+          },
+          "name": "logGroup",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.CloudWatchLogsLogDeliveryProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.CustomPluginProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-customplugin.html"
+        },
+        "stability": "external",
+        "summary": "A plugin is an AWS resource that contains the code that defines a connector's logic."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.CustomPluginProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 734
+      },
+      "name": "CustomPluginProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-customplugin.html#cfn-kafkaconnect-connector-customplugin-custompluginarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the custom plugin."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 740
+          },
+          "name": "customPluginArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-customplugin.html#cfn-kafkaconnect-connector-customplugin-revision"
+            },
+            "stability": "external",
+            "summary": "The revision of the custom plugin."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 746
+          },
+          "name": "revision",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.CustomPluginProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.FirehoseLogDeliveryProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-firehoselogdelivery.html"
+        },
+        "stability": "external",
+        "summary": "The settings for delivering logs to Amazon Kinesis Data Firehose."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.FirehoseLogDeliveryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 812
+      },
+      "name": "FirehoseLogDeliveryProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-firehoselogdelivery.html#cfn-kafkaconnect-connector-firehoselogdelivery-enabled"
+            },
+            "stability": "external",
+            "summary": "Specifies whether connector logs get delivered to Amazon Kinesis Data Firehose."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 824
+          },
+          "name": "enabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-firehoselogdelivery.html#cfn-kafkaconnect-connector-firehoselogdelivery-deliverystream"
+            },
+            "stability": "external",
+            "summary": "The name of the Kinesis Data Firehose delivery stream that is the destination for log delivery."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 818
+          },
+          "name": "deliveryStream",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.FirehoseLogDeliveryProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.KafkaClusterClientAuthenticationProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-kafkaclusterclientauthentication.html"
+        },
+        "stability": "external",
+        "summary": "The client authentication information used in order to authenticate with the Apache Kafka cluster."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.KafkaClusterClientAuthenticationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 957
+      },
+      "name": "KafkaClusterClientAuthenticationProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-kafkaclusterclientauthentication.html#cfn-kafkaconnect-connector-kafkaclusterclientauthentication-authenticationtype"
+            },
+            "remarks": "Value NONE means that no client authentication is used.",
+            "stability": "external",
+            "summary": "The type of client authentication used to connect to the Apache Kafka cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 963
+          },
+          "name": "authenticationType",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.KafkaClusterClientAuthenticationProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.KafkaClusterEncryptionInTransitProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-kafkaclusterencryptionintransit.html"
+        },
+        "stability": "external",
+        "summary": "Details of encryption in transit to the Apache Kafka cluster."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.KafkaClusterEncryptionInTransitProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 1025
+      },
+      "name": "KafkaClusterEncryptionInTransitProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-kafkaclusterencryptionintransit.html#cfn-kafkaconnect-connector-kafkaclusterencryptionintransit-encryptiontype"
+            },
+            "stability": "external",
+            "summary": "The type of encryption in transit to the Apache Kafka cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1031
+          },
+          "name": "encryptionType",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.KafkaClusterEncryptionInTransitProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.KafkaClusterProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-kafkacluster.html"
+        },
+        "stability": "external",
+        "summary": "The details of the Apache Kafka cluster to which the connector is connected."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.KafkaClusterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 889
+      },
+      "name": "KafkaClusterProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-kafkacluster.html#cfn-kafkaconnect-connector-kafkacluster-apachekafkacluster"
+            },
+            "stability": "external",
+            "summary": "The Apache Kafka cluster to which the connector is connected."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 895
+          },
+          "name": "apacheKafkaCluster",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.ApacheKafkaClusterProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.KafkaClusterProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.LogDeliveryProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-logdelivery.html"
+        },
+        "stability": "external",
+        "summary": "Details about log delivery."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.LogDeliveryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 1093
+      },
+      "name": "LogDeliveryProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-logdelivery.html#cfn-kafkaconnect-connector-logdelivery-workerlogdelivery"
+            },
+            "remarks": "This configuration specifies the details of these destinations.",
+            "stability": "external",
+            "summary": "The workers can send worker logs to different destination types."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1099
+          },
+          "name": "workerLogDelivery",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.WorkerLogDeliveryProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.LogDeliveryProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.PluginProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-plugin.html"
+        },
+        "stability": "external",
+        "summary": "A plugin is an AWS resource that contains the code that defines your connector logic."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.PluginProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 1161
+      },
+      "name": "PluginProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-plugin.html#cfn-kafkaconnect-connector-plugin-customplugin"
+            },
+            "stability": "external",
+            "summary": "Details about a custom plugin."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1167
+          },
+          "name": "customPlugin",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.CustomPluginProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.PluginProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.ProvisionedCapacityProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-provisionedcapacity.html"
+        },
+        "stability": "external",
+        "summary": "Details about a connector's provisioned capacity."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.ProvisionedCapacityProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 1229
+      },
+      "name": "ProvisionedCapacityProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-provisionedcapacity.html#cfn-kafkaconnect-connector-provisionedcapacity-workercount"
+            },
+            "stability": "external",
+            "summary": "The number of workers that are allocated to the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1241
+          },
+          "name": "workerCount",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-provisionedcapacity.html#cfn-kafkaconnect-connector-provisionedcapacity-mcucount"
+            },
+            "remarks": "The valid values are 1,2,4,8.",
+            "stability": "external",
+            "summary": "The number of microcontroller units (MCUs) allocated to each connector worker."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1235
+          },
+          "name": "mcuCount",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.ProvisionedCapacityProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.S3LogDeliveryProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-s3logdelivery.html"
+        },
+        "stability": "external",
+        "summary": "Details about delivering logs to Amazon S3."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.S3LogDeliveryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 1306
+      },
+      "name": "S3LogDeliveryProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-s3logdelivery.html#cfn-kafkaconnect-connector-s3logdelivery-enabled"
+            },
+            "stability": "external",
+            "summary": "Specifies whether connector logs get sent to the specified Amazon S3 destination."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1318
+          },
+          "name": "enabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-s3logdelivery.html#cfn-kafkaconnect-connector-s3logdelivery-bucket"
+            },
+            "stability": "external",
+            "summary": "The name of the S3 bucket that is the destination for log delivery."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1312
+          },
+          "name": "bucket",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-s3logdelivery.html#cfn-kafkaconnect-connector-s3logdelivery-prefix"
+            },
+            "stability": "external",
+            "summary": "The S3 prefix that is the destination for log delivery."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1324
+          },
+          "name": "prefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.S3LogDeliveryProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.ScaleInPolicyProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-scaleinpolicy.html"
+        },
+        "stability": "external",
+        "summary": "The scale-in policy for the connector."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.ScaleInPolicyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 1392
+      },
+      "name": "ScaleInPolicyProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-scaleinpolicy.html#cfn-kafkaconnect-connector-scaleinpolicy-cpuutilizationpercentage"
+            },
+            "stability": "external",
+            "summary": "Specifies the CPU utilization percentage threshold at which you want connector scale in to be triggered."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1398
+          },
+          "name": "cpuUtilizationPercentage",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.ScaleInPolicyProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.ScaleOutPolicyProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-scaleoutpolicy.html"
+        },
+        "stability": "external",
+        "summary": "The scale-out policy for the connector."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.ScaleOutPolicyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 1460
+      },
+      "name": "ScaleOutPolicyProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-scaleoutpolicy.html#cfn-kafkaconnect-connector-scaleoutpolicy-cpuutilizationpercentage"
+            },
+            "stability": "external",
+            "summary": "The CPU utilization percentage threshold at which you want connector scale out to be triggered."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1466
+          },
+          "name": "cpuUtilizationPercentage",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.ScaleOutPolicyProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.VpcProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-vpc.html"
+        },
+        "stability": "external",
+        "summary": "Information about the VPC in which the connector resides."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.VpcProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 1528
+      },
+      "name": "VpcProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-vpc.html#cfn-kafkaconnect-connector-vpc-securitygroups"
+            },
+            "stability": "external",
+            "summary": "The security groups for the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1534
+          },
+          "name": "securityGroups",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-vpc.html#cfn-kafkaconnect-connector-vpc-subnets"
+            },
+            "stability": "external",
+            "summary": "The subnets for the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1540
+          },
+          "name": "subnets",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.VpcProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.WorkerConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-workerconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The configuration of the workers, which are the processes that run the connector logic."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.WorkerConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 1606
+      },
+      "name": "WorkerConfigurationProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-workerconfiguration.html#cfn-kafkaconnect-connector-workerconfiguration-revision"
+            },
+            "stability": "external",
+            "summary": "The revision of the worker configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1612
+          },
+          "name": "revision",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-workerconfiguration.html#cfn-kafkaconnect-connector-workerconfiguration-workerconfigurationarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the worker configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1618
+          },
+          "name": "workerConfigurationArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.WorkerConfigurationProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnector.WorkerLogDeliveryProperty": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-workerlogdelivery.html"
+        },
+        "remarks": "This configuration specifies the details of these destinations.",
+        "stability": "external",
+        "summary": "Workers can send worker logs to different destination types."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.WorkerLogDeliveryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 1684
+      },
+      "name": "WorkerLogDeliveryProperty",
+      "namespace": "CfnConnector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-workerlogdelivery.html#cfn-kafkaconnect-connector-workerlogdelivery-cloudwatchlogs"
+            },
+            "stability": "external",
+            "summary": "Details about delivering logs to Amazon CloudWatch Logs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1690
+          },
+          "name": "cloudWatchLogs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.CloudWatchLogsLogDeliveryProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-workerlogdelivery.html#cfn-kafkaconnect-connector-workerlogdelivery-firehose"
+            },
+            "stability": "external",
+            "summary": "Details about delivering logs to Amazon Kinesis Data Firehose."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1696
+          },
+          "name": "firehose",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.FirehoseLogDeliveryProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kafkaconnect-connector-workerlogdelivery.html#cfn-kafkaconnect-connector-workerlogdelivery-s3"
+            },
+            "stability": "external",
+            "summary": "Details about delivering logs to Amazon S3."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 1702
+          },
+          "name": "s3",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.S3LogDeliveryProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnector.WorkerLogDeliveryProperty"
+    },
+    "@aws-cdk/aws-kafkaconnect.CfnConnectorProps": {
+      "assembly": "@aws-cdk/aws-kafkaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnConnector`."
+      },
+      "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnectorProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kafkaconnect.generated.ts",
+        "line": 20
+      },
+      "name": "CfnConnectorProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-capacity"
+            },
+            "stability": "external",
+            "summary": "The connector's compute capacity settings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 27
+          },
+          "name": "capacity",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.CapacityProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-connectorconfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration of the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 34
+          },
+          "name": "connectorConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-connectorname"
+            },
+            "stability": "external",
+            "summary": "The name of the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 41
+          },
+          "name": "connectorName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-kafkacluster"
+            },
+            "stability": "external",
+            "summary": "The details of the Apache Kafka cluster to which the connector is connected."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 48
+          },
+          "name": "kafkaCluster",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.KafkaClusterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-kafkaclusterclientauthentication"
+            },
+            "remarks": "The value is NONE when no client authentication is used.",
+            "stability": "external",
+            "summary": "The type of client authentication used to connect to the Apache Kafka cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 55
+          },
+          "name": "kafkaClusterClientAuthentication",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.KafkaClusterClientAuthenticationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-kafkaclusterencryptionintransit"
+            },
+            "stability": "external",
+            "summary": "Details of encryption in transit to the Apache Kafka cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 62
+          },
+          "name": "kafkaClusterEncryptionInTransit",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.KafkaClusterEncryptionInTransitProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-kafkaconnectversion"
+            },
+            "remarks": "It has to be compatible with both the Apache Kafka cluster's version and the plugins.",
+            "stability": "external",
+            "summary": "The version of Kafka Connect."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 69
+          },
+          "name": "kafkaConnectVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-plugins"
+            },
+            "remarks": "You must specify a single-element list. Amazon MSK Connect does not currently support specifying multiple plugins.",
+            "stability": "external",
+            "summary": "Specifies which plugin to use for the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 76
+          },
+          "name": "plugins",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.PluginProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-serviceexecutionrolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role used by the connector to access Amazon Web Services resources."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 83
+          },
+          "name": "serviceExecutionRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-connectordescription"
+            },
+            "stability": "external",
+            "summary": "The description of the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 90
+          },
+          "name": "connectorDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-logdelivery"
+            },
+            "stability": "external",
+            "summary": "The settings for delivering connector logs to Amazon CloudWatch Logs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 97
+          },
+          "name": "logDelivery",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.LogDeliveryProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kafkaconnect-connector.html#cfn-kafkaconnect-connector-workerconfiguration"
+            },
+            "stability": "external",
+            "summary": "The worker configurations that are in use with the connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kafkaconnect.generated.ts",
+            "line": 104
+          },
+          "name": "workerConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kafkaconnect.CfnConnector.WorkerConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kafkaconnect.generated:CfnConnectorProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "XRfdplN9wKINTklLLi3L0yc7RUPMX/cvDCEmQrwyalw="
+}

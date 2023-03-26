@@ -1,0 +1,2904 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::BillingConductor Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::BillingConductor",
+    "aws-billingconductor"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-billingconductor",
+  "readme": {
+    "markdown": "# AWS::BillingConductor Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as billingconductor from '@aws-cdk/aws-billingconductor';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for BillingConductor construct libraries](https://constructs.dev/search?q=billingconductor)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::BillingConductor resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_BillingConductor.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::BillingConductor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_BillingConductor.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-billingconductor",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.BillingConductor",
+      "packageId": "Amazon.CDK.AWS.BillingConductor",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "billingconductor",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.billingconductor"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-billingconductor"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-billingconductor",
+      "module": "aws_cdk.aws_billingconductor"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-billingconductor.CfnBillingGroup": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::BillingConductor::BillingGroup",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html"
+        },
+        "remarks": "Creates a billing group that resembles a consolidated billing family that AWS charges, based off of the predefined pricing plan computation.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::BillingConductor::BillingGroup`."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnBillingGroup",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::BillingConductor::BillingGroup`."
+        },
+        "locationInModule": {
+          "filename": "lib/billingconductor.generated.ts",
+          "line": 249
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-billingconductor.CfnBillingGroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 139
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 276
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 292
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnBillingGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 143
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the created billing group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 168
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationTime"
+            },
+            "stability": "external",
+            "summary": "The time the billing group was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 174
+          },
+          "name": "attrCreationTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastModifiedTime"
+            },
+            "stability": "external",
+            "summary": "The most recent time the billing group was modified."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 180
+          },
+          "name": "attrLastModifiedTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Size"
+            },
+            "stability": "external",
+            "summary": "The number of accounts in the particular billing group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 186
+          },
+          "name": "attrSize",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "remarks": "Only one of the valid values can be used.",
+            "stability": "external",
+            "summary": "The billing group status."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 192
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StatusReason"
+            },
+            "stability": "external",
+            "summary": "The reason why the billing group is in its current status."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 198
+          },
+          "name": "attrStatusReason",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 281
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html#cfn-billingconductor-billinggroup-tags"
+            },
+            "stability": "external",
+            "summary": "`AWS::BillingConductor::BillingGroup.Tags`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 240
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html#cfn-billingconductor-billinggroup-accountgrouping"
+            },
+            "remarks": "The set of accounts resemble the linked accounts in a consolidated family.",
+            "stability": "external",
+            "summary": "The set of accounts that will be under the billing group."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 205
+          },
+          "name": "accountGrouping",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnBillingGroup.AccountGroupingProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html#cfn-billingconductor-billinggroup-computationpreference"
+            },
+            "stability": "external",
+            "summary": "The preferences and settings that will be used to compute the AWS charges for a billing group."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 212
+          },
+          "name": "computationPreference",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnBillingGroup.ComputationPreferenceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html#cfn-billingconductor-billinggroup-name"
+            },
+            "stability": "external",
+            "summary": "The billing group's name."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 219
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html#cfn-billingconductor-billinggroup-primaryaccountid"
+            },
+            "stability": "external",
+            "summary": "The account ID that serves as the main account in a billing group."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 226
+          },
+          "name": "primaryAccountId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html#cfn-billingconductor-billinggroup-description"
+            },
+            "stability": "external",
+            "summary": "The description of the billing group."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 233
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnBillingGroup"
+    },
+    "@aws-cdk/aws-billingconductor.CfnBillingGroup.AccountGroupingProperty": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-billinggroup-accountgrouping.html"
+        },
+        "remarks": "The set of accounts resemble the linked accounts in a consolidated family.",
+        "stability": "external",
+        "summary": "The set of accounts that will be under the billing group."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnBillingGroup.AccountGroupingProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 306
+      },
+      "name": "AccountGroupingProperty",
+      "namespace": "CfnBillingGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-billinggroup-accountgrouping.html#cfn-billingconductor-billinggroup-accountgrouping-linkedaccountids"
+            },
+            "remarks": "Account IDs must be a part of the consolidated billing family, and not associated with another billing group.",
+            "stability": "external",
+            "summary": "The account IDs that make up the billing group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 312
+          },
+          "name": "linkedAccountIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnBillingGroup.AccountGroupingProperty"
+    },
+    "@aws-cdk/aws-billingconductor.CfnBillingGroup.ComputationPreferenceProperty": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-billinggroup-computationpreference.html"
+        },
+        "stability": "external",
+        "summary": "The preferences and settings that will be used to compute the AWS charges for a billing group."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnBillingGroup.ComputationPreferenceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 374
+      },
+      "name": "ComputationPreferenceProperty",
+      "namespace": "CfnBillingGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-billinggroup-computationpreference.html#cfn-billingconductor-billinggroup-computationpreference-pricingplanarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the pricing plan used to compute the AWS charges for a billing group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 380
+          },
+          "name": "pricingPlanArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnBillingGroup.ComputationPreferenceProperty"
+    },
+    "@aws-cdk/aws-billingconductor.CfnBillingGroupProps": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnBillingGroup`."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnBillingGroupProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 20
+      },
+      "name": "CfnBillingGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html#cfn-billingconductor-billinggroup-accountgrouping"
+            },
+            "remarks": "The set of accounts resemble the linked accounts in a consolidated family.",
+            "stability": "external",
+            "summary": "The set of accounts that will be under the billing group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 27
+          },
+          "name": "accountGrouping",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnBillingGroup.AccountGroupingProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html#cfn-billingconductor-billinggroup-computationpreference"
+            },
+            "stability": "external",
+            "summary": "The preferences and settings that will be used to compute the AWS charges for a billing group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 34
+          },
+          "name": "computationPreference",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnBillingGroup.ComputationPreferenceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html#cfn-billingconductor-billinggroup-name"
+            },
+            "stability": "external",
+            "summary": "The billing group's name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 41
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html#cfn-billingconductor-billinggroup-primaryaccountid"
+            },
+            "stability": "external",
+            "summary": "The account ID that serves as the main account in a billing group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 48
+          },
+          "name": "primaryAccountId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html#cfn-billingconductor-billinggroup-description"
+            },
+            "stability": "external",
+            "summary": "The description of the billing group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 55
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-billinggroup.html#cfn-billingconductor-billinggroup-tags"
+            },
+            "stability": "external",
+            "summary": "`AWS::BillingConductor::BillingGroup.Tags`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 62
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnBillingGroupProps"
+    },
+    "@aws-cdk/aws-billingconductor.CfnCustomLineItem": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::BillingConductor::CustomLineItem",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html"
+        },
+        "remarks": "Creates a custom line item that can be used to create a one-time or recurring, fixed or percentage-based charge that you can apply to a single billing group. You can apply custom line items to the current or previous billing period. You can create either a fee or a discount custom line item.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::BillingConductor::CustomLineItem`."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItem",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::BillingConductor::CustomLineItem`."
+        },
+        "locationInModule": {
+          "filename": "lib/billingconductor.generated.ts",
+          "line": 668
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItemProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 558
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 693
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 709
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnCustomLineItem",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 562
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) that references the billing group where the custom line item applies to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 587
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AssociationSize"
+            },
+            "stability": "external",
+            "summary": "The number of resources that are associated to the custom line item."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 593
+          },
+          "name": "attrAssociationSize",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationTime"
+            },
+            "stability": "external",
+            "summary": "The time created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 599
+          },
+          "name": "attrCreationTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CurrencyCode"
+            },
+            "remarks": "Only one of the valid values can be used.",
+            "stability": "external",
+            "summary": "The custom line item's charge value currency."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 605
+          },
+          "name": "attrCurrencyCode",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastModifiedTime"
+            },
+            "stability": "external",
+            "summary": "The most recent time the custom line item was modified."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 611
+          },
+          "name": "attrLastModifiedTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ProductCode"
+            },
+            "stability": "external",
+            "summary": "The product code associated with the custom line item."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 617
+          },
+          "name": "attrProductCode",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 698
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html#cfn-billingconductor-customlineitem-tags"
+            },
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values that are attached to a custom line item."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 659
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html#cfn-billingconductor-customlineitem-billinggrouparn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) that references the billing group where the custom line item applies to."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 624
+          },
+          "name": "billingGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html#cfn-billingconductor-customlineitem-name"
+            },
+            "stability": "external",
+            "summary": "The custom line item's name."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 631
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html#cfn-billingconductor-customlineitem-billingperiodrange"
+            },
+            "stability": "external",
+            "summary": "A time range for which the custom line item is effective."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 638
+          },
+          "name": "billingPeriodRange",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItem.BillingPeriodRangeProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html#cfn-billingconductor-customlineitem-customlineitemchargedetails"
+            },
+            "remarks": "It should contain only one of `Flat` or `Percentage` .",
+            "stability": "external",
+            "summary": "The charge details of a custom line item."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 645
+          },
+          "name": "customLineItemChargeDetails",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItem.CustomLineItemChargeDetailsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html#cfn-billingconductor-customlineitem-description"
+            },
+            "remarks": "This is shown on the Bills page in association with the charge value.",
+            "stability": "external",
+            "summary": "The custom line item's description."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 652
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnCustomLineItem"
+    },
+    "@aws-cdk/aws-billingconductor.CfnCustomLineItem.BillingPeriodRangeProperty": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-customlineitem-billingperiodrange.html"
+        },
+        "stability": "external",
+        "summary": "The billing period range in which the custom line item request will be applied."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItem.BillingPeriodRangeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 723
+      },
+      "name": "BillingPeriodRangeProperty",
+      "namespace": "CfnCustomLineItem",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-customlineitem-billingperiodrange.html#cfn-billingconductor-customlineitem-billingperiodrange-exclusiveendbillingperiod"
+            },
+            "stability": "external",
+            "summary": "The exclusive end billing period that defines a billing period range where a custom line is applied."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 729
+          },
+          "name": "exclusiveEndBillingPeriod",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-customlineitem-billingperiodrange.html#cfn-billingconductor-customlineitem-billingperiodrange-inclusivestartbillingperiod"
+            },
+            "stability": "external",
+            "summary": "The inclusive start billing period that defines a billing period range where a custom line is applied."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 735
+          },
+          "name": "inclusiveStartBillingPeriod",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnCustomLineItem.BillingPeriodRangeProperty"
+    },
+    "@aws-cdk/aws-billingconductor.CfnCustomLineItem.CustomLineItemChargeDetailsProperty": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-customlineitem-customlineitemchargedetails.html"
+        },
+        "remarks": "It should contain only one of `Flat` or `Percentage` .",
+        "stability": "external",
+        "summary": "The charge details of a custom line item."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItem.CustomLineItemChargeDetailsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 799
+      },
+      "name": "CustomLineItemChargeDetailsProperty",
+      "namespace": "CfnCustomLineItem",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-customlineitem-customlineitemchargedetails.html#cfn-billingconductor-customlineitem-customlineitemchargedetails-type"
+            },
+            "stability": "external",
+            "summary": "The type of the custom line item that indicates whether the charge is a fee or credit."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 817
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-customlineitem-customlineitemchargedetails.html#cfn-billingconductor-customlineitem-customlineitemchargedetails-flat"
+            },
+            "stability": "external",
+            "summary": "A `CustomLineItemFlatChargeDetails` that describes the charge details of a flat custom line item."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 805
+          },
+          "name": "flat",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItem.CustomLineItemFlatChargeDetailsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-customlineitem-customlineitemchargedetails.html#cfn-billingconductor-customlineitem-customlineitemchargedetails-percentage"
+            },
+            "stability": "external",
+            "summary": "A `CustomLineItemPercentageChargeDetails` that describes the charge details of a percentage custom line item."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 811
+          },
+          "name": "percentage",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItem.CustomLineItemPercentageChargeDetailsProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnCustomLineItem.CustomLineItemChargeDetailsProperty"
+    },
+    "@aws-cdk/aws-billingconductor.CfnCustomLineItem.CustomLineItemFlatChargeDetailsProperty": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-customlineitem-customlineitemflatchargedetails.html"
+        },
+        "remarks": "It should contain only one of `Flat` or `Percentage` .",
+        "stability": "external",
+        "summary": "The charge details of a custom line item."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItem.CustomLineItemFlatChargeDetailsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 885
+      },
+      "name": "CustomLineItemFlatChargeDetailsProperty",
+      "namespace": "CfnCustomLineItem",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-customlineitem-customlineitemflatchargedetails.html#cfn-billingconductor-customlineitem-customlineitemflatchargedetails-chargevalue"
+            },
+            "stability": "external",
+            "summary": "The custom line item's fixed charge value in USD."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 891
+          },
+          "name": "chargeValue",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnCustomLineItem.CustomLineItemFlatChargeDetailsProperty"
+    },
+    "@aws-cdk/aws-billingconductor.CfnCustomLineItem.CustomLineItemPercentageChargeDetailsProperty": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-customlineitem-customlineitempercentagechargedetails.html"
+        },
+        "stability": "external",
+        "summary": "A representation of the charge details associated with a percentage custom line item."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItem.CustomLineItemPercentageChargeDetailsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 953
+      },
+      "name": "CustomLineItemPercentageChargeDetailsProperty",
+      "namespace": "CfnCustomLineItem",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-customlineitem-customlineitempercentagechargedetails.html#cfn-billingconductor-customlineitem-customlineitempercentagechargedetails-percentagevalue"
+            },
+            "remarks": "This will be multiplied against the combined value of its associated resources to determine its charge value.",
+            "stability": "external",
+            "summary": "The custom line item's percentage value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 965
+          },
+          "name": "percentageValue",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-customlineitem-customlineitempercentagechargedetails.html#cfn-billingconductor-customlineitem-customlineitempercentagechargedetails-childassociatedresources"
+            },
+            "stability": "external",
+            "summary": "A list of resource ARNs to associate to the percentage custom line item."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 959
+          },
+          "name": "childAssociatedResources",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnCustomLineItem.CustomLineItemPercentageChargeDetailsProperty"
+    },
+    "@aws-cdk/aws-billingconductor.CfnCustomLineItemProps": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnCustomLineItem`."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItemProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 441
+      },
+      "name": "CfnCustomLineItemProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html#cfn-billingconductor-customlineitem-billinggrouparn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) that references the billing group where the custom line item applies to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 448
+          },
+          "name": "billingGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html#cfn-billingconductor-customlineitem-name"
+            },
+            "stability": "external",
+            "summary": "The custom line item's name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 455
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html#cfn-billingconductor-customlineitem-billingperiodrange"
+            },
+            "stability": "external",
+            "summary": "A time range for which the custom line item is effective."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 462
+          },
+          "name": "billingPeriodRange",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItem.BillingPeriodRangeProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html#cfn-billingconductor-customlineitem-customlineitemchargedetails"
+            },
+            "remarks": "It should contain only one of `Flat` or `Percentage` .",
+            "stability": "external",
+            "summary": "The charge details of a custom line item."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 469
+          },
+          "name": "customLineItemChargeDetails",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnCustomLineItem.CustomLineItemChargeDetailsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html#cfn-billingconductor-customlineitem-description"
+            },
+            "remarks": "This is shown on the Bills page in association with the charge value.",
+            "stability": "external",
+            "summary": "The custom line item's description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 476
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-customlineitem.html#cfn-billingconductor-customlineitem-tags"
+            },
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values that are attached to a custom line item."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 483
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnCustomLineItemProps"
+    },
+    "@aws-cdk/aws-billingconductor.CfnPricingPlan": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::BillingConductor::PricingPlan",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingplan.html"
+        },
+        "remarks": "Creates a pricing plan that is used for computing AWS charges for billing groups.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::BillingConductor::PricingPlan`."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnPricingPlan",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::BillingConductor::PricingPlan`."
+        },
+        "locationInModule": {
+          "filename": "lib/billingconductor.generated.ts",
+          "line": 1209
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-billingconductor.CfnPricingPlanProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 1125
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1229
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1243
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPricingPlan",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1129
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the created pricing plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1154
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationTime"
+            },
+            "stability": "external",
+            "summary": "The time the pricing plan was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1160
+          },
+          "name": "attrCreationTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastModifiedTime"
+            },
+            "stability": "external",
+            "summary": "The most recent time the pricing plan was modified."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1166
+          },
+          "name": "attrLastModifiedTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Size"
+            },
+            "stability": "external",
+            "summary": "The pricing rules count currently associated with this pricing plan list element."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1172
+          },
+          "name": "attrSize",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1234
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingplan.html#cfn-billingconductor-pricingplan-tags"
+            },
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values that are attached to a pricing plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1200
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingplan.html#cfn-billingconductor-pricingplan-name"
+            },
+            "stability": "external",
+            "summary": "The name of a pricing plan."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1179
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingplan.html#cfn-billingconductor-pricingplan-description"
+            },
+            "stability": "external",
+            "summary": "The pricing plan description."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1186
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingplan.html#cfn-billingconductor-pricingplan-pricingrulearns"
+            },
+            "stability": "external",
+            "summary": "The `PricingRuleArns` that are associated with the Pricing Plan."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1193
+          },
+          "name": "pricingRuleArns",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnPricingPlan"
+    },
+    "@aws-cdk/aws-billingconductor.CfnPricingPlanProps": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingplan.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPricingPlan`."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnPricingPlanProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 1029
+      },
+      "name": "CfnPricingPlanProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingplan.html#cfn-billingconductor-pricingplan-name"
+            },
+            "stability": "external",
+            "summary": "The name of a pricing plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1036
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingplan.html#cfn-billingconductor-pricingplan-description"
+            },
+            "stability": "external",
+            "summary": "The pricing plan description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1043
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingplan.html#cfn-billingconductor-pricingplan-pricingrulearns"
+            },
+            "stability": "external",
+            "summary": "The `PricingRuleArns` that are associated with the Pricing Plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1050
+          },
+          "name": "pricingRuleArns",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingplan.html#cfn-billingconductor-pricingplan-tags"
+            },
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values that are attached to a pricing plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1057
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnPricingPlanProps"
+    },
+    "@aws-cdk/aws-billingconductor.CfnPricingRule": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::BillingConductor::PricingRule",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html"
+        },
+        "remarks": "Creates a pricing rule which can be associated with a pricing plan, or a set of pricing plans.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::BillingConductor::PricingRule`."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnPricingRule",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::BillingConductor::PricingRule`."
+        },
+        "locationInModule": {
+          "filename": "lib/billingconductor.generated.ts",
+          "line": 1557
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-billingconductor.CfnPricingRuleProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 1424
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1586
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1607
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPricingRule",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1428
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) used to uniquely identify a pricing rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1453
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AssociatedPricingPlanCount"
+            },
+            "stability": "external",
+            "summary": "The pricing plans count that this pricing rule is associated with."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1459
+          },
+          "name": "attrAssociatedPricingPlanCount",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationTime"
+            },
+            "stability": "external",
+            "summary": "The time the pricing rule was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1465
+          },
+          "name": "attrCreationTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastModifiedTime"
+            },
+            "stability": "external",
+            "summary": "The most recent time the pricing rule was modified."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1471
+          },
+          "name": "attrLastModifiedTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1591
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-tags"
+            },
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values that are attached to a pricing rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1534
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-name"
+            },
+            "stability": "external",
+            "summary": "The name of a pricing rule."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1478
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-scope"
+            },
+            "stability": "external",
+            "summary": "The scope of pricing rule that indicates if it is globally applicable, or if it is service-specific."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1485
+          },
+          "name": "scope",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-type"
+            },
+            "stability": "external",
+            "summary": "The type of pricing rule."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1492
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-billingentity"
+            },
+            "stability": "external",
+            "summary": "The seller of services provided by AWS , their affiliates, or third-party providers selling services via AWS Marketplace ."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1499
+          },
+          "name": "billingEntity",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-description"
+            },
+            "stability": "external",
+            "summary": "The pricing rule description."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1506
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-modifierpercentage"
+            },
+            "stability": "external",
+            "summary": "A percentage modifier applied on the public pricing rates."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1513
+          },
+          "name": "modifierPercentage",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-operation"
+            },
+            "stability": "external",
+            "summary": "`AWS::BillingConductor::PricingRule.Operation`."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1520
+          },
+          "name": "operation",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-service"
+            },
+            "stability": "external",
+            "summary": "If the `Scope` attribute is `SERVICE` , this attribute indicates which service the `PricingRule` is applicable for."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1527
+          },
+          "name": "service",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-tiering"
+            },
+            "stability": "external",
+            "summary": "The set of tiering configurations for the pricing rule."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1541
+          },
+          "name": "tiering",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnPricingRule.TieringProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-usagetype"
+            },
+            "stability": "external",
+            "summary": "`AWS::BillingConductor::PricingRule.UsageType`."
+          },
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1548
+          },
+          "name": "usageType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnPricingRule"
+    },
+    "@aws-cdk/aws-billingconductor.CfnPricingRule.FreeTierProperty": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-pricingrule-freetier.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnPricingRule.FreeTierProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 1621
+      },
+      "name": "FreeTierProperty",
+      "namespace": "CfnPricingRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-pricingrule-freetier.html#cfn-billingconductor-pricingrule-freetier-activated"
+            },
+            "stability": "external",
+            "summary": "`CfnPricingRule.FreeTierProperty.Activated`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1627
+          },
+          "name": "activated",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnPricingRule.FreeTierProperty"
+    },
+    "@aws-cdk/aws-billingconductor.CfnPricingRule.TieringProperty": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-pricingrule-tiering.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnPricingRule.TieringProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 1689
+      },
+      "name": "TieringProperty",
+      "namespace": "CfnPricingRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-billingconductor-pricingrule-tiering.html#cfn-billingconductor-pricingrule-tiering-freetier"
+            },
+            "stability": "external",
+            "summary": "`CfnPricingRule.TieringProperty.FreeTier`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1695
+          },
+          "name": "freeTier",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnPricingRule.FreeTierProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnPricingRule.TieringProperty"
+    },
+    "@aws-cdk/aws-billingconductor.CfnPricingRuleProps": {
+      "assembly": "@aws-cdk/aws-billingconductor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPricingRule`."
+      },
+      "fqn": "@aws-cdk/aws-billingconductor.CfnPricingRuleProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/billingconductor.generated.ts",
+        "line": 1256
+      },
+      "name": "CfnPricingRuleProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-name"
+            },
+            "stability": "external",
+            "summary": "The name of a pricing rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1263
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-scope"
+            },
+            "stability": "external",
+            "summary": "The scope of pricing rule that indicates if it is globally applicable, or if it is service-specific."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1270
+          },
+          "name": "scope",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-type"
+            },
+            "stability": "external",
+            "summary": "The type of pricing rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1277
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-billingentity"
+            },
+            "stability": "external",
+            "summary": "The seller of services provided by AWS , their affiliates, or third-party providers selling services via AWS Marketplace ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1284
+          },
+          "name": "billingEntity",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-description"
+            },
+            "stability": "external",
+            "summary": "The pricing rule description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1291
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-modifierpercentage"
+            },
+            "stability": "external",
+            "summary": "A percentage modifier applied on the public pricing rates."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1298
+          },
+          "name": "modifierPercentage",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-operation"
+            },
+            "stability": "external",
+            "summary": "`AWS::BillingConductor::PricingRule.Operation`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1305
+          },
+          "name": "operation",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-service"
+            },
+            "stability": "external",
+            "summary": "If the `Scope` attribute is `SERVICE` , this attribute indicates which service the `PricingRule` is applicable for."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1312
+          },
+          "name": "service",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-tags"
+            },
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values that are attached to a pricing rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1319
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-tiering"
+            },
+            "stability": "external",
+            "summary": "The set of tiering configurations for the pricing rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1326
+          },
+          "name": "tiering",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-billingconductor.CfnPricingRule.TieringProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-billingconductor-pricingrule.html#cfn-billingconductor-pricingrule-usagetype"
+            },
+            "stability": "external",
+            "summary": "`AWS::BillingConductor::PricingRule.UsageType`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/billingconductor.generated.ts",
+            "line": 1333
+          },
+          "name": "usageType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/billingconductor.generated:CfnPricingRuleProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "ntjv1+ArNQye5t00PXfN59dxLDzecR54GxcMU2yTl/4="
+}

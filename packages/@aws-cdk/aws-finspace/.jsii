@@ -1,0 +1,1063 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::FinSpace",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::FinSpace",
+    "aws-finspace"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-finspace",
+  "readme": {
+    "markdown": "# AWS::FinSpace Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as finspace from '@aws-cdk/aws-finspace';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for FinSpace construct libraries](https://constructs.dev/search?q=finspace)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::FinSpace resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_FinSpace.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::FinSpace](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_FinSpace.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-finspace",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.FinSpace",
+      "packageId": "Amazon.CDK.AWS.FinSpace",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "finspace",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.finspace"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-finspace"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-finspace",
+      "module": "aws_cdk.aws_finspace"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-finspace.CfnEnvironment": {
+      "assembly": "@aws-cdk/aws-finspace",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::FinSpace::Environment",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html"
+        },
+        "remarks": "The `AWS::FinSpace::Environment` resource represents an Amazon FinSpace environment.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::FinSpace::Environment`."
+      },
+      "fqn": "@aws-cdk/aws-finspace.CfnEnvironment",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::FinSpace::Environment`."
+        },
+        "locationInModule": {
+          "filename": "lib/finspace.generated.ts",
+          "line": 275
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-finspace.CfnEnvironmentProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/finspace.generated.ts",
+        "line": 149
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 301
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 318
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnEnvironment",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 153
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AwsAccountId"
+            },
+            "stability": "external",
+            "summary": "The ID of the AWS account in which the FinSpace environment is created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 178
+          },
+          "name": "attrAwsAccountId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DedicatedServiceAccountId"
+            },
+            "stability": "external",
+            "summary": "The AWS account ID of the dedicated service account associated with your FinSpace environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 184
+          },
+          "name": "attrDedicatedServiceAccountId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EnvironmentArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of your FinSpace environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 190
+          },
+          "name": "attrEnvironmentArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EnvironmentId"
+            },
+            "stability": "external",
+            "summary": "The identifier of the FinSpace environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 196
+          },
+          "name": "attrEnvironmentId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EnvironmentUrl"
+            },
+            "stability": "external",
+            "summary": "The sign-in url for the web application of your FinSpace environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 202
+          },
+          "name": "attrEnvironmentUrl",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SageMakerStudioDomainUrl"
+            },
+            "stability": "external",
+            "summary": "The url of the integrated FinSpace notebook environment in your web application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 208
+          },
+          "name": "attrSageMakerStudioDomainUrl",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "stability": "external",
+            "summary": "The current status of creation of the FinSpace environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 214
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 306
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-name"
+            },
+            "stability": "external",
+            "summary": "The name of the FinSpace environment."
+          },
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 221
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-databundles"
+            },
+            "remarks": "- `arn:aws:finspace:${Region}::data-bundle/capital-markets-sample` - Contains sample Capital Markets datasets, categories and controlled vocabularies.\n- `arn:aws:finspace:${Region}::data-bundle/taq` (default) - Contains trades and quotes data in addition to sample Capital Markets data.",
+            "stability": "external",
+            "summary": "The list of Amazon Resource Names (ARN) of the data bundles to install. Currently supported data bundle ARNs:."
+          },
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 231
+          },
+          "name": "dataBundles",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-description"
+            },
+            "stability": "external",
+            "summary": "The description of the FinSpace environment."
+          },
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 238
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-federationmode"
+            },
+            "stability": "external",
+            "summary": "The authentication mode for the environment."
+          },
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 245
+          },
+          "name": "federationMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-federationparameters"
+            },
+            "stability": "external",
+            "summary": "Configuration information when authentication mode is FEDERATED."
+          },
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 252
+          },
+          "name": "federationParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-finspace.CfnEnvironment.FederationParametersProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The KMS key id used to encrypt in the FinSpace environment."
+          },
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 259
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-superuserparameters"
+            },
+            "stability": "external",
+            "summary": "Configuration information for the superuser."
+          },
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 266
+          },
+          "name": "superuserParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-finspace.CfnEnvironment.SuperuserParametersProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/finspace.generated:CfnEnvironment"
+    },
+    "@aws-cdk/aws-finspace.CfnEnvironment.FederationParametersProperty": {
+      "assembly": "@aws-cdk/aws-finspace",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-finspace-environment-federationparameters.html"
+        },
+        "stability": "external",
+        "summary": "Configuration information when authentication mode is FEDERATED."
+      },
+      "fqn": "@aws-cdk/aws-finspace.CfnEnvironment.FederationParametersProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/finspace.generated.ts",
+        "line": 332
+      },
+      "name": "FederationParametersProperty",
+      "namespace": "CfnEnvironment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-finspace-environment-federationparameters.html#cfn-finspace-environment-federationparameters-applicationcallbackurl"
+            },
+            "stability": "external",
+            "summary": "The redirect or sign-in URL that should be entered into the SAML 2.0 compliant identity provider configuration (IdP)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 338
+          },
+          "name": "applicationCallBackUrl",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-finspace-environment-federationparameters.html#cfn-finspace-environment-federationparameters-attributemap"
+            },
+            "remarks": "The name must always be `Email` and the value should be set to the attribute definition in which user email is set. For example, name would be `Email` and value `http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress` . Please check your SAML 2.0 compliant identity provider (IdP) documentation for details.",
+            "stability": "external",
+            "summary": "SAML attribute name and value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 344
+          },
+          "name": "attributeMap",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-finspace-environment-federationparameters.html#cfn-finspace-environment-federationparameters-federationprovidername"
+            },
+            "stability": "external",
+            "summary": "Name of the identity provider (IdP)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 350
+          },
+          "name": "federationProviderName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-finspace-environment-federationparameters.html#cfn-finspace-environment-federationparameters-federationurn"
+            },
+            "remarks": "Also referred as Service Provider URN or Audience URI or Service Provider Entity ID.",
+            "stability": "external",
+            "summary": "The Uniform Resource Name (URN)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 356
+          },
+          "name": "federationUrn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-finspace-environment-federationparameters.html#cfn-finspace-environment-federationparameters-samlmetadatadocument"
+            },
+            "stability": "external",
+            "summary": "SAML 2.0 Metadata document from identity provider (IdP)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 362
+          },
+          "name": "samlMetadataDocument",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-finspace-environment-federationparameters.html#cfn-finspace-environment-federationparameters-samlmetadataurl"
+            },
+            "stability": "external",
+            "summary": "Provide the metadata URL from your SAML 2.0 compliant identity provider (IdP)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 368
+          },
+          "name": "samlMetadataUrl",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/finspace.generated:CfnEnvironment.FederationParametersProperty"
+    },
+    "@aws-cdk/aws-finspace.CfnEnvironment.SuperuserParametersProperty": {
+      "assembly": "@aws-cdk/aws-finspace",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-finspace-environment-superuserparameters.html"
+        },
+        "stability": "external",
+        "summary": "Configuration information for the superuser."
+      },
+      "fqn": "@aws-cdk/aws-finspace.CfnEnvironment.SuperuserParametersProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/finspace.generated.ts",
+        "line": 444
+      },
+      "name": "SuperuserParametersProperty",
+      "namespace": "CfnEnvironment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-finspace-environment-superuserparameters.html#cfn-finspace-environment-superuserparameters-emailaddress"
+            },
+            "stability": "external",
+            "summary": "The email address of the superuser."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 450
+          },
+          "name": "emailAddress",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-finspace-environment-superuserparameters.html#cfn-finspace-environment-superuserparameters-firstname"
+            },
+            "stability": "external",
+            "summary": "The first name of the superuser."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 456
+          },
+          "name": "firstName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-finspace-environment-superuserparameters.html#cfn-finspace-environment-superuserparameters-lastname"
+            },
+            "stability": "external",
+            "summary": "The last name of the superuser."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 462
+          },
+          "name": "lastName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/finspace.generated:CfnEnvironment.SuperuserParametersProperty"
+    },
+    "@aws-cdk/aws-finspace.CfnEnvironmentProps": {
+      "assembly": "@aws-cdk/aws-finspace",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnEnvironment`."
+      },
+      "fqn": "@aws-cdk/aws-finspace.CfnEnvironmentProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/finspace.generated.ts",
+        "line": 20
+      },
+      "name": "CfnEnvironmentProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-name"
+            },
+            "stability": "external",
+            "summary": "The name of the FinSpace environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 27
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-databundles"
+            },
+            "remarks": "- `arn:aws:finspace:${Region}::data-bundle/capital-markets-sample` - Contains sample Capital Markets datasets, categories and controlled vocabularies.\n- `arn:aws:finspace:${Region}::data-bundle/taq` (default) - Contains trades and quotes data in addition to sample Capital Markets data.",
+            "stability": "external",
+            "summary": "The list of Amazon Resource Names (ARN) of the data bundles to install. Currently supported data bundle ARNs:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 37
+          },
+          "name": "dataBundles",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-description"
+            },
+            "stability": "external",
+            "summary": "The description of the FinSpace environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 44
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-federationmode"
+            },
+            "stability": "external",
+            "summary": "The authentication mode for the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 51
+          },
+          "name": "federationMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-federationparameters"
+            },
+            "stability": "external",
+            "summary": "Configuration information when authentication mode is FEDERATED."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 58
+          },
+          "name": "federationParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-finspace.CfnEnvironment.FederationParametersProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The KMS key id used to encrypt in the FinSpace environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 65
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-finspace-environment.html#cfn-finspace-environment-superuserparameters"
+            },
+            "stability": "external",
+            "summary": "Configuration information for the superuser."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/finspace.generated.ts",
+            "line": 72
+          },
+          "name": "superuserParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-finspace.CfnEnvironment.SuperuserParametersProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/finspace.generated:CfnEnvironmentProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "XLCbTYvnIbfSx8uHuzb20Jje7H58O5YgQv40VW9Xks0="
+}

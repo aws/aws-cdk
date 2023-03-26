@@ -1,0 +1,71 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "description": "Schema definition for the Asset Manifest",
+  "docs": {
+    "deprecated": "merged into @aws-cdk/cloud-assembly-schema",
+    "stability": "deprecated"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/cdk-assets-schema",
+  "readme": {
+    "markdown": "# cdk-assets-schema\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)\n\n> This API may emit warnings. Backward compatibility is not guaranteed.\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis schema is now part of @aws-cdk/cloud-assembly-schema.\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/cdk-assets-schema",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.CdkAssets.Schema",
+      "packageId": "Amazon.CDK.CdkAssets.Schema"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cdk-assets-schema",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.cdkassets.schema"
+    },
+    "js": {
+      "npm": "@aws-cdk/cdk-assets-schema"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.cdk-assets-schema",
+      "module": "aws_cdk.cdk_assets_schema"
+    }
+  },
+  "types": {},
+  "version": "0.0.0",
+  "fingerprint": "r5nIoX2RZUZYCBC1EGwdHhXas8ax09L3G3jaY2yP26M="
+}

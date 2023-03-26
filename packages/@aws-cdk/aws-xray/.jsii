@@ -1,0 +1,2252 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::XRay",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::XRay",
+    "aws-xray"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-xray",
+  "readme": {
+    "markdown": "# AWS::XRay Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as xray from '@aws-cdk/aws-xray';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for XRay construct libraries](https://constructs.dev/search?q=xray)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::XRay resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_XRay.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::XRay](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_XRay.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-xray",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.XRay",
+      "packageId": "Amazon.CDK.AWS.XRay",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "xray",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.xray"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-xray"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-xray",
+      "module": "aws_cdk.aws_xray"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-xray.CfnGroup": {
+      "assembly": "@aws-cdk/aws-xray",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::XRay::Group",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-group.html"
+        },
+        "remarks": "Use the `AWS::XRay::Group` resource to specify a group with a name and a filter expression.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::XRay::Group`."
+      },
+      "fqn": "@aws-cdk/aws-xray.CfnGroup",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::XRay::Group`."
+        },
+        "locationInModule": {
+          "filename": "lib/xray.generated.ts",
+          "line": 191
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-xray.CfnGroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/xray.generated.ts",
+        "line": 120
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 207
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 221
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 124
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "GroupARN"
+            },
+            "stability": "external",
+            "summary": "The group ARN that was created or updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 149
+          },
+          "name": "attrGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 212
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-group.html#cfn-xray-group-filterexpression"
+            },
+            "stability": "external",
+            "summary": "The filter expression defining the parameters to include traces."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 156
+          },
+          "name": "filterExpression",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-group.html#cfn-xray-group-groupname"
+            },
+            "stability": "external",
+            "summary": "The unique case-sensitive name of the group."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 163
+          },
+          "name": "groupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-group.html#cfn-xray-group-insightsconfiguration"
+            },
+            "remarks": "- The InsightsEnabled boolean can be set to true to enable insights for the group or false to disable insights for the group.\n- The NotificationsEnabled boolean can be set to true to enable insights notifications through Amazon EventBridge for the group.",
+            "stability": "external",
+            "summary": "The structure containing configurations related to insights."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 173
+          },
+          "name": "insightsConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-xray.CfnGroup.InsightsConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-group.html#cfn-xray-group-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 182
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/xray.generated:CfnGroup"
+    },
+    "@aws-cdk/aws-xray.CfnGroup.InsightsConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-xray",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-group-insightsconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The structure containing configurations related to insights."
+      },
+      "fqn": "@aws-cdk/aws-xray.CfnGroup.InsightsConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/xray.generated.ts",
+        "line": 235
+      },
+      "name": "InsightsConfigurationProperty",
+      "namespace": "CfnGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-group-insightsconfiguration.html#cfn-xray-group-insightsconfiguration-insightsenabled"
+            },
+            "stability": "external",
+            "summary": "Set the InsightsEnabled value to true to enable insights or false to disable insights."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 241
+          },
+          "name": "insightsEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-group-insightsconfiguration.html#cfn-xray-group-insightsconfiguration-notificationsenabled"
+            },
+            "remarks": "Notifications can only be enabled on a group with InsightsEnabled set to true.",
+            "stability": "external",
+            "summary": "Set the NotificationsEnabled value to true to enable insights notifications."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 247
+          },
+          "name": "notificationsEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/xray.generated:CfnGroup.InsightsConfigurationProperty"
+    },
+    "@aws-cdk/aws-xray.CfnGroup.TagsItemsProperty": {
+      "assembly": "@aws-cdk/aws-xray",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-group-tagsitems.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-xray.CfnGroup.TagsItemsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/xray.generated.ts",
+        "line": 311
+      },
+      "name": "TagsItemsProperty",
+      "namespace": "CfnGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-group-tagsitems.html#cfn-xray-group-tagsitems-key"
+            },
+            "stability": "external",
+            "summary": "`CfnGroup.TagsItemsProperty.Key`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 317
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-group-tagsitems.html#cfn-xray-group-tagsitems-value"
+            },
+            "stability": "external",
+            "summary": "`CfnGroup.TagsItemsProperty.Value`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 323
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/xray.generated:CfnGroup.TagsItemsProperty"
+    },
+    "@aws-cdk/aws-xray.CfnGroupProps": {
+      "assembly": "@aws-cdk/aws-xray",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-group.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnGroup`."
+      },
+      "fqn": "@aws-cdk/aws-xray.CfnGroupProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/xray.generated.ts",
+        "line": 20
+      },
+      "name": "CfnGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-group.html#cfn-xray-group-filterexpression"
+            },
+            "stability": "external",
+            "summary": "The filter expression defining the parameters to include traces."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 27
+          },
+          "name": "filterExpression",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-group.html#cfn-xray-group-groupname"
+            },
+            "stability": "external",
+            "summary": "The unique case-sensitive name of the group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 34
+          },
+          "name": "groupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-group.html#cfn-xray-group-insightsconfiguration"
+            },
+            "remarks": "- The InsightsEnabled boolean can be set to true to enable insights for the group or false to disable insights for the group.\n- The NotificationsEnabled boolean can be set to true to enable insights notifications through Amazon EventBridge for the group.",
+            "stability": "external",
+            "summary": "The structure containing configurations related to insights."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 44
+          },
+          "name": "insightsConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-xray.CfnGroup.InsightsConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-group.html#cfn-xray-group-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 53
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/xray.generated:CfnGroupProps"
+    },
+    "@aws-cdk/aws-xray.CfnResourcePolicy": {
+      "assembly": "@aws-cdk/aws-xray",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::XRay::ResourcePolicy",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-resourcepolicy.html"
+        },
+        "remarks": "Sets the resource policy to grant one or more AWS services and accounts permissions to access X-Ray. Each resource policy will be associated with a specific AWS account. Each AWS account can have a maximum of 5 resource policies, and each policy name must be unique within that account. The maximum size of each resource policy is 5KB.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::XRay::ResourcePolicy`."
+      },
+      "fqn": "@aws-cdk/aws-xray.CfnResourcePolicy",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::XRay::ResourcePolicy`."
+        },
+        "locationInModule": {
+          "filename": "lib/xray.generated.ts",
+          "line": 528
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-xray.CfnResourcePolicyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/xray.generated.ts",
+        "line": 475
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 544
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 557
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnResourcePolicy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 479
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 549
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-resourcepolicy.html#cfn-xray-resourcepolicy-policydocument"
+            },
+            "stability": "external",
+            "summary": "The resource policy document, which can be up to 5kb in size."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 505
+          },
+          "name": "policyDocument",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-resourcepolicy.html#cfn-xray-resourcepolicy-policyname"
+            },
+            "remarks": "Must be unique within a specific AWS account.",
+            "stability": "external",
+            "summary": "The name of the resource policy."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 512
+          },
+          "name": "policyName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-resourcepolicy.html#cfn-xray-resourcepolicy-bypasspolicylockoutcheck"
+            },
+            "stability": "external",
+            "summary": "`AWS::XRay::ResourcePolicy.BypassPolicyLockoutCheck`."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 519
+          },
+          "name": "bypassPolicyLockoutCheck",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/xray.generated:CfnResourcePolicy"
+    },
+    "@aws-cdk/aws-xray.CfnResourcePolicyProps": {
+      "assembly": "@aws-cdk/aws-xray",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-resourcepolicy.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnResourcePolicy`."
+      },
+      "fqn": "@aws-cdk/aws-xray.CfnResourcePolicyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/xray.generated.ts",
+        "line": 388
+      },
+      "name": "CfnResourcePolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-resourcepolicy.html#cfn-xray-resourcepolicy-policydocument"
+            },
+            "stability": "external",
+            "summary": "The resource policy document, which can be up to 5kb in size."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 395
+          },
+          "name": "policyDocument",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-resourcepolicy.html#cfn-xray-resourcepolicy-policyname"
+            },
+            "remarks": "Must be unique within a specific AWS account.",
+            "stability": "external",
+            "summary": "The name of the resource policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 402
+          },
+          "name": "policyName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-resourcepolicy.html#cfn-xray-resourcepolicy-bypasspolicylockoutcheck"
+            },
+            "stability": "external",
+            "summary": "`AWS::XRay::ResourcePolicy.BypassPolicyLockoutCheck`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 409
+          },
+          "name": "bypassPolicyLockoutCheck",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/xray.generated:CfnResourcePolicyProps"
+    },
+    "@aws-cdk/aws-xray.CfnSamplingRule": {
+      "assembly": "@aws-cdk/aws-xray",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::XRay::SamplingRule",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-samplingrule.html"
+        },
+        "remarks": "Use the `AWS::XRay::SamplingRule` resource to specify a sampling rule, which controls sampling behavior for instrumented applications. A new sampling rule is created by specifying a `SamplingRule` . To change the configuration of an existing sampling rule, specify a `SamplingRuleUpdate` .\n\nServices retrieve rules with [GetSamplingRules](https://docs.aws.amazon.com//xray/latest/api/API_GetSamplingRules.html) , and evaluate each rule in ascending order of *priority* for each request. If a rule matches, the service records a trace, borrowing it from the reservoir size. After 10 seconds, the service reports back to X-Ray with [GetSamplingTargets](https://docs.aws.amazon.com//xray/latest/api/API_GetSamplingTargets.html) to get updated versions of each in-use rule. The updated rule contains a trace quota that the service can use instead of borrowing from the reservoir.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::XRay::SamplingRule`."
+      },
+      "fqn": "@aws-cdk/aws-xray.CfnSamplingRule",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::XRay::SamplingRule`."
+        },
+        "locationInModule": {
+          "filename": "lib/xray.generated.ts",
+          "line": 766
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-xray.CfnSamplingRuleProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/xray.generated.ts",
+        "line": 685
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 783
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 798
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSamplingRule",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 689
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "RuleARN"
+            },
+            "stability": "external",
+            "summary": "The sampling rule ARN that was created or updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 714
+          },
+          "name": "attrRuleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 788
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-samplingrule.html#cfn-xray-samplingrule-rulename"
+            },
+            "remarks": "Specify a rule by either name or ARN, but not both. Used only when deleting a sampling rule. When creating or updating a sampling rule, use the `RuleName` or `RuleARN` properties within `SamplingRule` or `SamplingRuleUpdate` .",
+            "stability": "external",
+            "summary": "The name of the sampling rule."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 721
+          },
+          "name": "ruleName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-samplingrule.html#cfn-xray-samplingrule-samplingrule"
+            },
+            "remarks": "Must be provided if creating a new sampling rule. Not valid when updating an existing sampling rule.",
+            "stability": "external",
+            "summary": "The sampling rule to be created."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 730
+          },
+          "name": "samplingRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-samplingrule.html#cfn-xray-samplingrule-samplingrulerecord"
+            },
+            "stability": "external",
+            "summary": "`AWS::XRay::SamplingRule.SamplingRuleRecord`."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 737
+          },
+          "name": "samplingRuleRecord",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleRecordProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-samplingrule.html#cfn-xray-samplingrule-samplingruleupdate"
+            },
+            "remarks": "Must be provided if updating an existing sampling rule. Not valid when creating a new sampling rule.\n\n> The `Version` of a sampling rule cannot be updated, and is not part of `SamplingRuleUpdate` .",
+            "stability": "external",
+            "summary": "A document specifying changes to a sampling rule's configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 748
+          },
+          "name": "samplingRuleUpdate",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleUpdateProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-samplingrule.html#cfn-xray-samplingrule-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 757
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/xray.generated:CfnSamplingRule"
+    },
+    "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleProperty": {
+      "assembly": "@aws-cdk/aws-xray",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html"
+        },
+        "remarks": "Rule fields can match properties of the service, or properties of a request. The service can ignore rules that don't match its properties.",
+        "stability": "external",
+        "summary": "A sampling rule that services use to decide whether to instrument a request."
+      },
+      "fqn": "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/xray.generated.ts",
+        "line": 812
+      },
+      "name": "SamplingRuleProperty",
+      "namespace": "CfnSamplingRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-attributes"
+            },
+            "remarks": "*Map Entries:* Maximum number of 5 items.\n\n*Key Length Constraints:* Minimum length of 1. Maximum length of 32.\n\n*Value Length Constraints:* Minimum length of 1. Maximum length of 32.",
+            "stability": "external",
+            "summary": "Matches attributes derived from the request."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 824
+          },
+          "name": "attributes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-fixedrate"
+            },
+            "stability": "external",
+            "summary": "The percentage of matching requests to instrument, after the reservoir is exhausted."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 830
+          },
+          "name": "fixedRate",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-host"
+            },
+            "stability": "external",
+            "summary": "Matches the hostname from a request URL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 842
+          },
+          "name": "host",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-httpmethod"
+            },
+            "stability": "external",
+            "summary": "Matches the HTTP method of a request."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 836
+          },
+          "name": "httpMethod",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-priority"
+            },
+            "stability": "external",
+            "summary": "The priority of the sampling rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 848
+          },
+          "name": "priority",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-reservoirsize"
+            },
+            "remarks": "The reservoir is not used directly by services, but applies to all services using the rule collectively.",
+            "stability": "external",
+            "summary": "A fixed number of matching requests to instrument per second, prior to applying the fixed rate."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 854
+          },
+          "name": "reservoirSize",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-resourcearn"
+            },
+            "stability": "external",
+            "summary": "Matches the ARN of the AWS resource on which the service runs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 860
+          },
+          "name": "resourceArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-rulearn"
+            },
+            "remarks": "You must specify either RuleARN or RuleName, but not both.",
+            "stability": "external",
+            "summary": "The ARN of the sampling rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 866
+          },
+          "name": "ruleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-rulename"
+            },
+            "remarks": "You must specify either RuleARN or RuleName, but not both.",
+            "stability": "external",
+            "summary": "The name of the sampling rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 872
+          },
+          "name": "ruleName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-servicename"
+            },
+            "stability": "external",
+            "summary": "Matches the `name` that the service uses to identify itself in segments."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 878
+          },
+          "name": "serviceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-servicetype"
+            },
+            "stability": "external",
+            "summary": "Matches the `origin` that the service uses to identify its type in segments."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 884
+          },
+          "name": "serviceType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-urlpath"
+            },
+            "stability": "external",
+            "summary": "Matches the path from a request URL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 890
+          },
+          "name": "urlPath",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrule.html#cfn-xray-samplingrule-samplingrule-version"
+            },
+            "stability": "external",
+            "summary": "The version of the sampling rule format ( `1` )."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 896
+          },
+          "name": "version",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/xray.generated:CfnSamplingRule.SamplingRuleProperty"
+    },
+    "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleRecordProperty": {
+      "assembly": "@aws-cdk/aws-xray",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrulerecord.html"
+        },
+        "stability": "external",
+        "summary": "A [SamplingRule](https://docs.aws.amazon.com//xray/latest/api/API_SamplingRule.html) and its metadata."
+      },
+      "fqn": "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleRecordProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/xray.generated.ts",
+        "line": 993
+      },
+      "name": "SamplingRuleRecordProperty",
+      "namespace": "CfnSamplingRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrulerecord.html#cfn-xray-samplingrule-samplingrulerecord-createdat"
+            },
+            "stability": "external",
+            "summary": "When the rule was created, in Unix time seconds."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 999
+          },
+          "name": "createdAt",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrulerecord.html#cfn-xray-samplingrule-samplingrulerecord-modifiedat"
+            },
+            "stability": "external",
+            "summary": "When the rule was last modified, in Unix time seconds."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1005
+          },
+          "name": "modifiedAt",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingrulerecord.html#cfn-xray-samplingrule-samplingrulerecord-samplingrule"
+            },
+            "stability": "external",
+            "summary": "The sampling rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1011
+          },
+          "name": "samplingRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/xray.generated:CfnSamplingRule.SamplingRuleRecordProperty"
+    },
+    "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleUpdateProperty": {
+      "assembly": "@aws-cdk/aws-xray",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html"
+        },
+        "stability": "external",
+        "summary": "A document specifying changes to a sampling rule's configuration."
+      },
+      "fqn": "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleUpdateProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/xray.generated.ts",
+        "line": 1078
+      },
+      "name": "SamplingRuleUpdateProperty",
+      "namespace": "CfnSamplingRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html#cfn-xray-samplingrule-samplingruleupdate-attributes"
+            },
+            "remarks": "*Map Entries:* Maximum number of 5 items.\n\n*Key Length Constraints:* Minimum length of 1. Maximum length of 32.\n\n*Value Length Constraints:* Minimum length of 1. Maximum length of 32.",
+            "stability": "external",
+            "summary": "Matches attributes derived from the request."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1090
+          },
+          "name": "attributes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html#cfn-xray-samplingrule-samplingruleupdate-fixedrate"
+            },
+            "stability": "external",
+            "summary": "The percentage of matching requests to instrument, after the reservoir is exhausted."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1096
+          },
+          "name": "fixedRate",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html#cfn-xray-samplingrule-samplingruleupdate-host"
+            },
+            "stability": "external",
+            "summary": "Matches the hostname from a request URL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1108
+          },
+          "name": "host",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html#cfn-xray-samplingrule-samplingruleupdate-httpmethod"
+            },
+            "stability": "external",
+            "summary": "Matches the HTTP method of a request."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1102
+          },
+          "name": "httpMethod",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html#cfn-xray-samplingrule-samplingruleupdate-priority"
+            },
+            "stability": "external",
+            "summary": "The priority of the sampling rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1114
+          },
+          "name": "priority",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html#cfn-xray-samplingrule-samplingruleupdate-reservoirsize"
+            },
+            "remarks": "The reservoir is not used directly by services, but applies to all services using the rule collectively.",
+            "stability": "external",
+            "summary": "A fixed number of matching requests to instrument per second, prior to applying the fixed rate."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1120
+          },
+          "name": "reservoirSize",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html#cfn-xray-samplingrule-samplingruleupdate-resourcearn"
+            },
+            "stability": "external",
+            "summary": "Matches the ARN of the AWS resource on which the service runs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1126
+          },
+          "name": "resourceArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html#cfn-xray-samplingrule-samplingruleupdate-rulearn"
+            },
+            "remarks": "You must specify either RuleARN or RuleName, but not both.",
+            "stability": "external",
+            "summary": "The ARN of the sampling rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1132
+          },
+          "name": "ruleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html#cfn-xray-samplingrule-samplingruleupdate-rulename"
+            },
+            "remarks": "You must specify either RuleARN or RuleName, but not both.",
+            "stability": "external",
+            "summary": "The name of the sampling rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1138
+          },
+          "name": "ruleName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html#cfn-xray-samplingrule-samplingruleupdate-servicename"
+            },
+            "stability": "external",
+            "summary": "Matches the `name` that the service uses to identify itself in segments."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1144
+          },
+          "name": "serviceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html#cfn-xray-samplingrule-samplingruleupdate-servicetype"
+            },
+            "stability": "external",
+            "summary": "Matches the `origin` that the service uses to identify its type in segments."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1150
+          },
+          "name": "serviceType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-samplingruleupdate.html#cfn-xray-samplingrule-samplingruleupdate-urlpath"
+            },
+            "stability": "external",
+            "summary": "Matches the path from a request URL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1156
+          },
+          "name": "urlPath",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/xray.generated:CfnSamplingRule.SamplingRuleUpdateProperty"
+    },
+    "@aws-cdk/aws-xray.CfnSamplingRule.TagsItemsProperty": {
+      "assembly": "@aws-cdk/aws-xray",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-tagsitems.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-xray.CfnSamplingRule.TagsItemsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/xray.generated.ts",
+        "line": 1250
+      },
+      "name": "TagsItemsProperty",
+      "namespace": "CfnSamplingRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-tagsitems.html#cfn-xray-samplingrule-tagsitems-key"
+            },
+            "stability": "external",
+            "summary": "`CfnSamplingRule.TagsItemsProperty.Key`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1256
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-xray-samplingrule-tagsitems.html#cfn-xray-samplingrule-tagsitems-value"
+            },
+            "stability": "external",
+            "summary": "`CfnSamplingRule.TagsItemsProperty.Value`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 1262
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/xray.generated:CfnSamplingRule.TagsItemsProperty"
+    },
+    "@aws-cdk/aws-xray.CfnSamplingRuleProps": {
+      "assembly": "@aws-cdk/aws-xray",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-samplingrule.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSamplingRule`."
+      },
+      "fqn": "@aws-cdk/aws-xray.CfnSamplingRuleProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/xray.generated.ts",
+        "line": 570
+      },
+      "name": "CfnSamplingRuleProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-samplingrule.html#cfn-xray-samplingrule-rulename"
+            },
+            "remarks": "Specify a rule by either name or ARN, but not both. Used only when deleting a sampling rule. When creating or updating a sampling rule, use the `RuleName` or `RuleARN` properties within `SamplingRule` or `SamplingRuleUpdate` .",
+            "stability": "external",
+            "summary": "The name of the sampling rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 577
+          },
+          "name": "ruleName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-samplingrule.html#cfn-xray-samplingrule-samplingrule"
+            },
+            "remarks": "Must be provided if creating a new sampling rule. Not valid when updating an existing sampling rule.",
+            "stability": "external",
+            "summary": "The sampling rule to be created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 586
+          },
+          "name": "samplingRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-samplingrule.html#cfn-xray-samplingrule-samplingrulerecord"
+            },
+            "stability": "external",
+            "summary": "`AWS::XRay::SamplingRule.SamplingRuleRecord`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 593
+          },
+          "name": "samplingRuleRecord",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleRecordProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-samplingrule.html#cfn-xray-samplingrule-samplingruleupdate"
+            },
+            "remarks": "Must be provided if updating an existing sampling rule. Not valid when creating a new sampling rule.\n\n> The `Version` of a sampling rule cannot be updated, and is not part of `SamplingRuleUpdate` .",
+            "stability": "external",
+            "summary": "A document specifying changes to a sampling rule's configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 604
+          },
+          "name": "samplingRuleUpdate",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-xray.CfnSamplingRule.SamplingRuleUpdateProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-xray-samplingrule.html#cfn-xray-samplingrule-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/xray.generated.ts",
+            "line": 613
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/xray.generated:CfnSamplingRuleProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "dIRpFsVG/UctNJ/lKiQo/7vOtaWkENvWYj/ijhqqf4Y="
+}

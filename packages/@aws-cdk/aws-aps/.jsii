@@ -1,0 +1,1034 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::APS",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::APS",
+    "aws-aps"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-aps",
+  "readme": {
+    "markdown": "# AWS::APS Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as aps from '@aws-cdk/aws-aps';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for APS construct libraries](https://constructs.dev/search?q=aps)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::APS resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_APS.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::APS](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_APS.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-aps",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.APS",
+      "packageId": "Amazon.CDK.AWS.APS",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "aps",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.aps"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-aps"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-aps",
+      "module": "aws_cdk.aws_aps"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-aps.CfnRuleGroupsNamespace": {
+      "assembly": "@aws-cdk/aws-aps",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::APS::RuleGroupsNamespace",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-rulegroupsnamespace.html"
+        },
+        "remarks": "The `AWS::APS::RuleGroupsNamespace` resource creates or updates a rule groups namespace within a Amazon Managed Service for Prometheus workspace. For more information, see [Recording rules and alerting rules](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-Ruler.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::APS::RuleGroupsNamespace`."
+      },
+      "fqn": "@aws-cdk/aws-aps.CfnRuleGroupsNamespace",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::APS::RuleGroupsNamespace`."
+        },
+        "locationInModule": {
+          "filename": "lib/aps.generated.ts",
+          "line": 184
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-aps.CfnRuleGroupsNamespaceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/aps.generated.ts",
+        "line": 118
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 203
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 217
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRuleGroupsNamespace",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 122
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For example, `arn:aws:aps:us-west-2:123456789012:rulegroupsnamespace/ws-EXAMPLE-3687-4ac9-853c-EXAMPLEe8f/amp=rules`",
+            "stability": "external",
+            "summary": "The ARN of the rules group namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 147
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 208
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-rulegroupsnamespace.html#cfn-aps-rulegroupsnamespace-tags"
+            },
+            "stability": "external",
+            "summary": "A list of key and value pairs for the workspace resources."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 175
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-rulegroupsnamespace.html#cfn-aps-rulegroupsnamespace-data"
+            },
+            "stability": "external",
+            "summary": "The rules definition file for this namespace."
+          },
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 154
+          },
+          "name": "data",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-rulegroupsnamespace.html#cfn-aps-rulegroupsnamespace-name"
+            },
+            "remarks": "This property is required.",
+            "stability": "external",
+            "summary": "The name of the rule groups namespace."
+          },
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 161
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-rulegroupsnamespace.html#cfn-aps-rulegroupsnamespace-workspace"
+            },
+            "stability": "external",
+            "summary": "The ARN of the workspace that contains this rule groups namespace."
+          },
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 168
+          },
+          "name": "workspace",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/aps.generated:CfnRuleGroupsNamespace"
+    },
+    "@aws-cdk/aws-aps.CfnRuleGroupsNamespaceProps": {
+      "assembly": "@aws-cdk/aws-aps",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-rulegroupsnamespace.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRuleGroupsNamespace`."
+      },
+      "fqn": "@aws-cdk/aws-aps.CfnRuleGroupsNamespaceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/aps.generated.ts",
+        "line": 20
+      },
+      "name": "CfnRuleGroupsNamespaceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-rulegroupsnamespace.html#cfn-aps-rulegroupsnamespace-data"
+            },
+            "stability": "external",
+            "summary": "The rules definition file for this namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 27
+          },
+          "name": "data",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-rulegroupsnamespace.html#cfn-aps-rulegroupsnamespace-name"
+            },
+            "remarks": "This property is required.",
+            "stability": "external",
+            "summary": "The name of the rule groups namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 34
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-rulegroupsnamespace.html#cfn-aps-rulegroupsnamespace-workspace"
+            },
+            "stability": "external",
+            "summary": "The ARN of the workspace that contains this rule groups namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 41
+          },
+          "name": "workspace",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-rulegroupsnamespace.html#cfn-aps-rulegroupsnamespace-tags"
+            },
+            "stability": "external",
+            "summary": "A list of key and value pairs for the workspace resources."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 48
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/aps.generated:CfnRuleGroupsNamespaceProps"
+    },
+    "@aws-cdk/aws-aps.CfnWorkspace": {
+      "assembly": "@aws-cdk/aws-aps",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::APS::Workspace",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-workspace.html"
+        },
+        "remarks": "The `AWS::APS::Workspace` type specifies an Amazon Managed Service for Prometheus ( Amazon Managed Service for Prometheus ) workspace. A *workspace* is a logical and isolated Prometheus server dedicated to Prometheus resources such as metrics. You can have one or more workspaces in each Region in your account.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::APS::Workspace`."
+      },
+      "fqn": "@aws-cdk/aws-aps.CfnWorkspace",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::APS::Workspace`."
+        },
+        "locationInModule": {
+          "filename": "lib/aps.generated.ts",
+          "line": 407
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-aps.CfnWorkspaceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/aps.generated.ts",
+        "line": 327
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 425
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 439
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnWorkspace",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 331
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For example: `arn:aws:aps:us-west-2:123456789012:workspace/ws-EXAMPLE-3687-4ac9-853c-EXAMPLEe8f` .",
+            "stability": "external",
+            "summary": "The ARN of the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 356
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "PrometheusEndpoint"
+            },
+            "remarks": "This is the endpoint prefix without the remote_write or query API appended. For example: `https://aps-workspaces.us-west-2.amazonaws.com/workspaces/ws-EXAMPLE-3687-4ac9-853c-EXAMPLEe8f/` .",
+            "stability": "external",
+            "summary": "The Prometheus endpoint attribute of the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 362
+          },
+          "name": "attrPrometheusEndpoint",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "WorkspaceId"
+            },
+            "remarks": "For example: `ws-EXAMPLE-3687-4ac9-853c-EXAMPLEe8f` .",
+            "stability": "external",
+            "summary": "The workspace ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 368
+          },
+          "name": "attrWorkspaceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 430
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-workspace.html#cfn-aps-workspace-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tag keys and values to associate with the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 398
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-workspace.html#cfn-aps-workspace-alertmanagerdefinition"
+            },
+            "remarks": "For more information, see [Alert manager and templating](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alert-manager.html) .",
+            "stability": "external",
+            "summary": "The alert manager definition for the workspace, as a string."
+          },
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 375
+          },
+          "name": "alertManagerDefinition",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-workspace.html#cfn-aps-workspace-alias"
+            },
+            "remarks": "It does not need to be unique.\n\nThe alias can be as many as 100 characters and can include any type of characters. Amazon Managed Service for Prometheus automatically strips any blank spaces from the beginning and end of the alias that you specify.",
+            "stability": "external",
+            "summary": "An alias that you assign to this workspace to help you identify it."
+          },
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 384
+          },
+          "name": "alias",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-workspace.html#cfn-aps-workspace-loggingconfiguration"
+            },
+            "stability": "external",
+            "summary": "The LoggingConfiguration attribute is used to set the logging configuration for the workspace."
+          },
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 391
+          },
+          "name": "loggingConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-aps.CfnWorkspace.LoggingConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/aps.generated:CfnWorkspace"
+    },
+    "@aws-cdk/aws-aps.CfnWorkspace.LoggingConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-aps",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-aps-workspace-loggingconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The LoggingConfiguration attribute sets the logging configuration for the workspace."
+      },
+      "fqn": "@aws-cdk/aws-aps.CfnWorkspace.LoggingConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/aps.generated.ts",
+        "line": 453
+      },
+      "name": "LoggingConfigurationProperty",
+      "namespace": "CfnWorkspace",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-aps-workspace-loggingconfiguration.html#cfn-aps-workspace-loggingconfiguration-loggrouparn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the CloudWatch log group the logs are emitted to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 459
+          },
+          "name": "logGroupArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/aps.generated:CfnWorkspace.LoggingConfigurationProperty"
+    },
+    "@aws-cdk/aws-aps.CfnWorkspaceProps": {
+      "assembly": "@aws-cdk/aws-aps",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-workspace.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnWorkspace`."
+      },
+      "fqn": "@aws-cdk/aws-aps.CfnWorkspaceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/aps.generated.ts",
+        "line": 230
+      },
+      "name": "CfnWorkspaceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-workspace.html#cfn-aps-workspace-alertmanagerdefinition"
+            },
+            "remarks": "For more information, see [Alert manager and templating](https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-alert-manager.html) .",
+            "stability": "external",
+            "summary": "The alert manager definition for the workspace, as a string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 237
+          },
+          "name": "alertManagerDefinition",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-workspace.html#cfn-aps-workspace-alias"
+            },
+            "remarks": "It does not need to be unique.\n\nThe alias can be as many as 100 characters and can include any type of characters. Amazon Managed Service for Prometheus automatically strips any blank spaces from the beginning and end of the alias that you specify.",
+            "stability": "external",
+            "summary": "An alias that you assign to this workspace to help you identify it."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 246
+          },
+          "name": "alias",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-workspace.html#cfn-aps-workspace-loggingconfiguration"
+            },
+            "stability": "external",
+            "summary": "The LoggingConfiguration attribute is used to set the logging configuration for the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 253
+          },
+          "name": "loggingConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-aps.CfnWorkspace.LoggingConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-aps-workspace.html#cfn-aps-workspace-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tag keys and values to associate with the workspace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aps.generated.ts",
+            "line": 260
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/aps.generated:CfnWorkspaceProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "KeBXPlJOxuxFFLX8noj5ZL5PTNgUgmoQ2tZeGN68IwY="
+}

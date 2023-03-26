@@ -1,0 +1,2861 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::DLM",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "aws-dlm"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-dlm",
+  "readme": {
+    "markdown": "# Amazon Data Lifecycle Manager Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as dlm from '@aws-cdk/aws-dlm';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for DLM construct libraries](https://constructs.dev/search?q=dlm)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::DLM resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DLM.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::DLM](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DLM.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-dlm",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.DLM",
+      "packageId": "Amazon.CDK.AWS.DLM"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "dlm",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.dlm"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-dlm"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-dlm",
+      "module": "aws_cdk.aws_dlm"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::DLM::LifecyclePolicy",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dlm-lifecyclepolicy.html"
+        },
+        "remarks": "Specifies a lifecycle policy, which is used to automate operations on Amazon EBS resources.\n\nThe properties are required when you add a lifecycle policy and optional when you update a lifecycle policy.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::DLM::LifecyclePolicy`."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::DLM::LifecyclePolicy`."
+        },
+        "locationInModule": {
+          "filename": "lib/dlm.generated.ts",
+          "line": 200
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 127
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 217
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 232
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 131
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the lifecycle policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 156
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 222
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dlm-lifecyclepolicy.html#cfn-dlm-lifecyclepolicy-tags"
+            },
+            "stability": "external",
+            "summary": "The tags to apply to the lifecycle policy during creation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 191
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dlm-lifecyclepolicy.html#cfn-dlm-lifecyclepolicy-description"
+            },
+            "remarks": "The characters ^[0-9A-Za-z _-]+$ are supported.",
+            "stability": "external",
+            "summary": "A description of the lifecycle policy."
+          },
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 163
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dlm-lifecyclepolicy.html#cfn-dlm-lifecyclepolicy-executionrolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role used to run the operations specified by the lifecycle policy."
+          },
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 170
+          },
+          "name": "executionRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dlm-lifecyclepolicy.html#cfn-dlm-lifecyclepolicy-policydetails"
+            },
+            "stability": "external",
+            "summary": "The configuration details of the lifecycle policy."
+          },
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 177
+          },
+          "name": "policyDetails",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.PolicyDetailsProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dlm-lifecyclepolicy.html#cfn-dlm-lifecyclepolicy-state"
+            },
+            "stability": "external",
+            "summary": "The activation state of the lifecycle policy."
+          },
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 184
+          },
+          "name": "state",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ActionProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-action.html"
+        },
+        "stability": "external",
+        "summary": "*[Event-based policies only]* Specifies an action for an event-based policy."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ActionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 246
+      },
+      "name": "ActionProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-action.html#cfn-dlm-lifecyclepolicy-action-crossregioncopy"
+            },
+            "stability": "external",
+            "summary": "The rule for copying shared snapshots across Regions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 252
+          },
+          "name": "crossRegionCopy",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyActionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-action.html#cfn-dlm-lifecyclepolicy-action-name"
+            },
+            "stability": "external",
+            "summary": "A descriptive name for the action."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 258
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.ActionProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ArchiveRetainRuleProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-archiveretainrule.html"
+        },
+        "stability": "external",
+        "summary": "*[Snapshot policies only]* Specifies information about the archive storage tier retention period."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ArchiveRetainRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 324
+      },
+      "name": "ArchiveRetainRuleProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-archiveretainrule.html#cfn-dlm-lifecyclepolicy-archiveretainrule-retentionarchivetier"
+            },
+            "remarks": "For more information, see [Archive Amazon EBS snapshots](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/snapshot-archive.html) .",
+            "stability": "external",
+            "summary": "Information about retention period in the Amazon EBS Snapshots Archive."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 330
+          },
+          "name": "retentionArchiveTier",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.RetentionArchiveTierProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.ArchiveRetainRuleProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ArchiveRuleProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-archiverule.html"
+        },
+        "stability": "external",
+        "summary": "*[Snapshot policies only]* Specifies a snapshot archiving rule for a schedule."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ArchiveRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 392
+      },
+      "name": "ArchiveRuleProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-archiverule.html#cfn-dlm-lifecyclepolicy-archiverule-retainrule"
+            },
+            "stability": "external",
+            "summary": "Information about the retention period for the snapshot archiving rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 398
+          },
+          "name": "retainRule",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ArchiveRetainRuleProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.ArchiveRuleProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CreateRuleProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-createrule.html"
+        },
+        "remarks": "> - You must specify either *CronExpression* , or *Interval* , *IntervalUnit* , and *Times* .\n> - If you need to specify an `ArchiveRule` for the schedule, then you must specify a creation frequency of at least 28 days.",
+        "stability": "external",
+        "summary": "*[Snapshot and AMI policies only]* Specifies when the policy should create snapshots or AMIs."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CreateRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 463
+      },
+      "name": "CreateRuleProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-createrule.html#cfn-dlm-lifecyclepolicy-createrule-cronexpression"
+            },
+            "remarks": "The schedule interval must be between 1 hour and 1 year. For more information, see [Cron expressions](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/ScheduledEvents.html#CronExpressions) in the *Amazon CloudWatch User Guide* .",
+            "stability": "external",
+            "summary": "The schedule, as a Cron expression."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 469
+          },
+          "name": "cronExpression",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-createrule.html#cfn-dlm-lifecyclepolicy-createrule-interval"
+            },
+            "remarks": "The supported values are 1, 2, 3, 4, 6, 8, 12, and 24.",
+            "stability": "external",
+            "summary": "The interval between snapshots."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 475
+          },
+          "name": "interval",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-createrule.html#cfn-dlm-lifecyclepolicy-createrule-intervalunit"
+            },
+            "stability": "external",
+            "summary": "The interval unit."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 481
+          },
+          "name": "intervalUnit",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-createrule.html#cfn-dlm-lifecyclepolicy-createrule-location"
+            },
+            "remarks": "To create snapshots in the same Region as the source resource, specify `CLOUD` . To create snapshots on the same Outpost as the source resource, specify `OUTPOST_LOCAL` . If you omit this parameter, `CLOUD` is used by default.\n\nIf the policy targets resources in an AWS Region , then you must create snapshots in the same Region as the source resource. If the policy targets resources on an Outpost, then you can create snapshots on the same Outpost as the source resource, or in the Region of that Outpost.",
+            "stability": "external",
+            "summary": "*[Snapshot policies only]* Specifies the destination for snapshots created by the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 489
+          },
+          "name": "location",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-createrule.html#cfn-dlm-lifecyclepolicy-createrule-times"
+            },
+            "remarks": "The operation occurs within a one-hour window following the specified time. If you do not specify a time, Amazon Data Lifecycle Manager selects a time within the next 24 hours.",
+            "stability": "external",
+            "summary": "The time, in UTC, to start the operation. The supported format is hh:mm."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 497
+          },
+          "name": "times",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.CreateRuleProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyActionProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyaction.html"
+        },
+        "remarks": "> To specify a cross-Region copy rule for snapshot and AMI policies, use `CrossRegionCopyRule` .",
+        "stability": "external",
+        "summary": "*[Event-based policies only]* Specifies a cross-Region copy action for event-based policies."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyActionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 572
+      },
+      "name": "CrossRegionCopyActionProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyaction.html#cfn-dlm-lifecyclepolicy-crossregioncopyaction-encryptionconfiguration"
+            },
+            "stability": "external",
+            "summary": "The encryption settings for the copied snapshot."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 578
+          },
+          "name": "encryptionConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.EncryptionConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyaction.html#cfn-dlm-lifecyclepolicy-crossregioncopyaction-target"
+            },
+            "stability": "external",
+            "summary": "The target Region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 590
+          },
+          "name": "target",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyaction.html#cfn-dlm-lifecyclepolicy-crossregioncopyaction-retainrule"
+            },
+            "remarks": "After the retention period expires, the cross-Region copy is deleted.",
+            "stability": "external",
+            "summary": "Specifies a retention rule for cross-Region snapshot copies created by snapshot or event-based policies, or cross-Region AMI copies created by AMI policies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 584
+          },
+          "name": "retainRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyRetainRuleProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.CrossRegionCopyActionProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyDeprecateRuleProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopydeprecaterule.html"
+        },
+        "stability": "external",
+        "summary": "*[AMI policies only]* Specifies an AMI deprecation rule for cross-Region AMI copies created by an AMI policy."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyDeprecateRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 659
+      },
+      "name": "CrossRegionCopyDeprecateRuleProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopydeprecaterule.html#cfn-dlm-lifecyclepolicy-crossregioncopydeprecaterule-interval"
+            },
+            "remarks": "The period must be less than or equal to the cross-Region AMI copy retention period, and it can't be greater than 10 years. This is equivalent to 120 months, 520 weeks, or 3650 days.",
+            "stability": "external",
+            "summary": "The period after which to deprecate the cross-Region AMI copies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 665
+          },
+          "name": "interval",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopydeprecaterule.html#cfn-dlm-lifecyclepolicy-crossregioncopydeprecaterule-intervalunit"
+            },
+            "remarks": "For example, to deprecate a cross-Region AMI copy after 3 months, specify `Interval=3` and `IntervalUnit=MONTHS` .",
+            "stability": "external",
+            "summary": "The unit of time in which to measure the *Interval* ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 671
+          },
+          "name": "intervalUnit",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.CrossRegionCopyDeprecateRuleProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyRetainRuleProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyretainrule.html"
+        },
+        "remarks": "After the retention period expires, the cross-Region copy is deleted.",
+        "stability": "external",
+        "summary": "Specifies a retention rule for cross-Region snapshot copies created by snapshot or event-based policies, or cross-Region AMI copies created by AMI policies."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyRetainRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 737
+      },
+      "name": "CrossRegionCopyRetainRuleProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyretainrule.html#cfn-dlm-lifecyclepolicy-crossregioncopyretainrule-interval"
+            },
+            "remarks": "The maximum is 100 years. This is equivalent to 1200 months, 5200 weeks, or 36500 days.",
+            "stability": "external",
+            "summary": "The amount of time to retain a cross-Region snapshot or AMI copy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 743
+          },
+          "name": "interval",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyretainrule.html#cfn-dlm-lifecyclepolicy-crossregioncopyretainrule-intervalunit"
+            },
+            "remarks": "For example, to retain a cross-Region copy for 3 months, specify `Interval=3` and `IntervalUnit=MONTHS` .",
+            "stability": "external",
+            "summary": "The unit of time for time-based retention."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 749
+          },
+          "name": "intervalUnit",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.CrossRegionCopyRetainRuleProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyRuleProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyrule.html"
+        },
+        "remarks": "> To specify a cross-Region copy action for event-based polices, use `CrossRegionCopyAction` .",
+        "stability": "external",
+        "summary": "*[Snapshot and AMI policies only]* Specifies a cross-Region copy rule for snapshot and AMI policies."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 817
+      },
+      "name": "CrossRegionCopyRuleProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyrule.html#cfn-dlm-lifecyclepolicy-crossregioncopyrule-encrypted"
+            },
+            "remarks": "Copies of encrypted snapshots are encrypted, even if this parameter is false or if encryption by default is not enabled.",
+            "stability": "external",
+            "summary": "To encrypt a copy of an unencrypted snapshot if encryption by default is not enabled, enable encryption using this parameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 841
+          },
+          "name": "encrypted",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyrule.html#cfn-dlm-lifecyclepolicy-crossregioncopyrule-cmkarn"
+            },
+            "remarks": "If this parameter is not specified, the default KMS key for the account is used.",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the AWS KMS key to use for EBS encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 823
+          },
+          "name": "cmkArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyrule.html#cfn-dlm-lifecyclepolicy-crossregioncopyrule-copytags"
+            },
+            "stability": "external",
+            "summary": "Indicates whether to copy all user-defined tags from the source snapshot or AMI to the cross-Region copy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 829
+          },
+          "name": "copyTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyrule.html#cfn-dlm-lifecyclepolicy-crossregioncopyrule-deprecaterule"
+            },
+            "stability": "external",
+            "summary": "*[AMI policies only]* The AMI deprecation rule for cross-Region AMI copies created by the rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 835
+          },
+          "name": "deprecateRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyDeprecateRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyrule.html#cfn-dlm-lifecyclepolicy-crossregioncopyrule-retainrule"
+            },
+            "stability": "external",
+            "summary": "The retention rule that indicates how long the cross-Region snapshot or AMI copies are to be retained in the destination Region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 847
+          },
+          "name": "retainRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyRetainRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyrule.html#cfn-dlm-lifecyclepolicy-crossregioncopyrule-target"
+            },
+            "remarks": "Use this parameter instead of *TargetRegion* . Do not specify both.",
+            "stability": "external",
+            "summary": "The target Region or the Amazon Resource Name (ARN) of the target Outpost for the snapshot copies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 855
+          },
+          "name": "target",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-crossregioncopyrule.html#cfn-dlm-lifecyclepolicy-crossregioncopyrule-targetregion"
+            },
+            "remarks": "Instead, use *Target* to specify a target Region or a target Outpost for snapshot copies.\n>\n> For policies created before the *Target* parameter was introduced, this parameter indicates the target Region for snapshot copies.",
+            "stability": "external",
+            "summary": "> Avoid using this parameter when creating new policies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 863
+          },
+          "name": "targetRegion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.CrossRegionCopyRuleProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.DeprecateRuleProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-deprecaterule.html"
+        },
+        "remarks": "For age-based schedules, you must specify *Interval* and *IntervalUnit* . For count-based schedules, you must specify *Count* .",
+        "stability": "external",
+        "summary": "*[AMI policies only]* Specifies an AMI deprecation rule for AMIs created by an AMI lifecycle policy."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.DeprecateRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 945
+      },
+      "name": "DeprecateRuleProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-deprecaterule.html#cfn-dlm-lifecyclepolicy-deprecaterule-count"
+            },
+            "remarks": "The count must be less than or equal to the schedule's retention count, and it can't be greater than 1000.",
+            "stability": "external",
+            "summary": "If the schedule has a count-based retention rule, this parameter specifies the number of oldest AMIs to deprecate."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 951
+          },
+          "name": "count",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-deprecaterule.html#cfn-dlm-lifecyclepolicy-deprecaterule-interval"
+            },
+            "remarks": "The period must be less than or equal to the schedule's retention period, and it can't be greater than 10 years. This is equivalent to 120 months, 520 weeks, or 3650 days.",
+            "stability": "external",
+            "summary": "If the schedule has an age-based retention rule, this parameter specifies the period after which to deprecate AMIs created by the schedule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 957
+          },
+          "name": "interval",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-deprecaterule.html#cfn-dlm-lifecyclepolicy-deprecaterule-intervalunit"
+            },
+            "stability": "external",
+            "summary": "The unit of time in which to measure the *Interval* ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 963
+          },
+          "name": "intervalUnit",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.DeprecateRuleProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.EncryptionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-encryptionconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "*[Event-based policies only]* Specifies the encryption settings for cross-Region snapshot copies created by event-based policies."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.EncryptionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 1030
+      },
+      "name": "EncryptionConfigurationProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-encryptionconfiguration.html#cfn-dlm-lifecyclepolicy-encryptionconfiguration-encrypted"
+            },
+            "remarks": "Copies of encrypted snapshots are encrypted, even if this parameter is false or when encryption by default is not enabled.",
+            "stability": "external",
+            "summary": "To encrypt a copy of an unencrypted snapshot when encryption by default is not enabled, enable encryption using this parameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1042
+          },
+          "name": "encrypted",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-encryptionconfiguration.html#cfn-dlm-lifecyclepolicy-encryptionconfiguration-cmkarn"
+            },
+            "remarks": "If this parameter is not specified, the default KMS key for the account is used.",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the AWS KMS key to use for EBS encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1036
+          },
+          "name": "cmkArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.EncryptionConfigurationProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.EventParametersProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-eventparameters.html"
+        },
+        "stability": "external",
+        "summary": "*[Event-based policies only]* Specifies an event that activates an event-based policy."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.EventParametersProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 1107
+      },
+      "name": "EventParametersProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-eventparameters.html#cfn-dlm-lifecyclepolicy-eventparameters-eventtype"
+            },
+            "remarks": "Currently, only snapshot sharing events are supported.",
+            "stability": "external",
+            "summary": "The type of event."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1121
+          },
+          "name": "eventType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-eventparameters.html#cfn-dlm-lifecyclepolicy-eventparameters-snapshotowner"
+            },
+            "remarks": "The policy only runs if one of the specified AWS accounts shares a snapshot with your account.",
+            "stability": "external",
+            "summary": "The IDs of the AWS accounts that can trigger policy by sharing snapshots with your account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1127
+          },
+          "name": "snapshotOwner",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-eventparameters.html#cfn-dlm-lifecyclepolicy-eventparameters-descriptionregex"
+            },
+            "remarks": "The description pattern is specified using a regular expression. The policy runs only if a snapshot with a description that matches the specified pattern is shared with your account.\n\nFor example, specifying `^.*Created for policy: policy-1234567890abcdef0.*$` configures the policy to run only if snapshots created by policy `policy-1234567890abcdef0` are shared with your account.",
+            "stability": "external",
+            "summary": "The snapshot description that can trigger the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1115
+          },
+          "name": "descriptionRegex",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.EventParametersProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.EventSourceProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-eventsource.html"
+        },
+        "stability": "external",
+        "summary": "*[Event-based policies only]* Specifies an event that activates an event-based policy."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.EventSourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 1196
+      },
+      "name": "EventSourceProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-eventsource.html#cfn-dlm-lifecyclepolicy-eventsource-type"
+            },
+            "remarks": "Currently only managed CloudWatch Events rules are supported.",
+            "stability": "external",
+            "summary": "The source of the event."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1208
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-eventsource.html#cfn-dlm-lifecyclepolicy-eventsource-parameters"
+            },
+            "stability": "external",
+            "summary": "Information about the event."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1202
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.EventParametersProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.EventSourceProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.FastRestoreRuleProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-fastrestorerule.html"
+        },
+        "remarks": "You can enable fast snapshot restore based on either a count or a time interval.",
+        "stability": "external",
+        "summary": "*[Snapshot policies only]* Specifies a rule for enabling fast snapshot restore for snapshots created by snapshot policies."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.FastRestoreRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 1273
+      },
+      "name": "FastRestoreRuleProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-fastrestorerule.html#cfn-dlm-lifecyclepolicy-fastrestorerule-availabilityzones"
+            },
+            "stability": "external",
+            "summary": "The Availability Zones in which to enable fast snapshot restore."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1279
+          },
+          "name": "availabilityZones",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-fastrestorerule.html#cfn-dlm-lifecyclepolicy-fastrestorerule-count"
+            },
+            "stability": "external",
+            "summary": "The number of snapshots to be enabled with fast snapshot restore."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1285
+          },
+          "name": "count",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-fastrestorerule.html#cfn-dlm-lifecyclepolicy-fastrestorerule-interval"
+            },
+            "remarks": "The maximum is 100 years. This is equivalent to 1200 months, 5200 weeks, or 36500 days.",
+            "stability": "external",
+            "summary": "The amount of time to enable fast snapshot restore."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1291
+          },
+          "name": "interval",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-fastrestorerule.html#cfn-dlm-lifecyclepolicy-fastrestorerule-intervalunit"
+            },
+            "stability": "external",
+            "summary": "The unit of time for enabling fast snapshot restore."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1297
+          },
+          "name": "intervalUnit",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.FastRestoreRuleProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ParametersProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-parameters.html"
+        },
+        "remarks": "The set of valid parameters depends on the combination of policy type and target resource type.\n\nIf you choose to exclude boot volumes and you specify tags that consequently exclude all of the additional data volumes attached to an instance, then Amazon Data Lifecycle Manager will not create any snapshots for the affected instance, and it will emit a `SnapshotsCreateFailed` Amazon CloudWatch metric. For more information, see [Monitor your policies using Amazon CloudWatch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/monitor-dlm-cw-metrics.html) .",
+        "stability": "external",
+        "summary": "*[Snapshot and AMI policies only]* Specifies optional parameters for snapshot and AMI policies."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ParametersProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 1369
+      },
+      "name": "ParametersProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-parameters.html#cfn-dlm-lifecyclepolicy-parameters-excludebootvolume"
+            },
+            "remarks": "The default is `false` . If you specify `true` , then the root volumes attached to targeted instances will be excluded from the multi-volume snapshot sets created by the policy.",
+            "stability": "external",
+            "summary": "*[Snapshot policies that target instances only]* Indicates whether to exclude the root volume from multi-volume snapshot sets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1375
+          },
+          "name": "excludeBootVolume",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-parameters.html#cfn-dlm-lifecyclepolicy-parameters-excludedatavolumetags"
+            },
+            "remarks": "If you create a snapshot lifecycle policy that targets instances and you specify tags for this parameter, then data volumes with the specified tags that are attached to targeted instances will be excluded from the multi-volume snapshot sets created by the policy.",
+            "stability": "external",
+            "summary": "*[Snapshot policies that target instances only]* The tags used to identify data (non-root) volumes to exclude from multi-volume snapshot sets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1383
+          },
+          "name": "excludeDataVolumeTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.CfnTag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-parameters.html#cfn-dlm-lifecyclepolicy-parameters-noreboot"
+            },
+            "remarks": "`true` indicates that targeted instances are not rebooted when the policy runs. `false` indicates that target instances are rebooted when the policy runs. The default is `true` (instances are not rebooted).",
+            "stability": "external",
+            "summary": "*[AMI policies only]* Indicates whether targeted instances are rebooted when the lifecycle policy runs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1389
+          },
+          "name": "noReboot",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.ParametersProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.PolicyDetailsProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-policydetails.html"
+        },
+        "stability": "external",
+        "summary": "*[All policy types]* Specifies the configuration of a lifecycle policy."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.PolicyDetailsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 1456
+      },
+      "name": "PolicyDetailsProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-policydetails.html#cfn-dlm-lifecyclepolicy-policydetails-actions"
+            },
+            "remarks": "You can specify only one action per policy.",
+            "stability": "external",
+            "summary": "*[Event-based policies only]* The actions to be performed when the event-based policy is activated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1462
+          },
+          "name": "actions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ActionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-policydetails.html#cfn-dlm-lifecyclepolicy-policydetails-eventsource"
+            },
+            "stability": "external",
+            "summary": "*[Event-based policies only]* The event that activates the event-based policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1468
+          },
+          "name": "eventSource",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.EventSourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-policydetails.html#cfn-dlm-lifecyclepolicy-policydetails-parameters"
+            },
+            "remarks": "> If you are modifying a policy that was created or previously modified using the Amazon Data Lifecycle Manager console, then you must include this parameter and specify either the default values or the new values that you require. You can't omit this parameter or set its values to null.",
+            "stability": "external",
+            "summary": "*[Snapshot and AMI policies only]* A set of optional parameters for snapshot and AMI lifecycle policies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1476
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ParametersProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-policydetails.html#cfn-dlm-lifecyclepolicy-policydetails-policytype"
+            },
+            "remarks": "Specify `EBS_SNAPSHOT_MANAGEMENT` to create a lifecycle policy that manages the lifecycle of Amazon EBS snapshots. Specify `IMAGE_MANAGEMENT` to create a lifecycle policy that manages the lifecycle of EBS-backed AMIs. Specify `EVENT_BASED_POLICY` to create an event-based policy that performs specific actions when a defined event occurs in your AWS account .\n\nThe default is `EBS_SNAPSHOT_MANAGEMENT` .",
+            "stability": "external",
+            "summary": "*[All policy types]* The valid target resource types and actions a policy can manage."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1484
+          },
+          "name": "policyType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-policydetails.html#cfn-dlm-lifecyclepolicy-policydetails-resourcelocations"
+            },
+            "remarks": "If the source resources are located in an AWS Region , specify `CLOUD` . If the source resources are located on an Outpost in your account, specify `OUTPOST` .\n\nIf you specify `OUTPOST` , Amazon Data Lifecycle Manager backs up all resources of the specified type with matching target tags across all of the Outposts in your account.",
+            "stability": "external",
+            "summary": "*[Snapshot and AMI policies only]* The location of the resources to backup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1492
+          },
+          "name": "resourceLocations",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-policydetails.html#cfn-dlm-lifecyclepolicy-policydetails-resourcetypes"
+            },
+            "remarks": "Use `VOLUME` to create snapshots of individual volumes or use `INSTANCE` to create multi-volume snapshots from the volumes for an instance.",
+            "stability": "external",
+            "summary": "*[Snapshot policies only]* The target resource type for snapshot and AMI lifecycle policies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1498
+          },
+          "name": "resourceTypes",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-policydetails.html#cfn-dlm-lifecyclepolicy-policydetails-schedules"
+            },
+            "remarks": "A policy can have up to four schedules—one mandatory schedule and up to three optional schedules.",
+            "stability": "external",
+            "summary": "*[Snapshot and AMI policies only]* The schedules of policy-defined actions for snapshot and AMI lifecycle policies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1504
+          },
+          "name": "schedules",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ScheduleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-policydetails.html#cfn-dlm-lifecyclepolicy-policydetails-targettags"
+            },
+            "stability": "external",
+            "summary": "*[Snapshot and AMI policies only]* The single tag that identifies targeted resources for this policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1510
+          },
+          "name": "targetTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.CfnTag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.PolicyDetailsProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.RetainRuleProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-retainrule.html"
+        },
+        "remarks": "> For snapshot policies that have an `ArchiveRule` , this retention rule applies to standard tier retention. When the retention threshold is met, snapshots are moved from the standard to the archive tier.\n>\n> For snapshot policies that do not have an *ArchiveRule* , snapshots are permanently deleted when this retention threshold is met.\n\nYou can retain snapshots based on either a count or a time interval.\n\n- *Count-based retention*\n\nYou must specify *Count* . If you specify an `ArchiveRule` for the schedule, then you can specify a retention count of `0` to archive snapshots immediately after creation. If you specify a `FastRestoreRule` , `ShareRule` , or a `CrossRegionCopyRule` , then you must specify a retention count of `1` or more.\n- *Age-based retention*\n\nYou must specify *Interval* and *IntervalUnit* . If you specify an `ArchiveRule` for the schedule, then you can specify a retention interval of `0` days to archive snapshots immediately after creation. If you specify a `FastRestoreRule` , `ShareRule` , or a `CrossRegionCopyRule` , then you must specify a retention interval of `1` day or more.",
+        "stability": "external",
+        "summary": "*[Snapshot and AMI policies only]* Specifies a retention rule for snapshots created by snapshot policies, or for AMIs created by AMI policies."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.RetainRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 1605
+      },
+      "name": "RetainRuleProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-retainrule.html#cfn-dlm-lifecyclepolicy-retainrule-count"
+            },
+            "remarks": "For example if you want to retain a maximum of three snapshots, specify `3` . When the fourth snapshot is created, the oldest retained snapshot is deleted, or it is moved to the archive tier if you have specified an `ArchiveRule` .",
+            "stability": "external",
+            "summary": "The number of snapshots to retain for each volume, up to a maximum of 1000."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1611
+          },
+          "name": "count",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-retainrule.html#cfn-dlm-lifecyclepolicy-retainrule-interval"
+            },
+            "remarks": "The maximum is 100 years. This is equivalent to 1200 months, 5200 weeks, or 36500 days.",
+            "stability": "external",
+            "summary": "The amount of time to retain each snapshot."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1617
+          },
+          "name": "interval",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-retainrule.html#cfn-dlm-lifecyclepolicy-retainrule-intervalunit"
+            },
+            "remarks": "For example, to retain snapshots for 3 months, specify `Interval=3` and `IntervalUnit=MONTHS` . Once the snapshot has been retained for 3 months, it is deleted, or it is moved to the archive tier if you have specified an `ArchiveRule` .",
+            "stability": "external",
+            "summary": "The unit of time for time-based retention."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1623
+          },
+          "name": "intervalUnit",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.RetainRuleProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.RetentionArchiveTierProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-retentionarchivetier.html"
+        },
+        "remarks": "Once the archive retention threshold is met, the snapshots are permanently deleted from the archive tier.\n\n> The archive retention rule must retain snapshots in the archive tier for a minimum of 90 days.\n\nFor *count-based schedules* , you must specify *Count* . For *age-based schedules* , you must specify *Interval* and *IntervalUnit* .\n\nFor more information about using snapshot archiving, see [Considerations for snapshot lifecycle policies](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/snapshot-ami-policy.html#dlm-archive) .",
+        "stability": "external",
+        "summary": "*[Snapshot policies only]* Describes the retention rule for archived snapshots."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.RetentionArchiveTierProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 1696
+      },
+      "name": "RetentionArchiveTierProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-retentionarchivetier.html#cfn-dlm-lifecyclepolicy-retentionarchivetier-count"
+            },
+            "remarks": "The count must ensure that each snapshot remains in the archive tier for at least 90 days. For example, if the schedule creates snapshots every 30 days, you must specify a count of 3 or more to ensure that each snapshot is archived for at least 90 days.",
+            "stability": "external",
+            "summary": "The maximum number of snapshots to retain in the archive storage tier for each volume."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1702
+          },
+          "name": "count",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-retentionarchivetier.html#cfn-dlm-lifecyclepolicy-retentionarchivetier-interval"
+            },
+            "remarks": "After this period expires, the snapshot is permanently deleted.",
+            "stability": "external",
+            "summary": "Specifies the period of time to retain snapshots in the archive tier."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1708
+          },
+          "name": "interval",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-retentionarchivetier.html#cfn-dlm-lifecyclepolicy-retentionarchivetier-intervalunit"
+            },
+            "remarks": "For example, to retain a snapshots in the archive tier for 6 months, specify `Interval=6` and `IntervalUnit=MONTHS` .",
+            "stability": "external",
+            "summary": "The unit of time in which to measure the *Interval* ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1714
+          },
+          "name": "intervalUnit",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.RetentionArchiveTierProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ScheduleProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html"
+        },
+        "stability": "external",
+        "summary": "*[Snapshot and AMI policies only]* Specifies a schedule for a snapshot or AMI lifecycle policy."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ScheduleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 1781
+      },
+      "name": "ScheduleProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html#cfn-dlm-lifecyclepolicy-schedule-archiverule"
+            },
+            "remarks": "When you specify an archiving rule, snapshots are automatically moved from the standard tier to the archive tier once the schedule's retention threshold is met. Snapshots are then retained in the archive tier for the archive retention period that you specify.\n\nFor more information about using snapshot archiving, see [Considerations for snapshot lifecycle policies](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/snapshot-ami-policy.html#dlm-archive) .",
+            "stability": "external",
+            "summary": "*[Snapshot policies that target volumes only]* The snapshot archiving rule for the schedule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1789
+          },
+          "name": "archiveRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ArchiveRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html#cfn-dlm-lifecyclepolicy-schedule-copytags"
+            },
+            "stability": "external",
+            "summary": "Copy all user-defined tags on a source volume to snapshots of the volume created by this policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1795
+          },
+          "name": "copyTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html#cfn-dlm-lifecyclepolicy-schedule-createrule"
+            },
+            "stability": "external",
+            "summary": "The creation rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1801
+          },
+          "name": "createRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CreateRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html#cfn-dlm-lifecyclepolicy-schedule-crossregioncopyrules"
+            },
+            "remarks": "> You can't specify cross-Region copy rules for policies that create snapshots on an Outpost. If the policy creates snapshots in a Region, then snapshots can be copied to up to three Regions or Outposts.",
+            "stability": "external",
+            "summary": "Specifies a rule for copying snapshots or AMIs across regions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1809
+          },
+          "name": "crossRegionCopyRules",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.CrossRegionCopyRuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html#cfn-dlm-lifecyclepolicy-schedule-deprecaterule"
+            },
+            "stability": "external",
+            "summary": "*[AMI policies only]* The AMI deprecation rule for the schedule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1815
+          },
+          "name": "deprecateRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.DeprecateRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html#cfn-dlm-lifecyclepolicy-schedule-fastrestorerule"
+            },
+            "stability": "external",
+            "summary": "*[Snapshot policies only]* The rule for enabling fast snapshot restore."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1821
+          },
+          "name": "fastRestoreRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.FastRestoreRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html#cfn-dlm-lifecyclepolicy-schedule-name"
+            },
+            "stability": "external",
+            "summary": "The name of the schedule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1827
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html#cfn-dlm-lifecyclepolicy-schedule-retainrule"
+            },
+            "stability": "external",
+            "summary": "The retention rule for snapshots or AMIs created by the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1833
+          },
+          "name": "retainRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.RetainRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html#cfn-dlm-lifecyclepolicy-schedule-sharerules"
+            },
+            "stability": "external",
+            "summary": "*[Snapshot policies only]* The rule for sharing snapshots with other AWS accounts ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1839
+          },
+          "name": "shareRules",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ShareRuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html#cfn-dlm-lifecyclepolicy-schedule-tagstoadd"
+            },
+            "remarks": "These user-defined tags are in addition to the AWS -added lifecycle tags.",
+            "stability": "external",
+            "summary": "The tags to apply to policy-created resources."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1845
+          },
+          "name": "tagsToAdd",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.CfnTag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html#cfn-dlm-lifecyclepolicy-schedule-variabletags"
+            },
+            "remarks": "Keys may be any valid Amazon EC2 tag key. Values must be in one of the two following formats: `$(instance-id)` or `$(timestamp)` . Variable tags are only valid for EBS Snapshot Management – Instance policies.",
+            "stability": "external",
+            "summary": "*[AMI policies and snapshot policies that target instances only]* A collection of key/value pairs with values determined dynamically when the policy is executed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1851
+          },
+          "name": "variableTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.CfnTag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.ScheduleProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ShareRuleProperty": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-sharerule.html"
+        },
+        "stability": "external",
+        "summary": "*[Snapshot policies only]* Specifies a rule for sharing snapshots across AWS accounts ."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.ShareRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 1942
+      },
+      "name": "ShareRuleProperty",
+      "namespace": "CfnLifecyclePolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-sharerule.html#cfn-dlm-lifecyclepolicy-sharerule-targetaccounts"
+            },
+            "stability": "external",
+            "summary": "The IDs of the AWS accounts with which to share the snapshots."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1948
+          },
+          "name": "targetAccounts",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-sharerule.html#cfn-dlm-lifecyclepolicy-sharerule-unshareinterval"
+            },
+            "stability": "external",
+            "summary": "The period after which snapshots that are shared with other AWS accounts are automatically unshared."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1954
+          },
+          "name": "unshareInterval",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-sharerule.html#cfn-dlm-lifecyclepolicy-sharerule-unshareintervalunit"
+            },
+            "stability": "external",
+            "summary": "The unit of time for the automatic unsharing interval."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 1960
+          },
+          "name": "unshareIntervalUnit",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicy.ShareRuleProperty"
+    },
+    "@aws-cdk/aws-dlm.CfnLifecyclePolicyProps": {
+      "assembly": "@aws-cdk/aws-dlm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dlm-lifecyclepolicy.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnLifecyclePolicy`."
+      },
+      "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dlm.generated.ts",
+        "line": 20
+      },
+      "name": "CfnLifecyclePolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dlm-lifecyclepolicy.html#cfn-dlm-lifecyclepolicy-description"
+            },
+            "remarks": "The characters ^[0-9A-Za-z _-]+$ are supported.",
+            "stability": "external",
+            "summary": "A description of the lifecycle policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 27
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dlm-lifecyclepolicy.html#cfn-dlm-lifecyclepolicy-executionrolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role used to run the operations specified by the lifecycle policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 34
+          },
+          "name": "executionRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dlm-lifecyclepolicy.html#cfn-dlm-lifecyclepolicy-policydetails"
+            },
+            "stability": "external",
+            "summary": "The configuration details of the lifecycle policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 41
+          },
+          "name": "policyDetails",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-dlm.CfnLifecyclePolicy.PolicyDetailsProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dlm-lifecyclepolicy.html#cfn-dlm-lifecyclepolicy-state"
+            },
+            "stability": "external",
+            "summary": "The activation state of the lifecycle policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 48
+          },
+          "name": "state",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dlm-lifecyclepolicy.html#cfn-dlm-lifecyclepolicy-tags"
+            },
+            "stability": "external",
+            "summary": "The tags to apply to the lifecycle policy during creation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dlm.generated.ts",
+            "line": 55
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/dlm.generated:CfnLifecyclePolicyProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "sv16tKL+RsBMQZBP0eh+JhLgKSol622Qpp2K13zbooc="
+}

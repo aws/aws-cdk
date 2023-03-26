@@ -1,0 +1,699 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::IoTFleetHub",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::IoTFleetHub",
+    "aws-iotfleethub"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-iotfleethub",
+  "readme": {
+    "markdown": "# AWS::IoTFleetHub Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as iotfleethub from '@aws-cdk/aws-iotfleethub';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for IoTFleetHub construct libraries](https://constructs.dev/search?q=iotfleethub)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::IoTFleetHub resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_IoTFleetHub.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::IoTFleetHub](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_IoTFleetHub.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-iotfleethub",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.IoTFleetHub",
+      "packageId": "Amazon.CDK.AWS.IoTFleetHub",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "iotfleethub",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.iotfleethub"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-iotfleethub"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-iotfleethub",
+      "module": "aws_cdk.aws_iotfleethub"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-iotfleethub.CfnApplication": {
+      "assembly": "@aws-cdk/aws-iotfleethub",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::IoTFleetHub::Application",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotfleethub-application.html"
+        },
+        "remarks": "Represents a Fleet Hub for AWS IoT Device Management web application.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::IoTFleetHub::Application`."
+      },
+      "fqn": "@aws-cdk/aws-iotfleethub.CfnApplication",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::IoTFleetHub::Application`."
+        },
+        "locationInModule": {
+          "filename": "lib/iotfleethub.generated.ts",
+          "line": 233
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-iotfleethub.CfnApplicationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/iotfleethub.generated.ts",
+        "line": 121
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 258
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 272
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnApplication",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 125
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationArn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the web application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 150
+          },
+          "name": "attrApplicationArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationCreationDate"
+            },
+            "stability": "external",
+            "summary": "The date (in Unix epoch time) when the web application was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 156
+          },
+          "name": "attrApplicationCreationDate",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationId"
+            },
+            "stability": "external",
+            "summary": "The unique Id of the web application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 162
+          },
+          "name": "attrApplicationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationLastUpdateDate"
+            },
+            "stability": "external",
+            "summary": "The date (in Unix epoch time) when the web application was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 168
+          },
+          "name": "attrApplicationLastUpdateDate",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationState"
+            },
+            "stability": "external",
+            "summary": "The current state of the web application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 174
+          },
+          "name": "attrApplicationState",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationUrl"
+            },
+            "stability": "external",
+            "summary": "The URL of the web application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 180
+          },
+          "name": "attrApplicationUrl",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ErrorMessage"
+            },
+            "remarks": "This message explains failures in the `CreateApplication` and `DeleteApplication` actions.",
+            "stability": "external",
+            "summary": "A message that explains any failures included in the applicationState response field."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 186
+          },
+          "name": "attrErrorMessage",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SsoClientId"
+            },
+            "stability": "external",
+            "summary": "The Id of the single sign-on client that you use to authenticate and authorize users on the web application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 192
+          },
+          "name": "attrSsoClientId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 263
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotfleethub-application.html#cfn-iotfleethub-application-tags"
+            },
+            "stability": "external",
+            "summary": "A set of key/value pairs that you can use to manage the web application resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 224
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotfleethub-application.html#cfn-iotfleethub-application-applicationname"
+            },
+            "stability": "external",
+            "summary": "The name of the web application."
+          },
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 199
+          },
+          "name": "applicationName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotfleethub-application.html#cfn-iotfleethub-application-rolearn"
+            },
+            "remarks": "> The name of the role must be in the form `FleetHub_random_string` .\n\nPattern: `^arn:[!-~]+$`",
+            "stability": "external",
+            "summary": "The ARN of the role that the web application assumes when it interacts with AWS IoT Core ."
+          },
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 210
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotfleethub-application.html#cfn-iotfleethub-application-applicationdescription"
+            },
+            "stability": "external",
+            "summary": "An optional description of the web application."
+          },
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 217
+          },
+          "name": "applicationDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iotfleethub.generated:CfnApplication"
+    },
+    "@aws-cdk/aws-iotfleethub.CfnApplicationProps": {
+      "assembly": "@aws-cdk/aws-iotfleethub",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotfleethub-application.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnApplication`."
+      },
+      "fqn": "@aws-cdk/aws-iotfleethub.CfnApplicationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iotfleethub.generated.ts",
+        "line": 20
+      },
+      "name": "CfnApplicationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotfleethub-application.html#cfn-iotfleethub-application-applicationname"
+            },
+            "stability": "external",
+            "summary": "The name of the web application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 27
+          },
+          "name": "applicationName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotfleethub-application.html#cfn-iotfleethub-application-rolearn"
+            },
+            "remarks": "> The name of the role must be in the form `FleetHub_random_string` .\n\nPattern: `^arn:[!-~]+$`",
+            "stability": "external",
+            "summary": "The ARN of the role that the web application assumes when it interacts with AWS IoT Core ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 38
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotfleethub-application.html#cfn-iotfleethub-application-applicationdescription"
+            },
+            "stability": "external",
+            "summary": "An optional description of the web application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 45
+          },
+          "name": "applicationDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotfleethub-application.html#cfn-iotfleethub-application-tags"
+            },
+            "stability": "external",
+            "summary": "A set of key/value pairs that you can use to manage the web application resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotfleethub.generated.ts",
+            "line": 52
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iotfleethub.generated:CfnApplicationProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "jZR9nCYgaRzOYMGqjCgh65yvb7r4z2orzeMpzWTHD8g="
+}

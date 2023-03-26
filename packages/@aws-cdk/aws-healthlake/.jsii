@@ -1,0 +1,957 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::HealthLake",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::HealthLake",
+    "aws-healthlake"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-healthlake",
+  "readme": {
+    "markdown": "# AWS::HealthLake Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as healthlake from '@aws-cdk/aws-healthlake';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for HealthLake construct libraries](https://constructs.dev/search?q=healthlake)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::HealthLake resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_HealthLake.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::HealthLake](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_HealthLake.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-healthlake",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.HealthLake",
+      "packageId": "Amazon.CDK.AWS.HealthLake",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "healthlake",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.healthlake"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-healthlake"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-healthlake",
+      "module": "aws_cdk.aws_healthlake"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-healthlake.CfnFHIRDatastore": {
+      "assembly": "@aws-cdk/aws-healthlake",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::HealthLake::FHIRDatastore",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html"
+        },
+        "remarks": "Creates a Data Store that can ingest and export FHIR formatted data.\n\n> Please note that when a user tries to do an Update operation via CloudFormation, changes to the Data Store name, Type Version, PreloadDataConfig, or SSEConfiguration will delete their existing Data Store for the stack and create a new one. This will lead to potential loss of data.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::HealthLake::FHIRDatastore`."
+      },
+      "fqn": "@aws-cdk/aws-healthlake.CfnFHIRDatastore",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::HealthLake::FHIRDatastore`."
+        },
+        "locationInModule": {
+          "filename": "lib/healthlake.generated.ts",
+          "line": 235
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-healthlake.CfnFHIRDatastoreProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/healthlake.generated.ts",
+        "line": 130
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 258
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 273
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnFHIRDatastore",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 134
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedAt.Nanos"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 159
+          },
+          "name": "attrCreatedAtNanos",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedAt.Seconds"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 165
+          },
+          "name": "attrCreatedAtSeconds",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DatastoreArn"
+            },
+            "stability": "external",
+            "summary": "The Data Store ARN is generated during the creation of the Data Store and can be found in the output from the initial Data Store creation request."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 171
+          },
+          "name": "attrDatastoreArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DatastoreEndpoint"
+            },
+            "stability": "external",
+            "summary": "The endpoint for the created Data Store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 177
+          },
+          "name": "attrDatastoreEndpoint",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DatastoreId"
+            },
+            "remarks": "This id is in the output from the initial Data Store creation call.",
+            "stability": "external",
+            "summary": "The Amazon generated Data Store id."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 183
+          },
+          "name": "attrDatastoreId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DatastoreStatus"
+            },
+            "remarks": "Possible statuses are ‘CREATING’, ‘ACTIVE’, ‘DELETING’, ‘DELETED’.",
+            "stability": "external",
+            "summary": "The status of the FHIR Data Store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 189
+          },
+          "name": "attrDatastoreStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 263
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html#cfn-healthlake-fhirdatastore-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 226
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html#cfn-healthlake-fhirdatastore-datastoretypeversion"
+            },
+            "remarks": "The only supported version is R4.",
+            "stability": "external",
+            "summary": "The FHIR version of the Data Store."
+          },
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 196
+          },
+          "name": "datastoreTypeVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html#cfn-healthlake-fhirdatastore-datastorename"
+            },
+            "stability": "external",
+            "summary": "The user generated name for the Data Store."
+          },
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 203
+          },
+          "name": "datastoreName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html#cfn-healthlake-fhirdatastore-preloaddataconfig"
+            },
+            "remarks": "Only data preloaded from Synthea is supported.",
+            "stability": "external",
+            "summary": "The preloaded data configuration for the Data Store."
+          },
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 210
+          },
+          "name": "preloadDataConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-healthlake.CfnFHIRDatastore.PreloadDataConfigProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html#cfn-healthlake-fhirdatastore-sseconfiguration"
+            },
+            "stability": "external",
+            "summary": "The server-side encryption key configuration for a customer provided encryption key specified for creating a Data Store."
+          },
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 217
+          },
+          "name": "sseConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-healthlake.CfnFHIRDatastore.SseConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/healthlake.generated:CfnFHIRDatastore"
+    },
+    "@aws-cdk/aws-healthlake.CfnFHIRDatastore.CreatedAtProperty": {
+      "assembly": "@aws-cdk/aws-healthlake",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-createdat.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-healthlake.CfnFHIRDatastore.CreatedAtProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/healthlake.generated.ts",
+        "line": 287
+      },
+      "name": "CreatedAtProperty",
+      "namespace": "CfnFHIRDatastore",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-createdat.html#cfn-healthlake-fhirdatastore-createdat-nanos"
+            },
+            "stability": "external",
+            "summary": "`CfnFHIRDatastore.CreatedAtProperty.Nanos`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 293
+          },
+          "name": "nanos",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-createdat.html#cfn-healthlake-fhirdatastore-createdat-seconds"
+            },
+            "stability": "external",
+            "summary": "`CfnFHIRDatastore.CreatedAtProperty.Seconds`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 299
+          },
+          "name": "seconds",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/healthlake.generated:CfnFHIRDatastore.CreatedAtProperty"
+    },
+    "@aws-cdk/aws-healthlake.CfnFHIRDatastore.KmsEncryptionConfigProperty": {
+      "assembly": "@aws-cdk/aws-healthlake",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-kmsencryptionconfig.html"
+        },
+        "remarks": "If a customer owned key is not specified, an Amazon owned key will be used for encryption.",
+        "stability": "external",
+        "summary": "The customer-managed-key(CMK) used when creating a Data Store."
+      },
+      "fqn": "@aws-cdk/aws-healthlake.CfnFHIRDatastore.KmsEncryptionConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/healthlake.generated.ts",
+        "line": 365
+      },
+      "name": "KmsEncryptionConfigProperty",
+      "namespace": "CfnFHIRDatastore",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-kmsencryptionconfig.html#cfn-healthlake-fhirdatastore-kmsencryptionconfig-cmktype"
+            },
+            "remarks": "The two types of supported CMKs are customer owned CMKs and Amazon owned CMKs. For more information on CMK types, see [KmsEncryptionConfig](https://docs.aws.amazon.com/healthlake/latest/APIReference/API_KmsEncryptionConfig.html#HealthLake-Type-KmsEncryptionConfig-CmkType) .",
+            "stability": "external",
+            "summary": "The type of customer-managed-key(CMK) used for encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 371
+          },
+          "name": "cmkType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-kmsencryptionconfig.html#cfn-healthlake-fhirdatastore-kmsencryptionconfig-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The KMS encryption key id/alias used to encrypt the Data Store contents at rest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 377
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/healthlake.generated:CfnFHIRDatastore.KmsEncryptionConfigProperty"
+    },
+    "@aws-cdk/aws-healthlake.CfnFHIRDatastore.PreloadDataConfigProperty": {
+      "assembly": "@aws-cdk/aws-healthlake",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-preloaddataconfig.html"
+        },
+        "remarks": "Currently, the only supported preloaded data is synthetic data generated from Synthea.",
+        "stability": "external",
+        "summary": "Optional parameter to preload data upon creation of the Data Store."
+      },
+      "fqn": "@aws-cdk/aws-healthlake.CfnFHIRDatastore.PreloadDataConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/healthlake.generated.ts",
+        "line": 442
+      },
+      "name": "PreloadDataConfigProperty",
+      "namespace": "CfnFHIRDatastore",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-preloaddataconfig.html#cfn-healthlake-fhirdatastore-preloaddataconfig-preloaddatatype"
+            },
+            "remarks": "Only Synthea preloaded data is supported.",
+            "stability": "external",
+            "summary": "The type of preloaded data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 448
+          },
+          "name": "preloadDataType",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/healthlake.generated:CfnFHIRDatastore.PreloadDataConfigProperty"
+    },
+    "@aws-cdk/aws-healthlake.CfnFHIRDatastore.SseConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-healthlake",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-sseconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The server-side encryption key configuration for a customer provided encryption key."
+      },
+      "fqn": "@aws-cdk/aws-healthlake.CfnFHIRDatastore.SseConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/healthlake.generated.ts",
+        "line": 510
+      },
+      "name": "SseConfigurationProperty",
+      "namespace": "CfnFHIRDatastore",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-healthlake-fhirdatastore-sseconfiguration.html#cfn-healthlake-fhirdatastore-sseconfiguration-kmsencryptionconfig"
+            },
+            "stability": "external",
+            "summary": "The server-side encryption key configuration for a customer provided encryption key (CMK)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 516
+          },
+          "name": "kmsEncryptionConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-healthlake.CfnFHIRDatastore.KmsEncryptionConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/healthlake.generated:CfnFHIRDatastore.SseConfigurationProperty"
+    },
+    "@aws-cdk/aws-healthlake.CfnFHIRDatastoreProps": {
+      "assembly": "@aws-cdk/aws-healthlake",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnFHIRDatastore`."
+      },
+      "fqn": "@aws-cdk/aws-healthlake.CfnFHIRDatastoreProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/healthlake.generated.ts",
+        "line": 20
+      },
+      "name": "CfnFHIRDatastoreProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html#cfn-healthlake-fhirdatastore-datastoretypeversion"
+            },
+            "remarks": "The only supported version is R4.",
+            "stability": "external",
+            "summary": "The FHIR version of the Data Store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 27
+          },
+          "name": "datastoreTypeVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html#cfn-healthlake-fhirdatastore-datastorename"
+            },
+            "stability": "external",
+            "summary": "The user generated name for the Data Store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 34
+          },
+          "name": "datastoreName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html#cfn-healthlake-fhirdatastore-preloaddataconfig"
+            },
+            "remarks": "Only data preloaded from Synthea is supported.",
+            "stability": "external",
+            "summary": "The preloaded data configuration for the Data Store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 41
+          },
+          "name": "preloadDataConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-healthlake.CfnFHIRDatastore.PreloadDataConfigProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html#cfn-healthlake-fhirdatastore-sseconfiguration"
+            },
+            "stability": "external",
+            "summary": "The server-side encryption key configuration for a customer provided encryption key specified for creating a Data Store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 48
+          },
+          "name": "sseConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-healthlake.CfnFHIRDatastore.SseConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-healthlake-fhirdatastore.html#cfn-healthlake-fhirdatastore-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/healthlake.generated.ts",
+            "line": 57
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/healthlake.generated:CfnFHIRDatastoreProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "adE86pCG0r2p8fp19Cy5QENTrQDxI4v7ngEWaXviio8="
+}

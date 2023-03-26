@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "31.0.0",
   "artifacts": {
     "nested-stacks-docker.assets": {
       "type": "cdk:asset-manifest",

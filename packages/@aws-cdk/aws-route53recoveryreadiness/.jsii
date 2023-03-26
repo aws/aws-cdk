@@ -1,0 +1,2063 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::Route53RecoveryReadiness",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::Route53RecoveryReadiness",
+    "aws-route53recoveryreadiness"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-route53recoveryreadiness",
+  "readme": {
+    "markdown": "# AWS::Route53RecoveryReadiness Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as route53recoveryreadiness from '@aws-cdk/aws-route53recoveryreadiness';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for Route53RecoveryReadiness construct libraries](https://constructs.dev/search?q=route53recoveryreadiness)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Route53RecoveryReadiness resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Route53RecoveryReadiness.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Route53RecoveryReadiness](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Route53RecoveryReadiness.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-route53recoveryreadiness",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Route53RecoveryReadiness",
+      "packageId": "Amazon.CDK.AWS.Route53RecoveryReadiness",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "route53recoveryreadiness",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.route53recoveryreadiness"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-route53recoveryreadiness"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-route53recoveryreadiness",
+      "module": "aws_cdk.aws_route53recoveryreadiness"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-route53recoveryreadiness.CfnCell": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Route53RecoveryReadiness::Cell",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-cell.html"
+        },
+        "remarks": "Creates a cell in an account.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Route53RecoveryReadiness::Cell`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnCell",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Route53RecoveryReadiness::Cell`."
+        },
+        "locationInModule": {
+          "filename": "lib/route53recoveryreadiness.generated.ts",
+          "line": 170
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnCellProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 105
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 186
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 199
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnCell",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 109
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CellArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the cell."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 134
+          },
+          "name": "attrCellArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ParentReadinessScopes"
+            },
+            "remarks": "This is a list but currently can have only one element.",
+            "stability": "external",
+            "summary": "The readiness scope for the cell, which can be a cell Amazon Resource Name (ARN) or a recovery group ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 140
+          },
+          "name": "attrParentReadinessScopes",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 191
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-cell.html#cfn-route53recoveryreadiness-cell-tags"
+            },
+            "stability": "external",
+            "summary": "A collection of tags associated with a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 161
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-cell.html#cfn-route53recoveryreadiness-cell-cellname"
+            },
+            "stability": "external",
+            "summary": "The name of the cell to create."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 147
+          },
+          "name": "cellName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-cell.html#cfn-route53recoveryreadiness-cell-cells"
+            },
+            "remarks": "For example, Availability Zones within specific AWS Regions .",
+            "stability": "external",
+            "summary": "A list of cell Amazon Resource Names (ARNs) contained within this cell, for use in nested cells."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 154
+          },
+          "name": "cells",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnCell"
+    },
+    "@aws-cdk/aws-route53recoveryreadiness.CfnCellProps": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-cell.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnCell`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnCellProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 20
+      },
+      "name": "CfnCellProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-cell.html#cfn-route53recoveryreadiness-cell-cellname"
+            },
+            "stability": "external",
+            "summary": "The name of the cell to create."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 27
+          },
+          "name": "cellName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-cell.html#cfn-route53recoveryreadiness-cell-cells"
+            },
+            "remarks": "For example, Availability Zones within specific AWS Regions .",
+            "stability": "external",
+            "summary": "A list of cell Amazon Resource Names (ARNs) contained within this cell, for use in nested cells."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 34
+          },
+          "name": "cells",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-cell.html#cfn-route53recoveryreadiness-cell-tags"
+            },
+            "stability": "external",
+            "summary": "A collection of tags associated with a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 41
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnCellProps"
+    },
+    "@aws-cdk/aws-route53recoveryreadiness.CfnReadinessCheck": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Route53RecoveryReadiness::ReadinessCheck",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-readinesscheck.html"
+        },
+        "remarks": "Creates a readiness check in an account. A readiness check monitors a resource set in your application, such as a set of Amazon Aurora instances, that Application Recovery Controller is auditing recovery readiness for. The audits run once every minute on every resource that's associated with a readiness check.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Route53RecoveryReadiness::ReadinessCheck`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnReadinessCheck",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Route53RecoveryReadiness::ReadinessCheck`."
+        },
+        "locationInModule": {
+          "filename": "lib/route53recoveryreadiness.generated.ts",
+          "line": 356
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnReadinessCheckProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 297
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 371
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 384
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnReadinessCheck",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 301
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ReadinessCheckArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the readiness check."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 326
+          },
+          "name": "attrReadinessCheckArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 376
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-readinesscheck.html#cfn-route53recoveryreadiness-readinesscheck-tags"
+            },
+            "stability": "external",
+            "summary": "A collection of tags associated with a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 347
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-readinesscheck.html#cfn-route53recoveryreadiness-readinesscheck-readinesscheckname"
+            },
+            "stability": "external",
+            "summary": "The name of the readiness check to create."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 333
+          },
+          "name": "readinessCheckName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-readinesscheck.html#cfn-route53recoveryreadiness-readinesscheck-resourcesetname"
+            },
+            "stability": "external",
+            "summary": "The name of the resource set to check."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 340
+          },
+          "name": "resourceSetName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnReadinessCheck"
+    },
+    "@aws-cdk/aws-route53recoveryreadiness.CfnReadinessCheckProps": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-readinesscheck.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnReadinessCheck`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnReadinessCheckProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 212
+      },
+      "name": "CfnReadinessCheckProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-readinesscheck.html#cfn-route53recoveryreadiness-readinesscheck-readinesscheckname"
+            },
+            "stability": "external",
+            "summary": "The name of the readiness check to create."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 219
+          },
+          "name": "readinessCheckName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-readinesscheck.html#cfn-route53recoveryreadiness-readinesscheck-resourcesetname"
+            },
+            "stability": "external",
+            "summary": "The name of the resource set to check."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 226
+          },
+          "name": "resourceSetName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-readinesscheck.html#cfn-route53recoveryreadiness-readinesscheck-tags"
+            },
+            "stability": "external",
+            "summary": "A collection of tags associated with a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 233
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnReadinessCheckProps"
+    },
+    "@aws-cdk/aws-route53recoveryreadiness.CfnRecoveryGroup": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Route53RecoveryReadiness::RecoveryGroup",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-recoverygroup.html"
+        },
+        "remarks": "Creates a recovery group in an account. A recovery group corresponds to an application and includes a list of the cells that make up the application.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Route53RecoveryReadiness::RecoveryGroup`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnRecoveryGroup",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Route53RecoveryReadiness::RecoveryGroup`."
+        },
+        "locationInModule": {
+          "filename": "lib/route53recoveryreadiness.generated.ts",
+          "line": 541
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnRecoveryGroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 482
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 556
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 569
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRecoveryGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 486
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "RecoveryGroupArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the recovery group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 511
+          },
+          "name": "attrRecoveryGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 561
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-recoverygroup.html#cfn-route53recoveryreadiness-recoverygroup-tags"
+            },
+            "stability": "external",
+            "summary": "A collection of tags associated with a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 532
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-recoverygroup.html#cfn-route53recoveryreadiness-recoverygroup-cells"
+            },
+            "stability": "external",
+            "summary": "A list of the cell Amazon Resource Names (ARNs) in the recovery group."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 518
+          },
+          "name": "cells",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-recoverygroup.html#cfn-route53recoveryreadiness-recoverygroup-recoverygroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the recovery group to create."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 525
+          },
+          "name": "recoveryGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnRecoveryGroup"
+    },
+    "@aws-cdk/aws-route53recoveryreadiness.CfnRecoveryGroupProps": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-recoverygroup.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRecoveryGroup`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnRecoveryGroupProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 397
+      },
+      "name": "CfnRecoveryGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-recoverygroup.html#cfn-route53recoveryreadiness-recoverygroup-cells"
+            },
+            "stability": "external",
+            "summary": "A list of the cell Amazon Resource Names (ARNs) in the recovery group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 404
+          },
+          "name": "cells",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-recoverygroup.html#cfn-route53recoveryreadiness-recoverygroup-recoverygroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the recovery group to create."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 411
+          },
+          "name": "recoveryGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-recoverygroup.html#cfn-route53recoveryreadiness-recoverygroup-tags"
+            },
+            "stability": "external",
+            "summary": "A collection of tags associated with a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 418
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnRecoveryGroupProps"
+    },
+    "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Route53RecoveryReadiness::ResourceSet",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-resourceset.html"
+        },
+        "remarks": "Creates a resource set. A resource set is a set of resources of one type that span multiple cells. You can associate a resource set with a readiness check to monitor the resources for failover readiness.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Route53RecoveryReadiness::ResourceSet`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Route53RecoveryReadiness::ResourceSet`."
+        },
+        "locationInModule": {
+          "filename": "lib/route53recoveryreadiness.generated.ts",
+          "line": 753
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 683
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 771
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 785
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnResourceSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 687
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ResourceSetArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the resource set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 712
+          },
+          "name": "attrResourceSetArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 776
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-resourceset.html#cfn-route53recoveryreadiness-resourceset-tags"
+            },
+            "stability": "external",
+            "summary": "A tag to associate with the parameters for a resource set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 744
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-resourceset.html#cfn-route53recoveryreadiness-resourceset-resources"
+            },
+            "stability": "external",
+            "summary": "A list of resource objects in the resource set."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 719
+          },
+          "name": "resources",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.ResourceProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-resourceset.html#cfn-route53recoveryreadiness-resourceset-resourcesettype"
+            },
+            "remarks": "AWS::AutoScaling::AutoScalingGroup, AWS::CloudWatch::Alarm, AWS::EC2::CustomerGateway, AWS::DynamoDB::Table, AWS::EC2::Volume, AWS::ElasticLoadBalancing::LoadBalancer, AWS::ElasticLoadBalancingV2::LoadBalancer, AWS::MSK::Cluster, AWS::RDS::DBCluster, AWS::Route53::HealthCheck, AWS::SQS::Queue, AWS::SNS::Topic, AWS::SNS::Subscription, AWS::EC2::VPC, AWS::EC2::VPNConnection, AWS::EC2::VPNGateway, AWS::Route53RecoveryReadiness::DNSTargetResource.\n\nNote that AWS::Route53RecoveryReadiness::DNSTargetResource is only used for this setting. It isn't an actual AWS CloudFormation resource type.",
+            "stability": "external",
+            "summary": "The resource type of the resources in the resource set. Enter one of the following values for resource type:."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 730
+          },
+          "name": "resourceSetType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-resourceset.html#cfn-route53recoveryreadiness-resourceset-resourcesetname"
+            },
+            "stability": "external",
+            "summary": "The name of the resource set to create."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 737
+          },
+          "name": "resourceSetName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnResourceSet"
+    },
+    "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.DNSTargetResourceProperty": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-dnstargetresource.html"
+        },
+        "stability": "external",
+        "summary": "A component for DNS/routing control readiness checks and architecture checks."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.DNSTargetResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 799
+      },
+      "name": "DNSTargetResourceProperty",
+      "namespace": "CfnResourceSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-dnstargetresource.html#cfn-route53recoveryreadiness-resourceset-dnstargetresource-domainname"
+            },
+            "stability": "external",
+            "summary": "The domain name that acts as an ingress point to a portion of the customer application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 805
+          },
+          "name": "domainName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-dnstargetresource.html#cfn-route53recoveryreadiness-resourceset-dnstargetresource-hostedzonearn"
+            },
+            "stability": "external",
+            "summary": "The hosted zone Amazon Resource Name (ARN) that contains the DNS record with the provided name of the target resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 811
+          },
+          "name": "hostedZoneArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-dnstargetresource.html#cfn-route53recoveryreadiness-resourceset-dnstargetresource-recordsetid"
+            },
+            "stability": "external",
+            "summary": "The Route 53 record set ID that uniquely identifies a DNS record, given a name and a type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 817
+          },
+          "name": "recordSetId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-dnstargetresource.html#cfn-route53recoveryreadiness-resourceset-dnstargetresource-recordtype"
+            },
+            "stability": "external",
+            "summary": "The type of DNS record of the target resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 823
+          },
+          "name": "recordType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-dnstargetresource.html#cfn-route53recoveryreadiness-resourceset-dnstargetresource-targetresource"
+            },
+            "stability": "external",
+            "summary": "The target resource that the Route 53 record points to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 829
+          },
+          "name": "targetResource",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.TargetResourceProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnResourceSet.DNSTargetResourceProperty"
+    },
+    "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.NLBResourceProperty": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-nlbresource.html"
+        },
+        "stability": "external",
+        "summary": "The Network Load Balancer resource that a DNS target resource points to."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.NLBResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 902
+      },
+      "name": "NLBResourceProperty",
+      "namespace": "CfnResourceSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-nlbresource.html#cfn-route53recoveryreadiness-resourceset-nlbresource-arn"
+            },
+            "stability": "external",
+            "summary": "The Network Load Balancer resource Amazon Resource Name (ARN)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 908
+          },
+          "name": "arn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnResourceSet.NLBResourceProperty"
+    },
+    "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.R53ResourceRecordProperty": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-r53resourcerecord.html"
+        },
+        "stability": "external",
+        "summary": "The Route 53 resource that a DNS target resource record points to."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.R53ResourceRecordProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 969
+      },
+      "name": "R53ResourceRecordProperty",
+      "namespace": "CfnResourceSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-r53resourcerecord.html#cfn-route53recoveryreadiness-resourceset-r53resourcerecord-domainname"
+            },
+            "stability": "external",
+            "summary": "The DNS target domain name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 975
+          },
+          "name": "domainName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-r53resourcerecord.html#cfn-route53recoveryreadiness-resourceset-r53resourcerecord-recordsetid"
+            },
+            "stability": "external",
+            "summary": "The Route 53 Resource Record Set ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 981
+          },
+          "name": "recordSetId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnResourceSet.R53ResourceRecordProperty"
+    },
+    "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.ResourceProperty": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-resource.html"
+        },
+        "stability": "external",
+        "summary": "The resource element of a resource set."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.ResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 1045
+      },
+      "name": "ResourceProperty",
+      "namespace": "CfnResourceSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-resource.html#cfn-route53recoveryreadiness-resourceset-resource-componentid"
+            },
+            "stability": "external",
+            "summary": "The component identifier of the resource, generated when DNS target resource is used."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 1051
+          },
+          "name": "componentId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-resource.html#cfn-route53recoveryreadiness-resourceset-resource-dnstargetresource"
+            },
+            "remarks": "This is a required setting when `ResourceSet` `ResourceSetType` is set to `AWS::Route53RecoveryReadiness::DNSTargetResource` . Do not set it for any other `ResourceSetType` setting.",
+            "stability": "external",
+            "summary": "A component for DNS/routing control readiness checks."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 1057
+          },
+          "name": "dnsTargetResource",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.DNSTargetResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-resource.html#cfn-route53recoveryreadiness-resourceset-resource-readinessscopes"
+            },
+            "stability": "external",
+            "summary": "The recovery group Amazon Resource Name (ARN) or the cell ARN that the readiness checks for this resource set are scoped to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 1063
+          },
+          "name": "readinessScopes",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-resource.html#cfn-route53recoveryreadiness-resourceset-resource-resourcearn"
+            },
+            "remarks": "This is a required setting for all `ResourceSet` `ResourceSetType` settings except `AWS::Route53RecoveryReadiness::DNSTargetResource` . Do not set this when `ResourceSetType` is set to `AWS::Route53RecoveryReadiness::DNSTargetResource` .",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the AWS resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 1069
+          },
+          "name": "resourceArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnResourceSet.ResourceProperty"
+    },
+    "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.TargetResourceProperty": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-targetresource.html"
+        },
+        "stability": "external",
+        "summary": "The target resource that the Route 53 record points to."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.TargetResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 1139
+      },
+      "name": "TargetResourceProperty",
+      "namespace": "CfnResourceSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-targetresource.html#cfn-route53recoveryreadiness-resourceset-targetresource-nlbresource"
+            },
+            "stability": "external",
+            "summary": "The Network Load Balancer resource that a DNS target resource points to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 1145
+          },
+          "name": "nlbResource",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.NLBResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoveryreadiness-resourceset-targetresource.html#cfn-route53recoveryreadiness-resourceset-targetresource-r53resource"
+            },
+            "stability": "external",
+            "summary": "The Route 53 resource that a DNS target resource record points to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 1151
+          },
+          "name": "r53Resource",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.R53ResourceRecordProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnResourceSet.TargetResourceProperty"
+    },
+    "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSetProps": {
+      "assembly": "@aws-cdk/aws-route53recoveryreadiness",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-resourceset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnResourceSet`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoveryreadiness.generated.ts",
+        "line": 582
+      },
+      "name": "CfnResourceSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-resourceset.html#cfn-route53recoveryreadiness-resourceset-resources"
+            },
+            "stability": "external",
+            "summary": "A list of resource objects in the resource set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 589
+          },
+          "name": "resources",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-route53recoveryreadiness.CfnResourceSet.ResourceProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-resourceset.html#cfn-route53recoveryreadiness-resourceset-resourcesettype"
+            },
+            "remarks": "AWS::AutoScaling::AutoScalingGroup, AWS::CloudWatch::Alarm, AWS::EC2::CustomerGateway, AWS::DynamoDB::Table, AWS::EC2::Volume, AWS::ElasticLoadBalancing::LoadBalancer, AWS::ElasticLoadBalancingV2::LoadBalancer, AWS::MSK::Cluster, AWS::RDS::DBCluster, AWS::Route53::HealthCheck, AWS::SQS::Queue, AWS::SNS::Topic, AWS::SNS::Subscription, AWS::EC2::VPC, AWS::EC2::VPNConnection, AWS::EC2::VPNGateway, AWS::Route53RecoveryReadiness::DNSTargetResource.\n\nNote that AWS::Route53RecoveryReadiness::DNSTargetResource is only used for this setting. It isn't an actual AWS CloudFormation resource type.",
+            "stability": "external",
+            "summary": "The resource type of the resources in the resource set. Enter one of the following values for resource type:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 600
+          },
+          "name": "resourceSetType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-resourceset.html#cfn-route53recoveryreadiness-resourceset-resourcesetname"
+            },
+            "stability": "external",
+            "summary": "The name of the resource set to create."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 607
+          },
+          "name": "resourceSetName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoveryreadiness-resourceset.html#cfn-route53recoveryreadiness-resourceset-tags"
+            },
+            "stability": "external",
+            "summary": "A tag to associate with the parameters for a resource set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoveryreadiness.generated.ts",
+            "line": 614
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoveryreadiness.generated:CfnResourceSetProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "s2eKUbr6Zij2MOs7VaXcolRigvq7gcuuK526EeUsO1c="
+}

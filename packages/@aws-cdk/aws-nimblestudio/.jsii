@@ -1,0 +1,3736 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::NimbleStudio",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::NimbleStudio",
+    "aws-nimblestudio"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-nimblestudio",
+  "readme": {
+    "markdown": "# AWS::NimbleStudio Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as nimblestudio from '@aws-cdk/aws-nimblestudio';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for NimbleStudio construct libraries](https://constructs.dev/search?q=nimblestudio)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::NimbleStudio resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_NimbleStudio.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::NimbleStudio](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_NimbleStudio.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-nimblestudio",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.NimbleStudio",
+      "packageId": "Amazon.CDK.AWS.NimbleStudio",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "nimblestudio",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.nimblestudio"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-nimblestudio"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-nimblestudio",
+      "module": "aws_cdk.aws_nimblestudio"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-nimblestudio.CfnLaunchProfile": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::NimbleStudio::LaunchProfile",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html"
+        },
+        "remarks": "The `AWS::NimbleStudio::LaunchProfile` resource represents access permissions for a set of studio components, including types of workstations, render farms, and shared file systems. Launch profiles are shared with studio users to give them access to the set of studio components.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::NimbleStudio::LaunchProfile`."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnLaunchProfile",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::NimbleStudio::LaunchProfile`."
+        },
+        "locationInModule": {
+          "filename": "lib/nimblestudio.generated.ts",
+          "line": 259
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-nimblestudio.CfnLaunchProfileProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 163
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 285
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 303
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnLaunchProfile",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 167
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LaunchProfileId"
+            },
+            "stability": "external",
+            "summary": "The unique identifier for the launch profile resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 192
+          },
+          "name": "attrLaunchProfileId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 290
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 250
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-ec2subnetids"
+            },
+            "stability": "external",
+            "summary": "Unique identifiers for a collection of EC2 subnets."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 199
+          },
+          "name": "ec2SubnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-launchprofileprotocolversions"
+            },
+            "remarks": "The only valid version is \"2021-03-31\".",
+            "stability": "external",
+            "summary": "The version number of the protocol that is used by the launch profile."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 206
+          },
+          "name": "launchProfileProtocolVersions",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-name"
+            },
+            "stability": "external",
+            "summary": "A friendly name for the launch profile."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 213
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-streamconfiguration"
+            },
+            "stability": "external",
+            "summary": "A configuration for a streaming session."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 220
+          },
+          "name": "streamConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.StreamConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-studiocomponentids"
+            },
+            "stability": "external",
+            "summary": "Unique identifiers for a collection of studio components that can be used with this launch profile."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 227
+          },
+          "name": "studioComponentIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-studioid"
+            },
+            "remarks": "In Nimble Studio , all other resources are contained in a studio resource.",
+            "stability": "external",
+            "summary": "The unique identifier for a studio resource."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 234
+          },
+          "name": "studioId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-description"
+            },
+            "stability": "external",
+            "summary": "A human-readable description of the launch profile."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 241
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnLaunchProfile"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.StreamConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "A configuration for a streaming session."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.StreamConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 317
+      },
+      "name": "StreamConfigurationProperty",
+      "namespace": "CfnLaunchProfile",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfiguration.html#cfn-nimblestudio-launchprofile-streamconfiguration-clipboardmode"
+            },
+            "stability": "external",
+            "summary": "Allows or deactivates the use of the system clipboard to copy and paste between the streaming session and streaming client."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 334
+          },
+          "name": "clipboardMode",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfiguration.html#cfn-nimblestudio-launchprofile-streamconfiguration-ec2instancetypes"
+            },
+            "stability": "external",
+            "summary": "The EC2 instance types that users can select from when launching a streaming session with this launch profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 340
+          },
+          "name": "ec2InstanceTypes",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfiguration.html#cfn-nimblestudio-launchprofile-streamconfiguration-streamingimageids"
+            },
+            "stability": "external",
+            "summary": "The streaming images that users can select from when launching a streaming session with this launch profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 376
+          },
+          "name": "streamingImageIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfiguration.html#cfn-nimblestudio-launchprofile-streamconfiguration-automaticterminationmode"
+            },
+            "remarks": "- When `ACTIVATED` , the streaming session is scheduled for termination after being in the `STOPPED` state for the time specified in `maxStoppedSessionLengthInMinutes` .\n- When `DEACTIVATED` , the streaming session can remain in the `STOPPED` state indefinitely.\n\nThis parameter is only allowed when `sessionPersistenceMode` is `ACTIVATED` . When allowed, the default value for this parameter is `DEACTIVATED` .",
+            "stability": "external",
+            "summary": "Indicates if a streaming session created from this launch profile should be terminated automatically or retained without termination after being in a `STOPPED` state."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 328
+          },
+          "name": "automaticTerminationMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfiguration.html#cfn-nimblestudio-launchprofile-streamconfiguration-maxsessionlengthinminutes"
+            },
+            "remarks": "After this point, Nimble Studio automatically terminates or stops the session. The default length of time is 690 minutes, and the maximum length of time is 30 days.",
+            "stability": "external",
+            "summary": "The length of time, in minutes, that a streaming session can be active before it is stopped or terminated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 346
+          },
+          "name": "maxSessionLengthInMinutes",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfiguration.html#cfn-nimblestudio-launchprofile-streamconfiguration-maxstoppedsessionlengthinminutes"
+            },
+            "remarks": "The default value is 0. The maximum value is 5760.\n\nThis field is allowed only when `sessionPersistenceMode` is `ACTIVATED` and `automaticTerminationMode` is `ACTIVATED` .\n\nIf the value is set to 0, your sessions can’t be `STOPPED` . If you then call `StopStreamingSession` , the session fails. If the time that a session stays in the `READY` state exceeds the `maxSessionLengthInMinutes` value, the session will automatically be terminated (instead of `STOPPED` ).\n\nIf the value is set to a positive number, the session can be stopped. You can call `StopStreamingSession` to stop sessions in the `READY` state. If the time that a session stays in the `READY` state exceeds the `maxSessionLengthInMinutes` value, the session will automatically be stopped (instead of terminated).",
+            "stability": "external",
+            "summary": "Integer that determines if you can start and stop your sessions and how long a session can stay in the `STOPPED` state."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 358
+          },
+          "name": "maxStoppedSessionLengthInMinutes",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfiguration.html#cfn-nimblestudio-launchprofile-streamconfiguration-sessionpersistencemode"
+            },
+            "remarks": "This means that `volumeConfiguration` and `automaticTerminationMode` are configured.",
+            "stability": "external",
+            "summary": "Determine if a streaming session created from this launch profile can configure persistent storage."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 364
+          },
+          "name": "sessionPersistenceMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfiguration.html#cfn-nimblestudio-launchprofile-streamconfiguration-sessionstorage"
+            },
+            "stability": "external",
+            "summary": "The upload storage for a streaming session."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 370
+          },
+          "name": "sessionStorage",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.StreamConfigurationSessionStorageProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfiguration.html#cfn-nimblestudio-launchprofile-streamconfiguration-volumeconfiguration"
+            },
+            "remarks": "This parameter is only allowed when `sessionPersistenceMode` is `ACTIVATED` .",
+            "stability": "external",
+            "summary": "Custom volume configuration for the root volumes that are attached to streaming sessions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 384
+          },
+          "name": "volumeConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.VolumeConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnLaunchProfile.StreamConfigurationProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.StreamConfigurationSessionStorageProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfigurationsessionstorage.html"
+        },
+        "stability": "external",
+        "summary": "The configuration for a streaming session’s upload storage."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.StreamConfigurationSessionStorageProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 472
+      },
+      "name": "StreamConfigurationSessionStorageProperty",
+      "namespace": "CfnLaunchProfile",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfigurationsessionstorage.html#cfn-nimblestudio-launchprofile-streamconfigurationsessionstorage-mode"
+            },
+            "remarks": "The only valid option is `UPLOAD` .",
+            "stability": "external",
+            "summary": "Allows artists to upload files to their workstations."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 478
+          },
+          "name": "mode",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamconfigurationsessionstorage.html#cfn-nimblestudio-launchprofile-streamconfigurationsessionstorage-root"
+            },
+            "stability": "external",
+            "summary": "The configuration for the upload storage root of the streaming session."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 484
+          },
+          "name": "root",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.StreamingSessionStorageRootProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnLaunchProfile.StreamConfigurationSessionStorageProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.StreamingSessionStorageRootProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamingsessionstorageroot.html"
+        },
+        "stability": "external",
+        "summary": "The upload storage root location (folder) on streaming workstations where files are uploaded."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.StreamingSessionStorageRootProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 549
+      },
+      "name": "StreamingSessionStorageRootProperty",
+      "namespace": "CfnLaunchProfile",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamingsessionstorageroot.html#cfn-nimblestudio-launchprofile-streamingsessionstorageroot-linux"
+            },
+            "stability": "external",
+            "summary": "The folder path in Linux workstations where files are uploaded."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 555
+          },
+          "name": "linux",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-streamingsessionstorageroot.html#cfn-nimblestudio-launchprofile-streamingsessionstorageroot-windows"
+            },
+            "stability": "external",
+            "summary": "The folder path in Windows workstations where files are uploaded."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 561
+          },
+          "name": "windows",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnLaunchProfile.StreamingSessionStorageRootProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.VolumeConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-volumeconfiguration.html"
+        },
+        "remarks": "This parameter is only allowed when `sessionPersistenceMode` is `ACTIVATED` .",
+        "stability": "external",
+        "summary": "Custom volume configuration for the root volumes that are attached to streaming sessions."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.VolumeConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 627
+      },
+      "name": "VolumeConfigurationProperty",
+      "namespace": "CfnLaunchProfile",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-volumeconfiguration.html#cfn-nimblestudio-launchprofile-volumeconfiguration-iops"
+            },
+            "stability": "external",
+            "summary": "The number of I/O operations per second for the root volume that is attached to streaming session."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 633
+          },
+          "name": "iops",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-volumeconfiguration.html#cfn-nimblestudio-launchprofile-volumeconfiguration-size"
+            },
+            "remarks": "The root volume size is measured in GiBs.",
+            "stability": "external",
+            "summary": "The size of the root volume that is attached to the streaming session."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 639
+          },
+          "name": "size",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-launchprofile-volumeconfiguration.html#cfn-nimblestudio-launchprofile-volumeconfiguration-throughput"
+            },
+            "remarks": "The throughput is measured in MiB/s.",
+            "stability": "external",
+            "summary": "The throughput to provision for the root volume that is attached to the streaming session."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 645
+          },
+          "name": "throughput",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnLaunchProfile.VolumeConfigurationProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnLaunchProfileProps": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnLaunchProfile`."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnLaunchProfileProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 20
+      },
+      "name": "CfnLaunchProfileProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-ec2subnetids"
+            },
+            "stability": "external",
+            "summary": "Unique identifiers for a collection of EC2 subnets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 27
+          },
+          "name": "ec2SubnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-launchprofileprotocolversions"
+            },
+            "remarks": "The only valid version is \"2021-03-31\".",
+            "stability": "external",
+            "summary": "The version number of the protocol that is used by the launch profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 34
+          },
+          "name": "launchProfileProtocolVersions",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-name"
+            },
+            "stability": "external",
+            "summary": "A friendly name for the launch profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 41
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-streamconfiguration"
+            },
+            "stability": "external",
+            "summary": "A configuration for a streaming session."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 48
+          },
+          "name": "streamConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnLaunchProfile.StreamConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-studiocomponentids"
+            },
+            "stability": "external",
+            "summary": "Unique identifiers for a collection of studio components that can be used with this launch profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 55
+          },
+          "name": "studioComponentIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-studioid"
+            },
+            "remarks": "In Nimble Studio , all other resources are contained in a studio resource.",
+            "stability": "external",
+            "summary": "The unique identifier for a studio resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 62
+          },
+          "name": "studioId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-description"
+            },
+            "stability": "external",
+            "summary": "A human-readable description of the launch profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 69
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-launchprofile.html#cfn-nimblestudio-launchprofile-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 78
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnLaunchProfileProps"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStreamingImage": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::NimbleStudio::StreamingImage",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-streamingimage.html"
+        },
+        "remarks": "The `AWS::NimbleStudio::StreamingImage` resource creates a streaming image in a studio. A streaming image defines the operating system and software to be used in an  streaming session.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::NimbleStudio::StreamingImage`."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStreamingImage",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::NimbleStudio::StreamingImage`."
+        },
+        "locationInModule": {
+          "filename": "lib/nimblestudio.generated.ts",
+          "line": 926
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-nimblestudio.CfnStreamingImageProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 821
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 951
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 966
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnStreamingImage",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 825
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EncryptionConfiguration.KeyArn"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 850
+          },
+          "name": "attrEncryptionConfigurationKeyArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EncryptionConfiguration.KeyType"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 856
+          },
+          "name": "attrEncryptionConfigurationKeyType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EulaIds"
+            },
+            "stability": "external",
+            "summary": "The list of IDs of EULAs that must be accepted before a streaming session can be started using this streaming image."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 862
+          },
+          "name": "attrEulaIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Owner"
+            },
+            "stability": "external",
+            "summary": "The owner of the streaming image, either the studioId that contains the streaming image or 'amazon' for images that are provided by  ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 868
+          },
+          "name": "attrOwner",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Platform"
+            },
+            "stability": "external",
+            "summary": "The platform of the streaming image, either WINDOWS or LINUX."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 874
+          },
+          "name": "attrPlatform",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StreamingImageId"
+            },
+            "stability": "external",
+            "summary": "The unique identifier for the streaming image resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 880
+          },
+          "name": "attrStreamingImageId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 956
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-streamingimage.html#cfn-nimblestudio-streamingimage-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 917
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-streamingimage.html#cfn-nimblestudio-streamingimage-ec2imageid"
+            },
+            "stability": "external",
+            "summary": "The ID of an EC2 machine image with which to create the streaming image."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 887
+          },
+          "name": "ec2ImageId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-streamingimage.html#cfn-nimblestudio-streamingimage-name"
+            },
+            "stability": "external",
+            "summary": "A friendly name for a streaming image resource."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 894
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-streamingimage.html#cfn-nimblestudio-streamingimage-studioid"
+            },
+            "remarks": "In Nimble Studio , all other resources are contained in a studio resource.",
+            "stability": "external",
+            "summary": "The unique identifier for a studio resource."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 901
+          },
+          "name": "studioId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-streamingimage.html#cfn-nimblestudio-streamingimage-description"
+            },
+            "stability": "external",
+            "summary": "A human-readable description of the streaming image."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 908
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStreamingImage"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStreamingImage.StreamingImageEncryptionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-streamingimage-streamingimageencryptionconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Specifies how a streaming image is encrypted."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStreamingImage.StreamingImageEncryptionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 980
+      },
+      "name": "StreamingImageEncryptionConfigurationProperty",
+      "namespace": "CfnStreamingImage",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-streamingimage-streamingimageencryptionconfiguration.html#cfn-nimblestudio-streamingimage-streamingimageencryptionconfiguration-keytype"
+            },
+            "stability": "external",
+            "summary": "The type of KMS key that is used to encrypt studio data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 992
+          },
+          "name": "keyType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-streamingimage-streamingimageencryptionconfiguration.html#cfn-nimblestudio-streamingimage-streamingimageencryptionconfiguration-keyarn"
+            },
+            "stability": "external",
+            "summary": "The ARN for a KMS key that is used to encrypt studio data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 986
+          },
+          "name": "keyArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStreamingImage.StreamingImageEncryptionConfigurationProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStreamingImageProps": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-streamingimage.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnStreamingImage`."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStreamingImageProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 711
+      },
+      "name": "CfnStreamingImageProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-streamingimage.html#cfn-nimblestudio-streamingimage-ec2imageid"
+            },
+            "stability": "external",
+            "summary": "The ID of an EC2 machine image with which to create the streaming image."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 718
+          },
+          "name": "ec2ImageId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-streamingimage.html#cfn-nimblestudio-streamingimage-name"
+            },
+            "stability": "external",
+            "summary": "A friendly name for a streaming image resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 725
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-streamingimage.html#cfn-nimblestudio-streamingimage-studioid"
+            },
+            "remarks": "In Nimble Studio , all other resources are contained in a studio resource.",
+            "stability": "external",
+            "summary": "The unique identifier for a studio resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 732
+          },
+          "name": "studioId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-streamingimage.html#cfn-nimblestudio-streamingimage-description"
+            },
+            "stability": "external",
+            "summary": "A human-readable description of the streaming image."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 739
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-streamingimage.html#cfn-nimblestudio-streamingimage-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 748
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStreamingImageProps"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudio": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::NimbleStudio::Studio",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html"
+        },
+        "remarks": "The `AWS::NimbleStudio::Studio` resource creates a new studio resource. In  , all other resources are contained in a studio.\n\nWhen creating a studio, two IAM roles must be provided: the admin role and the user role. These roles are assumed by your users when they log in to the  portal. The user role must have the AmazonNimbleStudio-StudioUser managed policy attached for the portal to function properly. The Admin Role must have the AmazonNimbleStudio-StudioAdmin managed policy attached for the portal to function properly.\n\nYou can optionally specify an AWS Key Management Service key in the StudioEncryptionConfiguration. In Nimble Studio, resource names, descriptions, initialization scripts, and other data you provide are always encrypted at rest using an AWS Key Management Service key. By default, this key is owned by AWS and managed on your behalf. You may provide your own AWS Key Management Service key when calling CreateStudio to encrypt this data using a key that you own and manage. When providing an AWS Key Management Service key during studio creation,  creates AWS Key Management Service grants in your account to provide your studio user and admin roles access to these AWS Key Management Service keys. If you delete this grant, the studio will no longer be accessible to your portal users. If you delete the studio AWS Key Management Service key, your studio will no longer be accessible.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::NimbleStudio::Studio`."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudio",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::NimbleStudio::Studio`."
+        },
+        "locationInModule": {
+          "filename": "lib/nimblestudio.generated.ts",
+          "line": 1281
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 1181
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1306
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1322
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnStudio",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1185
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "HomeRegion"
+            },
+            "remarks": "For example, `us-west-2` .",
+            "stability": "external",
+            "summary": "The AWS Region where the studio resource is located."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1210
+          },
+          "name": "attrHomeRegion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SsoClientId"
+            },
+            "stability": "external",
+            "summary": "The IAM Identity Center application client ID that is used to integrate with IAM Identity Center , which enables IAM Identity Center users to log into the  portal."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1216
+          },
+          "name": "attrSsoClientId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StudioId"
+            },
+            "stability": "external",
+            "summary": "The unique identifier for the studio resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1222
+          },
+          "name": "attrStudioId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StudioUrl"
+            },
+            "stability": "external",
+            "summary": "The unique identifier for the studio resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1228
+          },
+          "name": "attrStudioUrl",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1311
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html#cfn-nimblestudio-studio-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1272
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html#cfn-nimblestudio-studio-adminrolearn"
+            },
+            "stability": "external",
+            "summary": "The IAM role that studio admins assume when logging in to the Nimble Studio portal."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1235
+          },
+          "name": "adminRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html#cfn-nimblestudio-studio-displayname"
+            },
+            "stability": "external",
+            "summary": "A friendly name for the studio."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1242
+          },
+          "name": "displayName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html#cfn-nimblestudio-studio-studioname"
+            },
+            "stability": "external",
+            "summary": "The name of the studio, as included in the URL when accessing it in the Nimble Studio portal."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1249
+          },
+          "name": "studioName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html#cfn-nimblestudio-studio-userrolearn"
+            },
+            "stability": "external",
+            "summary": "The IAM role that studio users assume when logging in to the Nimble Studio portal."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1256
+          },
+          "name": "userRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html#cfn-nimblestudio-studio-studioencryptionconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration of the encryption method that is used for the studio."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1263
+          },
+          "name": "studioEncryptionConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnStudio.StudioEncryptionConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudio"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudio.StudioEncryptionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studio-studioencryptionconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Configuration of the encryption method that is used for the studio."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudio.StudioEncryptionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 1336
+      },
+      "name": "StudioEncryptionConfigurationProperty",
+      "namespace": "CfnStudio",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studio-studioencryptionconfiguration.html#cfn-nimblestudio-studio-studioencryptionconfiguration-keytype"
+            },
+            "stability": "external",
+            "summary": "The type of KMS key that is used to encrypt studio data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1348
+          },
+          "name": "keyType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studio-studioencryptionconfiguration.html#cfn-nimblestudio-studio-studioencryptionconfiguration-keyarn"
+            },
+            "stability": "external",
+            "summary": "The ARN for a KMS key that is used to encrypt studio data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1342
+          },
+          "name": "keyArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudio.StudioEncryptionConfigurationProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudioComponent": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::NimbleStudio::StudioComponent",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html"
+        },
+        "remarks": "The `AWS::NimbleStudio::StudioComponent` resource represents a network resource that is used by a studio's users and workflows. A typical studio contains studio components for the following: a render farm, an Active Directory, a licensing service, and a shared file system.\n\nAccess to a studio component is managed by specifying security groups for the resource, as well as its endpoint.\n\nA studio component also has a set of initialization scripts, which are returned by `GetLaunchProfileInitialization` . These initialization scripts run on streaming sessions when they start. They provide users with flexibility in controlling how studio resources are configured on a streaming session.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::NimbleStudio::StudioComponent`."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::NimbleStudio::StudioComponent`."
+        },
+        "locationInModule": {
+          "filename": "lib/nimblestudio.generated.ts",
+          "line": 1686
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponentProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 1576
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1711
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1731
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnStudioComponent",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1580
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StudioComponentId"
+            },
+            "stability": "external",
+            "summary": "The unique identifier for the studio component resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1605
+          },
+          "name": "attrStudioComponentId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1716
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1677
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-name"
+            },
+            "stability": "external",
+            "summary": "A friendly name for the studio component resource."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1612
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-studioid"
+            },
+            "remarks": "In Nimble Studio , all other resources are contained in a studio resource.",
+            "stability": "external",
+            "summary": "The unique identifier for a studio resource."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1619
+          },
+          "name": "studioId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-type"
+            },
+            "stability": "external",
+            "summary": "The type of the studio component."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1626
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-configuration"
+            },
+            "stability": "external",
+            "summary": "The configuration of the studio component, based on component type."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1633
+          },
+          "name": "configuration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.StudioComponentConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-description"
+            },
+            "stability": "external",
+            "summary": "A human-readable description for the studio component resource."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1640
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-ec2securitygroupids"
+            },
+            "stability": "external",
+            "summary": "The EC2 security groups that control access to the studio component."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1647
+          },
+          "name": "ec2SecurityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-initializationscripts"
+            },
+            "stability": "external",
+            "summary": "Initialization scripts for studio components."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1654
+          },
+          "name": "initializationScripts",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.StudioComponentInitializationScriptProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-scriptparameters"
+            },
+            "stability": "external",
+            "summary": "Parameters for the studio component scripts."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1661
+          },
+          "name": "scriptParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ScriptParameterKeyValueProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-subtype"
+            },
+            "stability": "external",
+            "summary": "The specific subtype of a studio component."
+          },
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1668
+          },
+          "name": "subtype",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudioComponent"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ActiveDirectoryComputerAttributeProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-activedirectorycomputerattribute.html"
+        },
+        "stability": "external",
+        "summary": "An LDAP attribute of an Active Directory computer account, in the form of a name:value pair."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ActiveDirectoryComputerAttributeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 1745
+      },
+      "name": "ActiveDirectoryComputerAttributeProperty",
+      "namespace": "CfnStudioComponent",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-activedirectorycomputerattribute.html#cfn-nimblestudio-studiocomponent-activedirectorycomputerattribute-name"
+            },
+            "stability": "external",
+            "summary": "The name for the LDAP attribute."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1751
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-activedirectorycomputerattribute.html#cfn-nimblestudio-studiocomponent-activedirectorycomputerattribute-value"
+            },
+            "stability": "external",
+            "summary": "The value for the LDAP attribute."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1757
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudioComponent.ActiveDirectoryComputerAttributeProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ActiveDirectoryConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-activedirectoryconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The configuration for a AWS Directory Service for Microsoft Active Directory studio resource."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ActiveDirectoryConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 1821
+      },
+      "name": "ActiveDirectoryConfigurationProperty",
+      "namespace": "CfnStudioComponent",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-activedirectoryconfiguration.html#cfn-nimblestudio-studiocomponent-activedirectoryconfiguration-computerattributes"
+            },
+            "stability": "external",
+            "summary": "A collection of custom attributes for an Active Directory computer."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1827
+          },
+          "name": "computerAttributes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ActiveDirectoryComputerAttributeProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-activedirectoryconfiguration.html#cfn-nimblestudio-studiocomponent-activedirectoryconfiguration-directoryid"
+            },
+            "stability": "external",
+            "summary": "The directory ID of the AWS Directory Service for Microsoft Active Directory to access using this studio component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1833
+          },
+          "name": "directoryId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-activedirectoryconfiguration.html#cfn-nimblestudio-studiocomponent-activedirectoryconfiguration-organizationalunitdistinguishedname"
+            },
+            "stability": "external",
+            "summary": "The distinguished name (DN) and organizational unit (OU) of an Active Directory computer."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1839
+          },
+          "name": "organizationalUnitDistinguishedName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudioComponent.ActiveDirectoryConfigurationProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ComputeFarmConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-computefarmconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The configuration for a render farm that is associated with a studio resource."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ComputeFarmConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 1906
+      },
+      "name": "ComputeFarmConfigurationProperty",
+      "namespace": "CfnStudioComponent",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-computefarmconfiguration.html#cfn-nimblestudio-studiocomponent-computefarmconfiguration-activedirectoryuser"
+            },
+            "stability": "external",
+            "summary": "The name of an Active Directory user that is used on ComputeFarm worker instances."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1912
+          },
+          "name": "activeDirectoryUser",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-computefarmconfiguration.html#cfn-nimblestudio-studiocomponent-computefarmconfiguration-endpoint"
+            },
+            "stability": "external",
+            "summary": "The endpoint of the ComputeFarm that is accessed by the studio component resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1918
+          },
+          "name": "endpoint",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudioComponent.ComputeFarmConfigurationProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudioComponent.LicenseServiceConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-licenseserviceconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The configuration for a license service that is associated with a studio resource."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.LicenseServiceConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 1982
+      },
+      "name": "LicenseServiceConfigurationProperty",
+      "namespace": "CfnStudioComponent",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-licenseserviceconfiguration.html#cfn-nimblestudio-studiocomponent-licenseserviceconfiguration-endpoint"
+            },
+            "stability": "external",
+            "summary": "The endpoint of the license service that is accessed by the studio component resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1988
+          },
+          "name": "endpoint",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudioComponent.LicenseServiceConfigurationProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ScriptParameterKeyValueProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-scriptparameterkeyvalue.html"
+        },
+        "stability": "external",
+        "summary": "A parameter for a studio component script, in the form of a key-value pair."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ScriptParameterKeyValueProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 2049
+      },
+      "name": "ScriptParameterKeyValueProperty",
+      "namespace": "CfnStudioComponent",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-scriptparameterkeyvalue.html#cfn-nimblestudio-studiocomponent-scriptparameterkeyvalue-key"
+            },
+            "stability": "external",
+            "summary": "A script parameter key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2055
+          },
+          "name": "key",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-scriptparameterkeyvalue.html#cfn-nimblestudio-studiocomponent-scriptparameterkeyvalue-value"
+            },
+            "stability": "external",
+            "summary": "A script parameter value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2061
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudioComponent.ScriptParameterKeyValueProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudioComponent.SharedFileSystemConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-sharedfilesystemconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The configuration for a shared file storage system that is associated with a studio resource."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.SharedFileSystemConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 2125
+      },
+      "name": "SharedFileSystemConfigurationProperty",
+      "namespace": "CfnStudioComponent",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-sharedfilesystemconfiguration.html#cfn-nimblestudio-studiocomponent-sharedfilesystemconfiguration-endpoint"
+            },
+            "stability": "external",
+            "summary": "The endpoint of the shared file system that is accessed by the studio component resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2131
+          },
+          "name": "endpoint",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-sharedfilesystemconfiguration.html#cfn-nimblestudio-studiocomponent-sharedfilesystemconfiguration-filesystemid"
+            },
+            "stability": "external",
+            "summary": "The unique identifier for a file system."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2137
+          },
+          "name": "fileSystemId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-sharedfilesystemconfiguration.html#cfn-nimblestudio-studiocomponent-sharedfilesystemconfiguration-linuxmountpoint"
+            },
+            "stability": "external",
+            "summary": "The mount location for a shared file system on a Linux virtual workstation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2143
+          },
+          "name": "linuxMountPoint",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-sharedfilesystemconfiguration.html#cfn-nimblestudio-studiocomponent-sharedfilesystemconfiguration-sharename"
+            },
+            "stability": "external",
+            "summary": "The name of the file share."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2149
+          },
+          "name": "shareName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-sharedfilesystemconfiguration.html#cfn-nimblestudio-studiocomponent-sharedfilesystemconfiguration-windowsmountdrive"
+            },
+            "stability": "external",
+            "summary": "The mount location for a shared file system on a Windows virtual workstation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2155
+          },
+          "name": "windowsMountDrive",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudioComponent.SharedFileSystemConfigurationProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudioComponent.StudioComponentConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-studiocomponentconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The configuration of the studio component, based on component type."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.StudioComponentConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 2228
+      },
+      "name": "StudioComponentConfigurationProperty",
+      "namespace": "CfnStudioComponent",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-studiocomponentconfiguration.html#cfn-nimblestudio-studiocomponent-studiocomponentconfiguration-activedirectoryconfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration for a AWS Directory Service for Microsoft Active Directory studio resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2234
+          },
+          "name": "activeDirectoryConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ActiveDirectoryConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-studiocomponentconfiguration.html#cfn-nimblestudio-studiocomponent-studiocomponentconfiguration-computefarmconfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration for a render farm that is associated with a studio resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2240
+          },
+          "name": "computeFarmConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ComputeFarmConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-studiocomponentconfiguration.html#cfn-nimblestudio-studiocomponent-studiocomponentconfiguration-licenseserviceconfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration for a license service that is associated with a studio resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2246
+          },
+          "name": "licenseServiceConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.LicenseServiceConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-studiocomponentconfiguration.html#cfn-nimblestudio-studiocomponent-studiocomponentconfiguration-sharedfilesystemconfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration for a shared file storage system that is associated with a studio resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2252
+          },
+          "name": "sharedFileSystemConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.SharedFileSystemConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudioComponent.StudioComponentConfigurationProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudioComponent.StudioComponentInitializationScriptProperty": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-studiocomponentinitializationscript.html"
+        },
+        "stability": "external",
+        "summary": "Initialization scripts for studio components."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.StudioComponentInitializationScriptProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 2322
+      },
+      "name": "StudioComponentInitializationScriptProperty",
+      "namespace": "CfnStudioComponent",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-studiocomponentinitializationscript.html#cfn-nimblestudio-studiocomponent-studiocomponentinitializationscript-launchprofileprotocolversion"
+            },
+            "remarks": "The only valid version is \"2021-03-31\".",
+            "stability": "external",
+            "summary": "The version number of the protocol that is used by the launch profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2328
+          },
+          "name": "launchProfileProtocolVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-studiocomponentinitializationscript.html#cfn-nimblestudio-studiocomponent-studiocomponentinitializationscript-platform"
+            },
+            "stability": "external",
+            "summary": "The platform of the initialization script, either Windows or Linux."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2334
+          },
+          "name": "platform",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-studiocomponentinitializationscript.html#cfn-nimblestudio-studiocomponent-studiocomponentinitializationscript-runcontext"
+            },
+            "stability": "external",
+            "summary": "The method to use when running the initialization script."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2340
+          },
+          "name": "runContext",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-nimblestudio-studiocomponent-studiocomponentinitializationscript.html#cfn-nimblestudio-studiocomponent-studiocomponentinitializationscript-script"
+            },
+            "stability": "external",
+            "summary": "The initialization script."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 2346
+          },
+          "name": "script",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudioComponent.StudioComponentInitializationScriptProperty"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudioComponentProps": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnStudioComponent`."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponentProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 1412
+      },
+      "name": "CfnStudioComponentProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-name"
+            },
+            "stability": "external",
+            "summary": "A friendly name for the studio component resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1419
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-studioid"
+            },
+            "remarks": "In Nimble Studio , all other resources are contained in a studio resource.",
+            "stability": "external",
+            "summary": "The unique identifier for a studio resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1426
+          },
+          "name": "studioId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-type"
+            },
+            "stability": "external",
+            "summary": "The type of the studio component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1433
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-configuration"
+            },
+            "stability": "external",
+            "summary": "The configuration of the studio component, based on component type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1440
+          },
+          "name": "configuration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.StudioComponentConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-description"
+            },
+            "stability": "external",
+            "summary": "A human-readable description for the studio component resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1447
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-ec2securitygroupids"
+            },
+            "stability": "external",
+            "summary": "The EC2 security groups that control access to the studio component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1454
+          },
+          "name": "ec2SecurityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-initializationscripts"
+            },
+            "stability": "external",
+            "summary": "Initialization scripts for studio components."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1461
+          },
+          "name": "initializationScripts",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.StudioComponentInitializationScriptProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-scriptparameters"
+            },
+            "stability": "external",
+            "summary": "Parameters for the studio component scripts."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1468
+          },
+          "name": "scriptParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioComponent.ScriptParameterKeyValueProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-subtype"
+            },
+            "stability": "external",
+            "summary": "The specific subtype of a studio component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1475
+          },
+          "name": "subtype",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studiocomponent.html#cfn-nimblestudio-studiocomponent-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1484
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudioComponentProps"
+    },
+    "@aws-cdk/aws-nimblestudio.CfnStudioProps": {
+      "assembly": "@aws-cdk/aws-nimblestudio",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnStudio`."
+      },
+      "fqn": "@aws-cdk/aws-nimblestudio.CfnStudioProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/nimblestudio.generated.ts",
+        "line": 1056
+      },
+      "name": "CfnStudioProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html#cfn-nimblestudio-studio-adminrolearn"
+            },
+            "stability": "external",
+            "summary": "The IAM role that studio admins assume when logging in to the Nimble Studio portal."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1063
+          },
+          "name": "adminRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html#cfn-nimblestudio-studio-displayname"
+            },
+            "stability": "external",
+            "summary": "A friendly name for the studio."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1070
+          },
+          "name": "displayName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html#cfn-nimblestudio-studio-studioname"
+            },
+            "stability": "external",
+            "summary": "The name of the studio, as included in the URL when accessing it in the Nimble Studio portal."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1077
+          },
+          "name": "studioName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html#cfn-nimblestudio-studio-userrolearn"
+            },
+            "stability": "external",
+            "summary": "The IAM role that studio users assume when logging in to the Nimble Studio portal."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1084
+          },
+          "name": "userRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html#cfn-nimblestudio-studio-studioencryptionconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration of the encryption method that is used for the studio."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1091
+          },
+          "name": "studioEncryptionConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-nimblestudio.CfnStudio.StudioEncryptionConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-nimblestudio-studio.html#cfn-nimblestudio-studio-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/nimblestudio.generated.ts",
+            "line": 1100
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/nimblestudio.generated:CfnStudioProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "t9qSA8WbBJxgAr0i12z7dS/ewX+5+5AM/tBFotTnLxc="
+}

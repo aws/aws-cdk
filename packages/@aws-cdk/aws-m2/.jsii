@@ -1,0 +1,1808 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::M2 Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::M2",
+    "aws-m2"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-m2",
+  "readme": {
+    "markdown": "# AWS::M2 Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as m2 from '@aws-cdk/aws-m2';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for M2 construct libraries](https://constructs.dev/search?q=m2)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::M2 resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_M2.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::M2](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_M2.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-m2",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.M2",
+      "packageId": "Amazon.CDK.AWS.M2",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "m2",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.m2"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-m2"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-m2",
+      "module": "aws_cdk.aws_m2"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-m2.CfnApplication": {
+      "assembly": "@aws-cdk/aws-m2",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::M2::Application",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html"
+        },
+        "remarks": "Specifies a new application with given parameters. Requires an existing runtime environment and application definition file.\n\nFor information about application definitions, see the [AWS Mainframe Modernization User Guide](https://docs.aws.amazon.com/m2/latest/userguide/applications-m2-definition.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::M2::Application`."
+      },
+      "fqn": "@aws-cdk/aws-m2.CfnApplication",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::M2::Application`."
+        },
+        "locationInModule": {
+          "filename": "lib/m2.generated.ts",
+          "line": 234
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-m2.CfnApplicationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/m2.generated.ts",
+        "line": 144
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 256
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 272
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnApplication",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 148
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 173
+          },
+          "name": "attrApplicationArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationId"
+            },
+            "stability": "external",
+            "summary": "The identifier of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 179
+          },
+          "name": "attrApplicationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 261
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html#cfn-m2-application-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 225
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html#cfn-m2-application-definition"
+            },
+            "remarks": "For information about application definitions, see the [AWS Mainframe Modernization User Guide](https://docs.aws.amazon.com/m2/latest/userguide/applications-m2-definition.html) .",
+            "stability": "external",
+            "summary": "The application definition for a particular application. You can specify either inline JSON or an Amazon S3 bucket location."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 188
+          },
+          "name": "definition",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-m2.CfnApplication.DefinitionProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html#cfn-m2-application-enginetype"
+            },
+            "stability": "external",
+            "summary": "The type of the target platform for this application."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 195
+          },
+          "name": "engineType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html#cfn-m2-application-name"
+            },
+            "stability": "external",
+            "summary": "The name of the application."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 202
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html#cfn-m2-application-description"
+            },
+            "stability": "external",
+            "summary": "The description of the application."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 209
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html#cfn-m2-application-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The identifier of a customer managed key."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 216
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/m2.generated:CfnApplication"
+    },
+    "@aws-cdk/aws-m2.CfnApplication.DefinitionProperty": {
+      "assembly": "@aws-cdk/aws-m2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-application-definition.html"
+        },
+        "remarks": "You can specify either inline JSON or an Amazon S3 bucket location.",
+        "stability": "external",
+        "summary": "The application definition for a particular application."
+      },
+      "fqn": "@aws-cdk/aws-m2.CfnApplication.DefinitionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/m2.generated.ts",
+        "line": 286
+      },
+      "name": "DefinitionProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-application-definition.html#cfn-m2-application-definition-content"
+            },
+            "remarks": "This is a JSON object that contains the resource configuration/definitions that identify an application.",
+            "stability": "external",
+            "summary": "The content of the application definition."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 292
+          },
+          "name": "content",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-application-definition.html#cfn-m2-application-definition-s3location"
+            },
+            "stability": "external",
+            "summary": "The S3 bucket that contains the application definition."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 298
+          },
+          "name": "s3Location",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/m2.generated:CfnApplication.DefinitionProperty"
+    },
+    "@aws-cdk/aws-m2.CfnApplicationProps": {
+      "assembly": "@aws-cdk/aws-m2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnApplication`."
+      },
+      "fqn": "@aws-cdk/aws-m2.CfnApplicationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/m2.generated.ts",
+        "line": 20
+      },
+      "name": "CfnApplicationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html#cfn-m2-application-definition"
+            },
+            "remarks": "For information about application definitions, see the [AWS Mainframe Modernization User Guide](https://docs.aws.amazon.com/m2/latest/userguide/applications-m2-definition.html) .",
+            "stability": "external",
+            "summary": "The application definition for a particular application. You can specify either inline JSON or an Amazon S3 bucket location."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 29
+          },
+          "name": "definition",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-m2.CfnApplication.DefinitionProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html#cfn-m2-application-enginetype"
+            },
+            "stability": "external",
+            "summary": "The type of the target platform for this application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 36
+          },
+          "name": "engineType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html#cfn-m2-application-name"
+            },
+            "stability": "external",
+            "summary": "The name of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 43
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html#cfn-m2-application-description"
+            },
+            "stability": "external",
+            "summary": "The description of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 50
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html#cfn-m2-application-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The identifier of a customer managed key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 57
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-application.html#cfn-m2-application-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 66
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/m2.generated:CfnApplicationProps"
+    },
+    "@aws-cdk/aws-m2.CfnEnvironment": {
+      "assembly": "@aws-cdk/aws-m2",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::M2::Environment",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html"
+        },
+        "remarks": "Specifies a runtime environment for a given runtime engine.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::M2::Environment`."
+      },
+      "fqn": "@aws-cdk/aws-m2.CfnEnvironment",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::M2::Environment`."
+        },
+        "locationInModule": {
+          "filename": "lib/m2.generated.ts",
+          "line": 688
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-m2.CfnEnvironmentProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/m2.generated.ts",
+        "line": 551
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 717
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 740
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnEnvironment",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 555
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EnvironmentArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the runtime environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 580
+          },
+          "name": "attrEnvironmentArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EnvironmentId"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the runtime environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 586
+          },
+          "name": "attrEnvironmentId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 722
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 679
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-enginetype"
+            },
+            "stability": "external",
+            "summary": "The target platform for the runtime environment."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 593
+          },
+          "name": "engineType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-instancetype"
+            },
+            "stability": "external",
+            "summary": "The instance type of the runtime environment."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 600
+          },
+          "name": "instanceType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-name"
+            },
+            "stability": "external",
+            "summary": "The name of the runtime environment."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 607
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-description"
+            },
+            "stability": "external",
+            "summary": "The description of the runtime environment."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 614
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-engineversion"
+            },
+            "stability": "external",
+            "summary": "The version of the runtime engine."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 621
+          },
+          "name": "engineVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-highavailabilityconfig"
+            },
+            "stability": "external",
+            "summary": "Defines the details of a high availability configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 628
+          },
+          "name": "highAvailabilityConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-m2.CfnEnvironment.HighAvailabilityConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The identifier of a customer managed key."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 635
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-preferredmaintenancewindow"
+            },
+            "remarks": "If you do not provide a value, a random system-generated value will be assigned.",
+            "stability": "external",
+            "summary": "Configures the maintenance window you want for the runtime environment."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 642
+          },
+          "name": "preferredMaintenanceWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-publiclyaccessible"
+            },
+            "stability": "external",
+            "summary": "Specifies whether the runtime environment is publicly accessible."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 649
+          },
+          "name": "publiclyAccessible",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-securitygroupids"
+            },
+            "stability": "external",
+            "summary": "The list of security groups for the VPC associated with this runtime environment."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 656
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-storageconfigurations"
+            },
+            "stability": "external",
+            "summary": "Defines the storage configuration for a runtime environment."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 663
+          },
+          "name": "storageConfigurations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-m2.CfnEnvironment.StorageConfigurationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-subnetids"
+            },
+            "stability": "external",
+            "summary": "The list of subnets associated with the VPC for this runtime environment."
+          },
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 670
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/m2.generated:CfnEnvironment"
+    },
+    "@aws-cdk/aws-m2.CfnEnvironment.EfsStorageConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-m2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-environment-efsstorageconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Defines the storage configuration for an Amazon EFS file system."
+      },
+      "fqn": "@aws-cdk/aws-m2.CfnEnvironment.EfsStorageConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/m2.generated.ts",
+        "line": 754
+      },
+      "name": "EfsStorageConfigurationProperty",
+      "namespace": "CfnEnvironment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-environment-efsstorageconfiguration.html#cfn-m2-environment-efsstorageconfiguration-filesystemid"
+            },
+            "stability": "external",
+            "summary": "The file system identifier."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 760
+          },
+          "name": "fileSystemId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-environment-efsstorageconfiguration.html#cfn-m2-environment-efsstorageconfiguration-mountpoint"
+            },
+            "stability": "external",
+            "summary": "The mount point for the file system."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 766
+          },
+          "name": "mountPoint",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/m2.generated:CfnEnvironment.EfsStorageConfigurationProperty"
+    },
+    "@aws-cdk/aws-m2.CfnEnvironment.FsxStorageConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-m2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-environment-fsxstorageconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Defines the storage configuration for an Amazon FSx file system."
+      },
+      "fqn": "@aws-cdk/aws-m2.CfnEnvironment.FsxStorageConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/m2.generated.ts",
+        "line": 832
+      },
+      "name": "FsxStorageConfigurationProperty",
+      "namespace": "CfnEnvironment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-environment-fsxstorageconfiguration.html#cfn-m2-environment-fsxstorageconfiguration-filesystemid"
+            },
+            "stability": "external",
+            "summary": "The file system identifier."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 838
+          },
+          "name": "fileSystemId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-environment-fsxstorageconfiguration.html#cfn-m2-environment-fsxstorageconfiguration-mountpoint"
+            },
+            "stability": "external",
+            "summary": "The mount point for the file system."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 844
+          },
+          "name": "mountPoint",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/m2.generated:CfnEnvironment.FsxStorageConfigurationProperty"
+    },
+    "@aws-cdk/aws-m2.CfnEnvironment.HighAvailabilityConfigProperty": {
+      "assembly": "@aws-cdk/aws-m2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-environment-highavailabilityconfig.html"
+        },
+        "stability": "external",
+        "summary": "Defines the details of a high availability configuration."
+      },
+      "fqn": "@aws-cdk/aws-m2.CfnEnvironment.HighAvailabilityConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/m2.generated.ts",
+        "line": 910
+      },
+      "name": "HighAvailabilityConfigProperty",
+      "namespace": "CfnEnvironment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-environment-highavailabilityconfig.html#cfn-m2-environment-highavailabilityconfig-desiredcapacity"
+            },
+            "stability": "external",
+            "summary": "The number of instances in a high availability configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 916
+          },
+          "name": "desiredCapacity",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/m2.generated:CfnEnvironment.HighAvailabilityConfigProperty"
+    },
+    "@aws-cdk/aws-m2.CfnEnvironment.StorageConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-m2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-environment-storageconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Defines the storage configuration for a runtime environment."
+      },
+      "fqn": "@aws-cdk/aws-m2.CfnEnvironment.StorageConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/m2.generated.ts",
+        "line": 978
+      },
+      "name": "StorageConfigurationProperty",
+      "namespace": "CfnEnvironment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-environment-storageconfiguration.html#cfn-m2-environment-storageconfiguration-efs"
+            },
+            "stability": "external",
+            "summary": "Defines the storage configuration for an Amazon EFS file system."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 984
+          },
+          "name": "efs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-m2.CfnEnvironment.EfsStorageConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-m2-environment-storageconfiguration.html#cfn-m2-environment-storageconfiguration-fsx"
+            },
+            "stability": "external",
+            "summary": "Defines the storage configuration for an Amazon FSx file system."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 990
+          },
+          "name": "fsx",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-m2.CfnEnvironment.FsxStorageConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/m2.generated:CfnEnvironment.StorageConfigurationProperty"
+    },
+    "@aws-cdk/aws-m2.CfnEnvironmentProps": {
+      "assembly": "@aws-cdk/aws-m2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnEnvironment`."
+      },
+      "fqn": "@aws-cdk/aws-m2.CfnEnvironmentProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/m2.generated.ts",
+        "line": 361
+      },
+      "name": "CfnEnvironmentProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-enginetype"
+            },
+            "stability": "external",
+            "summary": "The target platform for the runtime environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 368
+          },
+          "name": "engineType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-instancetype"
+            },
+            "stability": "external",
+            "summary": "The instance type of the runtime environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 375
+          },
+          "name": "instanceType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-name"
+            },
+            "stability": "external",
+            "summary": "The name of the runtime environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 382
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-description"
+            },
+            "stability": "external",
+            "summary": "The description of the runtime environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 389
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-engineversion"
+            },
+            "stability": "external",
+            "summary": "The version of the runtime engine."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 396
+          },
+          "name": "engineVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-highavailabilityconfig"
+            },
+            "stability": "external",
+            "summary": "Defines the details of a high availability configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 403
+          },
+          "name": "highAvailabilityConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-m2.CfnEnvironment.HighAvailabilityConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The identifier of a customer managed key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 410
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-preferredmaintenancewindow"
+            },
+            "remarks": "If you do not provide a value, a random system-generated value will be assigned.",
+            "stability": "external",
+            "summary": "Configures the maintenance window you want for the runtime environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 417
+          },
+          "name": "preferredMaintenanceWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-publiclyaccessible"
+            },
+            "stability": "external",
+            "summary": "Specifies whether the runtime environment is publicly accessible."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 424
+          },
+          "name": "publiclyAccessible",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-securitygroupids"
+            },
+            "stability": "external",
+            "summary": "The list of security groups for the VPC associated with this runtime environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 431
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-storageconfigurations"
+            },
+            "stability": "external",
+            "summary": "Defines the storage configuration for a runtime environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 438
+          },
+          "name": "storageConfigurations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-m2.CfnEnvironment.StorageConfigurationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-subnetids"
+            },
+            "stability": "external",
+            "summary": "The list of subnets associated with the VPC for this runtime environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 445
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-m2-environment.html#cfn-m2-environment-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/m2.generated.ts",
+            "line": 454
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/m2.generated:CfnEnvironmentProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "cfFs+5JoX7QWP1g6oZ0Sig5BRbYJi3LVk+MKNxjDADw="
+}

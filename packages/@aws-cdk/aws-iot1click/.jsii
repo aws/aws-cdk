@@ -1,0 +1,1407 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::IoT1Click",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "aws-iot1click"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-iot1click",
+  "readme": {
+    "markdown": "# AWS IoT 1-Click Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as iot1click from '@aws-cdk/aws-iot1click';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for IoT1Click construct libraries](https://constructs.dev/search?q=iot1click)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::IoT1Click resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_IoT1Click.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::IoT1Click](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_IoT1Click.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-iot1click",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.IoT1Click",
+      "packageId": "Amazon.CDK.AWS.IoT1Click"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "iot1click",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.iot1click"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-iot1click"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-iot1click",
+      "module": "aws_cdk.aws_iot1click"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-iot1click.CfnDevice": {
+      "assembly": "@aws-cdk/aws-iot1click",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::IoT1Click::Device",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-device.html"
+        },
+        "remarks": "The `AWS::IoT1Click::Device` resource controls the enabled state of an AWS IoT 1-Click compatible device. For more information, see [Device](https://docs.aws.amazon.com/iot-1-click/1.0/devices-apireference/devices-deviceid.html) in the *AWS IoT 1-Click Devices API Reference* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::IoT1Click::Device`."
+      },
+      "fqn": "@aws-cdk/aws-iot1click.CfnDevice",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::IoT1Click::Device`."
+        },
+        "locationInModule": {
+          "filename": "lib/iot1click.generated.ts",
+          "line": 161
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-iot1click.CfnDeviceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/iot1click.generated.ts",
+        "line": 97
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 179
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 191
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDevice",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 101
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the device, such as `arn:aws:iot1click:us-west-2:123456789012:devices/G030PX0312744DWM` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 126
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DeviceId"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the device."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 132
+          },
+          "name": "attrDeviceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Enabled"
+            },
+            "stability": "external",
+            "summary": "A Boolean value indicating whether the device is enabled ( `true` ) or not ( `false` )."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 138
+          },
+          "name": "attrEnabled",
+          "type": {
+            "fqn": "@aws-cdk/core.IResolvable"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 184
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-device.html#cfn-iot1click-device-deviceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the device, such as `G030PX0312744DWM` ."
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 145
+          },
+          "name": "deviceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-device.html#cfn-iot1click-device-enabled"
+            },
+            "stability": "external",
+            "summary": "A Boolean value indicating whether the device is enabled ( `true` ) or not ( `false` )."
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 152
+          },
+          "name": "enabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iot1click.generated:CfnDevice"
+    },
+    "@aws-cdk/aws-iot1click.CfnDeviceProps": {
+      "assembly": "@aws-cdk/aws-iot1click",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-device.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDevice`."
+      },
+      "fqn": "@aws-cdk/aws-iot1click.CfnDeviceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iot1click.generated.ts",
+        "line": 20
+      },
+      "name": "CfnDeviceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-device.html#cfn-iot1click-device-deviceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the device, such as `G030PX0312744DWM` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 27
+          },
+          "name": "deviceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-device.html#cfn-iot1click-device-enabled"
+            },
+            "stability": "external",
+            "summary": "A Boolean value indicating whether the device is enabled ( `true` ) or not ( `false` )."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 34
+          },
+          "name": "enabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iot1click.generated:CfnDeviceProps"
+    },
+    "@aws-cdk/aws-iot1click.CfnPlacement": {
+      "assembly": "@aws-cdk/aws-iot1click",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::IoT1Click::Placement",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-placement.html"
+        },
+        "remarks": "The `AWS::IoT1Click::Placement` resource creates a placement to be associated with an AWS IoT 1-Click project. A placement is an instance of a device in a location. For more information, see [Projects, Templates, and Placements](https://docs.aws.amazon.com/iot-1-click/latest/developerguide/1click-PTP.html) in the *AWS IoT 1-Click Developer Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::IoT1Click::Placement`."
+      },
+      "fqn": "@aws-cdk/aws-iot1click.CfnPlacement",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::IoT1Click::Placement`."
+        },
+        "locationInModule": {
+          "filename": "lib/iot1click.generated.ts",
+          "line": 372
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-iot1click.CfnPlacementProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/iot1click.generated.ts",
+        "line": 300
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 390
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 404
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPlacement",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 304
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "PlacementName"
+            },
+            "stability": "external",
+            "summary": "The name of the placement, such as `floor17` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 329
+          },
+          "name": "attrPlacementName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ProjectName"
+            },
+            "stability": "external",
+            "summary": "The name of the project containing the placement, such as `conference-rooms` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 335
+          },
+          "name": "attrProjectName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 395
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-placement.html#cfn-iot1click-placement-associateddevices"
+            },
+            "stability": "external",
+            "summary": "The devices to associate with the placement, as defined by a mapping of zero or more key-value pairs wherein the key is a template name and the value is a device ID."
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 349
+          },
+          "name": "associatedDevices",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-placement.html#cfn-iot1click-placement-attributes"
+            },
+            "stability": "external",
+            "summary": "The user-defined attributes associated with the placement."
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 356
+          },
+          "name": "attributes",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-placement.html#cfn-iot1click-placement-projectname"
+            },
+            "stability": "external",
+            "summary": "The name of the project containing the placement."
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 342
+          },
+          "name": "projectName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-placement.html#cfn-iot1click-placement-placementname"
+            },
+            "stability": "external",
+            "summary": "The name of the placement."
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 363
+          },
+          "name": "placementName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iot1click.generated:CfnPlacement"
+    },
+    "@aws-cdk/aws-iot1click.CfnPlacementProps": {
+      "assembly": "@aws-cdk/aws-iot1click",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-placement.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPlacement`."
+      },
+      "fqn": "@aws-cdk/aws-iot1click.CfnPlacementProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iot1click.generated.ts",
+        "line": 204
+      },
+      "name": "CfnPlacementProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-placement.html#cfn-iot1click-placement-projectname"
+            },
+            "stability": "external",
+            "summary": "The name of the project containing the placement."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 211
+          },
+          "name": "projectName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-placement.html#cfn-iot1click-placement-associateddevices"
+            },
+            "stability": "external",
+            "summary": "The devices to associate with the placement, as defined by a mapping of zero or more key-value pairs wherein the key is a template name and the value is a device ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 218
+          },
+          "name": "associatedDevices",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-placement.html#cfn-iot1click-placement-attributes"
+            },
+            "stability": "external",
+            "summary": "The user-defined attributes associated with the placement."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 225
+          },
+          "name": "attributes",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-placement.html#cfn-iot1click-placement-placementname"
+            },
+            "stability": "external",
+            "summary": "The name of the placement."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 232
+          },
+          "name": "placementName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iot1click.generated:CfnPlacementProps"
+    },
+    "@aws-cdk/aws-iot1click.CfnProject": {
+      "assembly": "@aws-cdk/aws-iot1click",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::IoT1Click::Project",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-project.html"
+        },
+        "remarks": "The `AWS::IoT1Click::Project` resource creates an empty project with a placement template. A project contains zero or more placements that adhere to the placement template defined in the project. For more information, see [CreateProject](https://docs.aws.amazon.com/iot-1-click/latest/projects-apireference/API_CreateProject.html) in the *AWS IoT 1-Click Projects API Reference* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::IoT1Click::Project`."
+      },
+      "fqn": "@aws-cdk/aws-iot1click.CfnProject",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::IoT1Click::Project`."
+        },
+        "locationInModule": {
+          "filename": "lib/iot1click.generated.ts",
+          "line": 568
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-iot1click.CfnProjectProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/iot1click.generated.ts",
+        "line": 503
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 585
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 598
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnProject",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 507
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the project, such as `arn:aws:iot1click:us-east-1:123456789012:projects/project-a1bzhi` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 532
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ProjectName"
+            },
+            "stability": "external",
+            "summary": "The name of the project, such as `project-a1bzhi` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 538
+          },
+          "name": "attrProjectName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 590
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-project.html#cfn-iot1click-project-placementtemplate"
+            },
+            "stability": "external",
+            "summary": "An object describing the project's placement specifications."
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 545
+          },
+          "name": "placementTemplate",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iot1click.CfnProject.PlacementTemplateProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-project.html#cfn-iot1click-project-description"
+            },
+            "stability": "external",
+            "summary": "The description of the project."
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 552
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-project.html#cfn-iot1click-project-projectname"
+            },
+            "stability": "external",
+            "summary": "The name of the project from which to obtain information."
+          },
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 559
+          },
+          "name": "projectName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iot1click.generated:CfnProject"
+    },
+    "@aws-cdk/aws-iot1click.CfnProject.DeviceTemplateProperty": {
+      "assembly": "@aws-cdk/aws-iot1click",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot1click-project-devicetemplate.html"
+        },
+        "remarks": "`DeviceTemplate` is a property of the `AWS::IoT1Click::Project` resource.",
+        "stability": "external",
+        "summary": "In AWS CloudFormation , use the `DeviceTemplate` property type to define the template for an AWS IoT 1-Click project."
+      },
+      "fqn": "@aws-cdk/aws-iot1click.CfnProject.DeviceTemplateProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iot1click.generated.ts",
+        "line": 614
+      },
+      "name": "DeviceTemplateProperty",
+      "namespace": "CfnProject",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot1click-project-devicetemplate.html#cfn-iot1click-project-devicetemplate-callbackoverrides"
+            },
+            "stability": "external",
+            "summary": "An optional AWS Lambda function to invoke instead of the default AWS Lambda function provided by the placement template."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 620
+          },
+          "name": "callbackOverrides",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot1click-project-devicetemplate.html#cfn-iot1click-project-devicetemplate-devicetype"
+            },
+            "stability": "external",
+            "summary": "The device type, which currently must be `\"button\"` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 626
+          },
+          "name": "deviceType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iot1click.generated:CfnProject.DeviceTemplateProperty"
+    },
+    "@aws-cdk/aws-iot1click.CfnProject.PlacementTemplateProperty": {
+      "assembly": "@aws-cdk/aws-iot1click",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot1click-project-placementtemplate.html"
+        },
+        "remarks": "`PlacementTemplate` is a property of the `AWS::IoT1Click::Project` resource.",
+        "stability": "external",
+        "summary": "In AWS CloudFormation , use the `PlacementTemplate` property type to define the template for an AWS IoT 1-Click project."
+      },
+      "fqn": "@aws-cdk/aws-iot1click.CfnProject.PlacementTemplateProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iot1click.generated.ts",
+        "line": 692
+      },
+      "name": "PlacementTemplateProperty",
+      "namespace": "CfnProject",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot1click-project-placementtemplate.html#cfn-iot1click-project-placementtemplate-defaultattributes"
+            },
+            "stability": "external",
+            "summary": "The default attributes (key-value pairs) to be applied to all placements using this template."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 698
+          },
+          "name": "defaultAttributes",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot1click-project-placementtemplate.html#cfn-iot1click-project-placementtemplate-devicetemplates"
+            },
+            "stability": "external",
+            "summary": "An object specifying the [DeviceTemplate](https://docs.aws.amazon.com/iot-1-click/latest/projects-apireference/API_DeviceTemplate.html) for all placements using this ( [PlacementTemplate](https://docs.aws.amazon.com/iot-1-click/latest/projects-apireference/API_PlacementTemplate.html) ) template."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 704
+          },
+          "name": "deviceTemplates",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iot1click.CfnProject.DeviceTemplateProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iot1click.generated:CfnProject.PlacementTemplateProperty"
+    },
+    "@aws-cdk/aws-iot1click.CfnProjectProps": {
+      "assembly": "@aws-cdk/aws-iot1click",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-project.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnProject`."
+      },
+      "fqn": "@aws-cdk/aws-iot1click.CfnProjectProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iot1click.generated.ts",
+        "line": 417
+      },
+      "name": "CfnProjectProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-project.html#cfn-iot1click-project-placementtemplate"
+            },
+            "stability": "external",
+            "summary": "An object describing the project's placement specifications."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 424
+          },
+          "name": "placementTemplate",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-iot1click.CfnProject.PlacementTemplateProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-project.html#cfn-iot1click-project-description"
+            },
+            "stability": "external",
+            "summary": "The description of the project."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 431
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iot1click-project.html#cfn-iot1click-project-projectname"
+            },
+            "stability": "external",
+            "summary": "The name of the project from which to obtain information."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iot1click.generated.ts",
+            "line": 438
+          },
+          "name": "projectName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iot1click.generated:CfnProjectProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "kemkZTIHS7XbmkjW++qMClgKlktbP5+/aY6GpMTIlko="
+}

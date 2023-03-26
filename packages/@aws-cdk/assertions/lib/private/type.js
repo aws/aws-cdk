@@ -1,0 +1,8 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getType = void 0;
+function getType(obj) {
+    return Array.isArray(obj) ? 'array' : typeof obj;
+}
+exports.getType = getType;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidHlwZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInR5cGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBRUEsU0FBZ0IsT0FBTyxDQUFDLEdBQVE7SUFDOUIsT0FBTyxLQUFLLENBQUMsT0FBTyxDQUFDLEdBQUcsQ0FBQyxDQUFDLENBQUMsQ0FBQyxPQUFPLENBQUMsQ0FBQyxDQUFDLE9BQU8sR0FBRyxDQUFDO0FBQ25ELENBQUM7QUFGRCwwQkFFQyIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCB0eXBlIFR5cGUgPSAnc3RyaW5nJyB8ICdudW1iZXInIHwgJ2JpZ2ludCcgfCAnYm9vbGVhbicgfCAnc3ltYm9sJyB8ICd1bmRlZmluZWQnIHwgJ29iamVjdCcgfCAnZnVuY3Rpb24nIHwgJ2FycmF5JztcblxuZXhwb3J0IGZ1bmN0aW9uIGdldFR5cGUob2JqOiBhbnkpOiBUeXBlIHtcbiAgcmV0dXJuIEFycmF5LmlzQXJyYXkob2JqKSA/ICdhcnJheScgOiB0eXBlb2Ygb2JqO1xufSJdfQ==

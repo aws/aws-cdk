@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const cdk = require("@aws-cdk/core");
+const codecommit = require("../lib");
+const lib_1 = require("../lib");
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-cdk-codecommit-repo-contents-assets');
+new codecommit.Repository(stack, 'Repo', {
+    repositoryName: 'aws-cdk-codecommit-repo-contents-assets',
+    code: lib_1.Code.fromDirectory('./asset-test'),
+});
+app.synth();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuY29kZWNvbW1pdC1jb2RlLWFzc2V0LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiaW50ZWcuY29kZWNvbW1pdC1jb2RlLWFzc2V0LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEscUNBQXFDO0FBQ3JDLHFDQUFxQztBQUNyQyxnQ0FBOEI7QUFFOUIsTUFBTSxHQUFHLEdBQUcsSUFBSSxHQUFHLENBQUMsR0FBRyxFQUFFLENBQUM7QUFDMUIsTUFBTSxLQUFLLEdBQUcsSUFBSSxHQUFHLENBQUMsS0FBSyxDQUFDLEdBQUcsRUFBRSx5Q0FBeUMsQ0FBQyxDQUFDO0FBRTVFLElBQUksVUFBVSxDQUFDLFVBQVUsQ0FBQyxLQUFLLEVBQUUsTUFBTSxFQUFFO0lBQ3ZDLGNBQWMsRUFBRSx5Q0FBeUM7SUFDekQsSUFBSSxFQUFFLFVBQUksQ0FBQyxhQUFhLENBQUMsY0FBYyxDQUFDO0NBQ3pDLENBQUMsQ0FBQztBQUVILEdBQUcsQ0FBQyxLQUFLLEVBQUUsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCAqIGFzIGNkayBmcm9tICdAYXdzLWNkay9jb3JlJztcbmltcG9ydCAqIGFzIGNvZGVjb21taXQgZnJvbSAnLi4vbGliJztcbmltcG9ydCB7IENvZGUgfSBmcm9tICcuLi9saWInO1xuXG5jb25zdCBhcHAgPSBuZXcgY2RrLkFwcCgpO1xuY29uc3Qgc3RhY2sgPSBuZXcgY2RrLlN0YWNrKGFwcCwgJ2F3cy1jZGstY29kZWNvbW1pdC1yZXBvLWNvbnRlbnRzLWFzc2V0cycpO1xuXG5uZXcgY29kZWNvbW1pdC5SZXBvc2l0b3J5KHN0YWNrLCAnUmVwbycsIHtcbiAgcmVwb3NpdG9yeU5hbWU6ICdhd3MtY2RrLWNvZGVjb21taXQtcmVwby1jb250ZW50cy1hc3NldHMnLFxuICBjb2RlOiBDb2RlLmZyb21EaXJlY3RvcnkoJy4vYXNzZXQtdGVzdCcpLFxufSk7XG5cbmFwcC5zeW50aCgpO1xuIl19

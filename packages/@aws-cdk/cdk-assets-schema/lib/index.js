@@ -1,0 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/* eslint-disable no-console */
+console.error('error: @aws-cdk/cdk-assets-schema has been merged into @aws-cdk/cloud-assembly-schema');
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLCtCQUErQjtBQUMvQixPQUFPLENBQUMsS0FBSyxDQUFDLHVGQUF1RixDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKiBlc2xpbnQtZGlzYWJsZSBuby1jb25zb2xlICovXG5jb25zb2xlLmVycm9yKCdlcnJvcjogQGF3cy1jZGsvY2RrLWFzc2V0cy1zY2hlbWEgaGFzIGJlZW4gbWVyZ2VkIGludG8gQGF3cy1jZGsvY2xvdWQtYXNzZW1ibHktc2NoZW1hJyk7XG5cbmV4cG9ydCB7IH07XG4iXX0=

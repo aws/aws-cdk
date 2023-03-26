@@ -21,6 +21,21 @@ export class DockerBuildSecret {
   public static fromSrc(src: string): string {
     return `src=${src}`;
   }
+
+  /**
+   * A Docker build secret from the build environment
+   * @param environmentVariable The environment variable name
+   * @returns The latter half required for `--secret`
+   */
+  public static fromEnvironment(environmentVariable: string): string {
+    const value = process.env[environmentVariable];
+
+    if (value) {
+      return `env=${environmentVariable}`;
+    } else {
+      throw new Error(`Environment variable ${environmentVariable} is not set`);
+    }
+  }
 }
 
 /**
@@ -155,7 +170,7 @@ export enum BundlingOutput {
 
   /**
    * If the bundling output directory contains a single archive file (zip or jar)
-   * it will be used as the bundle output as-is. Otherwise, all the files in the bundling output directory will be zipped.
+   * it will be used as the bundle output as-is. Otherwise all the files in the bundling output directory will be zipped.
    */
   AUTO_DISCOVER = 'auto-discover',
 }
@@ -362,7 +377,7 @@ export class DockerImage extends BundlingDockerImage {
   public readonly image: string;
 
   constructor(image: string, _imageHash?: string) {
-    // It is preferable for the deprecated class to inherit a non-deprecated class.
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
     // However, in this case, the opposite has occurred which is incompatible with
     // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
     const deprecated = quiet();
@@ -379,7 +394,7 @@ export class DockerImage extends BundlingDockerImage {
    * @return The overridden image name if set or image hash name in that order
    */
   public toJSON() {
-    // It is preferable for the deprecated class to inherit a non-deprecated class.
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
     // However, in this case, the opposite has occurred which is incompatible with
     // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
     const deprecated = quiet();
@@ -394,7 +409,7 @@ export class DockerImage extends BundlingDockerImage {
    * Runs a Docker image
    */
   public run(options: DockerRunOptions = {}) {
-    // It is preferable for the deprecated class to inherit a non-deprecated class.
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
     // However, in this case, the opposite has occurred which is incompatible with
     // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
     const deprecated = quiet();
@@ -415,7 +430,7 @@ export class DockerImage extends BundlingDockerImage {
    * @returns the destination path
    */
   public cp(imagePath: string, outputPath?: string): string {
-    // It is preferable for the deprecated class to inherit a non-deprecated class.
+    // It is preferrable for the deprecated class to inherit a non-deprecated class.
     // However, in this case, the opposite has occurred which is incompatible with
     // a deprecation feature. See https://github.com/aws/jsii/issues/3102.
     const deprecated = quiet();

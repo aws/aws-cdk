@@ -1,0 +1,1192 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::RUM Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::RUM",
+    "aws-rum"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-rum",
+  "readme": {
+    "markdown": "# AWS::RUM Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as rum from '@aws-cdk/aws-rum';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for RUM construct libraries](https://constructs.dev/search?q=rum)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::RUM resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_RUM.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::RUM](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_RUM.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-rum",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.RUM",
+      "packageId": "Amazon.CDK.AWS.RUM",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "rum",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.rum"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-rum"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-rum",
+      "module": "aws_cdk.aws_rum"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-rum.CfnAppMonitor": {
+      "assembly": "@aws-cdk/aws-rum",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RUM::AppMonitor",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html"
+        },
+        "remarks": "Creates a CloudWatch RUM app monitor, which you can use to collect telemetry data from your application and send it to CloudWatch RUM. The data includes performance and reliability information such as page load time, client-side errors, and user behavior.\n\nAfter you create an app monitor, sign in to the CloudWatch RUM console to get the JavaScript code snippet to add to your web application. For more information, see [How do I find a code snippet that I've already generated?](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-find-code-snippet.html)",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RUM::AppMonitor`."
+      },
+      "fqn": "@aws-cdk/aws-rum.CfnAppMonitor",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RUM::AppMonitor`."
+        },
+        "locationInModule": {
+          "filename": "lib/rum.generated.ts",
+          "line": 220
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-rum.CfnAppMonitorProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/rum.generated.ts",
+        "line": 141
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 238
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 253
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnAppMonitor",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 145
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 243
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html#cfn-rum-appmonitor-tags"
+            },
+            "remarks": "Tags can help you organize and categorize your resources. You can also use them to scope user permissions by granting a user permission to access or change only resources with certain tag values.\n\nTags don't have any semantic meaning to AWS and are interpreted strictly as strings of characters.\n\nYou can associate as many as 50 tags with an app monitor.\n\nFor more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags (key-value pairs) to the app monitor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 211
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html#cfn-rum-appmonitor-domain"
+            },
+            "remarks": "This parameter is required.",
+            "stability": "external",
+            "summary": "The top-level internet domain name for which your application has administrative authority."
+          },
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 171
+          },
+          "name": "domain",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html#cfn-rum-appmonitor-name"
+            },
+            "remarks": "This parameter is required.",
+            "stability": "external",
+            "summary": "A name for the app monitor."
+          },
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 178
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html#cfn-rum-appmonitor-appmonitorconfiguration"
+            },
+            "remarks": "If you are using Amazon Cognito for authorization, you must include this structure in your request, and it must include the ID of the Amazon Cognito identity pool to use for authorization. If you don't include `AppMonitorConfiguration` , you must set up your own authorization method. For more information, see [Authorize your application to send data to AWS](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-get-started-authorization.html) .\n\nIf you omit this argument, the sample rate used for CloudWatch RUM is set to 10% of the user sessions.",
+            "stability": "external",
+            "summary": "A structure that contains much of the configuration data for the app monitor."
+          },
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 187
+          },
+          "name": "appMonitorConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-rum.CfnAppMonitor.AppMonitorConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html#cfn-rum-appmonitor-cwlogenabled"
+            },
+            "remarks": "This parameter specifies whether CloudWatch RUM sends a copy of this telemetry data to Amazon CloudWatch Logs in your account. This enables you to keep the telemetry data for more than 30 days, but it does incur Amazon CloudWatch Logs charges.\n\nIf you omit this parameter, the default is `false` .",
+            "stability": "external",
+            "summary": "Data collected by CloudWatch RUM is kept by RUM for 30 days and then deleted."
+          },
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 196
+          },
+          "name": "cwLogEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/rum.generated:CfnAppMonitor"
+    },
+    "@aws-cdk/aws-rum.CfnAppMonitor.AppMonitorConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-rum",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-appmonitorconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "This structure contains much of the configuration data for the app monitor."
+      },
+      "fqn": "@aws-cdk/aws-rum.CfnAppMonitor.AppMonitorConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rum.generated.ts",
+        "line": 267
+      },
+      "name": "AppMonitorConfigurationProperty",
+      "namespace": "CfnAppMonitor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-appmonitorconfiguration.html#cfn-rum-appmonitor-appmonitorconfiguration-allowcookies"
+            },
+            "remarks": "The cookies allow the CloudWatch RUM web client to collect data relating to the number of users an application has and the behavior of the application across a sequence of events. Cookies are stored in the top-level domain of the current page.",
+            "stability": "external",
+            "summary": "If you set this to `true` , the CloudWatch RUM web client sets two cookies, a session cookie and a user cookie."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 273
+          },
+          "name": "allowCookies",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-appmonitorconfiguration.html#cfn-rum-appmonitor-appmonitorconfiguration-enablexray"
+            },
+            "remarks": "You can then see traces and segments from these user sessions in the RUM dashboard and the CloudWatch ServiceLens console. For more information, see [What is AWS X-Ray ?](https://docs.aws.amazon.com/xray/latest/devguide/aws-xray.html)",
+            "stability": "external",
+            "summary": "If you set this to `true` , CloudWatch RUM sends client-side traces to X-Ray for each sampled session."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 279
+          },
+          "name": "enableXRay",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-appmonitorconfiguration.html#cfn-rum-appmonitor-appmonitorconfiguration-excludedpages"
+            },
+            "remarks": "You can't include both `ExcludedPages` and `IncludedPages` in the same app monitor.",
+            "stability": "external",
+            "summary": "A list of URLs in your website or application to exclude from RUM data collection."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 287
+          },
+          "name": "excludedPages",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-appmonitorconfiguration.html#cfn-rum-appmonitor-appmonitorconfiguration-favoritepages"
+            },
+            "stability": "external",
+            "summary": "A list of pages in your application that are to be displayed with a \"favorite\" icon in the CloudWatch RUM console."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 293
+          },
+          "name": "favoritePages",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-appmonitorconfiguration.html#cfn-rum-appmonitor-appmonitorconfiguration-guestrolearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the guest IAM role that is attached to the Amazon Cognito identity pool that is used to authorize the sending of data to CloudWatch RUM."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 299
+          },
+          "name": "guestRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-appmonitorconfiguration.html#cfn-rum-appmonitor-appmonitorconfiguration-identitypoolid"
+            },
+            "stability": "external",
+            "summary": "The ID of the Amazon Cognito identity pool that is used to authorize the sending of data to CloudWatch RUM."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 305
+          },
+          "name": "identityPoolId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-appmonitorconfiguration.html#cfn-rum-appmonitor-appmonitorconfiguration-includedpages"
+            },
+            "remarks": "You can't include both `ExcludedPages` and `IncludedPages` in the same app monitor.",
+            "stability": "external",
+            "summary": "If this app monitor is to collect data from only certain pages in your application, this structure lists those pages."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 313
+          },
+          "name": "includedPages",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-appmonitorconfiguration.html#cfn-rum-appmonitor-appmonitorconfiguration-metricdestinations"
+            },
+            "stability": "external",
+            "summary": "An array of structures that each define a destination that this app monitor will send extended metrics to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 319
+          },
+          "name": "metricDestinations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-rum.CfnAppMonitor.MetricDestinationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-appmonitorconfiguration.html#cfn-rum-appmonitor-appmonitorconfiguration-sessionsamplerate"
+            },
+            "remarks": "Choosing a higher portion gives you more data but also incurs more costs.\n\nThe range for this value is 0 to 1 inclusive. Setting this to 1 means that 100% of user sessions are sampled, and setting it to 0.1 means that 10% of user sessions are sampled.\n\nIf you omit this parameter, the default of 0.1 is used, and 10% of sessions will be sampled.",
+            "stability": "external",
+            "summary": "Specifies the portion of user sessions to use for CloudWatch RUM data collection."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 329
+          },
+          "name": "sessionSampleRate",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-appmonitorconfiguration.html#cfn-rum-appmonitor-appmonitorconfiguration-telemetries"
+            },
+            "remarks": "- `errors` indicates that RUM collects data about unhandled JavaScript errors raised by your application.\n- `performance` indicates that RUM collects performance data about how your application and its resources are loaded and rendered. This includes Core Web Vitals.\n- `http` indicates that RUM collects data about HTTP errors thrown by your application.",
+            "stability": "external",
+            "summary": "An array that lists the types of telemetry data that this app monitor is to collect."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 339
+          },
+          "name": "telemetries",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/rum.generated:CfnAppMonitor.AppMonitorConfigurationProperty"
+    },
+    "@aws-cdk/aws-rum.CfnAppMonitor.MetricDefinitionProperty": {
+      "assembly": "@aws-cdk/aws-rum",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-metricdefinition.html"
+        },
+        "remarks": "Valid destinations include CloudWatch and Evidently.\n\nBy default, RUM app monitors send some metrics to CloudWatch . These default metrics are listed in [CloudWatch metrics that you can collect with CloudWatch RUM](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-metrics.html) .\n\nIf you also send extended metrics, you can send metrics to Evidently as well as CloudWatch , and you can also optionally send the metrics with additional dimensions. The valid dimension names for the additional dimensions are `BrowserName` , `CountryCode` , `DeviceType` , `FileType` , `OSName` , and `PageId` . For more information, see [Extended metrics that you can send to CloudWatch and CloudWatch Evidently](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-vended-metrics.html) .\n\nThe maximum number of metric definitions that one destination can contain is 2000.\n\nExtended metrics sent are charged as CloudWatch custom metrics. Each combination of additional dimension name and dimension value counts as a custom metric.\n\nIf some metric definitions that you specify are not valid, then the operation will not modify any metric definitions even if other metric definitions specified are valid.",
+        "stability": "external",
+        "summary": "Specifies the extended metrics that you want the CloudWatch RUM app monitor to send to a destination."
+      },
+      "fqn": "@aws-cdk/aws-rum.CfnAppMonitor.MetricDefinitionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rum.generated.ts",
+        "line": 437
+      },
+      "name": "MetricDefinitionProperty",
+      "namespace": "CfnAppMonitor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-metricdefinition.html#cfn-rum-appmonitor-metricdefinition-name"
+            },
+            "stability": "external",
+            "summary": "The name of the metric that is defined in this structure."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 457
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-metricdefinition.html#cfn-rum-appmonitor-metricdefinition-dimensionkeys"
+            },
+            "remarks": "It defines the dimensions to associate with this metric in CloudWatch The value of this field is used only if the metric destination is `CloudWatch` . If the metric destination is `Evidently` , the value of `DimensionKeys` is ignored.",
+            "stability": "external",
+            "summary": "This field is a map of field paths to dimension names."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 443
+          },
+          "name": "dimensionKeys",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-metricdefinition.html#cfn-rum-appmonitor-metricdefinition-eventpattern"
+            },
+            "remarks": "RUM checks events that happen in a user's session against the pattern, and events that match the pattern are sent to the metric destination.\n\nIf the metrics destination is `CloudWatch` and the event also matches a value in `DimensionKeys` , then the metric is published with the specified dimensions.",
+            "stability": "external",
+            "summary": "The pattern that defines the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 451
+          },
+          "name": "eventPattern",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-metricdefinition.html#cfn-rum-appmonitor-metricdefinition-unitlabel"
+            },
+            "remarks": "It defines the CloudWatch metric unit that this metric is measured in.",
+            "stability": "external",
+            "summary": "Use this field only if you are sending this metric to CloudWatch ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 463
+          },
+          "name": "unitLabel",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-metricdefinition.html#cfn-rum-appmonitor-metricdefinition-valuekey"
+            },
+            "stability": "external",
+            "summary": "The field within the event object that the metric value is sourced from."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 469
+          },
+          "name": "valueKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rum.generated:CfnAppMonitor.MetricDefinitionProperty"
+    },
+    "@aws-cdk/aws-rum.CfnAppMonitor.MetricDestinationProperty": {
+      "assembly": "@aws-cdk/aws-rum",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-metricdestination.html"
+        },
+        "remarks": "You can send extended metrics to CloudWatch or to a CloudWatch Evidently experiment.\n\nFor more information about extended metrics, see [Extended metrics that you can send to CloudWatch and CloudWatch Evidently](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-vended-metrics.html) .",
+        "stability": "external",
+        "summary": "Creates or updates a destination to receive extended metrics from CloudWatch RUM."
+      },
+      "fqn": "@aws-cdk/aws-rum.CfnAppMonitor.MetricDestinationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rum.generated.ts",
+        "line": 545
+      },
+      "name": "MetricDestinationProperty",
+      "namespace": "CfnAppMonitor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-metricdestination.html#cfn-rum-appmonitor-metricdestination-destination"
+            },
+            "remarks": "Valid values are `CloudWatch` and `Evidently` . If you specify `Evidently` , you must also specify the ARN of the CloudWatch Evidently experiment that is to be the destination and an IAM role that has permission to write to the experiment.",
+            "stability": "external",
+            "summary": "Defines the destination to send the metrics to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 551
+          },
+          "name": "destination",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-metricdestination.html#cfn-rum-appmonitor-metricdestination-destinationarn"
+            },
+            "remarks": "This parameter specifies the ARN of the Evidently experiment that will receive the extended metrics.",
+            "stability": "external",
+            "summary": "Use this parameter only if `Destination` is `Evidently` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 557
+          },
+          "name": "destinationArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-metricdestination.html#cfn-rum-appmonitor-metricdestination-iamrolearn"
+            },
+            "remarks": "This parameter specifies the ARN of an IAM role that RUM will assume to write to the Evidently experiment that you are sending metrics to. This role must have permission to write to that experiment.",
+            "stability": "external",
+            "summary": "This parameter is required if `Destination` is `Evidently` . If `Destination` is `CloudWatch` , do not use this parameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 565
+          },
+          "name": "iamRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rum-appmonitor-metricdestination.html#cfn-rum-appmonitor-metricdestination-metricdefinitions"
+            },
+            "stability": "external",
+            "summary": "An array of structures which define the metrics that you want to send."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 571
+          },
+          "name": "metricDefinitions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-rum.CfnAppMonitor.MetricDefinitionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/rum.generated:CfnAppMonitor.MetricDestinationProperty"
+    },
+    "@aws-cdk/aws-rum.CfnAppMonitorProps": {
+      "assembly": "@aws-cdk/aws-rum",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnAppMonitor`."
+      },
+      "fqn": "@aws-cdk/aws-rum.CfnAppMonitorProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rum.generated.ts",
+        "line": 20
+      },
+      "name": "CfnAppMonitorProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html#cfn-rum-appmonitor-domain"
+            },
+            "remarks": "This parameter is required.",
+            "stability": "external",
+            "summary": "The top-level internet domain name for which your application has administrative authority."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 27
+          },
+          "name": "domain",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html#cfn-rum-appmonitor-name"
+            },
+            "remarks": "This parameter is required.",
+            "stability": "external",
+            "summary": "A name for the app monitor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 34
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html#cfn-rum-appmonitor-appmonitorconfiguration"
+            },
+            "remarks": "If you are using Amazon Cognito for authorization, you must include this structure in your request, and it must include the ID of the Amazon Cognito identity pool to use for authorization. If you don't include `AppMonitorConfiguration` , you must set up your own authorization method. For more information, see [Authorize your application to send data to AWS](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-RUM-get-started-authorization.html) .\n\nIf you omit this argument, the sample rate used for CloudWatch RUM is set to 10% of the user sessions.",
+            "stability": "external",
+            "summary": "A structure that contains much of the configuration data for the app monitor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 43
+          },
+          "name": "appMonitorConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-rum.CfnAppMonitor.AppMonitorConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html#cfn-rum-appmonitor-cwlogenabled"
+            },
+            "remarks": "This parameter specifies whether CloudWatch RUM sends a copy of this telemetry data to Amazon CloudWatch Logs in your account. This enables you to keep the telemetry data for more than 30 days, but it does incur Amazon CloudWatch Logs charges.\n\nIf you omit this parameter, the default is `false` .",
+            "stability": "external",
+            "summary": "Data collected by CloudWatch RUM is kept by RUM for 30 days and then deleted."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 52
+          },
+          "name": "cwLogEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rum-appmonitor.html#cfn-rum-appmonitor-tags"
+            },
+            "remarks": "Tags can help you organize and categorize your resources. You can also use them to scope user permissions by granting a user permission to access or change only resources with certain tag values.\n\nTags don't have any semantic meaning to AWS and are interpreted strictly as strings of characters.\n\nYou can associate as many as 50 tags with an app monitor.\n\nFor more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags (key-value pairs) to the app monitor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rum.generated.ts",
+            "line": 67
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/rum.generated:CfnAppMonitorProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "1L9tsERaXYNci2hU/sKiquFlGNV8dy3V5g68cwE9RaQ="
+}

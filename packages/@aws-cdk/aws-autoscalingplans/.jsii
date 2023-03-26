@@ -1,0 +1,1750 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::AutoScalingPlans",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "autoscalingplans"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-autoscalingplans",
+  "readme": {
+    "markdown": "# AWS Auto Scaling Plans Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as autoscalingplans from '@aws-cdk/aws-autoscalingplans';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for AutoScalingPlans construct libraries](https://constructs.dev/search?q=autoscalingplans)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::AutoScalingPlans resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_AutoScalingPlans.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::AutoScalingPlans](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_AutoScalingPlans.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-autoscalingplans",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.AutoScalingPlans",
+      "packageId": "Amazon.CDK.AWS.AutoScalingPlans"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "autoscalingplans",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.autoscalingplans"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-autoscalingplans"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-autoscalingplans",
+      "module": "aws_cdk.aws_autoscalingplans"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AutoScalingPlans::ScalingPlan",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html"
+        },
+        "remarks": "The `AWS::AutoScalingPlans::ScalingPlan` resource defines an AWS Auto Scaling scaling plan. A scaling plan is used to scale application resources to size them appropriately to ensure that enough resource is available in the application at peak times and to reduce allocated resource during periods of low utilization. The following resources can be added to a scaling plan:\n\n- Amazon EC2 Auto Scaling groups\n- Amazon EC2 Spot Fleet requests\n- Amazon ECS services\n- Amazon DynamoDB tables and global secondary indexes\n- Amazon Aurora Replicas\n\nFor more information, see the [AWS Auto Scaling User Guide](https://docs.aws.amazon.com/autoscaling/plans/userguide/what-is-aws-auto-scaling.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AutoScalingPlans::ScalingPlan`."
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AutoScalingPlans::ScalingPlan`."
+        },
+        "locationInModule": {
+          "filename": "lib/autoscalingplans.generated.ts",
+          "line": 163
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlanProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/autoscalingplans.generated.ts",
+        "line": 105
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 180
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 192
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnScalingPlan",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 109
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ScalingPlanName"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 134
+          },
+          "name": "attrScalingPlanName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ScalingPlanVersion"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 140
+          },
+          "name": "attrScalingPlanVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 185
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html#cfn-autoscalingplans-scalingplan-applicationsource"
+            },
+            "remarks": "You can create one scaling plan per application source. The `ApplicationSource` property must be present to ensure interoperability with the AWS Auto Scaling console.",
+            "stability": "external",
+            "summary": "A CloudFormation stack or a set of tags."
+          },
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 147
+          },
+          "name": "applicationSource",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ApplicationSourceProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html#cfn-autoscalingplans-scalingplan-scalinginstructions"
+            },
+            "stability": "external",
+            "summary": "The scaling instructions."
+          },
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 154
+          },
+          "name": "scalingInstructions",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ScalingInstructionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/autoscalingplans.generated:CfnScalingPlan"
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ApplicationSourceProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-applicationsource.html"
+        },
+        "stability": "external",
+        "summary": "`ApplicationSource` is a property of [ScalingPlan](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html) that specifies the application source to use with AWS Auto Scaling ( Auto Scaling Plans ). You can create one scaling plan per application source."
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ApplicationSourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/autoscalingplans.generated.ts",
+        "line": 206
+      },
+      "name": "ApplicationSourceProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-applicationsource.html#cfn-autoscalingplans-scalingplan-applicationsource-cloudformationstackarn"
+            },
+            "remarks": "You must specify either a `CloudFormationStackARN` or `TagFilters` .",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of a CloudFormation stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 214
+          },
+          "name": "cloudFormationStackArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-applicationsource.html#cfn-autoscalingplans-scalingplan-applicationsource-tagfilters"
+            },
+            "remarks": "Each tag filter specified must contain a key with values as optional. Each scaling plan can include up to 50 keys, and each key can include up to 20 values.\n\nTags are part of the syntax that you use to specify the resources you want returned when configuring a scaling plan from the AWS Auto Scaling console. You do not need to specify valid tag filter values when you create a scaling plan with CloudFormation. The `Key` and `Values` properties can accept any value as long as the combination of values is unique across scaling plans. However, if you also want to use the AWS Auto Scaling console to edit the scaling plan, then you must specify valid values.\n\nYou must specify either a `CloudFormationStackARN` or `TagFilters` .",
+            "stability": "external",
+            "summary": "A set of tag filters (keys and values)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 224
+          },
+          "name": "tagFilters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.TagFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/autoscalingplans.generated:CfnScalingPlan.ApplicationSourceProperty"
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.CustomizedLoadMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html"
+        },
+        "remarks": "For predictive scaling to work with a customized load metric specification, AWS Auto Scaling needs access to the `Sum` and `Average` statistics that CloudWatch computes from metric data.\n\nWhen you choose a load metric, make sure that the required `Sum` and `Average` statistics for your metric are available in CloudWatch and that they provide relevant data for predictive scaling. The `Sum` statistic must represent the total load on the resource, and the `Average` statistic must represent the average load per capacity unit of the resource. For example, there is a metric that counts the number of requests processed by your Auto Scaling group. If the `Sum` statistic represents the total request count processed by the group, then the `Average` statistic for the specified metric must represent the average request count processed by each instance of the group.\n\nIf you publish your own metrics, you can aggregate the data points at a given interval and then publish the aggregated data points to CloudWatch. Before AWS Auto Scaling generates the forecast, it sums up all the metric data points that occurred within each hour to match the granularity period that is used in the forecast (60 minutes).\n\nFor information about terminology, available metrics, or how to publish new metrics, see [Amazon CloudWatch Concepts](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_concepts.html) in the *Amazon CloudWatch User Guide* .\n\nAfter creating your scaling plan, you can use the AWS Auto Scaling console to visualize forecasts for the specified metric. For more information, see [View Scaling Information for a Resource](https://docs.aws.amazon.com/autoscaling/plans/userguide/gs-create-scaling-plan.html#gs-view-resource) in the *AWS Auto Scaling User Guide* .",
+        "stability": "external",
+        "summary": "`CustomizedLoadMetricSpecification` is a subproperty of [ScalingInstruction](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html) that specifies a customized load metric for predictive scaling to use with AWS Auto Scaling ( Auto Scaling Plans )."
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.CustomizedLoadMetricSpecificationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/autoscalingplans.generated.ts",
+        "line": 298
+      },
+      "name": "CustomizedLoadMetricSpecificationProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-metricname"
+            },
+            "stability": "external",
+            "summary": "The name of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 312
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-namespace"
+            },
+            "stability": "external",
+            "summary": "The namespace of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 318
+          },
+          "name": "namespace",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-statistic"
+            },
+            "remarks": "*Allowed Values* : `Sum`",
+            "stability": "external",
+            "summary": "The statistic of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 326
+          },
+          "name": "statistic",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-dimensions"
+            },
+            "remarks": "Conditional: If you published your metric with dimensions, you must specify the same dimensions in your customized load metric specification.",
+            "stability": "external",
+            "summary": "The dimensions of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 306
+          },
+          "name": "dimensions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.MetricDimensionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedloadmetricspecification-unit"
+            },
+            "stability": "external",
+            "summary": "The unit of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 332
+          },
+          "name": "unit",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/autoscalingplans.generated:CfnScalingPlan.CustomizedLoadMetricSpecificationProperty"
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.CustomizedScalingMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html"
+        },
+        "remarks": "To create your customized scaling metric specification:\n\n- Add values for each required property from CloudWatch. You can use an existing metric, or a new metric that you create. To use your own metric, you must first publish the metric to CloudWatch. For more information, see [Publish Custom Metrics](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/publishingMetrics.html) in the *Amazon CloudWatch User Guide* .\n- Choose a metric that changes proportionally with capacity. The value of the metric should increase or decrease in inverse proportion to the number of capacity units. That is, the value of the metric should decrease when capacity increases.\n\nFor information about terminology, available metrics, or how to publish new metrics, see [Amazon CloudWatch Concepts](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/cloudwatch_concepts.html) in the *Amazon CloudWatch User Guide* .",
+        "stability": "external",
+        "summary": "`CustomizedScalingMetricSpecification` is a subproperty of [TargetTrackingConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html) that specifies a customized scaling metric for a target tracking configuration to use with AWS Auto Scaling ( Auto Scaling Plans )."
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.CustomizedScalingMetricSpecificationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/autoscalingplans.generated.ts",
+        "line": 415
+      },
+      "name": "CustomizedScalingMetricSpecificationProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-metricname"
+            },
+            "stability": "external",
+            "summary": "The name of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 429
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-namespace"
+            },
+            "stability": "external",
+            "summary": "The namespace of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 435
+          },
+          "name": "namespace",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-statistic"
+            },
+            "stability": "external",
+            "summary": "The statistic of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 441
+          },
+          "name": "statistic",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-dimensions"
+            },
+            "remarks": "Conditional: If you published your metric with dimensions, you must specify the same dimensions in your customized scaling metric specification.",
+            "stability": "external",
+            "summary": "The dimensions of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 423
+          },
+          "name": "dimensions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.MetricDimensionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-customizedscalingmetricspecification-unit"
+            },
+            "stability": "external",
+            "summary": "The unit of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 447
+          },
+          "name": "unit",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/autoscalingplans.generated:CfnScalingPlan.CustomizedScalingMetricSpecificationProperty"
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.MetricDimensionProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-metricdimension.html"
+        },
+        "stability": "external",
+        "summary": "`MetricDimension` is a subproperty of [CustomizedScalingMetricSpecification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-customizedscalingmetricspecification.html) that specifies a dimension for a customized metric to use with AWS Auto Scaling ( Auto Scaling Plans ). Dimensions are arbitrary name/value pairs that can be associated with a CloudWatch metric. Duplicate dimensions are not allowed."
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.MetricDimensionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/autoscalingplans.generated.ts",
+        "line": 523
+      },
+      "name": "MetricDimensionProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-metricdimension.html#cfn-autoscalingplans-scalingplan-metricdimension-name"
+            },
+            "stability": "external",
+            "summary": "The name of the dimension."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 529
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-metricdimension.html#cfn-autoscalingplans-scalingplan-metricdimension-value"
+            },
+            "stability": "external",
+            "summary": "The value of the dimension."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 535
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/autoscalingplans.generated:CfnScalingPlan.MetricDimensionProperty"
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.PredefinedLoadMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedloadmetricspecification.html"
+        },
+        "remarks": "After creating your scaling plan, you can use the AWS Auto Scaling console to visualize forecasts for the specified metric. For more information, see [View Scaling Information for a Resource](https://docs.aws.amazon.com/autoscaling/plans/userguide/gs-create-scaling-plan.html#gs-view-resource) in the *AWS Auto Scaling User Guide* .",
+        "stability": "external",
+        "summary": "`PredefinedLoadMetricSpecification` is a subproperty of [ScalingInstruction](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html) that specifies a predefined load metric for predictive scaling to use with AWS Auto Scaling ( Auto Scaling Plans )."
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.PredefinedLoadMetricSpecificationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/autoscalingplans.generated.ts",
+        "line": 603
+      },
+      "name": "PredefinedLoadMetricSpecificationProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-predefinedloadmetricspecification-predefinedloadmetrictype"
+            },
+            "stability": "external",
+            "summary": "The metric type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 609
+          },
+          "name": "predefinedLoadMetricType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedloadmetricspecification.html#cfn-autoscalingplans-scalingplan-predefinedloadmetricspecification-resourcelabel"
+            },
+            "remarks": "You can't specify a resource label unless the metric type is `ALBTargetGroupRequestCount` and there is a target group for an Application Load Balancer attached to the Auto Scaling group.\n\nYou create the resource label by appending the final portion of the load balancer ARN and the final portion of the target group ARN into a single value, separated by a forward slash (/). The format is app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>, where:\n\n- app/<load-balancer-name>/<load-balancer-id> is the final portion of the load balancer ARN\n- targetgroup/<target-group-name>/<target-group-id> is the final portion of the target group ARN.\n\nThis is an example: app/EC2Co-EcsEl-1TKLTMITMM0EO/f37c06a68c1748aa/targetgroup/EC2Co-Defau-LDNM7Q3ZH1ZN/6d4ea56ca2d6a18d.\n\nTo find the ARN for an Application Load Balancer, use the [DescribeLoadBalancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_DescribeLoadBalancers.html) API operation. To find the ARN for the target group, use the [DescribeTargetGroups](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_DescribeTargetGroups.html) API operation.",
+            "stability": "external",
+            "summary": "Identifies the resource associated with the metric type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 624
+          },
+          "name": "resourceLabel",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/autoscalingplans.generated:CfnScalingPlan.PredefinedLoadMetricSpecificationProperty"
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.PredefinedScalingMetricSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedscalingmetricspecification.html"
+        },
+        "stability": "external",
+        "summary": "`PredefinedScalingMetricSpecification` is a subproperty of [TargetTrackingConfiguration](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html) that specifies a customized scaling metric for a target tracking configuration to use with AWS Auto Scaling ( Auto Scaling Plans )."
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.PredefinedScalingMetricSpecificationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/autoscalingplans.generated.ts",
+        "line": 689
+      },
+      "name": "PredefinedScalingMetricSpecificationProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-predefinedscalingmetricspecification-predefinedscalingmetrictype"
+            },
+            "remarks": "The `ALBRequestCountPerTarget` metric type applies only to Auto Scaling groups, Spot Fleet requests, and ECS services.",
+            "stability": "external",
+            "summary": "The metric type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 695
+          },
+          "name": "predefinedScalingMetricType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-predefinedscalingmetricspecification.html#cfn-autoscalingplans-scalingplan-predefinedscalingmetricspecification-resourcelabel"
+            },
+            "remarks": "You can't specify a resource label unless the metric type is `ALBRequestCountPerTarget` and there is a target group for an Application Load Balancer attached to the Auto Scaling group, Spot Fleet request, or ECS service.\n\nYou create the resource label by appending the final portion of the load balancer ARN and the final portion of the target group ARN into a single value, separated by a forward slash (/). The format is app/<load-balancer-name>/<load-balancer-id>/targetgroup/<target-group-name>/<target-group-id>, where:\n\n- app/<load-balancer-name>/<load-balancer-id> is the final portion of the load balancer ARN\n- targetgroup/<target-group-name>/<target-group-id> is the final portion of the target group ARN.\n\nThis is an example: app/EC2Co-EcsEl-1TKLTMITMM0EO/f37c06a68c1748aa/targetgroup/EC2Co-Defau-LDNM7Q3ZH1ZN/6d4ea56ca2d6a18d.\n\nTo find the ARN for an Application Load Balancer, use the [DescribeLoadBalancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_DescribeLoadBalancers.html) API operation. To find the ARN for the target group, use the [DescribeTargetGroups](https://docs.aws.amazon.com/elasticloadbalancing/latest/APIReference/API_DescribeTargetGroups.html) API operation.",
+            "stability": "external",
+            "summary": "Identifies the resource associated with the metric type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 710
+          },
+          "name": "resourceLabel",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/autoscalingplans.generated:CfnScalingPlan.PredefinedScalingMetricSpecificationProperty"
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ScalingInstructionProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html"
+        },
+        "remarks": "AWS Auto Scaling creates target tracking scaling policies based on the scaling instructions. Target tracking scaling policies adjust the capacity of your scalable resource as required to maintain resource utilization at the target value that you specified.\n\nAWS Auto Scaling also configures predictive scaling for your Amazon EC2 Auto Scaling groups using a subset of properties, including the load metric, the scaling metric, the target value for the scaling metric, the predictive scaling mode (forecast and scale or forecast only), and the desired behavior when the forecast capacity exceeds the maximum capacity of the resource. With predictive scaling, AWS Auto Scaling generates forecasts with traffic predictions for the two days ahead and schedules scaling actions that proactively add and remove resource capacity to match the forecast.\n\n> We recommend waiting a minimum of 24 hours after creating an Auto Scaling group to configure predictive scaling. At minimum, there must be 24 hours of historical data to generate a forecast. For more information, see [Best Practices for AWS Auto Scaling](https://docs.aws.amazon.com/autoscaling/plans/userguide/gs-best-practices.html) in the *AWS Auto Scaling User Guide* .",
+        "stability": "external",
+        "summary": "`ScalingInstruction` is a property of [ScalingPlan](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html) that specifies the scaling instruction for a scalable resource in a scaling plan. Each scaling instruction applies to one resource."
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ScalingInstructionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/autoscalingplans.generated.ts",
+        "line": 781
+      },
+      "name": "ScalingInstructionProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-maxcapacity"
+            },
+            "remarks": "The exception to this upper limit is if you specify a non-default setting for *PredictiveScalingMaxCapacityBehavior* .",
+            "stability": "external",
+            "summary": "The maximum capacity of the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 801
+          },
+          "name": "maxCapacity",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-mincapacity"
+            },
+            "stability": "external",
+            "summary": "The minimum capacity of the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 807
+          },
+          "name": "minCapacity",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-resourceid"
+            },
+            "remarks": "- Auto Scaling group - The resource type is `autoScalingGroup` and the unique identifier is the name of the Auto Scaling group. Example: `autoScalingGroup/my-asg` .\n- ECS service - The resource type is `service` and the unique identifier is the cluster name and service name. Example: `service/default/sample-webapp` .\n- Spot Fleet request - The resource type is `spot-fleet-request` and the unique identifier is the Spot Fleet request ID. Example: `spot-fleet-request/sfr-73fbd2ce-aa30-494c-8788-1cee4EXAMPLE` .\n- DynamoDB table - The resource type is `table` and the unique identifier is the resource ID. Example: `table/my-table` .\n- DynamoDB global secondary index - The resource type is `index` and the unique identifier is the resource ID. Example: `table/my-table/index/my-table-index` .\n- Aurora DB cluster - The resource type is `cluster` and the unique identifier is the cluster name. Example: `cluster:my-db-cluster` .",
+            "stability": "external",
+            "summary": "The ID of the resource. This string consists of the resource type and unique identifier."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 856
+          },
+          "name": "resourceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-scalabledimension"
+            },
+            "remarks": "- `autoscaling:autoScalingGroup:DesiredCapacity` - The desired capacity of an Auto Scaling group.\n- `ecs:service:DesiredCount` - The desired task count of an ECS service.\n- `ec2:spot-fleet-request:TargetCapacity` - The target capacity of a Spot Fleet request.\n- `dynamodb:table:ReadCapacityUnits` - The provisioned read capacity for a DynamoDB table.\n- `dynamodb:table:WriteCapacityUnits` - The provisioned write capacity for a DynamoDB table.\n- `dynamodb:index:ReadCapacityUnits` - The provisioned read capacity for a DynamoDB global secondary index.\n- `dynamodb:index:WriteCapacityUnits` - The provisioned write capacity for a DynamoDB global secondary index.\n- `rds:cluster:ReadReplicaCount` - The count of Aurora Replicas in an Aurora DB cluster. Available for Aurora MySQL-compatible edition and Aurora PostgreSQL-compatible edition.",
+            "stability": "external",
+            "summary": "The scalable dimension associated with the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 871
+          },
+          "name": "scalableDimension",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-servicenamespace"
+            },
+            "stability": "external",
+            "summary": "The namespace of the AWS service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 895
+          },
+          "name": "serviceNamespace",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-targettrackingconfigurations"
+            },
+            "remarks": "Each of these structures must specify a unique scaling metric and a target value for the metric.",
+            "stability": "external",
+            "summary": "The target tracking configurations (up to 10)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 901
+          },
+          "name": "targetTrackingConfigurations",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.TargetTrackingConfigurationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-customizedloadmetricspecification"
+            },
+            "remarks": "This property or a *PredefinedLoadMetricSpecification* is required when configuring predictive scaling, and cannot be used otherwise.",
+            "stability": "external",
+            "summary": "The customized load metric to use for predictive scaling."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 787
+          },
+          "name": "customizedLoadMetricSpecification",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.CustomizedLoadMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-disabledynamicscaling"
+            },
+            "remarks": "When dynamic scaling is enabled, AWS Auto Scaling creates target tracking scaling policies based on the specified target tracking configurations.\n\nThe default is enabled ( `false` ).",
+            "stability": "external",
+            "summary": "Controls whether dynamic scaling by AWS Auto Scaling is disabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 795
+          },
+          "name": "disableDynamicScaling",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-predefinedloadmetricspecification"
+            },
+            "remarks": "This property or a *CustomizedLoadMetricSpecification* is required when configuring predictive scaling, and cannot be used otherwise.",
+            "stability": "external",
+            "summary": "The predefined load metric to use for predictive scaling."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 813
+          },
+          "name": "predefinedLoadMetricSpecification",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.PredefinedLoadMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-predictivescalingmaxcapacitybehavior"
+            },
+            "remarks": "The default value is `SetForecastCapacityToMaxCapacity` .\n\nThe following are possible values:\n\n- `SetForecastCapacityToMaxCapacity` - AWS Auto Scaling cannot scale resource capacity higher than the maximum capacity. The maximum capacity is enforced as a hard limit.\n- `SetMaxCapacityToForecastCapacity` - AWS Auto Scaling can scale resource capacity higher than the maximum capacity to equal but not exceed forecast capacity.\n- `SetMaxCapacityAboveForecastCapacity` - AWS Auto Scaling can scale resource capacity higher than the maximum capacity by a specified buffer value. The intention is to give the target tracking scaling policy extra capacity if unexpected traffic occurs.\n\nValid only when configuring predictive scaling.",
+            "stability": "external",
+            "summary": "Defines the behavior that should be applied if the forecast capacity approaches or exceeds the maximum capacity specified for the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 827
+          },
+          "name": "predictiveScalingMaxCapacityBehavior",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-predictivescalingmaxcapacitybuffer"
+            },
+            "remarks": "The value is specified as a percentage relative to the forecast capacity. For example, if the buffer is 10, this means a 10 percent buffer. With a 10 percent buffer, if the forecast capacity is 50, and the maximum capacity is 40, then the effective maximum capacity is 55.\n\nValid only when configuring predictive scaling. Required if *PredictiveScalingMaxCapacityBehavior* is set to `SetMaxCapacityAboveForecastCapacity` , and cannot be used otherwise.\n\nThe range is 1-100.",
+            "stability": "external",
+            "summary": "The size of the capacity buffer to use when the forecast capacity is close to or exceeds the maximum capacity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 837
+          },
+          "name": "predictiveScalingMaxCapacityBuffer",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-predictivescalingmode"
+            },
+            "remarks": "The default value is `ForecastAndScale` . Otherwise, AWS Auto Scaling forecasts capacity but does not apply any scheduled scaling actions based on the capacity forecast.",
+            "stability": "external",
+            "summary": "The predictive scaling mode."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 843
+          },
+          "name": "predictiveScalingMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-scalingpolicyupdatebehavior"
+            },
+            "remarks": "The default value is `KeepExternalPolicies` .\n\nValid only when configuring dynamic scaling.",
+            "stability": "external",
+            "summary": "Controls whether your scaling policies that are external to AWS Auto Scaling are deleted and new target tracking scaling policies created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 879
+          },
+          "name": "scalingPolicyUpdateBehavior",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html#cfn-autoscalingplans-scalingplan-scalinginstruction-scheduledactionbuffertime"
+            },
+            "remarks": "For example, if the forecast says to add capacity at 10:00 AM, and the buffer time is 5 minutes, then the run time of the corresponding scheduled scaling action will be 9:55 AM. The intention is to give resources time to be provisioned. For example, it can take a few minutes to launch an EC2 instance. The actual amount of time required depends on several factors, such as the size of the instance and whether there are startup scripts to complete.\n\nThe value must be less than the forecast interval duration of 3600 seconds (60 minutes). The default is 300 seconds.\n\nValid only when configuring predictive scaling.",
+            "stability": "external",
+            "summary": "The amount of time, in seconds, to buffer the run time of scheduled scaling actions when scaling out."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 889
+          },
+          "name": "scheduledActionBufferTime",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/autoscalingplans.generated:CfnScalingPlan.ScalingInstructionProperty"
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.TagFilterProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-tagfilter.html"
+        },
+        "stability": "external",
+        "summary": "`TagFilter` is a subproperty of [ApplicationSource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-applicationsource.html) that specifies a tag for an application source to use with AWS Auto Scaling ( Auto Scaling Plans )."
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.TagFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/autoscalingplans.generated.ts",
+        "line": 1007
+      },
+      "name": "TagFilterProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-tagfilter.html#cfn-autoscalingplans-scalingplan-tagfilter-key"
+            },
+            "stability": "external",
+            "summary": "The tag key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 1013
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-tagfilter.html#cfn-autoscalingplans-scalingplan-tagfilter-values"
+            },
+            "stability": "external",
+            "summary": "The tag values (0 to 20)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 1019
+          },
+          "name": "values",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/autoscalingplans.generated:CfnScalingPlan.TagFilterProperty"
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.TargetTrackingConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "`TargetTrackingConfiguration` is a subproperty of [ScalingInstruction](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-scalinginstruction.html) that specifies a target tracking configuration to use with AWS Auto Scaling ( Auto Scaling Plans )."
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.TargetTrackingConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/autoscalingplans.generated.ts",
+        "line": 1084
+      },
+      "name": "TargetTrackingConfigurationProperty",
+      "namespace": "CfnScalingPlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-targetvalue"
+            },
+            "remarks": "Although this property accepts numbers of type Double, it won't accept values that are either too small or too large. Values must be in the range of -2^360 to 2^360.",
+            "stability": "external",
+            "summary": "The target value for the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 1128
+          },
+          "name": "targetValue",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-customizedscalingmetricspecification"
+            },
+            "remarks": "You can specify either a predefined metric or a customized metric.",
+            "stability": "external",
+            "summary": "A customized metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 1090
+          },
+          "name": "customizedScalingMetricSpecification",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.CustomizedScalingMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-disablescalein"
+            },
+            "remarks": "If the value is `true` , scale in is disabled and the target tracking scaling policy doesn't remove capacity from the scalable resource. Otherwise, scale in is enabled and the target tracking scaling policy can remove capacity from the scalable resource.\n\nThe default value is `false` .",
+            "stability": "external",
+            "summary": "Indicates whether scale in by the target tracking scaling policy is disabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 1098
+          },
+          "name": "disableScaleIn",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-estimatedinstancewarmup"
+            },
+            "remarks": "This value is used only if the resource is an Auto Scaling group.",
+            "stability": "external",
+            "summary": "The estimated time, in seconds, until a newly launched instance can contribute to the CloudWatch metrics."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 1104
+          },
+          "name": "estimatedInstanceWarmup",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-predefinedscalingmetricspecification"
+            },
+            "remarks": "You can specify either a predefined metric or a customized metric.",
+            "stability": "external",
+            "summary": "A predefined metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 1110
+          },
+          "name": "predefinedScalingMetricSpecification",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.PredefinedScalingMetricSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-scaleincooldown"
+            },
+            "remarks": "This value is not used if the scalable resource is an Auto Scaling group.",
+            "stability": "external",
+            "summary": "The amount of time, in seconds, after a scale-in activity completes before another scale in activity can start."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 1116
+          },
+          "name": "scaleInCooldown",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html#cfn-autoscalingplans-scalingplan-targettrackingconfiguration-scaleoutcooldown"
+            },
+            "remarks": "This value is not used if the scalable resource is an Auto Scaling group.",
+            "stability": "external",
+            "summary": "The amount of time, in seconds, after a scale-out activity completes before another scale-out activity can start."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 1122
+          },
+          "name": "scaleOutCooldown",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/autoscalingplans.generated:CfnScalingPlan.TargetTrackingConfigurationProperty"
+    },
+    "@aws-cdk/aws-autoscalingplans.CfnScalingPlanProps": {
+      "assembly": "@aws-cdk/aws-autoscalingplans",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnScalingPlan`."
+      },
+      "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlanProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/autoscalingplans.generated.ts",
+        "line": 20
+      },
+      "name": "CfnScalingPlanProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html#cfn-autoscalingplans-scalingplan-applicationsource"
+            },
+            "remarks": "You can create one scaling plan per application source. The `ApplicationSource` property must be present to ensure interoperability with the AWS Auto Scaling console.",
+            "stability": "external",
+            "summary": "A CloudFormation stack or a set of tags."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 27
+          },
+          "name": "applicationSource",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ApplicationSourceProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-autoscalingplans-scalingplan.html#cfn-autoscalingplans-scalingplan-scalinginstructions"
+            },
+            "stability": "external",
+            "summary": "The scaling instructions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/autoscalingplans.generated.ts",
+            "line": 34
+          },
+          "name": "scalingInstructions",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-autoscalingplans.CfnScalingPlan.ScalingInstructionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/autoscalingplans.generated:CfnScalingPlanProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "MwJBiC+0exJeWL3B8rZMi4rA+IuihMTvJldnRH6/LvQ="
+}

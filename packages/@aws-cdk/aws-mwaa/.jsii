@@ -1,0 +1,1678 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::MWAA",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::MWAA",
+    "aws-mwaa"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-mwaa",
+  "readme": {
+    "markdown": "# AWS::MWAA Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as mwaa from '@aws-cdk/aws-mwaa';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for MWAA construct libraries](https://constructs.dev/search?q=mwaa)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::MWAA resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_MWAA.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::MWAA](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_MWAA.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-mwaa",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.MWAA",
+      "packageId": "Amazon.CDK.AWS.MWAA"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "mwaa",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.mwaa"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-mwaa"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-mwaa",
+      "module": "aws_cdk.aws_mwaa"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-mwaa.CfnEnvironment": {
+      "assembly": "@aws-cdk/aws-mwaa",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MWAA::Environment",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html"
+        },
+        "remarks": "The `AWS::MWAA::Environment` resource creates an Amazon Managed Workflows for Apache Airflow (MWAA) environment.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MWAA::Environment`."
+      },
+      "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MWAA::Environment`."
+        },
+        "locationInModule": {
+          "filename": "lib/mwaa.generated.ts",
+          "line": 500
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-mwaa.CfnEnvironmentProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/mwaa.generated.ts",
+        "line": 281
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 539
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 569
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnEnvironment",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 285
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The ARN for the Amazon MWAA environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 310
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LoggingConfiguration.DagProcessingLogs.CloudWatchLogGroupArn"
+            },
+            "stability": "external",
+            "summary": "The ARN for the CloudWatch Logs group where the Apache Airflow DAG processing logs are published."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 316
+          },
+          "name": "attrLoggingConfigurationDagProcessingLogsCloudWatchLogGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LoggingConfiguration.SchedulerLogs.CloudWatchLogGroupArn"
+            },
+            "stability": "external",
+            "summary": "The ARN for the CloudWatch Logs group where the Apache Airflow Scheduler logs are published."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 322
+          },
+          "name": "attrLoggingConfigurationSchedulerLogsCloudWatchLogGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LoggingConfiguration.TaskLogs.CloudWatchLogGroupArn"
+            },
+            "stability": "external",
+            "summary": "The ARN for the CloudWatch Logs group where the Apache Airflow task logs are published."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 328
+          },
+          "name": "attrLoggingConfigurationTaskLogsCloudWatchLogGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LoggingConfiguration.WebserverLogs.CloudWatchLogGroupArn"
+            },
+            "stability": "external",
+            "summary": "The ARN for the CloudWatch Logs group where the Apache Airflow Web server logs are published."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 334
+          },
+          "name": "attrLoggingConfigurationWebserverLogsCloudWatchLogGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LoggingConfiguration.WorkerLogs.CloudWatchLogGroupArn"
+            },
+            "stability": "external",
+            "summary": "The ARN for the CloudWatch Logs group where the Apache Airflow Worker logs are published."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 340
+          },
+          "name": "attrLoggingConfigurationWorkerLogsCloudWatchLogGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "WebserverUrl"
+            },
+            "stability": "external",
+            "summary": "The URL of your Apache Airflow UI."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 346
+          },
+          "name": "attrWebserverUrl",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 544
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-tags"
+            },
+            "remarks": "For example, `\"Environment\": \"Staging\"` . To learn more, see [Tagging](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "The key-value tag pairs associated to your environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 475
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-airflowconfigurationoptions"
+            },
+            "remarks": "For example, `core.default_timezone: utc` . To learn more, see [Apache Airflow configuration options](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-env-variables.html) .",
+            "stability": "external",
+            "summary": "A list of key-value pairs containing the Airflow configuration options for your environment."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 360
+          },
+          "name": "airflowConfigurationOptions",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-name"
+            },
+            "stability": "external",
+            "summary": "The name of your Amazon MWAA environment."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 353
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-airflowversion"
+            },
+            "remarks": "If no value is specified, defaults to the latest version. Valid values: `2.0.2` , `1.10.12` , `2.2.2` , and `2.4.3` .",
+            "stability": "external",
+            "summary": "The version of Apache Airflow to use for the environment."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 367
+          },
+          "name": "airflowVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-dags3path"
+            },
+            "remarks": "For example, `dags` . To learn more, see [Adding or updating DAGs](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-dag-folder.html) .",
+            "stability": "external",
+            "summary": "The relative path to the DAGs folder on your Amazon S3 bucket."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 374
+          },
+          "name": "dagS3Path",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-environmentclass"
+            },
+            "remarks": "Valid values: `mw1.small` , `mw1.medium` , `mw1.large` . To learn more, see [Amazon MWAA environment class](https://docs.aws.amazon.com/mwaa/latest/userguide/environment-class.html) .",
+            "stability": "external",
+            "summary": "The environment class type."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 381
+          },
+          "name": "environmentClass",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-executionrolearn"
+            },
+            "remarks": "For example, `arn:aws:iam::123456789:role/my-execution-role` . To learn more, see [Amazon MWAA Execution role](https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-create-role.html) .",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the execution role in IAM that allows MWAA to access AWS resources in your environment."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 388
+          },
+          "name": "executionRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-kmskey"
+            },
+            "remarks": "You can use an AWS KMS key managed by MWAA, or a customer-managed KMS key (advanced).",
+            "stability": "external",
+            "summary": "The AWS Key Management Service (KMS) key to encrypt and decrypt the data in your environment."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 395
+          },
+          "name": "kmsKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-loggingconfiguration"
+            },
+            "stability": "external",
+            "summary": "The Apache Airflow logs being sent to CloudWatch Logs: `DagProcessingLogs` , `SchedulerLogs` , `TaskLogs` , `WebserverLogs` , `WorkerLogs` ."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 402
+          },
+          "name": "loggingConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment.LoggingConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-maxworkers"
+            },
+            "remarks": "MWAA scales the number of Apache Airflow workers up to the number you specify in the `MaxWorkers` field. For example, `20` . When there are no more tasks running, and no more in the queue, MWAA disposes of the extra workers leaving the one worker that is included with your environment, or the number you specify in `MinWorkers` .",
+            "stability": "external",
+            "summary": "The maximum number of workers that you want to run in your environment."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 409
+          },
+          "name": "maxWorkers",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-minworkers"
+            },
+            "remarks": "MWAA scales the number of Apache Airflow workers up to the number you specify in the `MaxWorkers` field. When there are no more tasks running, and no more in the queue, MWAA disposes of the extra workers leaving the worker count you specify in the `MinWorkers` field. For example, `2` .",
+            "stability": "external",
+            "summary": "The minimum number of workers that you want to run in your environment."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 416
+          },
+          "name": "minWorkers",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-networkconfiguration"
+            },
+            "remarks": "To learn more, see [About networking on Amazon MWAA](https://docs.aws.amazon.com/mwaa/latest/userguide/networking-about.html) .",
+            "stability": "external",
+            "summary": "The VPC networking components used to secure and enable network traffic between the AWS resources for your environment."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 423
+          },
+          "name": "networkConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment.NetworkConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-pluginss3objectversion"
+            },
+            "stability": "external",
+            "summary": "The version of the plugins.zip file on your Amazon S3 bucket. To learn more, see [Installing custom plugins](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-dag-import-plugins.html) ."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 430
+          },
+          "name": "pluginsS3ObjectVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-pluginss3path"
+            },
+            "stability": "external",
+            "summary": "The relative path to the `plugins.zip` file on your Amazon S3 bucket. For example, `plugins.zip` . To learn more, see [Installing custom plugins](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-dag-import-plugins.html) ."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 437
+          },
+          "name": "pluginsS3Path",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-requirementss3objectversion"
+            },
+            "stability": "external",
+            "summary": "The version of the requirements.txt file on your Amazon S3 bucket. To learn more, see [Installing Python dependencies](https://docs.aws.amazon.com/mwaa/latest/userguide/working-dags-dependencies.html) ."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 444
+          },
+          "name": "requirementsS3ObjectVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-requirementss3path"
+            },
+            "stability": "external",
+            "summary": "The relative path to the `requirements.txt` file on your Amazon S3 bucket. For example, `requirements.txt` . To learn more, see [Installing Python dependencies](https://docs.aws.amazon.com/mwaa/latest/userguide/working-dags-dependencies.html) ."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 451
+          },
+          "name": "requirementsS3Path",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-schedulers"
+            },
+            "remarks": "- *v2* - Accepts between 2 to 5. Defaults to 2.\n- *v1* - Accepts 1.",
+            "stability": "external",
+            "summary": "The number of schedulers that you want to run in your environment. Valid values:."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 461
+          },
+          "name": "schedulers",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-sourcebucketarn"
+            },
+            "remarks": "For example, `arn:aws:s3:::my-airflow-bucket-unique-name` . To learn more, see [Create an Amazon S3 bucket for Amazon MWAA](https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-s3-bucket.html) .",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the Amazon S3 bucket where your DAG code and supporting files are stored."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 468
+          },
+          "name": "sourceBucketArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-webserveraccessmode"
+            },
+            "remarks": "To learn more, see [Apache Airflow access modes](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-networking.html) . Valid values: `PRIVATE_ONLY` or `PUBLIC_ONLY` .",
+            "stability": "external",
+            "summary": "The Apache Airflow *Web server* access mode."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 482
+          },
+          "name": "webserverAccessMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-weeklymaintenancewindowstart"
+            },
+            "remarks": "For example: `TUE:03:30` . You can specify a start time in 30 minute increments only. Supported input includes the following:\n\n- MON|TUE|WED|THU|FRI|SAT|SUN:([01]\\\\d|2[0-3]):(00|30)",
+            "stability": "external",
+            "summary": "The day and time of the week to start weekly maintenance updates of your environment in the following format: `DAY:HH:MM` ."
+          },
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 491
+          },
+          "name": "weeklyMaintenanceWindowStart",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mwaa.generated:CfnEnvironment"
+    },
+    "@aws-cdk/aws-mwaa.CfnEnvironment.LoggingConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-mwaa",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-loggingconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The type of Apache Airflow logs to send to CloudWatch Logs."
+      },
+      "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment.LoggingConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mwaa.generated.ts",
+        "line": 583
+      },
+      "name": "LoggingConfigurationProperty",
+      "namespace": "CfnEnvironment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-loggingconfiguration.html#cfn-mwaa-environment-loggingconfiguration-dagprocessinglogs"
+            },
+            "stability": "external",
+            "summary": "Defines the processing logs sent to CloudWatch Logs and the logging level to send."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 589
+          },
+          "name": "dagProcessingLogs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment.ModuleLoggingConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-loggingconfiguration.html#cfn-mwaa-environment-loggingconfiguration-schedulerlogs"
+            },
+            "stability": "external",
+            "summary": "Defines the scheduler logs sent to CloudWatch Logs and the logging level to send."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 595
+          },
+          "name": "schedulerLogs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment.ModuleLoggingConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-loggingconfiguration.html#cfn-mwaa-environment-loggingconfiguration-tasklogs"
+            },
+            "stability": "external",
+            "summary": "Defines the task logs sent to CloudWatch Logs and the logging level to send."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 601
+          },
+          "name": "taskLogs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment.ModuleLoggingConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-loggingconfiguration.html#cfn-mwaa-environment-loggingconfiguration-webserverlogs"
+            },
+            "stability": "external",
+            "summary": "Defines the web server logs sent to CloudWatch Logs and the logging level to send."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 607
+          },
+          "name": "webserverLogs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment.ModuleLoggingConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-loggingconfiguration.html#cfn-mwaa-environment-loggingconfiguration-workerlogs"
+            },
+            "stability": "external",
+            "summary": "Defines the worker logs sent to CloudWatch Logs and the logging level to send."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 613
+          },
+          "name": "workerLogs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment.ModuleLoggingConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/mwaa.generated:CfnEnvironment.LoggingConfigurationProperty"
+    },
+    "@aws-cdk/aws-mwaa.CfnEnvironment.ModuleLoggingConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-mwaa",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-moduleloggingconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Defines the type of logs to send for the Apache Airflow log type (e.g. `DagProcessingLogs` )."
+      },
+      "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment.ModuleLoggingConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mwaa.generated.ts",
+        "line": 686
+      },
+      "name": "ModuleLoggingConfigurationProperty",
+      "namespace": "CfnEnvironment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-moduleloggingconfiguration.html#cfn-mwaa-environment-moduleloggingconfiguration-cloudwatchloggrouparn"
+            },
+            "remarks": "> `CloudWatchLogGroupArn` is available only as a return value, accessible when specified as an attribute in the [`Fn:GetAtt`](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#aws-resource-mwaa-environment-return-values) intrinsic function. Any value you provide for `CloudWatchLogGroupArn` is discarded by Amazon MWAA.",
+            "stability": "external",
+            "summary": "The ARN of the CloudWatch Logs log group for each type of Apache Airflow log type that you have enabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 694
+          },
+          "name": "cloudWatchLogGroupArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-moduleloggingconfiguration.html#cfn-mwaa-environment-moduleloggingconfiguration-enabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether to enable the Apache Airflow log type (e.g. `DagProcessingLogs` ) in CloudWatch Logs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 700
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-moduleloggingconfiguration.html#cfn-mwaa-environment-moduleloggingconfiguration-loglevel"
+            },
+            "stability": "external",
+            "summary": "Defines the Apache Airflow logs to send for the log type (e.g. `DagProcessingLogs` ) to CloudWatch Logs. Valid values: `CRITICAL` , `ERROR` , `WARNING` , `INFO` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 706
+          },
+          "name": "logLevel",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mwaa.generated:CfnEnvironment.ModuleLoggingConfigurationProperty"
+    },
+    "@aws-cdk/aws-mwaa.CfnEnvironment.NetworkConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-mwaa",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-networkconfiguration.html"
+        },
+        "remarks": "To learn more, see [About networking on Amazon MWAA](https://docs.aws.amazon.com/mwaa/latest/userguide/networking-about.html) .",
+        "stability": "external",
+        "summary": "The VPC networking components used to secure and enable network traffic between the AWS resources for your environment."
+      },
+      "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment.NetworkConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mwaa.generated.ts",
+        "line": 773
+      },
+      "name": "NetworkConfigurationProperty",
+      "namespace": "CfnEnvironment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-networkconfiguration.html#cfn-mwaa-environment-networkconfiguration-securitygroupids"
+            },
+            "remarks": "Accepts up to 5 security group IDs. A security group must be attached to the same VPC as the subnets. To learn more, see [Security in your VPC on Amazon MWAA](https://docs.aws.amazon.com/mwaa/latest/userguide/vpc-security.html) .",
+            "stability": "external",
+            "summary": "A list of one or more security group IDs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 779
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mwaa-environment-networkconfiguration.html#cfn-mwaa-environment-networkconfiguration-subnetids"
+            },
+            "remarks": "*Required* to create an environment. Must be private subnets in two different availability zones. A subnet must be attached to the same VPC as the security group. To learn more, see [About networking on Amazon MWAA](https://docs.aws.amazon.com/mwaa/latest/userguide/networking-about.html) .",
+            "stability": "external",
+            "summary": "A list of subnet IDs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 785
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/mwaa.generated:CfnEnvironment.NetworkConfigurationProperty"
+    },
+    "@aws-cdk/aws-mwaa.CfnEnvironmentProps": {
+      "assembly": "@aws-cdk/aws-mwaa",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnEnvironment`."
+      },
+      "fqn": "@aws-cdk/aws-mwaa.CfnEnvironmentProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mwaa.generated.ts",
+        "line": 20
+      },
+      "name": "CfnEnvironmentProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-name"
+            },
+            "stability": "external",
+            "summary": "The name of your Amazon MWAA environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 27
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-airflowconfigurationoptions"
+            },
+            "remarks": "For example, `core.default_timezone: utc` . To learn more, see [Apache Airflow configuration options](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-env-variables.html) .",
+            "stability": "external",
+            "summary": "A list of key-value pairs containing the Airflow configuration options for your environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 34
+          },
+          "name": "airflowConfigurationOptions",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-airflowversion"
+            },
+            "remarks": "If no value is specified, defaults to the latest version. Valid values: `2.0.2` , `1.10.12` , `2.2.2` , and `2.4.3` .",
+            "stability": "external",
+            "summary": "The version of Apache Airflow to use for the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 41
+          },
+          "name": "airflowVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-dags3path"
+            },
+            "remarks": "For example, `dags` . To learn more, see [Adding or updating DAGs](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-dag-folder.html) .",
+            "stability": "external",
+            "summary": "The relative path to the DAGs folder on your Amazon S3 bucket."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 48
+          },
+          "name": "dagS3Path",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-environmentclass"
+            },
+            "remarks": "Valid values: `mw1.small` , `mw1.medium` , `mw1.large` . To learn more, see [Amazon MWAA environment class](https://docs.aws.amazon.com/mwaa/latest/userguide/environment-class.html) .",
+            "stability": "external",
+            "summary": "The environment class type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 55
+          },
+          "name": "environmentClass",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-executionrolearn"
+            },
+            "remarks": "For example, `arn:aws:iam::123456789:role/my-execution-role` . To learn more, see [Amazon MWAA Execution role](https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-create-role.html) .",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the execution role in IAM that allows MWAA to access AWS resources in your environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 62
+          },
+          "name": "executionRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-kmskey"
+            },
+            "remarks": "You can use an AWS KMS key managed by MWAA, or a customer-managed KMS key (advanced).",
+            "stability": "external",
+            "summary": "The AWS Key Management Service (KMS) key to encrypt and decrypt the data in your environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 69
+          },
+          "name": "kmsKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-loggingconfiguration"
+            },
+            "stability": "external",
+            "summary": "The Apache Airflow logs being sent to CloudWatch Logs: `DagProcessingLogs` , `SchedulerLogs` , `TaskLogs` , `WebserverLogs` , `WorkerLogs` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 76
+          },
+          "name": "loggingConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment.LoggingConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-maxworkers"
+            },
+            "remarks": "MWAA scales the number of Apache Airflow workers up to the number you specify in the `MaxWorkers` field. For example, `20` . When there are no more tasks running, and no more in the queue, MWAA disposes of the extra workers leaving the one worker that is included with your environment, or the number you specify in `MinWorkers` .",
+            "stability": "external",
+            "summary": "The maximum number of workers that you want to run in your environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 83
+          },
+          "name": "maxWorkers",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-minworkers"
+            },
+            "remarks": "MWAA scales the number of Apache Airflow workers up to the number you specify in the `MaxWorkers` field. When there are no more tasks running, and no more in the queue, MWAA disposes of the extra workers leaving the worker count you specify in the `MinWorkers` field. For example, `2` .",
+            "stability": "external",
+            "summary": "The minimum number of workers that you want to run in your environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 90
+          },
+          "name": "minWorkers",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-networkconfiguration"
+            },
+            "remarks": "To learn more, see [About networking on Amazon MWAA](https://docs.aws.amazon.com/mwaa/latest/userguide/networking-about.html) .",
+            "stability": "external",
+            "summary": "The VPC networking components used to secure and enable network traffic between the AWS resources for your environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 97
+          },
+          "name": "networkConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mwaa.CfnEnvironment.NetworkConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-pluginss3objectversion"
+            },
+            "stability": "external",
+            "summary": "The version of the plugins.zip file on your Amazon S3 bucket. To learn more, see [Installing custom plugins](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-dag-import-plugins.html) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 104
+          },
+          "name": "pluginsS3ObjectVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-pluginss3path"
+            },
+            "stability": "external",
+            "summary": "The relative path to the `plugins.zip` file on your Amazon S3 bucket. For example, `plugins.zip` . To learn more, see [Installing custom plugins](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-dag-import-plugins.html) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 111
+          },
+          "name": "pluginsS3Path",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-requirementss3objectversion"
+            },
+            "stability": "external",
+            "summary": "The version of the requirements.txt file on your Amazon S3 bucket. To learn more, see [Installing Python dependencies](https://docs.aws.amazon.com/mwaa/latest/userguide/working-dags-dependencies.html) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 118
+          },
+          "name": "requirementsS3ObjectVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-requirementss3path"
+            },
+            "stability": "external",
+            "summary": "The relative path to the `requirements.txt` file on your Amazon S3 bucket. For example, `requirements.txt` . To learn more, see [Installing Python dependencies](https://docs.aws.amazon.com/mwaa/latest/userguide/working-dags-dependencies.html) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 125
+          },
+          "name": "requirementsS3Path",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-schedulers"
+            },
+            "remarks": "- *v2* - Accepts between 2 to 5. Defaults to 2.\n- *v1* - Accepts 1.",
+            "stability": "external",
+            "summary": "The number of schedulers that you want to run in your environment. Valid values:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 135
+          },
+          "name": "schedulers",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-sourcebucketarn"
+            },
+            "remarks": "For example, `arn:aws:s3:::my-airflow-bucket-unique-name` . To learn more, see [Create an Amazon S3 bucket for Amazon MWAA](https://docs.aws.amazon.com/mwaa/latest/userguide/mwaa-s3-bucket.html) .",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the Amazon S3 bucket where your DAG code and supporting files are stored."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 142
+          },
+          "name": "sourceBucketArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-tags"
+            },
+            "remarks": "For example, `\"Environment\": \"Staging\"` . To learn more, see [Tagging](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "The key-value tag pairs associated to your environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 149
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-webserveraccessmode"
+            },
+            "remarks": "To learn more, see [Apache Airflow access modes](https://docs.aws.amazon.com/mwaa/latest/userguide/configuring-networking.html) . Valid values: `PRIVATE_ONLY` or `PUBLIC_ONLY` .",
+            "stability": "external",
+            "summary": "The Apache Airflow *Web server* access mode."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 156
+          },
+          "name": "webserverAccessMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mwaa-environment.html#cfn-mwaa-environment-weeklymaintenancewindowstart"
+            },
+            "remarks": "For example: `TUE:03:30` . You can specify a start time in 30 minute increments only. Supported input includes the following:\n\n- MON|TUE|WED|THU|FRI|SAT|SUN:([01]\\\\d|2[0-3]):(00|30)",
+            "stability": "external",
+            "summary": "The day and time of the week to start weekly maintenance updates of your environment in the following format: `DAY:HH:MM` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mwaa.generated.ts",
+            "line": 165
+          },
+          "name": "weeklyMaintenanceWindowStart",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mwaa.generated:CfnEnvironmentProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "isGaHM0Yhzw0jiXQun+KDZpfx/A0GPwTqow0iQimg4c="
+}

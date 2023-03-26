@@ -1,0 +1,54 @@
+"use strict";
+var _a;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TarballImageAsset = void 0;
+const jsiiDeprecationWarnings = require("../.warnings.jsii.js");
+const JSII_RTTI_SYMBOL_1 = Symbol.for("jsii.rtti");
+const fs = require("fs");
+const path = require("path");
+const ecr = require("@aws-cdk/aws-ecr");
+const core_1 = require("@aws-cdk/core");
+const constructs_1 = require("constructs");
+/**
+ * An asset that represents a Docker image.
+ *
+ * The image will loaded from an existing tarball and uploaded to an ECR repository.
+ */
+class TarballImageAsset extends constructs_1.Construct {
+    constructor(scope, id, props) {
+        super(scope, id);
+        try {
+            jsiiDeprecationWarnings._aws_cdk_aws_ecr_assets_TarballImageAssetProps(props);
+        }
+        catch (error) {
+            if (process.env.JSII_DEBUG !== "1" && error.name === "DeprecationError") {
+                Error.captureStackTrace(error, TarballImageAsset);
+            }
+            throw error;
+        }
+        if (!fs.existsSync(props.tarballFile)) {
+            throw new Error(`Cannot find file at ${props.tarballFile}`);
+        }
+        const stagedTarball = new core_1.AssetStaging(this, 'Staging', { sourcePath: props.tarballFile });
+        this.sourceHash = stagedTarball.assetHash;
+        this.assetHash = stagedTarball.assetHash;
+        const stage = core_1.Stage.of(this);
+        const relativePathInOutDir = stage ? path.relative(stage.assetOutdir, stagedTarball.absoluteStagedPath) : stagedTarball.absoluteStagedPath;
+        const stack = core_1.Stack.of(this);
+        const location = stack.synthesizer.addDockerImageAsset({
+            sourceHash: stagedTarball.assetHash,
+            executable: [
+                'sh',
+                '-c',
+                `docker load -i ${relativePathInOutDir} | tail -n 1 | sed "s/Loaded image: //g"`,
+            ],
+        });
+        this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);
+        this.imageUri = location.imageUri;
+        this.imageTag = location.imageTag ?? this.assetHash;
+    }
+}
+_a = JSII_RTTI_SYMBOL_1;
+TarballImageAsset[_a] = { fqn: "@aws-cdk/aws-ecr-assets.TarballImageAsset", version: "0.0.0" };
+exports.TarballImageAsset = TarballImageAsset;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGFyYmFsbC1hc3NldC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbInRhcmJhbGwtYXNzZXQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7O0FBQUEseUJBQXlCO0FBQ3pCLDZCQUE2QjtBQUU3Qix3Q0FBd0M7QUFDeEMsd0NBQTJEO0FBQzNELDJDQUF1QztBQWdCdkM7Ozs7R0FJRztBQUNILE1BQWEsaUJBQWtCLFNBQVEsc0JBQVM7SUFnQzlDLFlBQVksS0FBZ0IsRUFBRSxFQUFVLEVBQUUsS0FBNkI7UUFDckUsS0FBSyxDQUFDLEtBQUssRUFBRSxFQUFFLENBQUMsQ0FBQzs7Ozs7OytDQWpDUixpQkFBaUI7Ozs7UUFtQzFCLElBQUksQ0FBQyxFQUFFLENBQUMsVUFBVSxDQUFDLEtBQUssQ0FBQyxXQUFXLENBQUMsRUFBRTtZQUNyQyxNQUFNLElBQUksS0FBSyxDQUFDLHVCQUF1QixLQUFLLENBQUMsV0FBVyxFQUFFLENBQUMsQ0FBQztTQUM3RDtRQUVELE1BQU0sYUFBYSxHQUFHLElBQUksbUJBQVksQ0FBQyxJQUFJLEVBQUUsU0FBUyxFQUFFLEVBQUUsVUFBVSxFQUFFLEtBQUssQ0FBQyxXQUFXLEVBQUUsQ0FBQyxDQUFDO1FBRTNGLElBQUksQ0FBQyxVQUFVLEdBQUcsYUFBYSxDQUFDLFNBQVMsQ0FBQztRQUMxQyxJQUFJLENBQUMsU0FBUyxHQUFHLGFBQWEsQ0FBQyxTQUFTLENBQUM7UUFFekMsTUFBTSxLQUFLLEdBQUcsWUFBSyxDQUFDLEVBQUUsQ0FBQyxJQUFJLENBQUMsQ0FBQztRQUM3QixNQUFNLG9CQUFvQixHQUFHLEtBQUssQ0FBQyxDQUFDLENBQUMsSUFBSSxDQUFDLFFBQVEsQ0FBQyxLQUFLLENBQUMsV0FBVyxFQUFFLGFBQWEsQ0FBQyxrQkFBa0IsQ0FBQyxDQUFDLENBQUMsQ0FBQyxhQUFhLENBQUMsa0JBQWtCLENBQUM7UUFFM0ksTUFBTSxLQUFLLEdBQUcsWUFBSyxDQUFDLEVBQUUsQ0FBQyxJQUFJLENBQUMsQ0FBQztRQUM3QixNQUFNLFFBQVEsR0FBRyxLQUFLLENBQUMsV0FBVyxDQUFDLG1CQUFtQixDQUFDO1lBQ3JELFVBQVUsRUFBRSxhQUFhLENBQUMsU0FBUztZQUNuQyxVQUFVLEVBQUU7Z0JBQ1YsSUFBSTtnQkFDSixJQUFJO2dCQUNKLGtCQUFrQixvQkFBb0IsMENBQTBDO2FBQ2pGO1NBQ0YsQ0FBQyxDQUFDO1FBRUgsSUFBSSxDQUFDLFVBQVUsR0FBRyxHQUFHLENBQUMsVUFBVSxDQUFDLGtCQUFrQixDQUFDLElBQUksRUFBRSxZQUFZLEVBQUUsUUFBUSxDQUFDLGNBQWMsQ0FBQyxDQUFDO1FBQ2pHLElBQUksQ0FBQyxRQUFRLEdBQUcsUUFBUSxDQUFDLFFBQVEsQ0FBQztRQUNsQyxJQUFJLENBQUMsUUFBUSxHQUFHLFFBQVEsQ0FBQyxRQUFRLElBQUksSUFBSSxDQUFDLFNBQVMsQ0FBQztLQUNyRDs7OztBQTVEVSw4Q0FBaUIiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBmcyBmcm9tICdmcyc7XG5pbXBvcnQgKiBhcyBwYXRoIGZyb20gJ3BhdGgnO1xuaW1wb3J0IHsgSUFzc2V0IH0gZnJvbSAnQGF3cy1jZGsvYXNzZXRzJztcbmltcG9ydCAqIGFzIGVjciBmcm9tICdAYXdzLWNkay9hd3MtZWNyJztcbmltcG9ydCB7IEFzc2V0U3RhZ2luZywgU3RhY2ssIFN0YWdlIH0gZnJvbSAnQGF3cy1jZGsvY29yZSc7XG5pbXBvcnQgeyBDb25zdHJ1Y3QgfSBmcm9tICdjb25zdHJ1Y3RzJztcblxuLyoqXG4gKiBPcHRpb25zIGZvciBUYXJiYWxsSW1hZ2VBc3NldFxuICovXG5leHBvcnQgaW50ZXJmYWNlIFRhcmJhbGxJbWFnZUFzc2V0UHJvcHMge1xuICAvKipcbiAgICogQWJzb2x1dGUgcGF0aCB0byB0aGUgdGFyYmFsbC5cbiAgICpcbiAgICogSXQgaXMgcmVjb21tZW5kZWQgdG8gdG8gdXNlIHRoZSBzY3JpcHQgcnVubmluZyBkaXJlY3RvcnkgKGUuZy4gYF9fZGlybmFtZWBcbiAgICogaW4gTm9kZS5qcyBwcm9qZWN0cyBvciBkaXJuYW1lIG9mIGBfX2ZpbGVfX2AgaW4gUHl0aG9uKSBpZiB5b3VyIHRhcmJhbGxcbiAgICogaXMgbG9jYXRlZCBhcyBhIHJlc291cmNlIGluc2lkZSB5b3VyIHByb2plY3QuXG4gICAqL1xuICByZWFkb25seSB0YXJiYWxsRmlsZTogc3RyaW5nO1xufVxuXG4vKipcbiAqIEFuIGFzc2V0IHRoYXQgcmVwcmVzZW50cyBhIERvY2tlciBpbWFnZS5cbiAqXG4gKiBUaGUgaW1hZ2Ugd2lsbCBsb2FkZWQgZnJvbSBhbiBleGlzdGluZyB0YXJiYWxsIGFuZCB1cGxvYWRlZCB0byBhbiBFQ1IgcmVwb3NpdG9yeS5cbiAqL1xuZXhwb3J0IGNsYXNzIFRhcmJhbGxJbWFnZUFzc2V0IGV4dGVuZHMgQ29uc3RydWN0IGltcGxlbWVudHMgSUFzc2V0IHtcbiAgLyoqXG4gICAqIFRoZSBmdWxsIFVSSSBvZiB0aGUgaW1hZ2UgKGluY2x1ZGluZyBhIHRhZykuIFVzZSB0aGlzIHJlZmVyZW5jZSB0byBwdWxsXG4gICAqIHRoZSBhc3NldC5cbiAgICovXG4gIHB1YmxpYyBpbWFnZVVyaTogc3RyaW5nO1xuXG4gIC8qKlxuICAgKiBSZXBvc2l0b3J5IHdoZXJlIHRoZSBpbWFnZSBpcyBzdG9yZWRcbiAgICovXG4gIHB1YmxpYyByZXBvc2l0b3J5OiBlY3IuSVJlcG9zaXRvcnk7XG5cbiAgLyoqXG4gICAqIEEgaGFzaCBvZiB0aGUgc291cmNlIG9mIHRoaXMgYXNzZXQsIHdoaWNoIGlzIGF2YWlsYWJsZSBhdCBjb25zdHJ1Y3Rpb24gdGltZS4gQXMgdGhpcyBpcyBhIHBsYWluXG4gICAqIHN0cmluZywgaXQgY2FuIGJlIHVzZWQgaW4gY29uc3RydWN0IElEcyBpbiBvcmRlciB0byBlbmZvcmNlIGNyZWF0aW9uIG9mIGEgbmV3IHJlc291cmNlIHdoZW5cbiAgICogdGhlIGNvbnRlbnQgaGFzaCBoYXMgY2hhbmdlZC5cbiAgICogQGRlcHJlY2F0ZWQgdXNlIGFzc2V0SGFzaFxuICAgKi9cbiAgcHVibGljIHJlYWRvbmx5IHNvdXJjZUhhc2g6IHN0cmluZztcblxuICAvKipcbiAgICogQSBoYXNoIG9mIHRoaXMgYXNzZXQsIHdoaWNoIGlzIGF2YWlsYWJsZSBhdCBjb25zdHJ1Y3Rpb24gdGltZS4gQXMgdGhpcyBpcyBhIHBsYWluIHN0cmluZywgaXRcbiAgICogY2FuIGJlIHVzZWQgaW4gY29uc3RydWN0IElEcyBpbiBvcmRlciB0byBlbmZvcmNlIGNyZWF0aW9uIG9mIGEgbmV3IHJlc291cmNlIHdoZW4gdGhlIGNvbnRlbnRcbiAgICogaGFzaCBoYXMgY2hhbmdlZC5cbiAgICovXG4gIHB1YmxpYyByZWFkb25seSBhc3NldEhhc2g6IHN0cmluZztcblxuICAvKipcbiAgICogVGhlIHRhZyBvZiB0aGlzIGFzc2V0IHdoZW4gaXQgaXMgdXBsb2FkZWQgdG8gRUNSLiBUaGUgdGFnIG1heSBkaWZmZXIgZnJvbSB0aGUgYXNzZXRIYXNoIGlmIGEgc3RhY2sgc3ludGhlc2l6ZXIgYWRkcyBhIGRvY2tlclRhZ1ByZWZpeC5cbiAgICovXG4gIHB1YmxpYyByZWFkb25seSBpbWFnZVRhZzogc3RyaW5nO1xuXG4gIGNvbnN0cnVjdG9yKHNjb3BlOiBDb25zdHJ1Y3QsIGlkOiBzdHJpbmcsIHByb3BzOiBUYXJiYWxsSW1hZ2VBc3NldFByb3BzKSB7XG4gICAgc3VwZXIoc2NvcGUsIGlkKTtcblxuICAgIGlmICghZnMuZXhpc3RzU3luYyhwcm9wcy50YXJiYWxsRmlsZSkpIHtcbiAgICAgIHRocm93IG5ldyBFcnJvcihgQ2Fubm90IGZpbmQgZmlsZSBhdCAke3Byb3BzLnRhcmJhbGxGaWxlfWApO1xuICAgIH1cblxuICAgIGNvbnN0IHN0YWdlZFRhcmJhbGwgPSBuZXcgQXNzZXRTdGFnaW5nKHRoaXMsICdTdGFnaW5nJywgeyBzb3VyY2VQYXRoOiBwcm9wcy50YXJiYWxsRmlsZSB9KTtcblxuICAgIHRoaXMuc291cmNlSGFzaCA9IHN0YWdlZFRhcmJhbGwuYXNzZXRIYXNoO1xuICAgIHRoaXMuYXNzZXRIYXNoID0gc3RhZ2VkVGFyYmFsbC5hc3NldEhhc2g7XG5cbiAgICBjb25zdCBzdGFnZSA9IFN0YWdlLm9mKHRoaXMpO1xuICAgIGNvbnN0IHJlbGF0aXZlUGF0aEluT3V0RGlyID0gc3RhZ2UgPyBwYXRoLnJlbGF0aXZlKHN0YWdlLmFzc2V0T3V0ZGlyLCBzdGFnZWRUYXJiYWxsLmFic29sdXRlU3RhZ2VkUGF0aCkgOiBzdGFnZWRUYXJiYWxsLmFic29sdXRlU3RhZ2VkUGF0aDtcblxuICAgIGNvbnN0IHN0YWNrID0gU3RhY2sub2YodGhpcyk7XG4gICAgY29uc3QgbG9jYXRpb24gPSBzdGFjay5zeW50aGVzaXplci5hZGREb2NrZXJJbWFnZUFzc2V0KHtcbiAgICAgIHNvdXJjZUhhc2g6IHN0YWdlZFRhcmJhbGwuYXNzZXRIYXNoLFxuICAgICAgZXhlY3V0YWJsZTogW1xuICAgICAgICAnc2gnLFxuICAgICAgICAnLWMnLFxuICAgICAgICBgZG9ja2VyIGxvYWQgLWkgJHtyZWxhdGl2ZVBhdGhJbk91dERpcn0gfCB0YWlsIC1uIDEgfCBzZWQgXCJzL0xvYWRlZCBpbWFnZTogLy9nXCJgLFxuICAgICAgXSxcbiAgICB9KTtcblxuICAgIHRoaXMucmVwb3NpdG9yeSA9IGVjci5SZXBvc2l0b3J5LmZyb21SZXBvc2l0b3J5TmFtZSh0aGlzLCAnUmVwb3NpdG9yeScsIGxvY2F0aW9uLnJlcG9zaXRvcnlOYW1lKTtcbiAgICB0aGlzLmltYWdlVXJpID0gbG9jYXRpb24uaW1hZ2VVcmk7XG4gICAgdGhpcy5pbWFnZVRhZyA9IGxvY2F0aW9uLmltYWdlVGFnID8/IHRoaXMuYXNzZXRIYXNoO1xuICB9XG59XG5cbiJdfQ==

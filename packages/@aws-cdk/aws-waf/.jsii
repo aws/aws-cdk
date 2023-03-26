@@ -1,0 +1,3405 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::WAF",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "waf"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-waf",
+  "readme": {
+    "markdown": "# AWS Web Application Firewall Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as waf from '@aws-cdk/aws-waf';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for WAF construct libraries](https://constructs.dev/search?q=waf)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::WAF resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_WAF.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::WAF](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_WAF.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-waf",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.WAF",
+      "packageId": "Amazon.CDK.AWS.WAF"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "waf",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.waf"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-waf"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-waf",
+      "module": "aws_cdk.aws_waf"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-waf.CfnByteMatchSet": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::WAF::ByteMatchSet",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-bytematchset.html"
+        },
+        "remarks": "> This is *AWS WAF Classic* documentation. For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nThe `AWS::WAF::ByteMatchSet` resource creates an AWS WAF `ByteMatchSet` that identifies a part of a web request that you want to inspect.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::WAF::ByteMatchSet`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnByteMatchSet",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::WAF::ByteMatchSet`."
+        },
+        "locationInModule": {
+          "filename": "lib/waf.generated.ts",
+          "line": 146
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.CfnByteMatchSetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 100
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 160
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 172
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnByteMatchSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 104
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 165
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-bytematchset.html#cfn-waf-bytematchset-name"
+            },
+            "remarks": "You can't change `Name` after you create a `ByteMatchSet` .",
+            "stability": "external",
+            "summary": "The name of the `ByteMatchSet` ."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 130
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-bytematchset.html#cfn-waf-bytematchset-bytematchtuples"
+            },
+            "stability": "external",
+            "summary": "Specifies the bytes (typically a string that corresponds with ASCII characters) that you want AWS WAF to search for in web requests, the location in requests that you want AWS WAF to search, and other settings."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 137
+          },
+          "name": "byteMatchTuples",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnByteMatchSet.ByteMatchTupleProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnByteMatchSet"
+    },
+    "@aws-cdk/aws-waf.CfnByteMatchSet.ByteMatchTupleProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples.html"
+        },
+        "remarks": "For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nThe bytes (typically a string that corresponds with ASCII characters) that you want AWS WAF to search for in web requests, the location in requests that you want AWS WAF to search, and other settings.",
+        "stability": "external",
+        "summary": "> This is *AWS WAF Classic* documentation."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnByteMatchSet.ByteMatchTupleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 190
+      },
+      "name": "ByteMatchTupleProperty",
+      "namespace": "CfnByteMatchSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples.html#cfn-waf-bytematchset-bytematchtuples-fieldtomatch"
+            },
+            "stability": "external",
+            "summary": "The part of a web request that you want to inspect, such as a specified header or a query string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 196
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.CfnByteMatchSet.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples.html#cfn-waf-bytematchset-bytematchtuples-positionalconstraint"
+            },
+            "remarks": "Valid values include the following:\n\n*CONTAINS*\n\nThe specified part of the web request must include the value of `TargetString` , but the location doesn't matter.\n\n*CONTAINS_WORD*\n\nThe specified part of the web request must include the value of `TargetString` , and `TargetString` must contain only alphanumeric characters or underscore (A-Z, a-z, 0-9, or _). In addition, `TargetString` must be a word, which means one of the following:\n\n- `TargetString` exactly matches the value of the specified part of the web request, such as the value of a header.\n- `TargetString` is at the beginning of the specified part of the web request and is followed by a character other than an alphanumeric character or underscore (_), for example, `BadBot;` .\n- `TargetString` is at the end of the specified part of the web request and is preceded by a character other than an alphanumeric character or underscore (_), for example, `;BadBot` .\n- `TargetString` is in the middle of the specified part of the web request and is preceded and followed by characters other than alphanumeric characters or underscore (_), for example, `-BadBot;` .\n\n*EXACTLY*\n\nThe value of the specified part of the web request must exactly match the value of `TargetString` .\n\n*STARTS_WITH*\n\nThe value of `TargetString` must appear at the beginning of the specified part of the web request.\n\n*ENDS_WITH*\n\nThe value of `TargetString` must appear at the end of the specified part of the web request.",
+            "stability": "external",
+            "summary": "Within the portion of a web request that you want to search (for example, in the query string, if any), specify where you want AWS WAF to search."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 227
+          },
+          "name": "positionalConstraint",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples.html#cfn-waf-bytematchset-bytematchtuples-texttransformation"
+            },
+            "remarks": "If you specify a transformation, AWS WAF performs the transformation on `FieldToMatch` before inspecting it for a match.\n\nYou can only specify a single type of TextTransformation.\n\n*CMD_LINE*\n\nWhen you're concerned that attackers are injecting an operating system command line command and using unusual formatting to disguise some or all of the command, use this option to perform the following transformations:\n\n- Delete the following characters: \\ \" ' ^\n- Delete spaces before the following characters: / (\n- Replace the following characters with a space: , ;\n- Replace multiple spaces with one space\n- Convert uppercase letters (A-Z) to lowercase (a-z)\n\n*COMPRESS_WHITE_SPACE*\n\nUse this option to replace the following characters with a space character (decimal 32):\n\n- \\f, formfeed, decimal 12\n- \\t, tab, decimal 9\n- \\n, newline, decimal 10\n- \\r, carriage return, decimal 13\n- \\v, vertical tab, decimal 11\n- non-breaking space, decimal 160\n\n`COMPRESS_WHITE_SPACE` also replaces multiple spaces with one space.\n\n*HTML_ENTITY_DECODE*\n\nUse this option to replace HTML-encoded characters with unencoded characters. `HTML_ENTITY_DECODE` performs the following operations:\n\n- Replaces `(ampersand)quot;` with `\"`\n- Replaces `(ampersand)nbsp;` with a non-breaking space, decimal 160\n- Replaces `(ampersand)lt;` with a \"less than\" symbol\n- Replaces `(ampersand)gt;` with `>`\n- Replaces characters that are represented in hexadecimal format, `(ampersand)#xhhhh;` , with the corresponding characters\n- Replaces characters that are represented in decimal format, `(ampersand)#nnnn;` , with the corresponding characters\n\n*LOWERCASE*\n\nUse this option to convert uppercase letters (A-Z) to lowercase (a-z).\n\n*URL_DECODE*\n\nUse this option to decode a URL-encoded value.\n\n*NONE*\n\nSpecify `NONE` if you don't want to perform any text transformations.",
+            "stability": "external",
+            "summary": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass AWS WAF ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 313
+          },
+          "name": "textTransformation",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples.html#cfn-waf-bytematchset-bytematchtuples-targetstring"
+            },
+            "remarks": "AWS WAF searches for the specified string in the part of web requests that you specified in `FieldToMatch` . The maximum length of the value is 50 bytes.\n\nYou must specify this property or the `TargetStringBase64` property.\n\nValid values depend on the values that you specified for `FieldToMatch` :\n\n- `HEADER` : The value that you want AWS WAF to search for in the request header that you specified in `FieldToMatch` , for example, the value of the `User-Agent` or `Referer` header.\n- `METHOD` : The HTTP method, which indicates the type of operation specified in the request. Amazon CloudFront supports the following methods: `DELETE` , `GET` , `HEAD` , `OPTIONS` , `PATCH` , `POST` , and `PUT` .\n- `QUERY_STRING` : The value that you want AWS WAF to search for in the query string, which is the part of a URL that appears after a `?` character.\n- `URI` : The value that you want AWS WAF to search for in the part of a URL that identifies a resource, for example, `/images/daily-ad.jpg` .\n- `BODY` : The part of a request that contains any additional data that you want to send to your web server as the HTTP request body, such as data from a form. The request body immediately follows the request headers. Note that only the first `8192` bytes of the request body are forwarded to AWS WAF for inspection. To allow or block requests based on the length of the body, you can create a size constraint set.\n- `SINGLE_QUERY_ARG` : The parameter in the query string that you will inspect, such as *UserName* or *SalesRegion* . The maximum length for `SINGLE_QUERY_ARG` is 30 characters.\n- `ALL_QUERY_ARGS` : Similar to `SINGLE_QUERY_ARG` , but instead of inspecting a single parameter, AWS WAF inspects all parameters within the query string for the value or regex pattern that you specify in `TargetString` .\n\nIf `TargetString` includes alphabetic characters A-Z and a-z, note that the value is case sensitive.",
+            "stability": "external",
+            "summary": "The value that you want AWS WAF to search for."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 247
+          },
+          "name": "targetString",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples.html#cfn-waf-bytematchset-bytematchtuples-targetstringbase64"
+            },
+            "remarks": "You must specify this property or the `TargetString` property.\n\nAWS WAF searches for this value in a specific part of web requests, which you define in the `FieldToMatch` property.\n\nValid values depend on the Type value in the `FieldToMatch` property. For example, for a `METHOD` type, you must specify HTTP methods such as `DELETE, GET, HEAD, OPTIONS, PATCH, POST` , and `PUT` .",
+            "stability": "external",
+            "summary": "The base64-encoded value that AWS WAF searches for. AWS CloudFormation sends this value to AWS WAF without encoding it."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 259
+          },
+          "name": "targetStringBase64",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnByteMatchSet.ByteMatchTupleProperty"
+    },
+    "@aws-cdk/aws-waf.CfnByteMatchSet.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples-fieldtomatch.html"
+        },
+        "remarks": "For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nSpecifies where in a web request to look for `TargetString` .",
+        "stability": "external",
+        "summary": "> This is *AWS WAF Classic* documentation."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnByteMatchSet.FieldToMatchProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 393
+      },
+      "name": "FieldToMatchProperty",
+      "namespace": "CfnByteMatchSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples-fieldtomatch.html#cfn-waf-bytematchset-bytematchtuples-fieldtomatch-type"
+            },
+            "remarks": "Parts of a request that you can search include the following:\n\n- `HEADER` : A specified request header, for example, the value of the `User-Agent` or `Referer` header. If you choose `HEADER` for the type, specify the name of the header in `Data` .\n- `METHOD` : The HTTP method, which indicated the type of operation that the request is asking the origin to perform. Amazon CloudFront supports the following methods: `DELETE` , `GET` , `HEAD` , `OPTIONS` , `PATCH` , `POST` , and `PUT` .\n- `QUERY_STRING` : A query string, which is the part of a URL that appears after a `?` character, if any.\n- `URI` : The part of a web request that identifies a resource, for example, `/images/daily-ad.jpg` .\n- `BODY` : The part of a request that contains any additional data that you want to send to your web server as the HTTP request body, such as data from a form. The request body immediately follows the request headers. Note that only the first `8192` bytes of the request body are forwarded to AWS WAF for inspection. To allow or block requests based on the length of the body, you can create a size constraint set.\n- `SINGLE_QUERY_ARG` : The parameter in the query string that you will inspect, such as *UserName* or *SalesRegion* . The maximum length for `SINGLE_QUERY_ARG` is 30 characters.\n- `ALL_QUERY_ARGS` : Similar to `SINGLE_QUERY_ARG` , but rather than inspecting a single parameter, AWS WAF will inspect all parameters within the query for the value or regex pattern that you specify in `TargetString` .",
+            "stability": "external",
+            "summary": "The part of the web request that you want AWS WAF to search for a specified string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 417
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples-fieldtomatch.html#cfn-waf-bytematchset-bytematchtuples-fieldtomatch-data"
+            },
+            "remarks": "The name of the header is not case sensitive.\n\nWhen the value of `Type` is `SINGLE_QUERY_ARG` , enter the name of the parameter that you want AWS WAF to search, for example, `UserName` or `SalesRegion` . The parameter name is not case sensitive.\n\nIf the value of `Type` is any other value, omit `Data` .",
+            "stability": "external",
+            "summary": "When the value of `Type` is `HEADER` , enter the name of the header that you want AWS WAF to search, for example, `User-Agent` or `Referer` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 403
+          },
+          "name": "data",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnByteMatchSet.FieldToMatchProperty"
+    },
+    "@aws-cdk/aws-waf.CfnByteMatchSetProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-bytematchset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnByteMatchSet`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnByteMatchSetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 20
+      },
+      "name": "CfnByteMatchSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-bytematchset.html#cfn-waf-bytematchset-name"
+            },
+            "remarks": "You can't change `Name` after you create a `ByteMatchSet` .",
+            "stability": "external",
+            "summary": "The name of the `ByteMatchSet` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 27
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-bytematchset.html#cfn-waf-bytematchset-bytematchtuples"
+            },
+            "stability": "external",
+            "summary": "Specifies the bytes (typically a string that corresponds with ASCII characters) that you want AWS WAF to search for in web requests, the location in requests that you want AWS WAF to search, and other settings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 34
+          },
+          "name": "byteMatchTuples",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnByteMatchSet.ByteMatchTupleProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnByteMatchSetProps"
+    },
+    "@aws-cdk/aws-waf.CfnIPSet": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::WAF::IPSet",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-ipset.html"
+        },
+        "remarks": "> This is *AWS WAF Classic* documentation. For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nContains one or more IP addresses or blocks of IP addresses specified in Classless Inter-Domain Routing (CIDR) notation. AWS WAF supports IPv4 address ranges: /8 and any range between /16 through /32. AWS WAF supports IPv6 address ranges: /24, /32, /48, /56, /64, and /128.\n\nTo specify an individual IP address, you specify the four-part IP address followed by a `/32` , for example, 192.0.2.0/32. To block a range of IP addresses, you can specify /8 or any range between /16 through /32 (for IPv4) or /24, /32, /48, /56, /64, or /128 (for IPv6). For more information about CIDR notation, see the Wikipedia entry [Classless Inter-Domain Routing](https://docs.aws.amazon.com/https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::WAF::IPSet`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnIPSet",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::WAF::IPSet`."
+        },
+        "locationInModule": {
+          "filename": "lib/waf.generated.ts",
+          "line": 609
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.CfnIPSetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 563
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 623
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 635
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnIPSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 567
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 628
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-ipset.html#cfn-waf-ipset-name"
+            },
+            "remarks": "You can't change the name of an `IPSet` after you create it.",
+            "stability": "external",
+            "summary": "The name of the `IPSet` ."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 593
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-ipset.html#cfn-waf-ipset-ipsetdescriptors"
+            },
+            "remarks": "If the `WebACL` is associated with an Amazon CloudFront distribution and the viewer did not use an HTTP proxy or a load balancer to send the request, this is the value of the c-ip field in the CloudFront access logs.",
+            "stability": "external",
+            "summary": "The IP address type ( `IPV4` or `IPV6` ) and the IP address range (in CIDR notation) that web requests originate from."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 600
+          },
+          "name": "ipSetDescriptors",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnIPSet.IPSetDescriptorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnIPSet"
+    },
+    "@aws-cdk/aws-waf.CfnIPSet.IPSetDescriptorProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-ipset-ipsetdescriptors.html"
+        },
+        "remarks": "For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nSpecifies the IP address type ( `IPV4` or `IPV6` ) and the IP address range (in CIDR format) that web requests originate from.",
+        "stability": "external",
+        "summary": "> This is *AWS WAF Classic* documentation."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnIPSet.IPSetDescriptorProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 653
+      },
+      "name": "IPSetDescriptorProperty",
+      "namespace": "CfnIPSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-ipset-ipsetdescriptors.html#cfn-waf-ipset-ipsetdescriptors-type"
+            },
+            "stability": "external",
+            "summary": "Specify `IPV4` or `IPV6` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 659
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-ipset-ipsetdescriptors.html#cfn-waf-ipset-ipsetdescriptors-value"
+            },
+            "remarks": "- To configure AWS WAF to allow, block, or count requests that originated from the IP address 192.0.2.44, specify `192.0.2.44/32` .\n- To configure AWS WAF to allow, block, or count requests that originated from IP addresses from 192.0.2.0 to 192.0.2.255, specify `192.0.2.0/24` .\n\nFor more information about CIDR notation, see the Wikipedia entry [Classless Inter-Domain Routing](https://docs.aws.amazon.com/https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing) .\n\nSpecify an IPv6 address by using CIDR notation. For example:\n\n- To configure AWS WAF to allow, block, or count requests that originated from the IP address 1111:0000:0000:0000:0000:0000:0000:0111, specify `1111:0000:0000:0000:0000:0000:0000:0111/128` .\n- To configure AWS WAF to allow, block, or count requests that originated from IP addresses 1111:0000:0000:0000:0000:0000:0000:0000 to 1111:0000:0000:0000:ffff:ffff:ffff:ffff, specify `1111:0000:0000:0000:0000:0000:0000:0000/64` .",
+            "stability": "external",
+            "summary": "Specify an IPv4 address by using CIDR notation. For example:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 675
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnIPSet.IPSetDescriptorProperty"
+    },
+    "@aws-cdk/aws-waf.CfnIPSetProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-ipset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnIPSet`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnIPSetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 481
+      },
+      "name": "CfnIPSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-ipset.html#cfn-waf-ipset-name"
+            },
+            "remarks": "You can't change the name of an `IPSet` after you create it.",
+            "stability": "external",
+            "summary": "The name of the `IPSet` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 488
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-ipset.html#cfn-waf-ipset-ipsetdescriptors"
+            },
+            "remarks": "If the `WebACL` is associated with an Amazon CloudFront distribution and the viewer did not use an HTTP proxy or a load balancer to send the request, this is the value of the c-ip field in the CloudFront access logs.",
+            "stability": "external",
+            "summary": "The IP address type ( `IPV4` or `IPV6` ) and the IP address range (in CIDR notation) that web requests originate from."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 495
+          },
+          "name": "ipSetDescriptors",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnIPSet.IPSetDescriptorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnIPSetProps"
+    },
+    "@aws-cdk/aws-waf.CfnRule": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::WAF::Rule",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html"
+        },
+        "remarks": "> This is *AWS WAF Classic* documentation. For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nA combination of `ByteMatchSet` , `IPSet` , and/or `SqlInjectionMatchSet` objects that identify the web requests that you want to allow, block, or count. For example, you might create a `Rule` that includes the following predicates:\n\n- An `IPSet` that causes AWS WAF to search for web requests that originate from the IP address `192.0.2.44`\n- A `ByteMatchSet` that causes AWS WAF to search for web requests for which the value of the `User-Agent` header is `BadBot` .\n\nTo match the settings in this `Rule` , a request must originate from `192.0.2.44` AND include a `User-Agent` header for which the value is `BadBot` .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::WAF::Rule`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnRule",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::WAF::Rule`."
+        },
+        "locationInModule": {
+          "filename": "lib/waf.generated.ts",
+          "line": 889
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.CfnRuleProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 836
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 905
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 918
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRule",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 840
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 910
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html#cfn-waf-rule-metricname"
+            },
+            "remarks": "The name can contain only alphanumeric characters (A-Z, a-z, 0-9), with maximum length 128 and minimum length one. It can't contain whitespace or metric names reserved for AWS WAF , including \"All\" and \"Default_Action.\" You can't change `MetricName` after you create the `Rule` .",
+            "stability": "external",
+            "summary": "The name of the metrics for this `Rule` ."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 866
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html#cfn-waf-rule-name"
+            },
+            "remarks": "You can't change the name of a `Rule` after you create it.",
+            "stability": "external",
+            "summary": "The friendly name or description for the `Rule` ."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 873
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html#cfn-waf-rule-predicates"
+            },
+            "stability": "external",
+            "summary": "The `Predicates` object contains one `Predicate` element for each `ByteMatchSet` , `IPSet` , or `SqlInjectionMatchSet` object that you want to include in a `Rule` ."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 880
+          },
+          "name": "predicates",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnRule.PredicateProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnRule"
+    },
+    "@aws-cdk/aws-waf.CfnRule.PredicateProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-rule-predicates.html"
+        },
+        "stability": "external",
+        "summary": "Specifies the `ByteMatchSet` , `IPSet` , `SqlInjectionMatchSet` , `XssMatchSet` , `RegexMatchSet` , `GeoMatchSet` , and `SizeConstraintSet` objects that you want to add to a `Rule` and, for each object, indicates whether you want to negate the settings, for example, requests that do NOT originate from the IP address 192.0.2.44."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnRule.PredicateProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 932
+      },
+      "name": "PredicateProperty",
+      "namespace": "CfnRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-rule-predicates.html#cfn-waf-rule-predicates-dataid"
+            },
+            "remarks": "The ID is returned by the corresponding `Create` or `List` command.",
+            "stability": "external",
+            "summary": "A unique identifier for a predicate in a `Rule` , such as `ByteMatchSetId` or `IPSetId` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 938
+          },
+          "name": "dataId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-rule-predicates.html#cfn-waf-rule-predicates-negated"
+            },
+            "remarks": "For example, if an `IPSet` includes the IP address `192.0.2.44` , AWS WAF will allow or block requests based on that IP address.\n\nSet `Negated` to `True` if you want AWS WAF to allow or block a request based on the negation of the settings in the `ByteMatchSet` , `IPSet` , `SqlInjectionMatchSet` , `XssMatchSet` , `RegexMatchSet` , `GeoMatchSet` , or `SizeConstraintSet` . For example, if an `IPSet` includes the IP address `192.0.2.44` , AWS WAF will allow, block, or count requests based on all IP addresses *except* `192.0.2.44` .",
+            "stability": "external",
+            "summary": "Set `Negated` to `False` if you want AWS WAF to allow, block, or count requests based on the settings in the specified `ByteMatchSet` , `IPSet` , `SqlInjectionMatchSet` , `XssMatchSet` , `RegexMatchSet` , `GeoMatchSet` , or `SizeConstraintSet` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 946
+          },
+          "name": "negated",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-rule-predicates.html#cfn-waf-rule-predicates-type"
+            },
+            "stability": "external",
+            "summary": "The type of predicate in a `Rule` , such as `ByteMatch` or `IPSet` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 952
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnRule.PredicateProperty"
+    },
+    "@aws-cdk/aws-waf.CfnRuleProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRule`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnRuleProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 740
+      },
+      "name": "CfnRuleProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html#cfn-waf-rule-metricname"
+            },
+            "remarks": "The name can contain only alphanumeric characters (A-Z, a-z, 0-9), with maximum length 128 and minimum length one. It can't contain whitespace or metric names reserved for AWS WAF , including \"All\" and \"Default_Action.\" You can't change `MetricName` after you create the `Rule` .",
+            "stability": "external",
+            "summary": "The name of the metrics for this `Rule` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 747
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html#cfn-waf-rule-name"
+            },
+            "remarks": "You can't change the name of a `Rule` after you create it.",
+            "stability": "external",
+            "summary": "The friendly name or description for the `Rule` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 754
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-rule.html#cfn-waf-rule-predicates"
+            },
+            "stability": "external",
+            "summary": "The `Predicates` object contains one `Predicate` element for each `ByteMatchSet` , `IPSet` , or `SqlInjectionMatchSet` object that you want to include in a `Rule` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 761
+          },
+          "name": "predicates",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnRule.PredicateProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnRuleProps"
+    },
+    "@aws-cdk/aws-waf.CfnSizeConstraintSet": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::WAF::SizeConstraintSet",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sizeconstraintset.html"
+        },
+        "remarks": "> This is *AWS WAF Classic* documentation. For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nA complex type that contains `SizeConstraint` objects, which specify the parts of web requests that you want AWS WAF to inspect the size of. If a `SizeConstraintSet` contains more than one `SizeConstraint` object, a request only needs to match one constraint to be considered a match.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::WAF::SizeConstraintSet`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnSizeConstraintSet",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::WAF::SizeConstraintSet`."
+        },
+        "locationInModule": {
+          "filename": "lib/waf.generated.ts",
+          "line": 1148
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.CfnSizeConstraintSetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 1102
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1163
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1175
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSizeConstraintSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1106
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1168
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sizeconstraintset.html#cfn-waf-sizeconstraintset-name"
+            },
+            "stability": "external",
+            "summary": "The name, if any, of the `SizeConstraintSet` ."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1132
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sizeconstraintset.html#cfn-waf-sizeconstraintset-sizeconstraints"
+            },
+            "stability": "external",
+            "summary": "The size constraint and the part of the web request to check."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1139
+          },
+          "name": "sizeConstraints",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnSizeConstraintSet.SizeConstraintProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnSizeConstraintSet"
+    },
+    "@aws-cdk/aws-waf.CfnSizeConstraintSet.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint-fieldtomatch.html"
+        },
+        "stability": "external",
+        "summary": "The part of a web request that you want to inspect, such as a specified header or a query string."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnSizeConstraintSet.FieldToMatchProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 1189
+      },
+      "name": "FieldToMatchProperty",
+      "namespace": "CfnSizeConstraintSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint-fieldtomatch.html#cfn-waf-sizeconstraintset-sizeconstraint-fieldtomatch-type"
+            },
+            "remarks": "Parts of a request that you can search include the following:\n\n- `HEADER` : A specified request header, for example, the value of the `User-Agent` or `Referer` header. If you choose `HEADER` for the type, specify the name of the header in `Data` .\n- `METHOD` : The HTTP method, which indicated the type of operation that the request is asking the origin to perform. Amazon CloudFront supports the following methods: `DELETE` , `GET` , `HEAD` , `OPTIONS` , `PATCH` , `POST` , and `PUT` .\n- `QUERY_STRING` : A query string, which is the part of a URL that appears after a `?` character, if any.\n- `URI` : The part of a web request that identifies a resource, for example, `/images/daily-ad.jpg` .\n- `BODY` : The part of a request that contains any additional data that you want to send to your web server as the HTTP request body, such as data from a form. The request body immediately follows the request headers. Note that only the first `8192` bytes of the request body are forwarded to AWS WAF for inspection. To allow or block requests based on the length of the body, you can create a size constraint set.\n- `SINGLE_QUERY_ARG` : The parameter in the query string that you will inspect, such as *UserName* or *SalesRegion* . The maximum length for `SINGLE_QUERY_ARG` is 30 characters.\n- `ALL_QUERY_ARGS` : Similar to `SINGLE_QUERY_ARG` , but rather than inspecting a single parameter, AWS WAF will inspect all parameters within the query for the value or regex pattern that you specify in `TargetString` .",
+            "stability": "external",
+            "summary": "The part of the web request that you want AWS WAF to search for a specified string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1213
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint-fieldtomatch.html#cfn-waf-sizeconstraintset-sizeconstraint-fieldtomatch-data"
+            },
+            "remarks": "The name of the header is not case sensitive.\n\nWhen the value of `Type` is `SINGLE_QUERY_ARG` , enter the name of the parameter that you want AWS WAF to search, for example, `UserName` or `SalesRegion` . The parameter name is not case sensitive.\n\nIf the value of `Type` is any other value, omit `Data` .",
+            "stability": "external",
+            "summary": "When the value of `Type` is `HEADER` , enter the name of the header that you want AWS WAF to search, for example, `User-Agent` or `Referer` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1199
+          },
+          "name": "data",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnSizeConstraintSet.FieldToMatchProperty"
+    },
+    "@aws-cdk/aws-waf.CfnSizeConstraintSet.SizeConstraintProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint.html"
+        },
+        "remarks": "For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nSpecifies a constraint on the size of a part of the web request. AWS WAF uses the `Size` , `ComparisonOperator` , and `FieldToMatch` to build an expression in the form of \" `Size` `ComparisonOperator` size in bytes of `FieldToMatch` \". If that expression is true, the `SizeConstraint` is considered to match.",
+        "stability": "external",
+        "summary": "> This is *AWS WAF Classic* documentation."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnSizeConstraintSet.SizeConstraintProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 1282
+      },
+      "name": "SizeConstraintProperty",
+      "namespace": "CfnSizeConstraintSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint.html#cfn-waf-sizeconstraintset-sizeconstraint-comparisonoperator"
+            },
+            "remarks": "AWS WAF uses this in combination with the provided `Size` and `FieldToMatch` to build an expression in the form of \" `Size` `ComparisonOperator` size in bytes of `FieldToMatch` \". If that expression is true, the `SizeConstraint` is considered to match.\n\n*EQ* : Used to test if the `Size` is equal to the size of the `FieldToMatch`\n\n*NE* : Used to test if the `Size` is not equal to the size of the `FieldToMatch`\n\n*LE* : Used to test if the `Size` is less than or equal to the size of the `FieldToMatch`\n\n*LT* : Used to test if the `Size` is strictly less than the size of the `FieldToMatch`\n\n*GE* : Used to test if the `Size` is greater than or equal to the size of the `FieldToMatch`\n\n*GT* : Used to test if the `Size` is strictly greater than the size of the `FieldToMatch`",
+            "stability": "external",
+            "summary": "The type of comparison you want AWS WAF to perform."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1300
+          },
+          "name": "comparisonOperator",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint.html#cfn-waf-sizeconstraintset-sizeconstraint-fieldtomatch"
+            },
+            "stability": "external",
+            "summary": "The part of a web request that you want to inspect, such as a specified header or a query string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1306
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.CfnSizeConstraintSet.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint.html#cfn-waf-sizeconstraintset-sizeconstraint-size"
+            },
+            "remarks": "AWS WAF uses this in combination with `ComparisonOperator` and `FieldToMatch` to build an expression in the form of \" `Size` `ComparisonOperator` size in bytes of `FieldToMatch` \". If that expression is true, the `SizeConstraint` is considered to match.\n\nValid values for size are 0 - 21474836480 bytes (0 - 20 GB).\n\nIf you specify `URI` for the value of `Type` , the / in the URI path that you specify counts as one character. For example, the URI `/logo.jpg` is nine characters long.",
+            "stability": "external",
+            "summary": "The size in bytes that you want AWS WAF to compare against the size of the specified `FieldToMatch` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1316
+          },
+          "name": "size",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sizeconstraintset-sizeconstraint.html#cfn-waf-sizeconstraintset-sizeconstraint-texttransformation"
+            },
+            "remarks": "If you specify a transformation, AWS WAF performs the transformation on `FieldToMatch` before inspecting it for a match.\n\nYou can only specify a single type of TextTransformation.\n\nNote that if you choose `BODY` for the value of `Type` , you must choose `NONE` for `TextTransformation` because Amazon CloudFront forwards only the first 8192 bytes for inspection.\n\n*NONE*\n\nSpecify `NONE` if you don't want to perform any text transformations.\n\n*CMD_LINE*\n\nWhen you're concerned that attackers are injecting an operating system command line command and using unusual formatting to disguise some or all of the command, use this option to perform the following transformations:\n\n- Delete the following characters: \\ \" ' ^\n- Delete spaces before the following characters: / (\n- Replace the following characters with a space: , ;\n- Replace multiple spaces with one space\n- Convert uppercase letters (A-Z) to lowercase (a-z)\n\n*COMPRESS_WHITE_SPACE*\n\nUse this option to replace the following characters with a space character (decimal 32):\n\n- \\f, formfeed, decimal 12\n- \\t, tab, decimal 9\n- \\n, newline, decimal 10\n- \\r, carriage return, decimal 13\n- \\v, vertical tab, decimal 11\n- non-breaking space, decimal 160\n\n`COMPRESS_WHITE_SPACE` also replaces multiple spaces with one space.\n\n*HTML_ENTITY_DECODE*\n\nUse this option to replace HTML-encoded characters with unencoded characters. `HTML_ENTITY_DECODE` performs the following operations:\n\n- Replaces `(ampersand)quot;` with `\"`\n- Replaces `(ampersand)nbsp;` with a non-breaking space, decimal 160\n- Replaces `(ampersand)lt;` with a \"less than\" symbol\n- Replaces `(ampersand)gt;` with `>`\n- Replaces characters that are represented in hexadecimal format, `(ampersand)#xhhhh;` , with the corresponding characters\n- Replaces characters that are represented in decimal format, `(ampersand)#nnnn;` , with the corresponding characters\n\n*LOWERCASE*\n\nUse this option to convert uppercase letters (A-Z) to lowercase (a-z).\n\n*URL_DECODE*\n\nUse this option to decode a URL-encoded value.",
+            "stability": "external",
+            "summary": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass AWS WAF ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1372
+          },
+          "name": "textTransformation",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnSizeConstraintSet.SizeConstraintProperty"
+    },
+    "@aws-cdk/aws-waf.CfnSizeConstraintSetProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sizeconstraintset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSizeConstraintSet`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnSizeConstraintSetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 1021
+      },
+      "name": "CfnSizeConstraintSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sizeconstraintset.html#cfn-waf-sizeconstraintset-name"
+            },
+            "stability": "external",
+            "summary": "The name, if any, of the `SizeConstraintSet` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1028
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sizeconstraintset.html#cfn-waf-sizeconstraintset-sizeconstraints"
+            },
+            "stability": "external",
+            "summary": "The size constraint and the part of the web request to check."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1035
+          },
+          "name": "sizeConstraints",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnSizeConstraintSet.SizeConstraintProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnSizeConstraintSetProps"
+    },
+    "@aws-cdk/aws-waf.CfnSqlInjectionMatchSet": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::WAF::SqlInjectionMatchSet",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sqlinjectionmatchset.html"
+        },
+        "remarks": "> This is *AWS WAF Classic* documentation. For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nA complex type that contains `SqlInjectionMatchTuple` objects, which specify the parts of web requests that you want AWS WAF to inspect for snippets of malicious SQL code and, if you want AWS WAF to inspect a header, the name of the header. If a `SqlInjectionMatchSet` contains more than one `SqlInjectionMatchTuple` object, a request needs to include snippets of SQL code in only one of the specified parts of the request to be considered a match.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::WAF::SqlInjectionMatchSet`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnSqlInjectionMatchSet",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::WAF::SqlInjectionMatchSet`."
+        },
+        "locationInModule": {
+          "filename": "lib/waf.generated.ts",
+          "line": 1571
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.CfnSqlInjectionMatchSetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 1525
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1585
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1597
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSqlInjectionMatchSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1529
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1590
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sqlinjectionmatchset.html#cfn-waf-sqlinjectionmatchset-name"
+            },
+            "stability": "external",
+            "summary": "The name, if any, of the `SqlInjectionMatchSet` ."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1555
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sqlinjectionmatchset.html#cfn-waf-sqlinjectionmatchset-sqlinjectionmatchtuples"
+            },
+            "stability": "external",
+            "summary": "Specifies the parts of web requests that you want to inspect for snippets of malicious SQL code."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1562
+          },
+          "name": "sqlInjectionMatchTuples",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnSqlInjectionMatchSet.SqlInjectionMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnSqlInjectionMatchSet"
+    },
+    "@aws-cdk/aws-waf.CfnSqlInjectionMatchSet.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples-fieldtomatch.html"
+        },
+        "stability": "external",
+        "summary": "The part of a web request that you want to inspect, such as a specified header or a query string."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnSqlInjectionMatchSet.FieldToMatchProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 1611
+      },
+      "name": "FieldToMatchProperty",
+      "namespace": "CfnSqlInjectionMatchSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples-fieldtomatch.html#cfn-waf-sizeconstraintset-sizeconstraint-fieldtomatch-type"
+            },
+            "remarks": "Parts of a request that you can search include the following:\n\n- `HEADER` : A specified request header, for example, the value of the `User-Agent` or `Referer` header. If you choose `HEADER` for the type, specify the name of the header in `Data` .\n- `METHOD` : The HTTP method, which indicated the type of operation that the request is asking the origin to perform. Amazon CloudFront supports the following methods: `DELETE` , `GET` , `HEAD` , `OPTIONS` , `PATCH` , `POST` , and `PUT` .\n- `QUERY_STRING` : A query string, which is the part of a URL that appears after a `?` character, if any.\n- `URI` : The part of a web request that identifies a resource, for example, `/images/daily-ad.jpg` .\n- `BODY` : The part of a request that contains any additional data that you want to send to your web server as the HTTP request body, such as data from a form. The request body immediately follows the request headers. Note that only the first `8192` bytes of the request body are forwarded to AWS WAF for inspection. To allow or block requests based on the length of the body, you can create a size constraint set.\n- `SINGLE_QUERY_ARG` : The parameter in the query string that you will inspect, such as *UserName* or *SalesRegion* . The maximum length for `SINGLE_QUERY_ARG` is 30 characters.\n- `ALL_QUERY_ARGS` : Similar to `SINGLE_QUERY_ARG` , but rather than inspecting a single parameter, AWS WAF will inspect all parameters within the query for the value or regex pattern that you specify in `TargetString` .",
+            "stability": "external",
+            "summary": "The part of the web request that you want AWS WAF to search for a specified string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1635
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-bytematchset-bytematchtuples-fieldtomatch.html#cfn-waf-sizeconstraintset-sizeconstraint-fieldtomatch-data"
+            },
+            "remarks": "The name of the header is not case sensitive.\n\nWhen the value of `Type` is `SINGLE_QUERY_ARG` , enter the name of the parameter that you want AWS WAF to search, for example, `UserName` or `SalesRegion` . The parameter name is not case sensitive.\n\nIf the value of `Type` is any other value, omit `Data` .",
+            "stability": "external",
+            "summary": "When the value of `Type` is `HEADER` , enter the name of the header that you want AWS WAF to search, for example, `User-Agent` or `Referer` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1621
+          },
+          "name": "data",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnSqlInjectionMatchSet.FieldToMatchProperty"
+    },
+    "@aws-cdk/aws-waf.CfnSqlInjectionMatchSet.SqlInjectionMatchTupleProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sqlinjectionmatchset-sqlinjectionmatchtuples.html"
+        },
+        "remarks": "For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nSpecifies the part of a web request that you want AWS WAF to inspect for snippets of malicious SQL code and, if you want AWS WAF to inspect a header, the name of the header.",
+        "stability": "external",
+        "summary": "> This is *AWS WAF Classic* documentation."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnSqlInjectionMatchSet.SqlInjectionMatchTupleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 1704
+      },
+      "name": "SqlInjectionMatchTupleProperty",
+      "namespace": "CfnSqlInjectionMatchSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sqlinjectionmatchset-sqlinjectionmatchtuples.html#cfn-waf-sqlinjectionmatchset-sqlinjectionmatchtuples-fieldtomatch"
+            },
+            "stability": "external",
+            "summary": "The part of a web request that you want to inspect, such as a specified header or a query string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1710
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.CfnSqlInjectionMatchSet.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-sqlinjectionmatchset-sqlinjectionmatchtuples.html#cfn-waf-sqlinjectionmatchset-sqlinjectionmatchtuples-texttransformation"
+            },
+            "remarks": "If you specify a transformation, AWS WAF performs the transformation on `FieldToMatch` before inspecting it for a match.\n\nYou can only specify a single type of TextTransformation.\n\n*CMD_LINE*\n\nWhen you're concerned that attackers are injecting an operating system command line command and using unusual formatting to disguise some or all of the command, use this option to perform the following transformations:\n\n- Delete the following characters: \\ \" ' ^\n- Delete spaces before the following characters: / (\n- Replace the following characters with a space: , ;\n- Replace multiple spaces with one space\n- Convert uppercase letters (A-Z) to lowercase (a-z)\n\n*COMPRESS_WHITE_SPACE*\n\nUse this option to replace the following characters with a space character (decimal 32):\n\n- \\f, formfeed, decimal 12\n- \\t, tab, decimal 9\n- \\n, newline, decimal 10\n- \\r, carriage return, decimal 13\n- \\v, vertical tab, decimal 11\n- non-breaking space, decimal 160\n\n`COMPRESS_WHITE_SPACE` also replaces multiple spaces with one space.\n\n*HTML_ENTITY_DECODE*\n\nUse this option to replace HTML-encoded characters with unencoded characters. `HTML_ENTITY_DECODE` performs the following operations:\n\n- Replaces `(ampersand)quot;` with `\"`\n- Replaces `(ampersand)nbsp;` with a non-breaking space, decimal 160\n- Replaces `(ampersand)lt;` with a \"less than\" symbol\n- Replaces `(ampersand)gt;` with `>`\n- Replaces characters that are represented in hexadecimal format, `(ampersand)#xhhhh;` , with the corresponding characters\n- Replaces characters that are represented in decimal format, `(ampersand)#nnnn;` , with the corresponding characters\n\n*LOWERCASE*\n\nUse this option to convert uppercase letters (A-Z) to lowercase (a-z).\n\n*URL_DECODE*\n\nUse this option to decode a URL-encoded value.\n\n*NONE*\n\nSpecify `NONE` if you don't want to perform any text transformations.",
+            "stability": "external",
+            "summary": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass AWS WAF ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1764
+          },
+          "name": "textTransformation",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnSqlInjectionMatchSet.SqlInjectionMatchTupleProperty"
+    },
+    "@aws-cdk/aws-waf.CfnSqlInjectionMatchSetProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sqlinjectionmatchset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSqlInjectionMatchSet`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnSqlInjectionMatchSetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 1445
+      },
+      "name": "CfnSqlInjectionMatchSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sqlinjectionmatchset.html#cfn-waf-sqlinjectionmatchset-name"
+            },
+            "stability": "external",
+            "summary": "The name, if any, of the `SqlInjectionMatchSet` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1452
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-sqlinjectionmatchset.html#cfn-waf-sqlinjectionmatchset-sqlinjectionmatchtuples"
+            },
+            "stability": "external",
+            "summary": "Specifies the parts of web requests that you want to inspect for snippets of malicious SQL code."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1459
+          },
+          "name": "sqlInjectionMatchTuples",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnSqlInjectionMatchSet.SqlInjectionMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnSqlInjectionMatchSetProps"
+    },
+    "@aws-cdk/aws-waf.CfnWebACL": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::WAF::WebACL",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html"
+        },
+        "remarks": "> This is *AWS WAF Classic* documentation. For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nContains the `Rules` that identify the requests that you want to allow, block, or count. In a `WebACL` , you also specify a default action ( `ALLOW` or `BLOCK` ), and the action for each `Rule` that you add to a `WebACL` , for example, block requests from specified IP addresses or block requests from specified referrers. You also associate the `WebACL` with a Amazon CloudFront distribution to identify the requests that you want AWS WAF to filter. If you add more than one `Rule` to a `WebACL` , a request needs to match only one of the specifications to be allowed, blocked, or counted.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::WAF::WebACL`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnWebACL",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::WAF::WebACL`."
+        },
+        "locationInModule": {
+          "filename": "lib/waf.generated.ts",
+          "line": 1991
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.CfnWebACLProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 1931
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2009
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2023
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnWebACL",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1935
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2014
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html#cfn-waf-webacl-defaultaction"
+            },
+            "remarks": "The action is specified by the `WafAction` object.",
+            "stability": "external",
+            "summary": "The action to perform if none of the `Rules` contained in the `WebACL` match."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1961
+          },
+          "name": "defaultAction",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.CfnWebACL.WafActionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html#cfn-waf-webacl-metricname"
+            },
+            "remarks": "The name can contain only alphanumeric characters (A-Z, a-z, 0-9), with maximum length 128 and minimum length one. It can't contain whitespace or metric names reserved for AWS WAF , including \"All\" and \"Default_Action.\" You can't change `MetricName` after you create the `WebACL` .",
+            "stability": "external",
+            "summary": "The name of the metrics for this `WebACL` ."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1968
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html#cfn-waf-webacl-name"
+            },
+            "remarks": "You can't change the name of a `WebACL` after you create it.",
+            "stability": "external",
+            "summary": "A friendly name or description of the `WebACL` ."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1975
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html#cfn-waf-webacl-rules"
+            },
+            "stability": "external",
+            "summary": "An array that contains the action for each `Rule` in a `WebACL` , the priority of the `Rule` , and the ID of the `Rule` ."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1982
+          },
+          "name": "rules",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnWebACL.ActivatedRuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnWebACL"
+    },
+    "@aws-cdk/aws-waf.CfnWebACL.ActivatedRuleProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-webacl-rules.html"
+        },
+        "remarks": "To specify whether to insert or delete a `Rule` , use the `Action` parameter in the `WebACLUpdate` data type.",
+        "stability": "external",
+        "summary": "The `ActivatedRule` object in an `UpdateWebACL` request specifies a `Rule` that you want to insert or delete, the priority of the `Rule` in the `WebACL` , and the action that you want AWS WAF to take when a web request matches the `Rule` ( `ALLOW` , `BLOCK` , or `COUNT` )."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnWebACL.ActivatedRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 2039
+      },
+      "name": "ActivatedRuleProperty",
+      "namespace": "CfnWebACL",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-webacl-rules.html#cfn-waf-webacl-rules-priority"
+            },
+            "remarks": "Rules with a lower value for `Priority` are evaluated before `Rules` with a higher value. The value must be a unique integer. If you add multiple `Rules` to a `WebACL` , the values don't need to be consecutive.",
+            "stability": "external",
+            "summary": "Specifies the order in which the `Rules` in a `WebACL` are evaluated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2057
+          },
+          "name": "priority",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-webacl-rules.html#cfn-waf-webacl-rules-ruleid"
+            },
+            "remarks": "You use `RuleId` to get more information about a `Rule` , update a `Rule` , insert a `Rule` into a `WebACL` or delete a one from a `WebACL` , or delete a `Rule` from AWS WAF .\n\n`RuleId` is returned by `CreateRule` and by `ListRules` .",
+            "stability": "external",
+            "summary": "The `RuleId` for a `Rule` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2065
+          },
+          "name": "ruleId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-webacl-rules.html#cfn-waf-webacl-rules-action"
+            },
+            "remarks": "Valid values for `Action` include the following:\n\n- `ALLOW` : CloudFront responds with the requested object.\n- `BLOCK` : CloudFront responds with an HTTP 403 (Forbidden) status code.\n- `COUNT` : AWS WAF increments a counter of requests that match the conditions in the rule and then continues to inspect the web request based on the remaining rules in the web ACL.\n\n`ActivatedRule|OverrideAction` applies only when updating or adding a `RuleGroup` to a `WebACL` . In this case, you do not use `ActivatedRule|Action` . For all other update requests, `ActivatedRule|Action` is used instead of `ActivatedRule|OverrideAction` .",
+            "stability": "external",
+            "summary": "Specifies the action that Amazon CloudFront or AWS WAF takes when a web request matches the conditions in the `Rule` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2051
+          },
+          "name": "action",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.CfnWebACL.WafActionProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnWebACL.ActivatedRuleProperty"
+    },
+    "@aws-cdk/aws-waf.CfnWebACL.WafActionProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-webacl-action.html"
+        },
+        "remarks": "For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nFor the action that is associated with a rule in a `WebACL` , specifies the action that you want AWS WAF to perform when a web request matches all of the conditions in a rule. For the default action in a `WebACL` , specifies the action that you want AWS WAF to take when a web request doesn't match all of the conditions in any of the rules in a `WebACL` .",
+        "stability": "external",
+        "summary": "> This is *AWS WAF Classic* documentation."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnWebACL.WafActionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 2138
+      },
+      "name": "WafActionProperty",
+      "namespace": "CfnWebACL",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-webacl-action.html#cfn-waf-webacl-action-type"
+            },
+            "remarks": "Valid settings include the following:\n\n- `ALLOW` : AWS WAF allows requests\n- `BLOCK` : AWS WAF blocks requests\n- `COUNT` : AWS WAF increments a counter of the requests that match all of the conditions in the rule. AWS WAF then continues to inspect the web request based on the remaining rules in the web ACL. You can't specify `COUNT` for the default action for a `WebACL` .",
+            "stability": "external",
+            "summary": "Specifies how you want AWS WAF to respond to requests that match the settings in a `Rule` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2148
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnWebACL.WafActionProperty"
+    },
+    "@aws-cdk/aws-waf.CfnWebACLProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnWebACL`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnWebACLProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 1829
+      },
+      "name": "CfnWebACLProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html#cfn-waf-webacl-defaultaction"
+            },
+            "remarks": "The action is specified by the `WafAction` object.",
+            "stability": "external",
+            "summary": "The action to perform if none of the `Rules` contained in the `WebACL` match."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1836
+          },
+          "name": "defaultAction",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.CfnWebACL.WafActionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html#cfn-waf-webacl-metricname"
+            },
+            "remarks": "The name can contain only alphanumeric characters (A-Z, a-z, 0-9), with maximum length 128 and minimum length one. It can't contain whitespace or metric names reserved for AWS WAF , including \"All\" and \"Default_Action.\" You can't change `MetricName` after you create the `WebACL` .",
+            "stability": "external",
+            "summary": "The name of the metrics for this `WebACL` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1843
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html#cfn-waf-webacl-name"
+            },
+            "remarks": "You can't change the name of a `WebACL` after you create it.",
+            "stability": "external",
+            "summary": "A friendly name or description of the `WebACL` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1850
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-webacl.html#cfn-waf-webacl-rules"
+            },
+            "stability": "external",
+            "summary": "An array that contains the action for each `Rule` in a `WebACL` , the priority of the `Rule` , and the ID of the `Rule` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 1857
+          },
+          "name": "rules",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnWebACL.ActivatedRuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnWebACLProps"
+    },
+    "@aws-cdk/aws-waf.CfnXssMatchSet": {
+      "assembly": "@aws-cdk/aws-waf",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::WAF::XssMatchSet",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-xssmatchset.html"
+        },
+        "remarks": "> This is *AWS WAF Classic* documentation. For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nA complex type that contains `XssMatchTuple` objects, which specify the parts of web requests that you want AWS WAF to inspect for cross-site scripting attacks and, if you want AWS WAF to inspect a header, the name of the header. If a `XssMatchSet` contains more than one `XssMatchTuple` object, a request needs to include cross-site scripting attacks in only one of the specified parts of the request to be considered a match.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::WAF::XssMatchSet`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnXssMatchSet",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::WAF::XssMatchSet`."
+        },
+        "locationInModule": {
+          "filename": "lib/waf.generated.ts",
+          "line": 2336
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-waf.CfnXssMatchSetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 2290
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2351
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2363
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnXssMatchSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2294
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2356
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-xssmatchset.html#cfn-waf-xssmatchset-name"
+            },
+            "stability": "external",
+            "summary": "The name, if any, of the `XssMatchSet` ."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2320
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-xssmatchset.html#cfn-waf-xssmatchset-xssmatchtuples"
+            },
+            "stability": "external",
+            "summary": "Specifies the parts of web requests that you want to inspect for cross-site scripting attacks."
+          },
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2327
+          },
+          "name": "xssMatchTuples",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnXssMatchSet.XssMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnXssMatchSet"
+    },
+    "@aws-cdk/aws-waf.CfnXssMatchSet.FieldToMatchProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-xssmatchset-xssmatchtuple-fieldtomatch.html"
+        },
+        "stability": "external",
+        "summary": "The part of a web request that you want to inspect, such as a specified header or a query string."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnXssMatchSet.FieldToMatchProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 2377
+      },
+      "name": "FieldToMatchProperty",
+      "namespace": "CfnXssMatchSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-xssmatchset-xssmatchtuple-fieldtomatch.html#cfn-waf-xssmatchset-xssmatchtuple-fieldtomatch-type"
+            },
+            "remarks": "Parts of a request that you can search include the following:\n\n- `HEADER` : A specified request header, for example, the value of the `User-Agent` or `Referer` header. If you choose `HEADER` for the type, specify the name of the header in `Data` .\n- `METHOD` : The HTTP method, which indicated the type of operation that the request is asking the origin to perform. Amazon CloudFront supports the following methods: `DELETE` , `GET` , `HEAD` , `OPTIONS` , `PATCH` , `POST` , and `PUT` .\n- `QUERY_STRING` : A query string, which is the part of a URL that appears after a `?` character, if any.\n- `URI` : The part of a web request that identifies a resource, for example, `/images/daily-ad.jpg` .\n- `BODY` : The part of a request that contains any additional data that you want to send to your web server as the HTTP request body, such as data from a form. The request body immediately follows the request headers. Note that only the first `8192` bytes of the request body are forwarded to AWS WAF for inspection. To allow or block requests based on the length of the body, you can create a size constraint set.\n- `SINGLE_QUERY_ARG` : The parameter in the query string that you will inspect, such as *UserName* or *SalesRegion* . The maximum length for `SINGLE_QUERY_ARG` is 30 characters.\n- `ALL_QUERY_ARGS` : Similar to `SINGLE_QUERY_ARG` , but rather than inspecting a single parameter, AWS WAF will inspect all parameters within the query for the value or regex pattern that you specify in `TargetString` .",
+            "stability": "external",
+            "summary": "The part of the web request that you want AWS WAF to search for a specified string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2401
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-xssmatchset-xssmatchtuple-fieldtomatch.html#cfn-waf-xssmatchset-xssmatchtuple-fieldtomatch-data"
+            },
+            "remarks": "The name of the header is not case sensitive.\n\nWhen the value of `Type` is `SINGLE_QUERY_ARG` , enter the name of the parameter that you want AWS WAF to search, for example, `UserName` or `SalesRegion` . The parameter name is not case sensitive.\n\nIf the value of `Type` is any other value, omit `Data` .",
+            "stability": "external",
+            "summary": "When the value of `Type` is `HEADER` , enter the name of the header that you want AWS WAF to search, for example, `User-Agent` or `Referer` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2387
+          },
+          "name": "data",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnXssMatchSet.FieldToMatchProperty"
+    },
+    "@aws-cdk/aws-waf.CfnXssMatchSet.XssMatchTupleProperty": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-xssmatchset-xssmatchtuple.html"
+        },
+        "remarks": "For more information, see [AWS WAF Classic](https://docs.aws.amazon.com/waf/latest/developerguide/classic-waf-chapter.html) in the developer guide.\n>\n> *For the latest version of AWS WAF* , use the AWS WAF V2 API and see the [AWS WAF Developer Guide](https://docs.aws.amazon.com/waf/latest/developerguide/waf-chapter.html) . With the latest version, AWS WAF has a single set of endpoints for regional and global use.\n\nSpecifies the part of a web request that you want AWS WAF to inspect for cross-site scripting attacks and, if you want AWS WAF to inspect a header, the name of the header.",
+        "stability": "external",
+        "summary": "> This is *AWS WAF Classic* documentation."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnXssMatchSet.XssMatchTupleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 2470
+      },
+      "name": "XssMatchTupleProperty",
+      "namespace": "CfnXssMatchSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-xssmatchset-xssmatchtuple.html#cfn-waf-xssmatchset-xssmatchtuple-fieldtomatch"
+            },
+            "stability": "external",
+            "summary": "The part of a web request that you want to inspect, such as a specified header or a query string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2476
+          },
+          "name": "fieldToMatch",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-waf.CfnXssMatchSet.FieldToMatchProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-waf-xssmatchset-xssmatchtuple.html#cfn-waf-xssmatchset-xssmatchtuple-texttransformation"
+            },
+            "remarks": "If you specify a transformation, AWS WAF performs the transformation on `FieldToMatch` before inspecting it for a match.\n\nYou can only specify a single type of TextTransformation.\n\n*CMD_LINE*\n\nWhen you're concerned that attackers are injecting an operating system command line command and using unusual formatting to disguise some or all of the command, use this option to perform the following transformations:\n\n- Delete the following characters: \\ \" ' ^\n- Delete spaces before the following characters: / (\n- Replace the following characters with a space: , ;\n- Replace multiple spaces with one space\n- Convert uppercase letters (A-Z) to lowercase (a-z)\n\n*COMPRESS_WHITE_SPACE*\n\nUse this option to replace the following characters with a space character (decimal 32):\n\n- \\f, formfeed, decimal 12\n- \\t, tab, decimal 9\n- \\n, newline, decimal 10\n- \\r, carriage return, decimal 13\n- \\v, vertical tab, decimal 11\n- non-breaking space, decimal 160\n\n`COMPRESS_WHITE_SPACE` also replaces multiple spaces with one space.\n\n*HTML_ENTITY_DECODE*\n\nUse this option to replace HTML-encoded characters with unencoded characters. `HTML_ENTITY_DECODE` performs the following operations:\n\n- Replaces `(ampersand)quot;` with `\"`\n- Replaces `(ampersand)nbsp;` with a non-breaking space, decimal 160\n- Replaces `(ampersand)lt;` with a \"less than\" symbol\n- Replaces `(ampersand)gt;` with `>`\n- Replaces characters that are represented in hexadecimal format, `(ampersand)#xhhhh;` , with the corresponding characters\n- Replaces characters that are represented in decimal format, `(ampersand)#nnnn;` , with the corresponding characters\n\n*LOWERCASE*\n\nUse this option to convert uppercase letters (A-Z) to lowercase (a-z).\n\n*URL_DECODE*\n\nUse this option to decode a URL-encoded value.\n\n*NONE*\n\nSpecify `NONE` if you don't want to perform any text transformations.",
+            "stability": "external",
+            "summary": "Text transformations eliminate some of the unusual formatting that attackers use in web requests in an effort to bypass AWS WAF ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2530
+          },
+          "name": "textTransformation",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnXssMatchSet.XssMatchTupleProperty"
+    },
+    "@aws-cdk/aws-waf.CfnXssMatchSetProps": {
+      "assembly": "@aws-cdk/aws-waf",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-xssmatchset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnXssMatchSet`."
+      },
+      "fqn": "@aws-cdk/aws-waf.CfnXssMatchSetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/waf.generated.ts",
+        "line": 2209
+      },
+      "name": "CfnXssMatchSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-xssmatchset.html#cfn-waf-xssmatchset-name"
+            },
+            "stability": "external",
+            "summary": "The name, if any, of the `XssMatchSet` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2216
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-waf-xssmatchset.html#cfn-waf-xssmatchset-xssmatchtuples"
+            },
+            "stability": "external",
+            "summary": "Specifies the parts of web requests that you want to inspect for cross-site scripting attacks."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/waf.generated.ts",
+            "line": 2223
+          },
+          "name": "xssMatchTuples",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-waf.CfnXssMatchSet.XssMatchTupleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/waf.generated:CfnXssMatchSetProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "M5567txUTZRzLrrAivWjiRg6Gw0b5VDW8/Owf+VuUYk="
+}

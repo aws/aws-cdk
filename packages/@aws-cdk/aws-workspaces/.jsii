@@ -1,0 +1,1307 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::WorkSpaces",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "workspaces"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-workspaces",
+  "readme": {
+    "markdown": "# Amazon WorkSpaces Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as workspaces from '@aws-cdk/aws-workspaces';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for WorkSpaces construct libraries](https://constructs.dev/search?q=workspaces)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::WorkSpaces resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_WorkSpaces.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::WorkSpaces](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_WorkSpaces.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-workspaces",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.WorkSpaces",
+      "packageId": "Amazon.CDK.AWS.WorkSpaces"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "workspaces",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.workspaces"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-workspaces"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-workspaces",
+      "module": "aws_cdk.aws_workspaces"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-workspaces.CfnConnectionAlias": {
+      "assembly": "@aws-cdk/aws-workspaces",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::WorkSpaces::ConnectionAlias",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-connectionalias.html"
+        },
+        "remarks": "The `AWS::WorkSpaces::ConnectionAlias` resource specifies a connection alias. Connection aliases are used for cross-Region redirection. For more information, see [Cross-Region Redirection for Amazon WorkSpaces](https://docs.aws.amazon.com/workspaces/latest/adminguide/cross-region-redirection.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::WorkSpaces::ConnectionAlias`."
+      },
+      "fqn": "@aws-cdk/aws-workspaces.CfnConnectionAlias",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::WorkSpaces::ConnectionAlias`."
+        },
+        "locationInModule": {
+          "filename": "lib/workspaces.generated.ts",
+          "line": 160
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-workspaces.CfnConnectionAliasProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/workspaces.generated.ts",
+        "line": 96
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 177
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 189
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnConnectionAlias",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 100
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AliasId"
+            },
+            "stability": "external",
+            "summary": "The identifier of the connection alias, returned as a string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 125
+          },
+          "name": "attrAliasId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Associations"
+            },
+            "stability": "external",
+            "summary": "The association status of the connection alias, returned as an array of `ConnectionAliasAssociation` objects."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 131
+          },
+          "name": "attrAssociations",
+          "type": {
+            "fqn": "@aws-cdk/core.IResolvable"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ConnectionAliasState"
+            },
+            "stability": "external",
+            "summary": "The current state of the connection alias, returned as a string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 137
+          },
+          "name": "attrConnectionAliasState",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 182
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-connectionalias.html#cfn-workspaces-connectionalias-tags"
+            },
+            "stability": "external",
+            "summary": "The tags to associate with the connection alias."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 151
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-connectionalias.html#cfn-workspaces-connectionalias-connectionstring"
+            },
+            "remarks": "The connection string must be in the form of a fully qualified domain name (FQDN), such as `www.example.com` .",
+            "stability": "external",
+            "summary": "The connection string specified for the connection alias."
+          },
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 144
+          },
+          "name": "connectionString",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/workspaces.generated:CfnConnectionAlias"
+    },
+    "@aws-cdk/aws-workspaces.CfnConnectionAlias.ConnectionAliasAssociationProperty": {
+      "assembly": "@aws-cdk/aws-workspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-workspaces-connectionalias-connectionaliasassociation.html"
+        },
+        "remarks": "For more information, see [Cross-Region Redirection for Amazon WorkSpaces](https://docs.aws.amazon.com/workspaces/latest/adminguide/cross-region-redirection.html) .",
+        "stability": "external",
+        "summary": "Describes a connection alias association that is used for cross-Region redirection."
+      },
+      "fqn": "@aws-cdk/aws-workspaces.CfnConnectionAlias.ConnectionAliasAssociationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/workspaces.generated.ts",
+        "line": 203
+      },
+      "name": "ConnectionAliasAssociationProperty",
+      "namespace": "CfnConnectionAlias",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-workspaces-connectionalias-connectionaliasassociation.html#cfn-workspaces-connectionalias-connectionaliasassociation-associatedaccountid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the AWS account that associated the connection alias with a directory."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 209
+          },
+          "name": "associatedAccountId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-workspaces-connectionalias-connectionaliasassociation.html#cfn-workspaces-connectionalias-connectionaliasassociation-associationstatus"
+            },
+            "stability": "external",
+            "summary": "The association status of the connection alias."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 215
+          },
+          "name": "associationStatus",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-workspaces-connectionalias-connectionaliasassociation.html#cfn-workspaces-connectionalias-connectionaliasassociation-connectionidentifier"
+            },
+            "remarks": "You use the connection identifier in the DNS TXT record when you're configuring your DNS routing policies.",
+            "stability": "external",
+            "summary": "The identifier of the connection alias association."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 221
+          },
+          "name": "connectionIdentifier",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-workspaces-connectionalias-connectionaliasassociation.html#cfn-workspaces-connectionalias-connectionaliasassociation-resourceid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the directory associated with a connection alias."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 227
+          },
+          "name": "resourceId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/workspaces.generated:CfnConnectionAlias.ConnectionAliasAssociationProperty"
+    },
+    "@aws-cdk/aws-workspaces.CfnConnectionAliasProps": {
+      "assembly": "@aws-cdk/aws-workspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-connectionalias.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnConnectionAlias`."
+      },
+      "fqn": "@aws-cdk/aws-workspaces.CfnConnectionAliasProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/workspaces.generated.ts",
+        "line": 20
+      },
+      "name": "CfnConnectionAliasProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-connectionalias.html#cfn-workspaces-connectionalias-connectionstring"
+            },
+            "remarks": "The connection string must be in the form of a fully qualified domain name (FQDN), such as `www.example.com` .",
+            "stability": "external",
+            "summary": "The connection string specified for the connection alias."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 27
+          },
+          "name": "connectionString",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-connectionalias.html#cfn-workspaces-connectionalias-tags"
+            },
+            "stability": "external",
+            "summary": "The tags to associate with the connection alias."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 34
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/workspaces.generated:CfnConnectionAliasProps"
+    },
+    "@aws-cdk/aws-workspaces.CfnWorkspace": {
+      "assembly": "@aws-cdk/aws-workspaces",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::WorkSpaces::Workspace",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html"
+        },
+        "remarks": "The `AWS::WorkSpaces::Workspace` resource specifies a WorkSpace.\n\nUpdates are not supported for the `BundleId` , `RootVolumeEncryptionEnabled` , `UserVolumeEncryptionEnabled` , or `VolumeEncryptionKey` properties. To update these properties, you must also update a property that triggers a replacement, such as the `UserName` property.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::WorkSpaces::Workspace`."
+      },
+      "fqn": "@aws-cdk/aws-workspaces.CfnWorkspace",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::WorkSpaces::Workspace`."
+        },
+        "locationInModule": {
+          "filename": "lib/workspaces.generated.ts",
+          "line": 524
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-workspaces.CfnWorkspaceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/workspaces.generated.ts",
+        "line": 436
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 546
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 564
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnWorkspace",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 440
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 551
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-tags"
+            },
+            "stability": "external",
+            "summary": "The tags for the WorkSpace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 494
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-bundleid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the bundle for the WorkSpace."
+          },
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 466
+          },
+          "name": "bundleId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-directoryid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the AWS Directory Service directory for the WorkSpace."
+          },
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 473
+          },
+          "name": "directoryId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-username"
+            },
+            "remarks": "This user name must exist in the AWS Directory Service directory for the WorkSpace.",
+            "stability": "external",
+            "summary": "The user name of the user for the WorkSpace."
+          },
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 480
+          },
+          "name": "userName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-rootvolumeencryptionenabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether the data stored on the root volume is encrypted."
+          },
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 487
+          },
+          "name": "rootVolumeEncryptionEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-uservolumeencryptionenabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether the data stored on the user volume is encrypted."
+          },
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 501
+          },
+          "name": "userVolumeEncryptionEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-volumeencryptionkey"
+            },
+            "remarks": "Amazon WorkSpaces does not support asymmetric KMS keys.",
+            "stability": "external",
+            "summary": "The symmetric AWS KMS key used to encrypt data stored on your WorkSpace."
+          },
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 508
+          },
+          "name": "volumeEncryptionKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-workspaceproperties"
+            },
+            "stability": "external",
+            "summary": "The WorkSpace properties."
+          },
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 515
+          },
+          "name": "workspaceProperties",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-workspaces.CfnWorkspace.WorkspacePropertiesProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/workspaces.generated:CfnWorkspace"
+    },
+    "@aws-cdk/aws-workspaces.CfnWorkspace.WorkspacePropertiesProperty": {
+      "assembly": "@aws-cdk/aws-workspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-workspaces-workspace-workspaceproperties.html"
+        },
+        "stability": "external",
+        "summary": "Information about a WorkSpace."
+      },
+      "fqn": "@aws-cdk/aws-workspaces.CfnWorkspace.WorkspacePropertiesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/workspaces.generated.ts",
+        "line": 578
+      },
+      "name": "WorkspacePropertiesProperty",
+      "namespace": "CfnWorkspace",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-workspaces-workspace-workspaceproperties.html#cfn-workspaces-workspace-workspaceproperties-computetypename"
+            },
+            "remarks": "For more information, see [Amazon WorkSpaces Bundles](https://docs.aws.amazon.com/workspaces/details/#Amazon_WorkSpaces_Bundles) .",
+            "stability": "external",
+            "summary": "The compute type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 584
+          },
+          "name": "computeTypeName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-workspaces-workspace-workspaceproperties.html#cfn-workspaces-workspace-workspaceproperties-rootvolumesizegib"
+            },
+            "remarks": "For important information about how to modify the size of the root and user volumes, see [Modify a WorkSpace](https://docs.aws.amazon.com/workspaces/latest/adminguide/modify-workspaces.html) .",
+            "stability": "external",
+            "summary": "The size of the root volume."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 590
+          },
+          "name": "rootVolumeSizeGib",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-workspaces-workspace-workspaceproperties.html#cfn-workspaces-workspace-workspaceproperties-runningmode"
+            },
+            "remarks": "> The `MANUAL` value is only supported by Amazon WorkSpaces Core. Contact your account team to be allow-listed to use this value. For more information, see [Amazon WorkSpaces Core](https://docs.aws.amazon.com/workspaces/core/) .",
+            "stability": "external",
+            "summary": "The running mode. For more information, see [Manage the WorkSpace Running Mode](https://docs.aws.amazon.com/workspaces/latest/adminguide/running-mode.html) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 598
+          },
+          "name": "runningMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-workspaces-workspace-workspaceproperties.html#cfn-workspaces-workspace-workspaceproperties-runningmodeautostoptimeoutinminutes"
+            },
+            "remarks": "Configured in 60-minute intervals.",
+            "stability": "external",
+            "summary": "The time after a user logs off when WorkSpaces are automatically stopped."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 604
+          },
+          "name": "runningModeAutoStopTimeoutInMinutes",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-workspaces-workspace-workspaceproperties.html#cfn-workspaces-workspace-workspaceproperties-uservolumesizegib"
+            },
+            "remarks": "For important information about how to modify the size of the root and user volumes, see [Modify a WorkSpace](https://docs.aws.amazon.com/workspaces/latest/adminguide/modify-workspaces.html) .",
+            "stability": "external",
+            "summary": "The size of the user storage."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 610
+          },
+          "name": "userVolumeSizeGib",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/workspaces.generated:CfnWorkspace.WorkspacePropertiesProperty"
+    },
+    "@aws-cdk/aws-workspaces.CfnWorkspaceProps": {
+      "assembly": "@aws-cdk/aws-workspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnWorkspace`."
+      },
+      "fqn": "@aws-cdk/aws-workspaces.CfnWorkspaceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/workspaces.generated.ts",
+        "line": 296
+      },
+      "name": "CfnWorkspaceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-bundleid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the bundle for the WorkSpace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 303
+          },
+          "name": "bundleId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-directoryid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the AWS Directory Service directory for the WorkSpace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 310
+          },
+          "name": "directoryId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-username"
+            },
+            "remarks": "This user name must exist in the AWS Directory Service directory for the WorkSpace.",
+            "stability": "external",
+            "summary": "The user name of the user for the WorkSpace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 317
+          },
+          "name": "userName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-rootvolumeencryptionenabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether the data stored on the root volume is encrypted."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 324
+          },
+          "name": "rootVolumeEncryptionEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-tags"
+            },
+            "stability": "external",
+            "summary": "The tags for the WorkSpace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 331
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-uservolumeencryptionenabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether the data stored on the user volume is encrypted."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 338
+          },
+          "name": "userVolumeEncryptionEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-volumeencryptionkey"
+            },
+            "remarks": "Amazon WorkSpaces does not support asymmetric KMS keys.",
+            "stability": "external",
+            "summary": "The symmetric AWS KMS key used to encrypt data stored on your WorkSpace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 345
+          },
+          "name": "volumeEncryptionKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-workspaces-workspace.html#cfn-workspaces-workspace-workspaceproperties"
+            },
+            "stability": "external",
+            "summary": "The WorkSpace properties."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/workspaces.generated.ts",
+            "line": 352
+          },
+          "name": "workspaceProperties",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-workspaces.CfnWorkspace.WorkspacePropertiesProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/workspaces.generated:CfnWorkspaceProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "0nO0H+RKVum8ZVuGYESgASsCeEThIBFlrmWhqMW8CG4="
+}

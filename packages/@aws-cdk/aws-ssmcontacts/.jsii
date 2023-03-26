@@ -1,0 +1,1311 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::SSMContacts",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::SSMContacts",
+    "aws-ssmcontacts"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-ssmcontacts",
+  "readme": {
+    "markdown": "# AWS::SSMContacts Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as ssmcontacts from '@aws-cdk/aws-ssmcontacts';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for SSMContacts construct libraries](https://constructs.dev/search?q=ssmcontacts)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::SSMContacts resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_SSMContacts.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::SSMContacts](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_SSMContacts.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-ssmcontacts",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.SSMContacts",
+      "packageId": "Amazon.CDK.AWS.SSMContacts",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "ssmcontacts",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.ssmcontacts"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-ssmcontacts"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-ssmcontacts",
+      "module": "aws_cdk.aws_ssmcontacts"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-ssmcontacts.CfnContact": {
+      "assembly": "@aws-cdk/aws-ssmcontacts",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SSMContacts::Contact",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contact.html"
+        },
+        "remarks": "The `AWS::SSMContacts::Contact` resource specifies a contact or escalation plan. Incident Manager contacts are a subset of actions and data types that you can use for managing responder engagement and interaction.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SSMContacts::Contact`."
+      },
+      "fqn": "@aws-cdk/aws-ssmcontacts.CfnContact",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SSMContacts::Contact`."
+        },
+        "locationInModule": {
+          "filename": "lib/ssmcontacts.generated.ts",
+          "line": 185
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-ssmcontacts.CfnContactProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ssmcontacts.generated.ts",
+        "line": 119
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 205
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 219
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnContact",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 123
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the `Contact` resource, such as `arn:aws:ssm-contacts:us-west-2:123456789012:contact/contactalias` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 148
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 210
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contact.html#cfn-ssmcontacts-contact-alias"
+            },
+            "stability": "external",
+            "summary": "The unique and identifiable alias of the contact or escalation plan."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 155
+          },
+          "name": "alias",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contact.html#cfn-ssmcontacts-contact-displayname"
+            },
+            "stability": "external",
+            "summary": "The full name of the contact or escalation plan."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 162
+          },
+          "name": "displayName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contact.html#cfn-ssmcontacts-contact-plan"
+            },
+            "remarks": "A contact has an engagement plan with stages that contact specified contact channels. An escalation plan uses stages that contact specified contacts.",
+            "stability": "external",
+            "summary": "A list of stages."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 169
+          },
+          "name": "plan",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-ssmcontacts.CfnContact.StageProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contact.html#cfn-ssmcontacts-contact-type"
+            },
+            "remarks": "A single contact is type `PERSONAL` and an escalation plan is type `ESCALATION` .",
+            "stability": "external",
+            "summary": "Refers to the type of contact."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 176
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ssmcontacts.generated:CfnContact"
+    },
+    "@aws-cdk/aws-ssmcontacts.CfnContact.ChannelTargetInfoProperty": {
+      "assembly": "@aws-cdk/aws-ssmcontacts",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-channeltargetinfo.html"
+        },
+        "stability": "external",
+        "summary": "Information about the contact channel that Incident Manager uses to engage the contact."
+      },
+      "fqn": "@aws-cdk/aws-ssmcontacts.CfnContact.ChannelTargetInfoProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmcontacts.generated.ts",
+        "line": 233
+      },
+      "name": "ChannelTargetInfoProperty",
+      "namespace": "CfnContact",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-channeltargetinfo.html#cfn-ssmcontacts-contact-channeltargetinfo-channelid"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the contact channel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 239
+          },
+          "name": "channelId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-channeltargetinfo.html#cfn-ssmcontacts-contact-channeltargetinfo-retryintervalinminutes"
+            },
+            "stability": "external",
+            "summary": "The number of minutes to wait to retry sending engagement in the case the engagement initially fails."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 245
+          },
+          "name": "retryIntervalInMinutes",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/ssmcontacts.generated:CfnContact.ChannelTargetInfoProperty"
+    },
+    "@aws-cdk/aws-ssmcontacts.CfnContact.ContactTargetInfoProperty": {
+      "assembly": "@aws-cdk/aws-ssmcontacts",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-contacttargetinfo.html"
+        },
+        "stability": "external",
+        "summary": "The contact that Incident Manager is engaging during an incident."
+      },
+      "fqn": "@aws-cdk/aws-ssmcontacts.CfnContact.ContactTargetInfoProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmcontacts.generated.ts",
+        "line": 311
+      },
+      "name": "ContactTargetInfoProperty",
+      "namespace": "CfnContact",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-contacttargetinfo.html#cfn-ssmcontacts-contact-contacttargetinfo-contactid"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the contact."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 317
+          },
+          "name": "contactId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-contacttargetinfo.html#cfn-ssmcontacts-contact-contacttargetinfo-isessential"
+            },
+            "stability": "external",
+            "summary": "A Boolean value determining if the contact's acknowledgement stops the progress of stages in the plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 323
+          },
+          "name": "isEssential",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmcontacts.generated:CfnContact.ContactTargetInfoProperty"
+    },
+    "@aws-cdk/aws-ssmcontacts.CfnContact.StageProperty": {
+      "assembly": "@aws-cdk/aws-ssmcontacts",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-stage.html"
+        },
+        "stability": "external",
+        "summary": "The `Stage` property type specifies a set amount of time that an escalation plan or engagement plan engages the specified contacts or contact methods."
+      },
+      "fqn": "@aws-cdk/aws-ssmcontacts.CfnContact.StageProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmcontacts.generated.ts",
+        "line": 389
+      },
+      "name": "StageProperty",
+      "namespace": "CfnContact",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-stage.html#cfn-ssmcontacts-contact-stage-durationinminutes"
+            },
+            "remarks": "The duration can only be set to 0 if a target is specified.",
+            "stability": "external",
+            "summary": "The time to wait until beginning the next stage."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 395
+          },
+          "name": "durationInMinutes",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-stage.html#cfn-ssmcontacts-contact-stage-targets"
+            },
+            "stability": "external",
+            "summary": "The contacts or contact methods that the escalation plan or engagement plan is engaging."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 401
+          },
+          "name": "targets",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ssmcontacts.CfnContact.TargetsProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmcontacts.generated:CfnContact.StageProperty"
+    },
+    "@aws-cdk/aws-ssmcontacts.CfnContact.TargetsProperty": {
+      "assembly": "@aws-cdk/aws-ssmcontacts",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-targets.html"
+        },
+        "stability": "external",
+        "summary": "The contact or contact channel that's being engaged."
+      },
+      "fqn": "@aws-cdk/aws-ssmcontacts.CfnContact.TargetsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmcontacts.generated.ts",
+        "line": 466
+      },
+      "name": "TargetsProperty",
+      "namespace": "CfnContact",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-targets.html#cfn-ssmcontacts-contact-targets-channeltargetinfo"
+            },
+            "stability": "external",
+            "summary": "Information about the contact channel Incident Manager is engaging."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 472
+          },
+          "name": "channelTargetInfo",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ssmcontacts.CfnContact.ChannelTargetInfoProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-targets.html#cfn-ssmcontacts-contact-targets-contacttargetinfo"
+            },
+            "stability": "external",
+            "summary": "The contact that Incident Manager is engaging during an incident."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 478
+          },
+          "name": "contactTargetInfo",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ssmcontacts.CfnContact.ContactTargetInfoProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmcontacts.generated:CfnContact.TargetsProperty"
+    },
+    "@aws-cdk/aws-ssmcontacts.CfnContactChannel": {
+      "assembly": "@aws-cdk/aws-ssmcontacts",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SSMContacts::ContactChannel",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contactchannel.html"
+        },
+        "remarks": "The `AWS::SSMContacts::ContactChannel` resource specifies a contact channel as the method that Incident Manager uses to engage your contact.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SSMContacts::ContactChannel`."
+      },
+      "fqn": "@aws-cdk/aws-ssmcontacts.CfnContactChannel",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SSMContacts::ContactChannel`."
+        },
+        "locationInModule": {
+          "filename": "lib/ssmcontacts.generated.ts",
+          "line": 731
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-ssmcontacts.CfnContactChannelProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ssmcontacts.generated.ts",
+        "line": 654
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 752
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 767
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnContactChannel",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 658
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the `ContactChannel` resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 683
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 757
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contactchannel.html#cfn-ssmcontacts-contactchannel-channeladdress"
+            },
+            "stability": "external",
+            "summary": "The details that Incident Manager uses when trying to engage the contact channel."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 690
+          },
+          "name": "channelAddress",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contactchannel.html#cfn-ssmcontacts-contactchannel-channelname"
+            },
+            "stability": "external",
+            "summary": "The name of the contact channel."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 697
+          },
+          "name": "channelName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contactchannel.html#cfn-ssmcontacts-contactchannel-channeltype"
+            },
+            "remarks": "- SMS\n- VOICE\n- EMAIL",
+            "stability": "external",
+            "summary": "The type of the contact channel. Incident Manager supports three contact methods:."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 708
+          },
+          "name": "channelType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contactchannel.html#cfn-ssmcontacts-contactchannel-contactid"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the contact you are adding the contact channel to."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 715
+          },
+          "name": "contactId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contactchannel.html#cfn-ssmcontacts-contactchannel-deferactivation"
+            },
+            "remarks": "Incident Manager can't engage your contact channel until it has been activated.",
+            "stability": "external",
+            "summary": "If you want to activate the channel at a later time, you can choose to defer activation."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 722
+          },
+          "name": "deferActivation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmcontacts.generated:CfnContactChannel"
+    },
+    "@aws-cdk/aws-ssmcontacts.CfnContactChannelProps": {
+      "assembly": "@aws-cdk/aws-ssmcontacts",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contactchannel.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnContactChannel`."
+      },
+      "fqn": "@aws-cdk/aws-ssmcontacts.CfnContactChannelProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmcontacts.generated.ts",
+        "line": 541
+      },
+      "name": "CfnContactChannelProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contactchannel.html#cfn-ssmcontacts-contactchannel-channeladdress"
+            },
+            "stability": "external",
+            "summary": "The details that Incident Manager uses when trying to engage the contact channel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 548
+          },
+          "name": "channelAddress",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contactchannel.html#cfn-ssmcontacts-contactchannel-channelname"
+            },
+            "stability": "external",
+            "summary": "The name of the contact channel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 555
+          },
+          "name": "channelName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contactchannel.html#cfn-ssmcontacts-contactchannel-channeltype"
+            },
+            "remarks": "- SMS\n- VOICE\n- EMAIL",
+            "stability": "external",
+            "summary": "The type of the contact channel. Incident Manager supports three contact methods:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 566
+          },
+          "name": "channelType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contactchannel.html#cfn-ssmcontacts-contactchannel-contactid"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the contact you are adding the contact channel to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 573
+          },
+          "name": "contactId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contactchannel.html#cfn-ssmcontacts-contactchannel-deferactivation"
+            },
+            "remarks": "Incident Manager can't engage your contact channel until it has been activated.",
+            "stability": "external",
+            "summary": "If you want to activate the channel at a later time, you can choose to defer activation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 580
+          },
+          "name": "deferActivation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmcontacts.generated:CfnContactChannelProps"
+    },
+    "@aws-cdk/aws-ssmcontacts.CfnContactProps": {
+      "assembly": "@aws-cdk/aws-ssmcontacts",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contact.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnContact`."
+      },
+      "fqn": "@aws-cdk/aws-ssmcontacts.CfnContactProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmcontacts.generated.ts",
+        "line": 20
+      },
+      "name": "CfnContactProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contact.html#cfn-ssmcontacts-contact-alias"
+            },
+            "stability": "external",
+            "summary": "The unique and identifiable alias of the contact or escalation plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 27
+          },
+          "name": "alias",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contact.html#cfn-ssmcontacts-contact-displayname"
+            },
+            "stability": "external",
+            "summary": "The full name of the contact or escalation plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 34
+          },
+          "name": "displayName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contact.html#cfn-ssmcontacts-contact-plan"
+            },
+            "remarks": "A contact has an engagement plan with stages that contact specified contact channels. An escalation plan uses stages that contact specified contacts.",
+            "stability": "external",
+            "summary": "A list of stages."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 41
+          },
+          "name": "plan",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-ssmcontacts.CfnContact.StageProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contact.html#cfn-ssmcontacts-contact-type"
+            },
+            "remarks": "A single contact is type `PERSONAL` and an escalation plan is type `ESCALATION` .",
+            "stability": "external",
+            "summary": "Refers to the type of contact."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmcontacts.generated.ts",
+            "line": 48
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ssmcontacts.generated:CfnContactProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "wU6mVVQTuwlYyWqWkm9jGUf+TqW8vY9T96LYid94VfA="
+}

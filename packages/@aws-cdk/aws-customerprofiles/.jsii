@@ -1,0 +1,3662 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::CustomerProfiles",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::CustomerProfiles",
+    "aws-customerprofiles"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-customerprofiles",
+  "readme": {
+    "markdown": "# AWS::CustomerProfiles Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as customerprofiles from '@aws-cdk/aws-customerprofiles';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for CustomerProfiles construct libraries](https://constructs.dev/search?q=customerprofiles)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::CustomerProfiles resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_CustomerProfiles.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::CustomerProfiles](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_CustomerProfiles.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-customerprofiles",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.CustomerProfiles",
+      "packageId": "Amazon.CDK.AWS.CustomerProfiles",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "customerprofiles",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.customerprofiles"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-customerprofiles"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-customerprofiles",
+      "module": "aws_cdk.aws_customerprofiles"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-customerprofiles.CfnDomain": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::CustomerProfiles::Domain",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-domain.html"
+        },
+        "remarks": "Specifies an Amazon Connect Customer Profiles Domain.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::CustomerProfiles::Domain`."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnDomain",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::CustomerProfiles::Domain`."
+        },
+        "locationInModule": {
+          "filename": "lib/customerprofiles.generated.ts",
+          "line": 205
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-customerprofiles.CfnDomainProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 126
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 224
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 239
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDomain",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 130
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedAt"
+            },
+            "stability": "external",
+            "summary": "The timestamp of when the domain was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 155
+          },
+          "name": "attrCreatedAt",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastUpdatedAt"
+            },
+            "stability": "external",
+            "summary": "The timestamp of when the domain was most recently edited."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 161
+          },
+          "name": "attrLastUpdatedAt",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 229
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-domain.html#cfn-customerprofiles-domain-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 196
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-domain.html#cfn-customerprofiles-domain-domainname"
+            },
+            "stability": "external",
+            "summary": "The unique name of the domain."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 168
+          },
+          "name": "domainName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-domain.html#cfn-customerprofiles-domain-deadletterqueueurl"
+            },
+            "remarks": "You must set up a policy on the DeadLetterQueue for the SendMessage operation to enable Amazon Connect Customer Profiles to send messages to the DeadLetterQueue.",
+            "stability": "external",
+            "summary": "The URL of the SQS dead letter queue, which is used for reporting errors associated with ingesting data from third party applications."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 175
+          },
+          "name": "deadLetterQueueUrl",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-domain.html#cfn-customerprofiles-domain-defaultencryptionkey"
+            },
+            "remarks": "It is used to encrypt all data before it is placed in permanent or semi-permanent storage.",
+            "stability": "external",
+            "summary": "The default encryption key, which is an AWS managed key, is used when no specific type of encryption key is specified."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 182
+          },
+          "name": "defaultEncryptionKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-domain.html#cfn-customerprofiles-domain-defaultexpirationdays"
+            },
+            "stability": "external",
+            "summary": "The default number of days until the data within the domain expires."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 189
+          },
+          "name": "defaultExpirationDays",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnDomain"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnDomainProps": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-domain.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDomain`."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnDomainProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 20
+      },
+      "name": "CfnDomainProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-domain.html#cfn-customerprofiles-domain-domainname"
+            },
+            "stability": "external",
+            "summary": "The unique name of the domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 27
+          },
+          "name": "domainName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-domain.html#cfn-customerprofiles-domain-deadletterqueueurl"
+            },
+            "remarks": "You must set up a policy on the DeadLetterQueue for the SendMessage operation to enable Amazon Connect Customer Profiles to send messages to the DeadLetterQueue.",
+            "stability": "external",
+            "summary": "The URL of the SQS dead letter queue, which is used for reporting errors associated with ingesting data from third party applications."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 34
+          },
+          "name": "deadLetterQueueUrl",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-domain.html#cfn-customerprofiles-domain-defaultencryptionkey"
+            },
+            "remarks": "It is used to encrypt all data before it is placed in permanent or semi-permanent storage.",
+            "stability": "external",
+            "summary": "The default encryption key, which is an AWS managed key, is used when no specific type of encryption key is specified."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 41
+          },
+          "name": "defaultEncryptionKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-domain.html#cfn-customerprofiles-domain-defaultexpirationdays"
+            },
+            "stability": "external",
+            "summary": "The default number of days until the data within the domain expires."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 48
+          },
+          "name": "defaultExpirationDays",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-domain.html#cfn-customerprofiles-domain-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 55
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnDomainProps"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::CustomerProfiles::Integration",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html"
+        },
+        "remarks": "Specifies an Amazon Connect Customer Profiles Integration.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::CustomerProfiles::Integration`."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::CustomerProfiles::Integration`."
+        },
+        "locationInModule": {
+          "filename": "lib/customerprofiles.generated.ts",
+          "line": 454
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegrationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 368
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 474
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 490
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnIntegration",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 372
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedAt"
+            },
+            "stability": "external",
+            "summary": "The timestamp of when the integration was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 397
+          },
+          "name": "attrCreatedAt",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastUpdatedAt"
+            },
+            "stability": "external",
+            "summary": "The timestamp of when the integration was most recently edited."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 403
+          },
+          "name": "attrLastUpdatedAt",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 479
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html#cfn-customerprofiles-integration-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 438
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html#cfn-customerprofiles-integration-domainname"
+            },
+            "stability": "external",
+            "summary": "The unique name of the domain."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 410
+          },
+          "name": "domainName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html#cfn-customerprofiles-integration-flowdefinition"
+            },
+            "stability": "external",
+            "summary": "The configuration that controls how Customer Profiles retrieves data from the source."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 417
+          },
+          "name": "flowDefinition",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.FlowDefinitionProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html#cfn-customerprofiles-integration-objecttypename"
+            },
+            "stability": "external",
+            "summary": "The name of the profile object type mapping to use."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 424
+          },
+          "name": "objectTypeName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html#cfn-customerprofiles-integration-objecttypenames"
+            },
+            "stability": "external",
+            "summary": "The object type mapping."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 431
+          },
+          "name": "objectTypeNames",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.ObjectTypeMappingProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html#cfn-customerprofiles-integration-uri"
+            },
+            "stability": "external",
+            "summary": "The URI of the S3 bucket or any other type of data source."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 445
+          },
+          "name": "uri",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.ConnectorOperatorProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-connectoroperator.html"
+        },
+        "stability": "external",
+        "summary": "The operation to be performed on the provided source fields."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.ConnectorOperatorProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 504
+      },
+      "name": "ConnectorOperatorProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-connectoroperator.html#cfn-customerprofiles-integration-connectoroperator-marketo"
+            },
+            "stability": "external",
+            "summary": "The operation to be performed on the provided Marketo source fields."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 510
+          },
+          "name": "marketo",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-connectoroperator.html#cfn-customerprofiles-integration-connectoroperator-s3"
+            },
+            "stability": "external",
+            "summary": "The operation to be performed on the provided Amazon S3 source fields."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 516
+          },
+          "name": "s3",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-connectoroperator.html#cfn-customerprofiles-integration-connectoroperator-salesforce"
+            },
+            "stability": "external",
+            "summary": "The operation to be performed on the provided Salesforce source fields."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 522
+          },
+          "name": "salesforce",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-connectoroperator.html#cfn-customerprofiles-integration-connectoroperator-servicenow"
+            },
+            "stability": "external",
+            "summary": "The operation to be performed on the provided ServiceNow source fields."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 528
+          },
+          "name": "serviceNow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-connectoroperator.html#cfn-customerprofiles-integration-connectoroperator-zendesk"
+            },
+            "stability": "external",
+            "summary": "The operation to be performed on the provided Zendesk source fields."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 534
+          },
+          "name": "zendesk",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.ConnectorOperatorProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.FlowDefinitionProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-flowdefinition.html"
+        },
+        "remarks": "Customer Profiles uses this information to create an AppFlow flow on behalf of customers.",
+        "stability": "external",
+        "summary": "The configurations that control how Customer Profiles retrieves data from the source, Amazon AppFlow."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.FlowDefinitionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 607
+      },
+      "name": "FlowDefinitionProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-flowdefinition.html#cfn-customerprofiles-integration-flowdefinition-flowname"
+            },
+            "remarks": "Use underscores (_) or hyphens (-) only. Spaces are not allowed.",
+            "stability": "external",
+            "summary": "The specified name of the flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 619
+          },
+          "name": "flowName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-flowdefinition.html#cfn-customerprofiles-integration-flowdefinition-kmsarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the AWS Key Management Service (KMS) key you provide for encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 625
+          },
+          "name": "kmsArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-flowdefinition.html#cfn-customerprofiles-integration-flowdefinition-sourceflowconfig"
+            },
+            "stability": "external",
+            "summary": "The configuration that controls how Customer Profiles retrieves data from the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 631
+          },
+          "name": "sourceFlowConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.SourceFlowConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-flowdefinition.html#cfn-customerprofiles-integration-flowdefinition-tasks"
+            },
+            "stability": "external",
+            "summary": "A list of tasks that Customer Profiles performs while transferring the data in the flow run."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 637
+          },
+          "name": "tasks",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.TaskProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-flowdefinition.html#cfn-customerprofiles-integration-flowdefinition-triggerconfig"
+            },
+            "stability": "external",
+            "summary": "The trigger settings that determine how and when the flow runs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 643
+          },
+          "name": "triggerConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.TriggerConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-flowdefinition.html#cfn-customerprofiles-integration-flowdefinition-description"
+            },
+            "stability": "external",
+            "summary": "A description of the flow you want to create."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 613
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.FlowDefinitionProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.IncrementalPullConfigProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-incrementalpullconfig.html"
+        },
+        "stability": "external",
+        "summary": "Specifies the configuration used when importing incremental records from the source."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.IncrementalPullConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 724
+      },
+      "name": "IncrementalPullConfigProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-incrementalpullconfig.html#cfn-customerprofiles-integration-incrementalpullconfig-datetimetypefieldname"
+            },
+            "stability": "external",
+            "summary": "A field that specifies the date time or timestamp field as the criteria to use when importing incremental records from the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 730
+          },
+          "name": "datetimeTypeFieldName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.IncrementalPullConfigProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.MarketoSourcePropertiesProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-marketosourceproperties.html"
+        },
+        "stability": "external",
+        "summary": "The properties that are applied when Marketo is being used as a source."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.MarketoSourcePropertiesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 791
+      },
+      "name": "MarketoSourcePropertiesProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-marketosourceproperties.html#cfn-customerprofiles-integration-marketosourceproperties-object"
+            },
+            "stability": "external",
+            "summary": "The object specified in the Marketo flow source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 797
+          },
+          "name": "object",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.MarketoSourcePropertiesProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.ObjectTypeMappingProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-objecttypemapping.html"
+        },
+        "stability": "external",
+        "summary": "A map in which each key is an event type from an external application such as Segment or Shopify, and each value is an `ObjectTypeName` (template) used to ingest the event."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.ObjectTypeMappingProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 859
+      },
+      "name": "ObjectTypeMappingProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-objecttypemapping.html#cfn-customerprofiles-integration-objecttypemapping-key"
+            },
+            "stability": "external",
+            "summary": "The key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 865
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-objecttypemapping.html#cfn-customerprofiles-integration-objecttypemapping-value"
+            },
+            "stability": "external",
+            "summary": "The value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 871
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.ObjectTypeMappingProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.S3SourcePropertiesProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-s3sourceproperties.html"
+        },
+        "stability": "external",
+        "summary": "The properties that are applied when Amazon S3 is being used as the flow source."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.S3SourcePropertiesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 937
+      },
+      "name": "S3SourcePropertiesProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-s3sourceproperties.html#cfn-customerprofiles-integration-s3sourceproperties-bucketname"
+            },
+            "stability": "external",
+            "summary": "The Amazon S3 bucket name where the source files are stored."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 943
+          },
+          "name": "bucketName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-s3sourceproperties.html#cfn-customerprofiles-integration-s3sourceproperties-bucketprefix"
+            },
+            "stability": "external",
+            "summary": "The object key for the Amazon S3 bucket in which the source files are stored."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 949
+          },
+          "name": "bucketPrefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.S3SourcePropertiesProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.SalesforceSourcePropertiesProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-salesforcesourceproperties.html"
+        },
+        "stability": "external",
+        "summary": "The properties that are applied when Salesforce is being used as a source."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.SalesforceSourcePropertiesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 1014
+      },
+      "name": "SalesforceSourcePropertiesProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-salesforcesourceproperties.html#cfn-customerprofiles-integration-salesforcesourceproperties-object"
+            },
+            "stability": "external",
+            "summary": "The object specified in the Salesforce flow source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1032
+          },
+          "name": "object",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-salesforcesourceproperties.html#cfn-customerprofiles-integration-salesforcesourceproperties-enabledynamicfieldupdate"
+            },
+            "stability": "external",
+            "summary": "The flag that enables dynamic fetching of new (recently added) fields in the Salesforce objects while running a flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1020
+          },
+          "name": "enableDynamicFieldUpdate",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-salesforcesourceproperties.html#cfn-customerprofiles-integration-salesforcesourceproperties-includedeletedrecords"
+            },
+            "stability": "external",
+            "summary": "Indicates whether Amazon AppFlow includes deleted files in the flow run."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1026
+          },
+          "name": "includeDeletedRecords",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.SalesforceSourcePropertiesProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.ScheduledTriggerPropertiesProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-scheduledtriggerproperties.html"
+        },
+        "remarks": "Currently, these settings only apply to the scheduled-trigger type.",
+        "stability": "external",
+        "summary": "Specifies the configuration details of a scheduled-trigger flow that you define."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.ScheduledTriggerPropertiesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 1100
+      },
+      "name": "ScheduledTriggerPropertiesProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-scheduledtriggerproperties.html#cfn-customerprofiles-integration-scheduledtriggerproperties-scheduleexpression"
+            },
+            "stability": "external",
+            "summary": "The scheduling expression that determines the rate at which the schedule will run, for example rate (5 minutes)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1124
+          },
+          "name": "scheduleExpression",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-scheduledtriggerproperties.html#cfn-customerprofiles-integration-scheduledtriggerproperties-datapullmode"
+            },
+            "stability": "external",
+            "summary": "Specifies whether a scheduled flow has an incremental data transfer or a complete data transfer for each flow run."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1106
+          },
+          "name": "dataPullMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-scheduledtriggerproperties.html#cfn-customerprofiles-integration-scheduledtriggerproperties-firstexecutionfrom"
+            },
+            "stability": "external",
+            "summary": "Specifies the date range for the records to import from the connector in the first flow run."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1112
+          },
+          "name": "firstExecutionFrom",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-scheduledtriggerproperties.html#cfn-customerprofiles-integration-scheduledtriggerproperties-scheduleendtime"
+            },
+            "stability": "external",
+            "summary": "Specifies the scheduled end time for a scheduled-trigger flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1118
+          },
+          "name": "scheduleEndTime",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-scheduledtriggerproperties.html#cfn-customerprofiles-integration-scheduledtriggerproperties-scheduleoffset"
+            },
+            "stability": "external",
+            "summary": "Specifies the optional offset that is added to the time interval for a schedule-triggered flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1130
+          },
+          "name": "scheduleOffset",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-scheduledtriggerproperties.html#cfn-customerprofiles-integration-scheduledtriggerproperties-schedulestarttime"
+            },
+            "stability": "external",
+            "summary": "Specifies the scheduled start time for a scheduled-trigger flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1136
+          },
+          "name": "scheduleStartTime",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-scheduledtriggerproperties.html#cfn-customerprofiles-integration-scheduledtriggerproperties-timezone"
+            },
+            "stability": "external",
+            "summary": "Specifies the time zone used when referring to the date and time of a scheduled-triggered flow, such as America/New_York."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1142
+          },
+          "name": "timezone",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.ScheduledTriggerPropertiesProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.ServiceNowSourcePropertiesProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-servicenowsourceproperties.html"
+        },
+        "stability": "external",
+        "summary": "The properties that are applied when ServiceNow is being used as a source."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.ServiceNowSourcePropertiesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 1222
+      },
+      "name": "ServiceNowSourcePropertiesProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-servicenowsourceproperties.html#cfn-customerprofiles-integration-servicenowsourceproperties-object"
+            },
+            "stability": "external",
+            "summary": "The object specified in the ServiceNow flow source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1228
+          },
+          "name": "object",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.ServiceNowSourcePropertiesProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.SourceConnectorPropertiesProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-sourceconnectorproperties.html"
+        },
+        "remarks": "Customer Profiles supports Salesforce, Zendesk, Marketo, ServiceNow and Amazon S3.",
+        "stability": "external",
+        "summary": "Specifies the information that is required to query a particular Amazon AppFlow connector."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.SourceConnectorPropertiesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 1290
+      },
+      "name": "SourceConnectorPropertiesProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-sourceconnectorproperties.html#cfn-customerprofiles-integration-sourceconnectorproperties-marketo"
+            },
+            "stability": "external",
+            "summary": "The properties that are applied when Marketo is being used as a source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1296
+          },
+          "name": "marketo",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.MarketoSourcePropertiesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-sourceconnectorproperties.html#cfn-customerprofiles-integration-sourceconnectorproperties-s3"
+            },
+            "stability": "external",
+            "summary": "The properties that are applied when Amazon S3 is being used as the flow source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1302
+          },
+          "name": "s3",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.S3SourcePropertiesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-sourceconnectorproperties.html#cfn-customerprofiles-integration-sourceconnectorproperties-salesforce"
+            },
+            "stability": "external",
+            "summary": "The properties that are applied when Salesforce is being used as a source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1308
+          },
+          "name": "salesforce",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.SalesforceSourcePropertiesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-sourceconnectorproperties.html#cfn-customerprofiles-integration-sourceconnectorproperties-servicenow"
+            },
+            "stability": "external",
+            "summary": "The properties that are applied when ServiceNow is being used as a source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1314
+          },
+          "name": "serviceNow",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.ServiceNowSourcePropertiesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-sourceconnectorproperties.html#cfn-customerprofiles-integration-sourceconnectorproperties-zendesk"
+            },
+            "stability": "external",
+            "summary": "The properties that are applied when using Zendesk as a flow source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1320
+          },
+          "name": "zendesk",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.ZendeskSourcePropertiesProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.SourceConnectorPropertiesProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.SourceFlowConfigProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-sourceflowconfig.html"
+        },
+        "stability": "external",
+        "summary": "The configuration that controls how Customer Profiles retrieves data from the source."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.SourceFlowConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 1393
+      },
+      "name": "SourceFlowConfigProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-sourceflowconfig.html#cfn-customerprofiles-integration-sourceflowconfig-connectortype"
+            },
+            "stability": "external",
+            "summary": "The type of connector, such as Salesforce, Marketo, and so on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1405
+          },
+          "name": "connectorType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-sourceflowconfig.html#cfn-customerprofiles-integration-sourceflowconfig-sourceconnectorproperties"
+            },
+            "stability": "external",
+            "summary": "Specifies the information that is required to query a particular source connector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1417
+          },
+          "name": "sourceConnectorProperties",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.SourceConnectorPropertiesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-sourceflowconfig.html#cfn-customerprofiles-integration-sourceflowconfig-connectorprofilename"
+            },
+            "remarks": "This name must be unique for each connector profile in the AWS account .",
+            "stability": "external",
+            "summary": "The name of the Amazon AppFlow connector profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1399
+          },
+          "name": "connectorProfileName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-sourceflowconfig.html#cfn-customerprofiles-integration-sourceflowconfig-incrementalpullconfig"
+            },
+            "remarks": "If a valid configuration is provided, the fields specified in the configuration are used when querying for the incremental data pull.",
+            "stability": "external",
+            "summary": "Defines the configuration for a scheduled incremental data pull."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1411
+          },
+          "name": "incrementalPullConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.IncrementalPullConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.SourceFlowConfigProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.TaskPropertiesMapProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-taskpropertiesmap.html"
+        },
+        "remarks": "The execution service looks for particular information based on the `TaskType` .",
+        "stability": "external",
+        "summary": "A map used to store task-related information."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.TaskPropertiesMapProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 1594
+      },
+      "name": "TaskPropertiesMapProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-taskpropertiesmap.html#cfn-customerprofiles-integration-taskpropertiesmap-operatorpropertykey"
+            },
+            "stability": "external",
+            "summary": "The task property key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1600
+          },
+          "name": "operatorPropertyKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-taskpropertiesmap.html#cfn-customerprofiles-integration-taskpropertiesmap-property"
+            },
+            "stability": "external",
+            "summary": "The task property value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1606
+          },
+          "name": "property",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.TaskPropertiesMapProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.TaskProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-task.html"
+        },
+        "remarks": "Task implementation varies based on the TaskType.",
+        "stability": "external",
+        "summary": "The `Task` property type specifies the class for modeling different type of tasks."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.TaskProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 1489
+      },
+      "name": "TaskProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-task.html#cfn-customerprofiles-integration-task-sourcefields"
+            },
+            "stability": "external",
+            "summary": "The source fields to which a particular task is applied."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1507
+          },
+          "name": "sourceFields",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-task.html#cfn-customerprofiles-integration-task-tasktype"
+            },
+            "stability": "external",
+            "summary": "Specifies the particular task implementation that Amazon AppFlow performs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1519
+          },
+          "name": "taskType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-task.html#cfn-customerprofiles-integration-task-connectoroperator"
+            },
+            "stability": "external",
+            "summary": "The operation to be performed on the provided source fields."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1495
+          },
+          "name": "connectorOperator",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.ConnectorOperatorProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-task.html#cfn-customerprofiles-integration-task-destinationfield"
+            },
+            "stability": "external",
+            "summary": "A field in a destination connector, or a field value against which Amazon AppFlow validates a source field."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1501
+          },
+          "name": "destinationField",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-task.html#cfn-customerprofiles-integration-task-taskproperties"
+            },
+            "remarks": "The service looks for particular information based on the TaskType.",
+            "stability": "external",
+            "summary": "A map used to store task-related information."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1513
+          },
+          "name": "taskProperties",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.TaskPropertiesMapProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.TaskProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.TriggerConfigProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-triggerconfig.html"
+        },
+        "stability": "external",
+        "summary": "The trigger settings that determine how and when Amazon AppFlow runs the specified flow."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.TriggerConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 1672
+      },
+      "name": "TriggerConfigProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-triggerconfig.html#cfn-customerprofiles-integration-triggerconfig-triggertype"
+            },
+            "remarks": "It can be OnDemand, Scheduled, or Event.",
+            "stability": "external",
+            "summary": "Specifies the type of flow trigger."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1684
+          },
+          "name": "triggerType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-triggerconfig.html#cfn-customerprofiles-integration-triggerconfig-triggerproperties"
+            },
+            "remarks": "Currently, these settings only apply to the Scheduled trigger type.",
+            "stability": "external",
+            "summary": "Specifies the configuration details of a schedule-triggered flow that you define."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1678
+          },
+          "name": "triggerProperties",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.TriggerPropertiesProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.TriggerConfigProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.TriggerPropertiesProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-triggerproperties.html"
+        },
+        "remarks": "Currently, these settings only apply to the Scheduled trigger type.",
+        "stability": "external",
+        "summary": "Specifies the configuration details that control the trigger for a flow."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.TriggerPropertiesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 1749
+      },
+      "name": "TriggerPropertiesProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-triggerproperties.html#cfn-customerprofiles-integration-triggerproperties-scheduled"
+            },
+            "stability": "external",
+            "summary": "Specifies the configuration details of a schedule-triggered flow that you define."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1755
+          },
+          "name": "scheduled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.ScheduledTriggerPropertiesProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.TriggerPropertiesProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegration.ZendeskSourcePropertiesProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-zendesksourceproperties.html"
+        },
+        "stability": "external",
+        "summary": "The properties that are applied when using Zendesk as a flow source."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.ZendeskSourcePropertiesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 1816
+      },
+      "name": "ZendeskSourcePropertiesProperty",
+      "namespace": "CfnIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-integration-zendesksourceproperties.html#cfn-customerprofiles-integration-zendesksourceproperties-object"
+            },
+            "stability": "external",
+            "summary": "The object specified in the Zendesk flow source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1822
+          },
+          "name": "object",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegration.ZendeskSourcePropertiesProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnIntegrationProps": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnIntegration`."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegrationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 252
+      },
+      "name": "CfnIntegrationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html#cfn-customerprofiles-integration-domainname"
+            },
+            "stability": "external",
+            "summary": "The unique name of the domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 259
+          },
+          "name": "domainName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html#cfn-customerprofiles-integration-flowdefinition"
+            },
+            "stability": "external",
+            "summary": "The configuration that controls how Customer Profiles retrieves data from the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 266
+          },
+          "name": "flowDefinition",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.FlowDefinitionProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html#cfn-customerprofiles-integration-objecttypename"
+            },
+            "stability": "external",
+            "summary": "The name of the profile object type mapping to use."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 273
+          },
+          "name": "objectTypeName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html#cfn-customerprofiles-integration-objecttypenames"
+            },
+            "stability": "external",
+            "summary": "The object type mapping."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 280
+          },
+          "name": "objectTypeNames",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-customerprofiles.CfnIntegration.ObjectTypeMappingProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html#cfn-customerprofiles-integration-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 287
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-integration.html#cfn-customerprofiles-integration-uri"
+            },
+            "stability": "external",
+            "summary": "The URI of the S3 bucket or any other type of data source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 294
+          },
+          "name": "uri",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnIntegrationProps"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnObjectType": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::CustomerProfiles::ObjectType",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html"
+        },
+        "remarks": "Specifies an Amazon Connect Customer Profiles Object Type Mapping.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::CustomerProfiles::ObjectType`."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectType",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::CustomerProfiles::ObjectType`."
+        },
+        "locationInModule": {
+          "filename": "lib/customerprofiles.generated.ts",
+          "line": 2153
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectTypeProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 2039
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2177
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2197
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnObjectType",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2043
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedAt"
+            },
+            "stability": "external",
+            "summary": "The timestamp of when the object type was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2068
+          },
+          "name": "attrCreatedAt",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastUpdatedAt"
+            },
+            "stability": "external",
+            "summary": "The timestamp of when the object type was most recently edited."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2074
+          },
+          "name": "attrLastUpdatedAt",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2182
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2137
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-domainname"
+            },
+            "stability": "external",
+            "summary": "The unique name of the domain."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2081
+          },
+          "name": "domainName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-allowprofilecreation"
+            },
+            "remarks": "The default is `FALSE` . If the AllowProfileCreation flag is set to `FALSE` , then the service tries to fetch a standard profile and associate this object with the profile. If it is set to `TRUE` , and if no match is found, then the service creates a new standard profile.",
+            "stability": "external",
+            "summary": "Indicates whether a profile should be created when data is received if one doesn’t exist for an object of this type."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2088
+          },
+          "name": "allowProfileCreation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-description"
+            },
+            "stability": "external",
+            "summary": "The description of the profile object type mapping."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2095
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-encryptionkey"
+            },
+            "remarks": "If not specified the system will use the encryption key of the domain.",
+            "stability": "external",
+            "summary": "The customer-provided key to encrypt the profile object that will be created in this profile object type mapping."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2102
+          },
+          "name": "encryptionKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-expirationdays"
+            },
+            "stability": "external",
+            "summary": "The number of days until the data of this type expires."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2109
+          },
+          "name": "expirationDays",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-fields"
+            },
+            "stability": "external",
+            "summary": "A list of field definitions for the object type mapping."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2116
+          },
+          "name": "fields",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectType.FieldMapProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-keys"
+            },
+            "stability": "external",
+            "summary": "A list of keys that can be used to map data to the profile or search for the profile."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2123
+          },
+          "name": "keys",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectType.KeyMapProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-objecttypename"
+            },
+            "stability": "external",
+            "summary": "The name of the profile object type."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2130
+          },
+          "name": "objectTypeName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-templateid"
+            },
+            "remarks": "This can be used instead of specifying the Keys and Fields properties directly.",
+            "stability": "external",
+            "summary": "A unique identifier for the template mapping."
+          },
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2144
+          },
+          "name": "templateId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnObjectType"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnObjectType.FieldMapProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-fieldmap.html"
+        },
+        "stability": "external",
+        "summary": "A map of the name and ObjectType field."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectType.FieldMapProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 2211
+      },
+      "name": "FieldMapProperty",
+      "namespace": "CfnObjectType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-fieldmap.html#cfn-customerprofiles-objecttype-fieldmap-name"
+            },
+            "stability": "external",
+            "summary": "Name of the field."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2217
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-fieldmap.html#cfn-customerprofiles-objecttype-fieldmap-objecttypefield"
+            },
+            "stability": "external",
+            "summary": "Represents a field in a ProfileObjectType."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2223
+          },
+          "name": "objectTypeField",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectType.ObjectTypeFieldProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnObjectType.FieldMapProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnObjectType.KeyMapProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-keymap.html"
+        },
+        "stability": "external",
+        "summary": "A unique key map that can be used to map data to the profile."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectType.KeyMapProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 2287
+      },
+      "name": "KeyMapProperty",
+      "namespace": "CfnObjectType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-keymap.html#cfn-customerprofiles-objecttype-keymap-name"
+            },
+            "stability": "external",
+            "summary": "Name of the key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2293
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-keymap.html#cfn-customerprofiles-objecttype-keymap-objecttypekeylist"
+            },
+            "stability": "external",
+            "summary": "A list of ObjectTypeKey."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2299
+          },
+          "name": "objectTypeKeyList",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectType.ObjectTypeKeyProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnObjectType.KeyMapProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnObjectType.ObjectTypeFieldProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-objecttypefield.html"
+        },
+        "stability": "external",
+        "summary": "Represents a field in a ProfileObjectType."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectType.ObjectTypeFieldProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 2363
+      },
+      "name": "ObjectTypeFieldProperty",
+      "namespace": "CfnObjectType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-objecttypefield.html#cfn-customerprofiles-objecttype-objecttypefield-contenttype"
+            },
+            "remarks": "Used for determining equality when searching.",
+            "stability": "external",
+            "summary": "The content type of the field."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2369
+          },
+          "name": "contentType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-objecttypefield.html#cfn-customerprofiles-objecttype-objecttypefield-source"
+            },
+            "remarks": "For example: _source.FirstName, where “_source” is a ProfileObjectType of a Zendesk user and “FirstName” is a field in that ObjectType.",
+            "stability": "external",
+            "summary": "A field of a ProfileObject."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2375
+          },
+          "name": "source",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-objecttypefield.html#cfn-customerprofiles-objecttype-objecttypefield-target"
+            },
+            "remarks": "For example: _profile.Address.PostalCode.",
+            "stability": "external",
+            "summary": "The location of the data in the standard ProfileObject model."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2381
+          },
+          "name": "target",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnObjectType.ObjectTypeFieldProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnObjectType.ObjectTypeKeyProperty": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-objecttypekey.html"
+        },
+        "remarks": "A Key is a special element that can be used to search for a customer profile.",
+        "stability": "external",
+        "summary": "An object that defines the Key element of a ProfileObject."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectType.ObjectTypeKeyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 2448
+      },
+      "name": "ObjectTypeKeyProperty",
+      "namespace": "CfnObjectType",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-objecttypekey.html#cfn-customerprofiles-objecttype-objecttypekey-fieldnames"
+            },
+            "stability": "external",
+            "summary": "The reference for the key name of the fields map."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2454
+          },
+          "name": "fieldNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-customerprofiles-objecttype-objecttypekey.html#cfn-customerprofiles-objecttype-objecttypekey-standardidentifiers"
+            },
+            "remarks": "Each ProfileObject can have only 1 UNIQUE key but multiple PROFILE keys. PROFILE means that this key can be used to tie an object to a PROFILE. UNIQUE means that it can be used to uniquely identify an object. If a key a is marked as SECONDARY, it will be used to search for profiles after all other PROFILE keys have been searched. A LOOKUP_ONLY key is only used to match a profile but is not persisted to be used for searching of the profile. A NEW_ONLY key is only used if the profile does not already exist before the object is ingested, otherwise it is only used for matching objects to profiles.",
+            "stability": "external",
+            "summary": "The types of keys that a ProfileObject can have."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 2460
+          },
+          "name": "standardIdentifiers",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnObjectType.ObjectTypeKeyProperty"
+    },
+    "@aws-cdk/aws-customerprofiles.CfnObjectTypeProps": {
+      "assembly": "@aws-cdk/aws-customerprofiles",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnObjectType`."
+      },
+      "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectTypeProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/customerprofiles.generated.ts",
+        "line": 1883
+      },
+      "name": "CfnObjectTypeProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-domainname"
+            },
+            "stability": "external",
+            "summary": "The unique name of the domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1890
+          },
+          "name": "domainName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-allowprofilecreation"
+            },
+            "remarks": "The default is `FALSE` . If the AllowProfileCreation flag is set to `FALSE` , then the service tries to fetch a standard profile and associate this object with the profile. If it is set to `TRUE` , and if no match is found, then the service creates a new standard profile.",
+            "stability": "external",
+            "summary": "Indicates whether a profile should be created when data is received if one doesn’t exist for an object of this type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1897
+          },
+          "name": "allowProfileCreation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-description"
+            },
+            "stability": "external",
+            "summary": "The description of the profile object type mapping."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1904
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-encryptionkey"
+            },
+            "remarks": "If not specified the system will use the encryption key of the domain.",
+            "stability": "external",
+            "summary": "The customer-provided key to encrypt the profile object that will be created in this profile object type mapping."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1911
+          },
+          "name": "encryptionKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-expirationdays"
+            },
+            "stability": "external",
+            "summary": "The number of days until the data of this type expires."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1918
+          },
+          "name": "expirationDays",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-fields"
+            },
+            "stability": "external",
+            "summary": "A list of field definitions for the object type mapping."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1925
+          },
+          "name": "fields",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectType.FieldMapProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-keys"
+            },
+            "stability": "external",
+            "summary": "A list of keys that can be used to map data to the profile or search for the profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1932
+          },
+          "name": "keys",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-customerprofiles.CfnObjectType.KeyMapProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-objecttypename"
+            },
+            "stability": "external",
+            "summary": "The name of the profile object type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1939
+          },
+          "name": "objectTypeName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-tags"
+            },
+            "stability": "external",
+            "summary": "The tags used to organize, track, or control access for this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1946
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-customerprofiles-objecttype.html#cfn-customerprofiles-objecttype-templateid"
+            },
+            "remarks": "This can be used instead of specifying the Keys and Fields properties directly.",
+            "stability": "external",
+            "summary": "A unique identifier for the template mapping."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/customerprofiles.generated.ts",
+            "line": 1953
+          },
+          "name": "templateId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/customerprofiles.generated:CfnObjectTypeProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "zcLD2TmnPPLCqDOC0p5vCmsai9UUe4xQYWc4BjEY3+g="
+}

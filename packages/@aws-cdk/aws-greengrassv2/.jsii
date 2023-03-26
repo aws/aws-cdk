@@ -1,0 +1,3283 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::GreengrassV2",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::GreengrassV2",
+    "aws-greengrassv2"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-greengrassv2",
+  "readme": {
+    "markdown": "# AWS::GreengrassV2 Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as greengrass from '@aws-cdk/aws-greengrassv2';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for GreengrassV2 construct libraries](https://constructs.dev/search?q=greengrassv2)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::GreengrassV2 resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_GreengrassV2.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::GreengrassV2](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_GreengrassV2.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-greengrassv2",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.GreengrassV2",
+      "packageId": "Amazon.CDK.AWS.GreengrassV2"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "greengrassv2",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.greengrassv2"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-greengrassv2"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-greengrassv2",
+      "module": "aws_cdk.aws_greengrassv2"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-greengrassv2.CfnComponentVersion": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::GreengrassV2::ComponentVersion",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-componentversion.html"
+        },
+        "remarks": "Creates a component. Components are software that run on AWS IoT Greengrass core devices. After you develop and test a component on your core device, you can use this operation to upload your component to AWS IoT Greengrass . Then, you can deploy the component to other core devices.\n\nYou can use this operation to do the following:\n\n- *Create components from recipes*\n\nCreate a component from a recipe, which is a file that defines the component's metadata, parameters, dependencies, lifecycle, artifacts, and platform capability. For more information, see [AWS IoT Greengrass component recipe reference](https://docs.aws.amazon.com/greengrass/v2/developerguide/component-recipe-reference.html) in the *AWS IoT Greengrass V2 Developer Guide* .\n\nTo create a component from a recipe, specify `inlineRecipe` when you call this operation.\n- *Create components from Lambda functions*\n\nCreate a component from an AWS Lambda function that runs on AWS IoT Greengrass . This creates a recipe and artifacts from the Lambda function's deployment package. You can use this operation to migrate Lambda functions from AWS IoT Greengrass V1 to AWS IoT Greengrass V2 .\n\nThis function only accepts Lambda functions that use the following runtimes:\n\n- Python 2.7 – `python2.7`\n- Python 3.7 – `python3.7`\n- Python 3.8 – `python3.8`\n- Java 8 – `java8`\n- Node.js 10 – `nodejs10.x`\n- Node.js 12 – `nodejs12.x`\n\nTo create a component from a Lambda function, specify `lambdaFunction` when you call this operation.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::GreengrassV2::ComponentVersion`."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::GreengrassV2::ComponentVersion`."
+        },
+        "locationInModule": {
+          "filename": "lib/greengrassv2.generated.ts",
+          "line": 220
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 138
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 237
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 250
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnComponentVersion",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 142
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the component version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 167
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ComponentName"
+            },
+            "stability": "external",
+            "summary": "The name of the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 173
+          },
+          "name": "attrComponentName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ComponentVersion"
+            },
+            "stability": "external",
+            "summary": "The version of the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 179
+          },
+          "name": "attrComponentVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 242
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-componentversion.html#cfn-greengrassv2-componentversion-tags"
+            },
+            "remarks": "You can use tags in IAM policies to control access to AWS IoT Greengrass resources. You can also use tags to categorize your resources. For more information, see [Tag your AWS IoT Greengrass Version 2 resources](https://docs.aws.amazon.com/greengrass/v2/developerguide/tag-resources.html) in the *AWS IoT Greengrass V2 Developer Guide* .\n\nThis `Json` property type is processed as a map of key-value pairs. It uses the following format, which is different from most `Tags` implementations in AWS CloudFormation templates.\n\n```json\n\"Tags\": { \"KeyName0\": \"value\", \"KeyName1\": \"value\", \"KeyName2\": \"value\"\n}\n```",
+            "stability": "external",
+            "summary": "Application-specific metadata to attach to the component version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 211
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-componentversion.html#cfn-greengrassv2-componentversion-inlinerecipe"
+            },
+            "remarks": "The recipe defines the component's metadata, parameters, dependencies, lifecycle, artifacts, and platform compatibility.\n\nYou must specify either `InlineRecipe` or `LambdaFunction` .",
+            "stability": "external",
+            "summary": "The recipe to use to create the component."
+          },
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 188
+          },
+          "name": "inlineRecipe",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-componentversion.html#cfn-greengrassv2-componentversion-lambdafunction"
+            },
+            "remarks": "You must specify either `InlineRecipe` or `LambdaFunction` .",
+            "stability": "external",
+            "summary": "The parameters to create a component from a Lambda function."
+          },
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 197
+          },
+          "name": "lambdaFunction",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaFunctionRecipeSourceProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnComponentVersion"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnComponentVersion.ComponentDependencyRequirementProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-componentdependencyrequirement.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about a component dependency for a Lambda function component."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.ComponentDependencyRequirementProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 264
+      },
+      "name": "ComponentDependencyRequirementProperty",
+      "namespace": "CfnComponentVersion",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-componentdependencyrequirement.html#cfn-greengrassv2-componentversion-componentdependencyrequirement-dependencytype"
+            },
+            "remarks": "- `SOFT` – The component doesn't restart if the dependency changes state.\n- `HARD` – The component restarts if the dependency changes state.\n\nDefault: `HARD`",
+            "stability": "external",
+            "summary": "The type of this dependency. Choose from the following options:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 275
+          },
+          "name": "dependencyType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-componentdependencyrequirement.html#cfn-greengrassv2-componentversion-componentdependencyrequirement-versionrequirement"
+            },
+            "remarks": "AWS IoT Greengrass uses semantic version constraints. For more information, see [Semantic Versioning](https://docs.aws.amazon.com/https://semver.org/) .",
+            "stability": "external",
+            "summary": "The component version requirement for the component dependency."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 283
+          },
+          "name": "versionRequirement",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnComponentVersion.ComponentDependencyRequirementProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnComponentVersion.ComponentPlatformProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-componentplatform.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about a platform that a component supports."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.ComponentPlatformProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 347
+      },
+      "name": "ComponentPlatformProperty",
+      "namespace": "CfnComponentVersion",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-componentplatform.html#cfn-greengrassv2-componentversion-componentplatform-attributes"
+            },
+            "remarks": "The AWS IoT Greengrass Core software defines the `os` and `platform` by default. You can specify additional platform attributes for a core device when you deploy the AWS IoT Greengrass nucleus component. For more information, see the [AWS IoT Greengrass nucleus component](https://docs.aws.amazon.com/greengrass/v2/developerguide/greengrass-nucleus-component.html) in the *AWS IoT Greengrass V2 Developer Guide* .",
+            "stability": "external",
+            "summary": "A dictionary of attributes for the platform."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 353
+          },
+          "name": "attributes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-componentplatform.html#cfn-greengrassv2-componentversion-componentplatform-name"
+            },
+            "remarks": "If you omit this parameter, AWS IoT Greengrass creates a friendly name from the `os` and `architecture` of the platform.",
+            "stability": "external",
+            "summary": "The friendly name of the platform. This name helps you identify the platform."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 361
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnComponentVersion.ComponentPlatformProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaContainerParamsProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdacontainerparams.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about a container in which AWS Lambda functions run on AWS IoT Greengrass core devices."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaContainerParamsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 425
+      },
+      "name": "LambdaContainerParamsProperty",
+      "namespace": "CfnComponentVersion",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdacontainerparams.html#cfn-greengrassv2-componentversion-lambdacontainerparams-devices"
+            },
+            "stability": "external",
+            "summary": "The list of system devices that the container can access."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 431
+          },
+          "name": "devices",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaDeviceMountProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdacontainerparams.html#cfn-greengrassv2-componentversion-lambdacontainerparams-memorysizeinkb"
+            },
+            "remarks": "Default: `16384` (16 MB)",
+            "stability": "external",
+            "summary": "The memory size of the container, expressed in kilobytes."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 439
+          },
+          "name": "memorySizeInKb",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdacontainerparams.html#cfn-greengrassv2-componentversion-lambdacontainerparams-mountrosysfs"
+            },
+            "remarks": "Default: `false`",
+            "stability": "external",
+            "summary": "Whether or not the container can read information from the device's `/sys` folder."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 447
+          },
+          "name": "mountRoSysfs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdacontainerparams.html#cfn-greengrassv2-componentversion-lambdacontainerparams-volumes"
+            },
+            "stability": "external",
+            "summary": "The list of volumes that the container can access."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 453
+          },
+          "name": "volumes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaVolumeMountProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnComponentVersion.LambdaContainerParamsProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaDeviceMountProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdadevicemount.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about a device that Linux processes in a container can access."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaDeviceMountProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 523
+      },
+      "name": "LambdaDeviceMountProperty",
+      "namespace": "CfnComponentVersion",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdadevicemount.html#cfn-greengrassv2-componentversion-lambdadevicemount-addgroupowner"
+            },
+            "remarks": "Default: `false`",
+            "stability": "external",
+            "summary": "Whether or not to add the component's system user as an owner of the device."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 531
+          },
+          "name": "addGroupOwner",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdadevicemount.html#cfn-greengrassv2-componentversion-lambdadevicemount-path"
+            },
+            "stability": "external",
+            "summary": "The mount path for the device in the file system."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 537
+          },
+          "name": "path",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdadevicemount.html#cfn-greengrassv2-componentversion-lambdadevicemount-permission"
+            },
+            "remarks": "Default: `ro`",
+            "stability": "external",
+            "summary": "The permission to access the device: read/only ( `ro` ) or read/write ( `rw` )."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 545
+          },
+          "name": "permission",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnComponentVersion.LambdaDeviceMountProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaEventSourceProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaeventsource.html"
+        },
+        "remarks": "The event source defines the topics on which this Lambda function subscribes to receive messages that run the function.",
+        "stability": "external",
+        "summary": "Contains information about an event source for an AWS Lambda function."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaEventSourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 612
+      },
+      "name": "LambdaEventSourceProperty",
+      "namespace": "CfnComponentVersion",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaeventsource.html#cfn-greengrassv2-componentversion-lambdaeventsource-topic"
+            },
+            "stability": "external",
+            "summary": "The topic to which to subscribe to receive event messages."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 618
+          },
+          "name": "topic",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaeventsource.html#cfn-greengrassv2-componentversion-lambdaeventsource-type"
+            },
+            "remarks": "- `PUB_SUB` – Subscribe to local publish/subscribe messages. This event source type doesn't support MQTT wildcards ( `+` and `#` ) in the event source topic.\n- `IOT_CORE` – Subscribe to AWS IoT Core MQTT messages. This event source type supports MQTT wildcards ( `+` and `#` ) in the event source topic.",
+            "stability": "external",
+            "summary": "The type of event source. Choose from the following options:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 627
+          },
+          "name": "type",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnComponentVersion.LambdaEventSourceProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaExecutionParametersProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaexecutionparameters.html"
+        },
+        "stability": "external",
+        "summary": "Contains parameters for a Lambda function that runs on AWS IoT Greengrass ."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaExecutionParametersProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 691
+      },
+      "name": "LambdaExecutionParametersProperty",
+      "namespace": "CfnComponentVersion",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaexecutionparameters.html#cfn-greengrassv2-componentversion-lambdaexecutionparameters-environmentvariables"
+            },
+            "stability": "external",
+            "summary": "The map of environment variables that are available to the Lambda function when it runs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 697
+          },
+          "name": "environmentVariables",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaexecutionparameters.html#cfn-greengrassv2-componentversion-lambdaexecutionparameters-eventsources"
+            },
+            "remarks": "The Lambda function runs when it receives a message from an event source. You can subscribe this function to local publish/subscribe messages and AWS IoT Core MQTT messages.",
+            "stability": "external",
+            "summary": "The list of event sources to which to subscribe to receive work messages."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 703
+          },
+          "name": "eventSources",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaEventSourceProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaexecutionparameters.html#cfn-greengrassv2-componentversion-lambdaexecutionparameters-execargs"
+            },
+            "stability": "external",
+            "summary": "The list of arguments to pass to the Lambda function when it runs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 709
+          },
+          "name": "execArgs",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaexecutionparameters.html#cfn-greengrassv2-componentversion-lambdaexecutionparameters-inputpayloadencodingtype"
+            },
+            "remarks": "Default: `json`",
+            "stability": "external",
+            "summary": "The encoding type that the Lambda function supports."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 717
+          },
+          "name": "inputPayloadEncodingType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaexecutionparameters.html#cfn-greengrassv2-componentversion-lambdaexecutionparameters-linuxprocessparams"
+            },
+            "stability": "external",
+            "summary": "The parameters for the Linux process that contains the Lambda function."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 723
+          },
+          "name": "linuxProcessParams",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaLinuxProcessParamsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaexecutionparameters.html#cfn-greengrassv2-componentversion-lambdaexecutionparameters-maxidletimeinseconds"
+            },
+            "stability": "external",
+            "summary": "The maximum amount of time in seconds that a non-pinned Lambda function can idle before the AWS IoT Greengrass Core software stops its process."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 729
+          },
+          "name": "maxIdleTimeInSeconds",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaexecutionparameters.html#cfn-greengrassv2-componentversion-lambdaexecutionparameters-maxinstancescount"
+            },
+            "stability": "external",
+            "summary": "The maximum number of instances that a non-pinned Lambda function can run at the same time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 735
+          },
+          "name": "maxInstancesCount",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaexecutionparameters.html#cfn-greengrassv2-componentversion-lambdaexecutionparameters-maxqueuesize"
+            },
+            "remarks": "The AWS IoT Greengrass core device stores messages in a FIFO (first-in-first-out) queue until it can run the Lambda function to consume each message.",
+            "stability": "external",
+            "summary": "The maximum size of the message queue for the Lambda function component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 741
+          },
+          "name": "maxQueueSize",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaexecutionparameters.html#cfn-greengrassv2-componentversion-lambdaexecutionparameters-pinned"
+            },
+            "remarks": "- A pinned Lambda function starts when the AWS IoT Greengrass Core starts and keeps running in its own container.\n- A non-pinned Lambda function starts only when it receives a work item and exists after it idles for `maxIdleTimeInSeconds` . If the function has multiple work items, the AWS IoT Greengrass Core software creates multiple instances of the function.\n\nDefault: `true`",
+            "stability": "external",
+            "summary": "Whether or not the Lambda function is pinned, or long-lived."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 752
+          },
+          "name": "pinned",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaexecutionparameters.html#cfn-greengrassv2-componentversion-lambdaexecutionparameters-statustimeoutinseconds"
+            },
+            "stability": "external",
+            "summary": "The interval in seconds at which a pinned (also known as long-lived) Lambda function component sends status updates to the Lambda manager component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 758
+          },
+          "name": "statusTimeoutInSeconds",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdaexecutionparameters.html#cfn-greengrassv2-componentversion-lambdaexecutionparameters-timeoutinseconds"
+            },
+            "stability": "external",
+            "summary": "The maximum amount of time in seconds that the Lambda function can process a work item."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 764
+          },
+          "name": "timeoutInSeconds",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnComponentVersion.LambdaExecutionParametersProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaFunctionRecipeSourceProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdafunctionrecipesource.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about an AWS Lambda function to import to create a component."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaFunctionRecipeSourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 855
+      },
+      "name": "LambdaFunctionRecipeSourceProperty",
+      "namespace": "CfnComponentVersion",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdafunctionrecipesource.html#cfn-greengrassv2-componentversion-lambdafunctionrecipesource-componentdependencies"
+            },
+            "stability": "external",
+            "summary": "The component versions on which this Lambda function component depends."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 861
+          },
+          "name": "componentDependencies",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.ComponentDependencyRequirementProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdafunctionrecipesource.html#cfn-greengrassv2-componentversion-lambdafunctionrecipesource-componentlambdaparameters"
+            },
+            "stability": "external",
+            "summary": "The system and runtime parameters for the Lambda function as it runs on the AWS IoT Greengrass core device."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 867
+          },
+          "name": "componentLambdaParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaExecutionParametersProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdafunctionrecipesource.html#cfn-greengrassv2-componentversion-lambdafunctionrecipesource-componentname"
+            },
+            "remarks": "Defaults to the name of the Lambda function.",
+            "stability": "external",
+            "summary": "The name of the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 875
+          },
+          "name": "componentName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdafunctionrecipesource.html#cfn-greengrassv2-componentversion-lambdafunctionrecipesource-componentplatforms"
+            },
+            "stability": "external",
+            "summary": "The platforms that the component version supports."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 881
+          },
+          "name": "componentPlatforms",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.ComponentPlatformProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdafunctionrecipesource.html#cfn-greengrassv2-componentversion-lambdafunctionrecipesource-componentversion"
+            },
+            "remarks": "Defaults to the version of the Lambda function as a semantic version. For example, if your function version is `3` , the component version becomes `3.0.0` .",
+            "stability": "external",
+            "summary": "The version of the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 889
+          },
+          "name": "componentVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdafunctionrecipesource.html#cfn-greengrassv2-componentversion-lambdafunctionrecipesource-lambdaarn"
+            },
+            "remarks": "The ARN must include the version of the function to import. You can't use version aliases like `$LATEST` .",
+            "stability": "external",
+            "summary": "The ARN of the Lambda function."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 895
+          },
+          "name": "lambdaArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnComponentVersion.LambdaFunctionRecipeSourceProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaLinuxProcessParamsProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdalinuxprocessparams.html"
+        },
+        "stability": "external",
+        "summary": "Contains parameters for a Linux process that contains an AWS Lambda function."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaLinuxProcessParamsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 971
+      },
+      "name": "LambdaLinuxProcessParamsProperty",
+      "namespace": "CfnComponentVersion",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdalinuxprocessparams.html#cfn-greengrassv2-componentversion-lambdalinuxprocessparams-containerparams"
+            },
+            "stability": "external",
+            "summary": "The parameters for the container in which the Lambda function runs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 977
+          },
+          "name": "containerParams",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaContainerParamsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdalinuxprocessparams.html#cfn-greengrassv2-componentversion-lambdalinuxprocessparams-isolationmode"
+            },
+            "remarks": "The process can run in an isolated runtime environment inside the AWS IoT Greengrass container, or as a regular process outside any container.\n\nDefault: `GreengrassContainer`",
+            "stability": "external",
+            "summary": "The isolation mode for the process that contains the Lambda function."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 985
+          },
+          "name": "isolationMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnComponentVersion.LambdaLinuxProcessParamsProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaVolumeMountProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdavolumemount.html"
+        },
+        "remarks": "When you define a volume, the AWS IoT Greengrass Core software mounts the source files to the destination inside the container.",
+        "stability": "external",
+        "summary": "Contains information about a volume that Linux processes in a container can access."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaVolumeMountProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 1049
+      },
+      "name": "LambdaVolumeMountProperty",
+      "namespace": "CfnComponentVersion",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdavolumemount.html#cfn-greengrassv2-componentversion-lambdavolumemount-addgroupowner"
+            },
+            "remarks": "Default: `false`",
+            "stability": "external",
+            "summary": "Whether or not to add the AWS IoT Greengrass user group as an owner of the volume."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1057
+          },
+          "name": "addGroupOwner",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdavolumemount.html#cfn-greengrassv2-componentversion-lambdavolumemount-destinationpath"
+            },
+            "stability": "external",
+            "summary": "The path to the logical volume in the file system."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1063
+          },
+          "name": "destinationPath",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdavolumemount.html#cfn-greengrassv2-componentversion-lambdavolumemount-permission"
+            },
+            "remarks": "Default: `ro`",
+            "stability": "external",
+            "summary": "The permission to access the volume: read/only ( `ro` ) or read/write ( `rw` )."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1071
+          },
+          "name": "permission",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-componentversion-lambdavolumemount.html#cfn-greengrassv2-componentversion-lambdavolumemount-sourcepath"
+            },
+            "stability": "external",
+            "summary": "The path to the physical volume in the file system."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1077
+          },
+          "name": "sourcePath",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnComponentVersion.LambdaVolumeMountProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnComponentVersionProps": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-componentversion.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnComponentVersion`."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 20
+      },
+      "name": "CfnComponentVersionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-componentversion.html#cfn-greengrassv2-componentversion-inlinerecipe"
+            },
+            "remarks": "The recipe defines the component's metadata, parameters, dependencies, lifecycle, artifacts, and platform compatibility.\n\nYou must specify either `InlineRecipe` or `LambdaFunction` .",
+            "stability": "external",
+            "summary": "The recipe to use to create the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 29
+          },
+          "name": "inlineRecipe",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-componentversion.html#cfn-greengrassv2-componentversion-lambdafunction"
+            },
+            "remarks": "You must specify either `InlineRecipe` or `LambdaFunction` .",
+            "stability": "external",
+            "summary": "The parameters to create a component from a Lambda function."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 38
+          },
+          "name": "lambdaFunction",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnComponentVersion.LambdaFunctionRecipeSourceProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-componentversion.html#cfn-greengrassv2-componentversion-tags"
+            },
+            "remarks": "You can use tags in IAM policies to control access to AWS IoT Greengrass resources. You can also use tags to categorize your resources. For more information, see [Tag your AWS IoT Greengrass Version 2 resources](https://docs.aws.amazon.com/greengrass/v2/developerguide/tag-resources.html) in the *AWS IoT Greengrass V2 Developer Guide* .\n\nThis `Json` property type is processed as a map of key-value pairs. It uses the following format, which is different from most `Tags` implementations in AWS CloudFormation templates.\n\n```json\n\"Tags\": { \"KeyName0\": \"value\", \"KeyName1\": \"value\", \"KeyName2\": \"value\"\n}\n```",
+            "stability": "external",
+            "summary": "Application-specific metadata to attach to the component version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 52
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnComponentVersionProps"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::GreengrassV2::Deployment",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html"
+        },
+        "remarks": "Creates a continuous deployment for a target, which is a AWS IoT Greengrass core device or group of core devices. When you add a new core device to a group of core devices that has a deployment, AWS IoT Greengrass deploys that group's deployment to the new device.\n\nYou can define one deployment for each target. When you create a new deployment for a target that has an existing deployment, you replace the previous deployment. AWS IoT Greengrass applies the new deployment to the target devices.\n\nYou can only add, update, or delete up to 10 deployments at a time to a single target.\n\nEvery deployment has a revision number that indicates how many deployment revisions you define for a target. Use this operation to create a new revision of an existing deployment. This operation returns the revision number of the new deployment when you create it.\n\nFor more information, see the [Create deployments](https://docs.aws.amazon.com/greengrass/v2/latest/developerguide/create-deployments.html) in the *AWS IoT Greengrass V2 Developer Guide* .\n\n> Deployment resources are deleted when you delete stacks. To keep the deployments in a stack, you must specify `\"DeletionPolicy\": \"Retain\"` on each deployment resource in the stack template that you want to keep. For more information, see [DeletionPolicy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html) .\n>\n> You can only delete up to 10 deployment resources at a time. If you delete more than 10 resources, you receive an error.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::GreengrassV2::Deployment`."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::GreengrassV2::Deployment`."
+        },
+        "locationInModule": {
+          "filename": "lib/greengrassv2.generated.ts",
+          "line": 1368
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-greengrassv2.CfnDeploymentProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 1281
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1387
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1403
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDeployment",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1285
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DeploymentId"
+            },
+            "stability": "external",
+            "summary": "The ID of the deployment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1310
+          },
+          "name": "attrDeploymentId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1392
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html#cfn-greengrassv2-deployment-tags"
+            },
+            "remarks": "You can use tags in IAM policies to control access to AWS IoT Greengrass resources. You can also use tags to categorize your resources. For more information, see [Tag your AWS IoT Greengrass Version 2 resources](https://docs.aws.amazon.com/greengrass/v2/developerguide/tag-resources.html) in the *AWS IoT Greengrass V2 Developer Guide* .\n\nThis `Json` property type is processed as a map of key-value pairs. It uses the following format, which is different from most `Tags` implementations in AWS CloudFormation templates.\n\n```json\n\"Tags\": { \"KeyName0\": \"value\", \"KeyName1\": \"value\", \"KeyName2\": \"value\"\n}\n```",
+            "stability": "external",
+            "summary": "Application-specific metadata to attach to the deployment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1359
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html#cfn-greengrassv2-deployment-targetarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the target AWS IoT thing or thing group."
+          },
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1317
+          },
+          "name": "targetArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html#cfn-greengrassv2-deployment-components"
+            },
+            "remarks": "This is a dictionary, where each key is the name of a component, and each key's value is the version and configuration to deploy for that component.",
+            "stability": "external",
+            "summary": "The components to deploy."
+          },
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1324
+          },
+          "name": "components",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.ComponentDeploymentSpecificationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html#cfn-greengrassv2-deployment-deploymentname"
+            },
+            "stability": "external",
+            "summary": "The name of the deployment."
+          },
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1331
+          },
+          "name": "deploymentName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html#cfn-greengrassv2-deployment-deploymentpolicies"
+            },
+            "remarks": "These policies define how the deployment updates components and handles failure.",
+            "stability": "external",
+            "summary": "The deployment policies for the deployment."
+          },
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1338
+          },
+          "name": "deploymentPolicies",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentPoliciesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html#cfn-greengrassv2-deployment-iotjobconfiguration"
+            },
+            "remarks": "The job configuration specifies the rollout, timeout, and stop configurations for the deployment configuration.",
+            "stability": "external",
+            "summary": "The job configuration for the deployment configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1345
+          },
+          "name": "iotJobConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentIoTJobConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.ComponentConfigurationUpdateProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-componentconfigurationupdate.html"
+        },
+        "remarks": "For more information, see [Update component configurations](https://docs.aws.amazon.com/greengrass/v2/developerguide/update-component-configurations.html) in the *AWS IoT Greengrass V2 Developer Guide* .",
+        "stability": "external",
+        "summary": "Contains information about a deployment's update to a component's configuration on AWS IoT Greengrass core devices."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.ComponentConfigurationUpdateProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 1417
+      },
+      "name": "ComponentConfigurationUpdateProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-componentconfigurationupdate.html#cfn-greengrassv2-deployment-componentconfigurationupdate-merge"
+            },
+            "remarks": "The core device merges this configuration with the component's existing configuration. If this is the first time a component deploys on a device, the core device merges this configuration with the component's default configuration. This means that the core device keeps it's existing configuration for keys and values that you don't specify in this object. For more information, see [Merge configuration updates](https://docs.aws.amazon.com/greengrass/v2/developerguide/update-component-configurations.html#merge-configuration-update) in the *AWS IoT Greengrass V2 Developer Guide* .",
+            "stability": "external",
+            "summary": "A serialized JSON string that contains the configuration object to merge to target devices."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1423
+          },
+          "name": "merge",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-componentconfigurationupdate.html#cfn-greengrassv2-deployment-componentconfigurationupdate-reset"
+            },
+            "remarks": "Use JSON pointers to specify each node to reset. JSON pointers start with a forward slash ( `/` ) and use forward slashes to separate the key for each level in the object. For more information, see the [JSON pointer specification](https://docs.aws.amazon.com/https://tools.ietf.org/html/rfc6901) and [Reset configuration updates](https://docs.aws.amazon.com/greengrass/v2/developerguide/update-component-configurations.html#reset-configuration-update) in the *AWS IoT Greengrass V2 Developer Guide* .",
+            "stability": "external",
+            "summary": "The list of configuration nodes to reset to default values on target devices."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1429
+          },
+          "name": "reset",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.ComponentConfigurationUpdateProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.ComponentDeploymentSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-componentdeploymentspecification.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about a component to deploy."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.ComponentDeploymentSpecificationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 1493
+      },
+      "name": "ComponentDeploymentSpecificationProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-componentdeploymentspecification.html#cfn-greengrassv2-deployment-componentdeploymentspecification-componentversion"
+            },
+            "stability": "external",
+            "summary": "The version of the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1499
+          },
+          "name": "componentVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-componentdeploymentspecification.html#cfn-greengrassv2-deployment-componentdeploymentspecification-configurationupdate"
+            },
+            "remarks": "You can define reset updates and merge updates. A reset updates the keys that you specify to the default configuration for the component. A merge updates the core device's component configuration with the keys and values that you specify. The AWS IoT Greengrass Core software applies reset updates before it applies merge updates. For more information, see [Update component configuration](https://docs.aws.amazon.com/greengrass/v2/developerguide/update-component-configurations.html) .",
+            "stability": "external",
+            "summary": "The configuration updates to deploy for the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1505
+          },
+          "name": "configurationUpdate",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.ComponentConfigurationUpdateProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-componentdeploymentspecification.html#cfn-greengrassv2-deployment-componentdeploymentspecification-runwith"
+            },
+            "remarks": "If you omit this parameter, the  software uses the system user and group that you configure for the core device. For more information, see [Configure the user and group that run components](https://docs.aws.amazon.com/greengrass/v2/developerguide/configure-greengrass-core-v2.html#configure-component-user) in the *AWS IoT Greengrass V2 Developer Guide* .",
+            "stability": "external",
+            "summary": "The system user and group that the  software uses to run component processes on the core device."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1511
+          },
+          "name": "runWith",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.ComponentRunWithProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.ComponentDeploymentSpecificationProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.ComponentRunWithProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-componentrunwith.html"
+        },
+        "remarks": "For more information, see [Configure the user and group that run components](https://docs.aws.amazon.com/greengrass/v2/developerguide/configure-greengrass-core-v2.html#configure-component-user) in the *AWS IoT Greengrass V2 Developer Guide* .",
+        "stability": "external",
+        "summary": "Contains information system user and group that the AWS IoT Greengrass Core software uses to run component processes on the core device."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.ComponentRunWithProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 1578
+      },
+      "name": "ComponentRunWithProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-componentrunwith.html#cfn-greengrassv2-deployment-componentrunwith-posixuser"
+            },
+            "remarks": "Specify the user and group separated by a colon ( `:` ) in the following format: `user:group` . The group is optional. If you don't specify a group, the AWS IoT Greengrass Core software uses the primary user for the group.",
+            "stability": "external",
+            "summary": "The POSIX system user and (optional) group to use to run this component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1584
+          },
+          "name": "posixUser",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-componentrunwith.html#cfn-greengrassv2-deployment-componentrunwith-systemresourcelimits"
+            },
+            "remarks": "AWS IoT Greengrass supports this feature only on Linux core devices.\n\nIf you omit this parameter, the AWS IoT Greengrass Core software uses the default system resource limits that you configure on the AWS IoT Greengrass nucleus component. For more information, see [Configure system resource limits for components](https://docs.aws.amazon.com/greengrass/v2/developerguide/configure-greengrass-core-v2.html#configure-component-system-resource-limits) .",
+            "stability": "external",
+            "summary": "The system resource limits to apply to this component's process on the core device."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1592
+          },
+          "name": "systemResourceLimits",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.SystemResourceLimitsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-componentrunwith.html#cfn-greengrassv2-deployment-componentrunwith-windowsuser"
+            },
+            "remarks": "The user must exist on each Windows core device, and its name and password must be in the LocalSystem account's Credentials Manager instance.\n\nIf you omit this parameter, the AWS IoT Greengrass Core software uses the default Windows user that you configure on the AWS IoT Greengrass nucleus component. For more information, see [Configure the user and group that run components](https://docs.aws.amazon.com/greengrass/v2/developerguide/configure-greengrass-core-v2.html#configure-component-user) .",
+            "stability": "external",
+            "summary": "The Windows user to use to run this component on Windows core devices."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1600
+          },
+          "name": "windowsUser",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.ComponentRunWithProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentComponentUpdatePolicyProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentcomponentupdatepolicy.html"
+        },
+        "remarks": "Each component on a device can report whether or not it's ready to update. After a component and its dependencies are ready, they can apply the update in the deployment. You can configure whether or not the deployment notifies components of an update and waits for a response. You specify the amount of time each component has to respond to the update notification.",
+        "stability": "external",
+        "summary": "Contains information about a deployment's policy that defines when components are safe to update."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentComponentUpdatePolicyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 1669
+      },
+      "name": "DeploymentComponentUpdatePolicyProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentcomponentupdatepolicy.html#cfn-greengrassv2-deployment-deploymentcomponentupdatepolicy-action"
+            },
+            "remarks": "Choose from the following options:\n\n- `NOTIFY_COMPONENTS` – The deployment notifies each component before it stops and updates that component. Components can use the [SubscribeToComponentUpdates](https://docs.aws.amazon.com/greengrass/v2/developerguide/interprocess-communication.html#ipc-operation-subscribetocomponentupdates) IPC operation to receive these notifications. Then, components can respond with the [DeferComponentUpdate](https://docs.aws.amazon.com/greengrass/v2/developerguide/interprocess-communication.html#ipc-operation-defercomponentupdate) IPC operation. For more information, see the [Create deployments](https://docs.aws.amazon.com/greengrass/v2/latest/developerguide/create-deployments.html) in the *AWS IoT Greengrass V2 Developer Guide* .\n- `SKIP_NOTIFY_COMPONENTS` – The deployment doesn't notify components or wait for them to be safe to update.\n\nDefault: `NOTIFY_COMPONENTS`",
+            "stability": "external",
+            "summary": "Whether or not to notify components and wait for components to become safe to update."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1680
+          },
+          "name": "action",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentcomponentupdatepolicy.html#cfn-greengrassv2-deployment-deploymentcomponentupdatepolicy-timeoutinseconds"
+            },
+            "remarks": "If the component waits for longer than this timeout, then the deployment proceeds on the device.\n\nDefault: `60`",
+            "stability": "external",
+            "summary": "The amount of time in seconds that each component on a device has to report that it's safe to update."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1688
+          },
+          "name": "timeoutInSeconds",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.DeploymentComponentUpdatePolicyProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentConfigurationValidationPolicyProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentconfigurationvalidationpolicy.html"
+        },
+        "remarks": "Components can use the [SubscribeToValidateConfigurationUpdates](https://docs.aws.amazon.com/greengrass/v2/developerguide/interprocess-communication.html#ipc-operation-subscribetovalidateconfigurationupdates) IPC operation to receive notifications when a deployment specifies a configuration update. Then, components can respond with the [SendConfigurationValidityReport](https://docs.aws.amazon.com/greengrass/v2/developerguide/interprocess-communication.html#ipc-operation-sendconfigurationvalidityreport) IPC operation. For more information, see the [Create deployments](https://docs.aws.amazon.com/greengrass/v2/latest/developerguide/create-deployments.html) in the *AWS IoT Greengrass V2 Developer Guide* .",
+        "stability": "external",
+        "summary": "Contains information about how long a component on a core device can validate its configuration updates before it times out."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentConfigurationValidationPolicyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 1752
+      },
+      "name": "DeploymentConfigurationValidationPolicyProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentconfigurationvalidationpolicy.html#cfn-greengrassv2-deployment-deploymentconfigurationvalidationpolicy-timeoutinseconds"
+            },
+            "remarks": "If the validation time exceeds this timeout, then the deployment proceeds for the device.\n\nDefault: `30`",
+            "stability": "external",
+            "summary": "The amount of time in seconds that a component can validate its configuration updates."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1760
+          },
+          "name": "timeoutInSeconds",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.DeploymentConfigurationValidationPolicyProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentIoTJobConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentiotjobconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about an AWS IoT job configuration."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentIoTJobConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 1821
+      },
+      "name": "DeploymentIoTJobConfigurationProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentiotjobconfiguration.html#cfn-greengrassv2-deployment-deploymentiotjobconfiguration-abortconfig"
+            },
+            "remarks": "This configuration defines when and how to stop a job rollout.",
+            "stability": "external",
+            "summary": "The stop configuration for the job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1827
+          },
+          "name": "abortConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobAbortConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentiotjobconfiguration.html#cfn-greengrassv2-deployment-deploymentiotjobconfiguration-jobexecutionsrolloutconfig"
+            },
+            "remarks": "This configuration defines the rate at which the job rolls out to the fleet of target devices.",
+            "stability": "external",
+            "summary": "The rollout configuration for the job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1833
+          },
+          "name": "jobExecutionsRolloutConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobExecutionsRolloutConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentiotjobconfiguration.html#cfn-greengrassv2-deployment-deploymentiotjobconfiguration-timeoutconfig"
+            },
+            "remarks": "This configuration defines the amount of time each device has to complete the job.",
+            "stability": "external",
+            "summary": "The timeout configuration for the job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1839
+          },
+          "name": "timeoutConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobTimeoutConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.DeploymentIoTJobConfigurationProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentPoliciesProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentpolicies.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about policies that define how a deployment updates components and handles failure."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentPoliciesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 1906
+      },
+      "name": "DeploymentPoliciesProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentpolicies.html#cfn-greengrassv2-deployment-deploymentpolicies-componentupdatepolicy"
+            },
+            "remarks": "This policy defines when it's safe to deploy the configuration to devices.",
+            "stability": "external",
+            "summary": "The component update policy for the configuration deployment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1912
+          },
+          "name": "componentUpdatePolicy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentComponentUpdatePolicyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentpolicies.html#cfn-greengrassv2-deployment-deploymentpolicies-configurationvalidationpolicy"
+            },
+            "remarks": "This policy defines how long each component has to validate its configure updates.",
+            "stability": "external",
+            "summary": "The configuration validation policy for the configuration deployment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1918
+          },
+          "name": "configurationValidationPolicy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentConfigurationValidationPolicyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-deploymentpolicies.html#cfn-greengrassv2-deployment-deploymentpolicies-failurehandlingpolicy"
+            },
+            "remarks": "Default: `ROLLBACK`",
+            "stability": "external",
+            "summary": "The failure handling policy for the configuration deployment. This policy defines what to do if the deployment fails."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1926
+          },
+          "name": "failureHandlingPolicy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.DeploymentPoliciesProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobAbortConfigProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobabortconfig.html"
+        },
+        "stability": "external",
+        "summary": "Contains a list of criteria that define when and how to cancel a configuration deployment."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobAbortConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 1993
+      },
+      "name": "IoTJobAbortConfigProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobabortconfig.html#cfn-greengrassv2-deployment-iotjobabortconfig-criterialist"
+            },
+            "stability": "external",
+            "summary": "The list of criteria that define when and how to cancel the configuration deployment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1999
+          },
+          "name": "criteriaList",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobAbortCriteriaProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.IoTJobAbortConfigProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobAbortCriteriaProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobabortcriteria.html"
+        },
+        "remarks": "The deployment stops if the following conditions are true:\n\n- The number of things that receive the deployment exceeds the `minNumberOfExecutedThings` .\n- The percentage of failures with type `failureType` exceeds the `thresholdPercentage` .",
+        "stability": "external",
+        "summary": "Contains criteria that define when and how to cancel a job."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobAbortCriteriaProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 2066
+      },
+      "name": "IoTJobAbortCriteriaProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobabortcriteria.html#cfn-greengrassv2-deployment-iotjobabortcriteria-action"
+            },
+            "stability": "external",
+            "summary": "The action to perform when the criteria are met."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 2072
+          },
+          "name": "action",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobabortcriteria.html#cfn-greengrassv2-deployment-iotjobabortcriteria-failuretype"
+            },
+            "stability": "external",
+            "summary": "The type of job deployment failure that can cancel a job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 2078
+          },
+          "name": "failureType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobabortcriteria.html#cfn-greengrassv2-deployment-iotjobabortcriteria-minnumberofexecutedthings"
+            },
+            "stability": "external",
+            "summary": "The minimum number of things that receive the configuration before the job can cancel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 2084
+          },
+          "name": "minNumberOfExecutedThings",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobabortcriteria.html#cfn-greengrassv2-deployment-iotjobabortcriteria-thresholdpercentage"
+            },
+            "remarks": "This parameter supports up to two digits after the decimal (for example, you can specify `10.9` or `10.99` , but not `10.999` ).",
+            "stability": "external",
+            "summary": "The minimum percentage of `failureType` failures that occur before the job can cancel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 2092
+          },
+          "name": "thresholdPercentage",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.IoTJobAbortCriteriaProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobExecutionsRolloutConfigProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobexecutionsrolloutconfig.html"
+        },
+        "remarks": "This configuration defines the rate at which the job deploys a configuration to a fleet of target devices.",
+        "stability": "external",
+        "summary": "Contains information about the rollout configuration for a job."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobExecutionsRolloutConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 2166
+      },
+      "name": "IoTJobExecutionsRolloutConfigProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobexecutionsrolloutconfig.html#cfn-greengrassv2-deployment-iotjobexecutionsrolloutconfig-exponentialrate"
+            },
+            "stability": "external",
+            "summary": "The exponential rate to increase the job rollout rate."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 2172
+          },
+          "name": "exponentialRate",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobExponentialRolloutRateProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobexecutionsrolloutconfig.html#cfn-greengrassv2-deployment-iotjobexecutionsrolloutconfig-maximumperminute"
+            },
+            "stability": "external",
+            "summary": "The maximum number of devices that receive a pending job notification, per minute."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 2178
+          },
+          "name": "maximumPerMinute",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.IoTJobExecutionsRolloutConfigProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobExponentialRolloutRateProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobexponentialrolloutrate.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about an exponential rollout rate for a configuration deployment job."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobExponentialRolloutRateProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 2242
+      },
+      "name": "IoTJobExponentialRolloutRateProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobexponentialrolloutrate.html#cfn-greengrassv2-deployment-iotjobexponentialrolloutrate-baserateperminute"
+            },
+            "remarks": "This parameter defines the initial rollout rate of the job.",
+            "stability": "external",
+            "summary": "The minimum number of devices that receive a pending job notification, per minute, when the job starts."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 2248
+          },
+          "name": "baseRatePerMinute",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobexponentialrolloutrate.html#cfn-greengrassv2-deployment-iotjobexponentialrolloutrate-incrementfactor"
+            },
+            "remarks": "This parameter supports up to one digit after the decimal (for example, you can specify `1.5` , but not `1.55` ).",
+            "stability": "external",
+            "summary": "The exponential factor to increase the rollout rate for the job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 2256
+          },
+          "name": "incrementFactor",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobexponentialrolloutrate.html#cfn-greengrassv2-deployment-iotjobexponentialrolloutrate-rateincreasecriteria"
+            },
+            "stability": "external",
+            "summary": "The criteria to increase the rollout rate for the job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 2262
+          },
+          "name": "rateIncreaseCriteria",
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.IoTJobExponentialRolloutRateProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobTimeoutConfigProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobtimeoutconfig.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about the timeout configuration for a job."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.IoTJobTimeoutConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 2332
+      },
+      "name": "IoTJobTimeoutConfigProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-iotjobtimeoutconfig.html#cfn-greengrassv2-deployment-iotjobtimeoutconfig-inprogresstimeoutinminutes"
+            },
+            "remarks": "The timer starts when the job status is set to `IN_PROGRESS` . If the job status doesn't change to a terminal state before the time expires, then the job status is set to `TIMED_OUT` .\n\nThe timeout interval must be between 1 minute and 7 days (10080 minutes).",
+            "stability": "external",
+            "summary": "The amount of time, in minutes, that devices have to complete the job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 2340
+          },
+          "name": "inProgressTimeoutInMinutes",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.IoTJobTimeoutConfigProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeployment.SystemResourceLimitsProperty": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-systemresourcelimits.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about system resource limits that the  software applies to a component's processes."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.SystemResourceLimitsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 2401
+      },
+      "name": "SystemResourceLimitsProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-systemresourcelimits.html#cfn-greengrassv2-deployment-systemresourcelimits-cpus"
+            },
+            "remarks": "A core device's total CPU time is equivalent to the device's number of CPU cores. For example, on a core device with 4 CPU cores, you can set this value to 2 to limit the component's processes to 50 percent usage of each CPU core. On a device with 1 CPU core, you can set this value to 0.25 to limit the component's processes to 25 percent usage of the CPU. If you set this value to a number greater than the number of CPU cores, the AWS IoT Greengrass Core software doesn't limit the component's CPU usage.",
+            "stability": "external",
+            "summary": "The maximum amount of CPU time that a component's processes can use on the core device."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 2407
+          },
+          "name": "cpus",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrassv2-deployment-systemresourcelimits.html#cfn-greengrassv2-deployment-systemresourcelimits-memory"
+            },
+            "remarks": "For more information, see [Configure system resource limits for components](https://docs.aws.amazon.com/greengrass/v2/developerguide/configure-greengrass-core-v2.html#configure-component-system-resource-limits) .",
+            "stability": "external",
+            "summary": "The maximum amount of RAM, expressed in kilobytes, that a component's processes can use on the core device."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 2413
+          },
+          "name": "memory",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeployment.SystemResourceLimitsProperty"
+    },
+    "@aws-cdk/aws-greengrassv2.CfnDeploymentProps": {
+      "assembly": "@aws-cdk/aws-greengrassv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDeployment`."
+      },
+      "fqn": "@aws-cdk/aws-greengrassv2.CfnDeploymentProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/greengrassv2.generated.ts",
+        "line": 1146
+      },
+      "name": "CfnDeploymentProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html#cfn-greengrassv2-deployment-targetarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the target AWS IoT thing or thing group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1153
+          },
+          "name": "targetArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html#cfn-greengrassv2-deployment-components"
+            },
+            "remarks": "This is a dictionary, where each key is the name of a component, and each key's value is the version and configuration to deploy for that component.",
+            "stability": "external",
+            "summary": "The components to deploy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1160
+          },
+          "name": "components",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.ComponentDeploymentSpecificationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html#cfn-greengrassv2-deployment-deploymentname"
+            },
+            "stability": "external",
+            "summary": "The name of the deployment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1167
+          },
+          "name": "deploymentName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html#cfn-greengrassv2-deployment-deploymentpolicies"
+            },
+            "remarks": "These policies define how the deployment updates components and handles failure.",
+            "stability": "external",
+            "summary": "The deployment policies for the deployment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1174
+          },
+          "name": "deploymentPolicies",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentPoliciesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html#cfn-greengrassv2-deployment-iotjobconfiguration"
+            },
+            "remarks": "The job configuration specifies the rollout, timeout, and stop configurations for the deployment configuration.",
+            "stability": "external",
+            "summary": "The job configuration for the deployment configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1181
+          },
+          "name": "iotJobConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-greengrassv2.CfnDeployment.DeploymentIoTJobConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-greengrassv2-deployment.html#cfn-greengrassv2-deployment-tags"
+            },
+            "remarks": "You can use tags in IAM policies to control access to AWS IoT Greengrass resources. You can also use tags to categorize your resources. For more information, see [Tag your AWS IoT Greengrass Version 2 resources](https://docs.aws.amazon.com/greengrass/v2/developerguide/tag-resources.html) in the *AWS IoT Greengrass V2 Developer Guide* .\n\nThis `Json` property type is processed as a map of key-value pairs. It uses the following format, which is different from most `Tags` implementations in AWS CloudFormation templates.\n\n```json\n\"Tags\": { \"KeyName0\": \"value\", \"KeyName1\": \"value\", \"KeyName2\": \"value\"\n}\n```",
+            "stability": "external",
+            "summary": "Application-specific metadata to attach to the deployment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/greengrassv2.generated.ts",
+            "line": 1195
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/greengrassv2.generated:CfnDeploymentProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "wN7yqe9ywY1XrI/Iup3EwdOrdwq5YIhYSHaQJF3Zsyw="
+}

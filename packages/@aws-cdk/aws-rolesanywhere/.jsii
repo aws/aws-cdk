@@ -1,0 +1,1768 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::RolesAnywhere Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::RolesAnywhere",
+    "aws-rolesanywhere"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-rolesanywhere",
+  "readme": {
+    "markdown": "# AWS::RolesAnywhere Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as rolesanywhere from '@aws-cdk/aws-rolesanywhere';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for RolesAnywhere construct libraries](https://constructs.dev/search?q=rolesanywhere)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::RolesAnywhere resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_RolesAnywhere.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::RolesAnywhere](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_RolesAnywhere.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-rolesanywhere",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.RolesAnywhere",
+      "packageId": "Amazon.CDK.AWS.RolesAnywhere",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "rolesanywhere",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.rolesanywhere"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-rolesanywhere"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-rolesanywhere",
+      "module": "aws_cdk.aws_rolesanywhere"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-rolesanywhere.CfnCRL": {
+      "assembly": "@aws-cdk/aws-rolesanywhere",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RolesAnywhere::CRL",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-crl.html"
+        },
+        "remarks": "The state of the certificate revocation list (CRL) after a read or write operation.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RolesAnywhere::CRL`."
+      },
+      "fqn": "@aws-cdk/aws-rolesanywhere.CfnCRL",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RolesAnywhere::CRL`."
+        },
+        "locationInModule": {
+          "filename": "lib/rolesanywhere.generated.ts",
+          "line": 198
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-rolesanywhere.CfnCRLProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/rolesanywhere.generated.ts",
+        "line": 125
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 215
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 230
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnCRL",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 129
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CrlId"
+            },
+            "stability": "external",
+            "summary": "The unique primary identifier of the Crl."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 154
+          },
+          "name": "attrCrlId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 220
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-crl.html#cfn-rolesanywhere-crl-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tags to attach to the CRL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 182
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-crl.html#cfn-rolesanywhere-crl-crldata"
+            },
+            "stability": "external",
+            "summary": "The revocation record for a certificate, following the x509 v3 standard."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 161
+          },
+          "name": "crlData",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-crl.html#cfn-rolesanywhere-crl-enabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether the certificate revocation list (CRL) is enabled."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 168
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-crl.html#cfn-rolesanywhere-crl-name"
+            },
+            "stability": "external",
+            "summary": "The name of the certificate revocation list (CRL)."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 175
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-crl.html#cfn-rolesanywhere-crl-trustanchorarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 189
+          },
+          "name": "trustAnchorArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rolesanywhere.generated:CfnCRL"
+    },
+    "@aws-cdk/aws-rolesanywhere.CfnCRLProps": {
+      "assembly": "@aws-cdk/aws-rolesanywhere",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-crl.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnCRL`."
+      },
+      "fqn": "@aws-cdk/aws-rolesanywhere.CfnCRLProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rolesanywhere.generated.ts",
+        "line": 20
+      },
+      "name": "CfnCRLProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-crl.html#cfn-rolesanywhere-crl-crldata"
+            },
+            "stability": "external",
+            "summary": "The revocation record for a certificate, following the x509 v3 standard."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 27
+          },
+          "name": "crlData",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-crl.html#cfn-rolesanywhere-crl-enabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether the certificate revocation list (CRL) is enabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 34
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-crl.html#cfn-rolesanywhere-crl-name"
+            },
+            "stability": "external",
+            "summary": "The name of the certificate revocation list (CRL)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 41
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-crl.html#cfn-rolesanywhere-crl-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tags to attach to the CRL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 48
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-crl.html#cfn-rolesanywhere-crl-trustanchorarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 55
+          },
+          "name": "trustAnchorArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rolesanywhere.generated:CfnCRLProps"
+    },
+    "@aws-cdk/aws-rolesanywhere.CfnProfile": {
+      "assembly": "@aws-cdk/aws-rolesanywhere",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RolesAnywhere::Profile",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html"
+        },
+        "remarks": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RolesAnywhere::Profile`."
+      },
+      "fqn": "@aws-cdk/aws-rolesanywhere.CfnProfile",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RolesAnywhere::Profile`."
+        },
+        "locationInModule": {
+          "filename": "lib/rolesanywhere.generated.ts",
+          "line": 480
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-rolesanywhere.CfnProfileProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/rolesanywhere.generated.ts",
+        "line": 380
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 501
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 519
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnProfile",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 384
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ProfileArn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 409
+          },
+          "name": "attrProfileArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ProfileId"
+            },
+            "stability": "external",
+            "summary": "The unique primary identifier of the Profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 415
+          },
+          "name": "attrProfileId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 506
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tags to attach to the profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 471
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-durationseconds"
+            },
+            "stability": "external",
+            "summary": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 422
+          },
+          "name": "durationSeconds",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-enabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether the profile is enabled."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 429
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-managedpolicyarns"
+            },
+            "stability": "external",
+            "summary": "A list of managed policy ARNs that apply to the vended session credentials."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 436
+          },
+          "name": "managedPolicyArns",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-name"
+            },
+            "stability": "external",
+            "summary": "The name of the profile."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 443
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-requireinstanceproperties"
+            },
+            "stability": "external",
+            "summary": "Specifies whether instance properties are required in temporary credential requests with this profile."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 450
+          },
+          "name": "requireInstanceProperties",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-rolearns"
+            },
+            "remarks": "During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+            "stability": "external",
+            "summary": "A list of IAM role ARNs."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 457
+          },
+          "name": "roleArns",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-sessionpolicy"
+            },
+            "stability": "external",
+            "summary": "A session policy that applies to the trust boundary of the vended session credentials."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 464
+          },
+          "name": "sessionPolicy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rolesanywhere.generated:CfnProfile"
+    },
+    "@aws-cdk/aws-rolesanywhere.CfnProfileProps": {
+      "assembly": "@aws-cdk/aws-rolesanywhere",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnProfile`."
+      },
+      "fqn": "@aws-cdk/aws-rolesanywhere.CfnProfileProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rolesanywhere.generated.ts",
+        "line": 243
+      },
+      "name": "CfnProfileProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-durationseconds"
+            },
+            "stability": "external",
+            "summary": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 250
+          },
+          "name": "durationSeconds",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-enabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether the profile is enabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 257
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-managedpolicyarns"
+            },
+            "stability": "external",
+            "summary": "A list of managed policy ARNs that apply to the vended session credentials."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 264
+          },
+          "name": "managedPolicyArns",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-name"
+            },
+            "stability": "external",
+            "summary": "The name of the profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 271
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-requireinstanceproperties"
+            },
+            "stability": "external",
+            "summary": "Specifies whether instance properties are required in temporary credential requests with this profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 278
+          },
+          "name": "requireInstanceProperties",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-rolearns"
+            },
+            "remarks": "During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+            "stability": "external",
+            "summary": "A list of IAM role ARNs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 285
+          },
+          "name": "roleArns",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-sessionpolicy"
+            },
+            "stability": "external",
+            "summary": "A session policy that applies to the trust boundary of the vended session credentials."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 292
+          },
+          "name": "sessionPolicy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-profile.html#cfn-rolesanywhere-profile-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tags to attach to the profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 299
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/rolesanywhere.generated:CfnProfileProps"
+    },
+    "@aws-cdk/aws-rolesanywhere.CfnTrustAnchor": {
+      "assembly": "@aws-cdk/aws-rolesanywhere",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RolesAnywhere::TrustAnchor",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-trustanchor.html"
+        },
+        "remarks": "The state of the trust anchor after a read or write operation.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RolesAnywhere::TrustAnchor`."
+      },
+      "fqn": "@aws-cdk/aws-rolesanywhere.CfnTrustAnchor",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RolesAnywhere::TrustAnchor`."
+        },
+        "locationInModule": {
+          "filename": "lib/rolesanywhere.generated.ts",
+          "line": 699
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-rolesanywhere.CfnTrustAnchorProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/rolesanywhere.generated.ts",
+        "line": 627
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 716
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 730
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnTrustAnchor",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 631
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "TrustAnchorArn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the trust anchor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 656
+          },
+          "name": "attrTrustAnchorArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "TrustAnchorId"
+            },
+            "stability": "external",
+            "summary": "The unique primary identifier of the TrustAnchor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 662
+          },
+          "name": "attrTrustAnchorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 721
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-trustanchor.html#cfn-rolesanywhere-trustanchor-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tags to attach to the trust anchor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 690
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-trustanchor.html#cfn-rolesanywhere-trustanchor-enabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether the trust anchor is enabled."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 669
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-trustanchor.html#cfn-rolesanywhere-trustanchor-name"
+            },
+            "stability": "external",
+            "summary": "The name of the trust anchor."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 676
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-trustanchor.html#cfn-rolesanywhere-trustanchor-source"
+            },
+            "stability": "external",
+            "summary": "The trust anchor type and its related certificate data."
+          },
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 683
+          },
+          "name": "source",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rolesanywhere.CfnTrustAnchor.SourceProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/rolesanywhere.generated:CfnTrustAnchor"
+    },
+    "@aws-cdk/aws-rolesanywhere.CfnTrustAnchor.SourceDataProperty": {
+      "assembly": "@aws-cdk/aws-rolesanywhere",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rolesanywhere-trustanchor-sourcedata.html"
+        },
+        "stability": "external",
+        "summary": "The data field of the trust anchor depending on its type."
+      },
+      "fqn": "@aws-cdk/aws-rolesanywhere.CfnTrustAnchor.SourceDataProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rolesanywhere.generated.ts",
+        "line": 820
+      },
+      "name": "SourceDataProperty",
+      "namespace": "CfnTrustAnchor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rolesanywhere-trustanchor-sourcedata.html#cfn-rolesanywhere-trustanchor-sourcedata-acmpcaarn"
+            },
+            "remarks": "Included for trust anchors of type `AWS_ACM_PCA` .",
+            "stability": "external",
+            "summary": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 826
+          },
+          "name": "acmPcaArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rolesanywhere-trustanchor-sourcedata.html#cfn-rolesanywhere-trustanchor-sourcedata-x509certificatedata"
+            },
+            "remarks": "Included for trust anchors of type `CERTIFICATE_BUNDLE` .",
+            "stability": "external",
+            "summary": "The PEM-encoded data for the certificate anchor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 832
+          },
+          "name": "x509CertificateData",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rolesanywhere.generated:CfnTrustAnchor.SourceDataProperty"
+    },
+    "@aws-cdk/aws-rolesanywhere.CfnTrustAnchor.SourceProperty": {
+      "assembly": "@aws-cdk/aws-rolesanywhere",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rolesanywhere-trustanchor-source.html"
+        },
+        "stability": "external",
+        "summary": "The trust anchor type and its related certificate data."
+      },
+      "fqn": "@aws-cdk/aws-rolesanywhere.CfnTrustAnchor.SourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rolesanywhere.generated.ts",
+        "line": 744
+      },
+      "name": "SourceProperty",
+      "namespace": "CfnTrustAnchor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rolesanywhere-trustanchor-source.html#cfn-rolesanywhere-trustanchor-source-sourcedata"
+            },
+            "stability": "external",
+            "summary": "The data field of the trust anchor depending on its type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 750
+          },
+          "name": "sourceData",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rolesanywhere.CfnTrustAnchor.SourceDataProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rolesanywhere-trustanchor-source.html#cfn-rolesanywhere-trustanchor-source-sourcetype"
+            },
+            "stability": "external",
+            "summary": "The type of the trust anchor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 756
+          },
+          "name": "sourceType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rolesanywhere.generated:CfnTrustAnchor.SourceProperty"
+    },
+    "@aws-cdk/aws-rolesanywhere.CfnTrustAnchorProps": {
+      "assembly": "@aws-cdk/aws-rolesanywhere",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-trustanchor.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnTrustAnchor`."
+      },
+      "fqn": "@aws-cdk/aws-rolesanywhere.CfnTrustAnchorProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rolesanywhere.generated.ts",
+        "line": 532
+      },
+      "name": "CfnTrustAnchorProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-trustanchor.html#cfn-rolesanywhere-trustanchor-enabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether the trust anchor is enabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 539
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-trustanchor.html#cfn-rolesanywhere-trustanchor-name"
+            },
+            "stability": "external",
+            "summary": "The name of the trust anchor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 546
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-trustanchor.html#cfn-rolesanywhere-trustanchor-source"
+            },
+            "stability": "external",
+            "summary": "The trust anchor type and its related certificate data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 553
+          },
+          "name": "source",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rolesanywhere.CfnTrustAnchor.SourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rolesanywhere-trustanchor.html#cfn-rolesanywhere-trustanchor-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tags to attach to the trust anchor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rolesanywhere.generated.ts",
+            "line": 560
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/rolesanywhere.generated:CfnTrustAnchorProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "5TBZQ2OtLxr4iZ3Xz17Jr9seTsabqLYcR/gkw8Ej19A="
+}

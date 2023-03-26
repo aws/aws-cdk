@@ -1,0 +1,1123 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::DevOpsGuru",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::DevOpsGuru",
+    "aws-devopsguru"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-devopsguru",
+  "readme": {
+    "markdown": "# AWS::DevOpsGuru Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as devopsguru from '@aws-cdk/aws-devopsguru';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for DevOpsGuru construct libraries](https://constructs.dev/search?q=devopsguru)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::DevOpsGuru resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DevOpsGuru.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::DevOpsGuru](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DevOpsGuru.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-devopsguru",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.DevOpsGuru",
+      "packageId": "Amazon.CDK.AWS.DevOpsGuru"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "devopsguru",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.devopsguru"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-devopsguru"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-devopsguru",
+      "module": "aws_cdk.aws_devopsguru"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-devopsguru.CfnNotificationChannel": {
+      "assembly": "@aws-cdk/aws-devopsguru",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::DevOpsGuru::NotificationChannel",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-devopsguru-notificationchannel.html"
+        },
+        "remarks": "Adds a notification channel to DevOps Guru. A notification channel is used to notify you about important DevOps Guru events, such as when an insight is generated.\n\nIf you use an Amazon SNS topic in another account, you must attach a policy to it that grants DevOps Guru permission to it notifications. DevOps Guru adds the required policy on your behalf to send notifications using Amazon SNS in your account. DevOps Guru only supports standard SNS topics. For more information, see [Permissions for cross account Amazon SNS topics](https://docs.aws.amazon.com/devops-guru/latest/userguide/sns-required-permissions.html) .\n\nIf you use an Amazon SNS topic in another account, you must attach a policy to it that grants DevOps Guru permission to it notifications. DevOps Guru adds the required policy on your behalf to send notifications using Amazon SNS in your account. For more information, see Permissions for cross account Amazon SNS topics.\n\nIf you use an Amazon SNS topic that is encrypted by an AWS Key Management Service customer-managed key (CMK), then you must add permissions to the CMK. For more information, see [Permissions for AWS KMS–encrypted Amazon SNS topics](https://docs.aws.amazon.com/devops-guru/latest/userguide/sns-kms-permissions.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::DevOpsGuru::NotificationChannel`."
+      },
+      "fqn": "@aws-cdk/aws-devopsguru.CfnNotificationChannel",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::DevOpsGuru::NotificationChannel`."
+        },
+        "locationInModule": {
+          "filename": "lib/devopsguru.generated.ts",
+          "line": 137
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-devopsguru.CfnNotificationChannelProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/devopsguru.generated.ts",
+        "line": 92
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 151
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 162
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnNotificationChannel",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 96
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Id"
+            },
+            "stability": "external",
+            "summary": "The ID of the notification channel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 121
+          },
+          "name": "attrId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 156
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-devopsguru-notificationchannel.html#cfn-devopsguru-notificationchannel-config"
+            },
+            "stability": "external",
+            "summary": "A `NotificationChannelConfig` object that contains information about configured notification channels."
+          },
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 128
+          },
+          "name": "config",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-devopsguru.CfnNotificationChannel.NotificationChannelConfigProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/devopsguru.generated:CfnNotificationChannel"
+    },
+    "@aws-cdk/aws-devopsguru.CfnNotificationChannel.NotificationChannelConfigProperty": {
+      "assembly": "@aws-cdk/aws-devopsguru",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-notificationchannel-notificationchannelconfig.html"
+        },
+        "remarks": "The one supported notification channel is Amazon Simple Notification Service (Amazon SNS).",
+        "stability": "external",
+        "summary": "Information about notification channels you have configured with DevOps Guru."
+      },
+      "fqn": "@aws-cdk/aws-devopsguru.CfnNotificationChannel.NotificationChannelConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/devopsguru.generated.ts",
+        "line": 176
+      },
+      "name": "NotificationChannelConfigProperty",
+      "namespace": "CfnNotificationChannel",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-notificationchannel-notificationchannelconfig.html#cfn-devopsguru-notificationchannel-notificationchannelconfig-filters"
+            },
+            "remarks": "If you do not provide filter configurations, the default configurations are to receive notifications for all message types of `High` or `Medium` severity.",
+            "stability": "external",
+            "summary": "The filter configurations for the Amazon SNS notification topic you use with DevOps Guru."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 182
+          },
+          "name": "filters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-devopsguru.CfnNotificationChannel.NotificationFilterConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-notificationchannel-notificationchannelconfig.html#cfn-devopsguru-notificationchannel-notificationchannelconfig-sns"
+            },
+            "remarks": "If you use an Amazon SNS topic in another account, you must attach a policy to it that grants DevOps Guru permission to it notifications. DevOps Guru adds the required policy on your behalf to send notifications using Amazon SNS in your account. DevOps Guru only supports standard SNS topics. For more information, see [Permissions for cross account Amazon SNS topics](https://docs.aws.amazon.com/devops-guru/latest/userguide/sns-required-permissions.html) .\n\nIf you use an Amazon SNS topic in another account, you must attach a policy to it that grants DevOps Guru permission to it notifications. DevOps Guru adds the required policy on your behalf to send notifications using Amazon SNS in your account. For more information, see Permissions for cross account Amazon SNS topics.\n\nIf you use an Amazon SNS topic that is encrypted by an AWS Key Management Service customer-managed key (CMK), then you must add permissions to the CMK. For more information, see [Permissions for AWS KMS–encrypted Amazon SNS topics](https://docs.aws.amazon.com/devops-guru/latest/userguide/sns-kms-permissions.html) .",
+            "stability": "external",
+            "summary": "Information about a notification channel configured in DevOps Guru to send notifications when insights are created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 194
+          },
+          "name": "sns",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-devopsguru.CfnNotificationChannel.SnsChannelConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/devopsguru.generated:CfnNotificationChannel.NotificationChannelConfigProperty"
+    },
+    "@aws-cdk/aws-devopsguru.CfnNotificationChannel.NotificationFilterConfigProperty": {
+      "assembly": "@aws-cdk/aws-devopsguru",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-notificationchannel-notificationfilterconfig.html"
+        },
+        "remarks": "You can choose to specify which events or message types to receive notifications for. You can also choose to specify which severity levels to receive notifications for.",
+        "stability": "external",
+        "summary": "The filter configurations for the Amazon SNS notification topic you use with DevOps Guru."
+      },
+      "fqn": "@aws-cdk/aws-devopsguru.CfnNotificationChannel.NotificationFilterConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/devopsguru.generated.ts",
+        "line": 258
+      },
+      "name": "NotificationFilterConfigProperty",
+      "namespace": "CfnNotificationChannel",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-notificationchannel-notificationfilterconfig.html#cfn-devopsguru-notificationchannel-notificationfilterconfig-messagetypes"
+            },
+            "remarks": "For example, you can choose to receive notifications only when the severity level is upgraded or a new insight is created.",
+            "stability": "external",
+            "summary": "The events that you want to receive notifications for."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 264
+          },
+          "name": "messageTypes",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-notificationchannel-notificationfilterconfig.html#cfn-devopsguru-notificationchannel-notificationfilterconfig-severities"
+            },
+            "remarks": "For example, you can choose to receive notifications only for insights with `HIGH` and `MEDIUM` severity levels. For more information, see [Understanding insight severities](https://docs.aws.amazon.com/devops-guru/latest/userguide/working-with-insights.html#understanding-insights-severities) .",
+            "stability": "external",
+            "summary": "The severity levels that you want to receive notifications for."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 270
+          },
+          "name": "severities",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/devopsguru.generated:CfnNotificationChannel.NotificationFilterConfigProperty"
+    },
+    "@aws-cdk/aws-devopsguru.CfnNotificationChannel.SnsChannelConfigProperty": {
+      "assembly": "@aws-cdk/aws-devopsguru",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-notificationchannel-snschannelconfig.html"
+        },
+        "remarks": "If you use an Amazon SNS topic in another account, you must attach a policy to it that grants DevOps Guru permission to it notifications. DevOps Guru adds the required policy on your behalf to send notifications using Amazon SNS in your account. DevOps Guru only supports standard SNS topics. For more information, see [Permissions for cross account Amazon SNS topics](https://docs.aws.amazon.com/devops-guru/latest/userguide/sns-required-permissions.html) .\n\nIf you use an Amazon SNS topic in another account, you must attach a policy to it that grants DevOps Guru permission to it notifications. DevOps Guru adds the required policy on your behalf to send notifications using Amazon SNS in your account. For more information, see Permissions for cross account Amazon SNS topics.\n\nIf you use an Amazon SNS topic that is encrypted by an AWS Key Management Service customer-managed key (CMK), then you must add permissions to the CMK. For more information, see [Permissions for AWS KMS–encrypted Amazon SNS topics](https://docs.aws.amazon.com/devops-guru/latest/userguide/sns-kms-permissions.html) .",
+        "stability": "external",
+        "summary": "Contains the Amazon Resource Name (ARN) of an Amazon Simple Notification Service topic."
+      },
+      "fqn": "@aws-cdk/aws-devopsguru.CfnNotificationChannel.SnsChannelConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/devopsguru.generated.ts",
+        "line": 340
+      },
+      "name": "SnsChannelConfigProperty",
+      "namespace": "CfnNotificationChannel",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-notificationchannel-snschannelconfig.html#cfn-devopsguru-notificationchannel-snschannelconfig-topicarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of an Amazon Simple Notification Service topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 346
+          },
+          "name": "topicArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/devopsguru.generated:CfnNotificationChannel.SnsChannelConfigProperty"
+    },
+    "@aws-cdk/aws-devopsguru.CfnNotificationChannelProps": {
+      "assembly": "@aws-cdk/aws-devopsguru",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-devopsguru-notificationchannel.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnNotificationChannel`."
+      },
+      "fqn": "@aws-cdk/aws-devopsguru.CfnNotificationChannelProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/devopsguru.generated.ts",
+        "line": 20
+      },
+      "name": "CfnNotificationChannelProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-devopsguru-notificationchannel.html#cfn-devopsguru-notificationchannel-config"
+            },
+            "stability": "external",
+            "summary": "A `NotificationChannelConfig` object that contains information about configured notification channels."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 27
+          },
+          "name": "config",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-devopsguru.CfnNotificationChannel.NotificationChannelConfigProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/devopsguru.generated:CfnNotificationChannelProps"
+    },
+    "@aws-cdk/aws-devopsguru.CfnResourceCollection": {
+      "assembly": "@aws-cdk/aws-devopsguru",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::DevOpsGuru::ResourceCollection",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-devopsguru-resourcecollection.html"
+        },
+        "remarks": "A collection of AWS resources supported by DevOps Guru. The one type of AWS resource collection supported is AWS CloudFormation stacks. DevOps Guru can be configured to analyze only the AWS resources that are defined in the stacks.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::DevOpsGuru::ResourceCollection`."
+      },
+      "fqn": "@aws-cdk/aws-devopsguru.CfnResourceCollection",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::DevOpsGuru::ResourceCollection`."
+        },
+        "locationInModule": {
+          "filename": "lib/devopsguru.generated.ts",
+          "line": 517
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-devopsguru.CfnResourceCollectionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/devopsguru.generated.ts",
+        "line": 472
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 531
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 542
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnResourceCollection",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 476
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ResourceCollectionType"
+            },
+            "remarks": "The one valid value is `CLOUD_FORMATION` for AWS CloudFormation stacks.",
+            "stability": "external",
+            "summary": "The type of AWS resource collections to return."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 501
+          },
+          "name": "attrResourceCollectionType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 536
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-devopsguru-resourcecollection.html#cfn-devopsguru-resourcecollection-resourcecollectionfilter"
+            },
+            "stability": "external",
+            "summary": "Information about a filter used to specify which AWS resources are analyzed for anomalous behavior by DevOps Guru."
+          },
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 508
+          },
+          "name": "resourceCollectionFilter",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-devopsguru.CfnResourceCollection.ResourceCollectionFilterProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/devopsguru.generated:CfnResourceCollection"
+    },
+    "@aws-cdk/aws-devopsguru.CfnResourceCollection.CloudFormationCollectionFilterProperty": {
+      "assembly": "@aws-cdk/aws-devopsguru",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-resourcecollection-cloudformationcollectionfilter.html"
+        },
+        "remarks": "You can use up to 500 stacks to specify which AWS resources in your account to analyze. For more information, see [Stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacks.html) in the *AWS CloudFormation User Guide* .",
+        "stability": "external",
+        "summary": "Information about AWS CloudFormation stacks."
+      },
+      "fqn": "@aws-cdk/aws-devopsguru.CfnResourceCollection.CloudFormationCollectionFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/devopsguru.generated.ts",
+        "line": 556
+      },
+      "name": "CloudFormationCollectionFilterProperty",
+      "namespace": "CfnResourceCollection",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-resourcecollection-cloudformationcollectionfilter.html#cfn-devopsguru-resourcecollection-cloudformationcollectionfilter-stacknames"
+            },
+            "stability": "external",
+            "summary": "An array of CloudFormation stack names."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 562
+          },
+          "name": "stackNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/devopsguru.generated:CfnResourceCollection.CloudFormationCollectionFilterProperty"
+    },
+    "@aws-cdk/aws-devopsguru.CfnResourceCollection.ResourceCollectionFilterProperty": {
+      "assembly": "@aws-cdk/aws-devopsguru",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-resourcecollection-resourcecollectionfilter.html"
+        },
+        "stability": "external",
+        "summary": "Information about a filter used to specify which AWS resources are analyzed for anomalous behavior by DevOps Guru."
+      },
+      "fqn": "@aws-cdk/aws-devopsguru.CfnResourceCollection.ResourceCollectionFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/devopsguru.generated.ts",
+        "line": 623
+      },
+      "name": "ResourceCollectionFilterProperty",
+      "namespace": "CfnResourceCollection",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-resourcecollection-resourcecollectionfilter.html#cfn-devopsguru-resourcecollection-resourcecollectionfilter-cloudformation"
+            },
+            "remarks": "You can use up to 500 stacks to specify which AWS resources in your account to analyze. For more information, see [Stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/stacks.html) in the *AWS CloudFormation User Guide* .",
+            "stability": "external",
+            "summary": "Information about AWS CloudFormation stacks."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 629
+          },
+          "name": "cloudFormation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-devopsguru.CfnResourceCollection.CloudFormationCollectionFilterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-resourcecollection-resourcecollectionfilter.html#cfn-devopsguru-resourcecollection-resourcecollectionfilter-tags"
+            },
+            "remarks": "Tags help you identify and organize your AWS resources. Many AWS services support tagging, so you can assign the same tag to resources from different services to indicate that the resources are related. For example, you can assign the same tag to an Amazon DynamoDB table resource that you assign to an AWS Lambda function. For more information about using tags, see the [Tagging best practices](https://docs.aws.amazon.com/https://d1.awsstatic.com/whitepapers/aws-tagging-best-practices.pdf) whitepaper.\n\nEach AWS tag has two parts.\n\n- A tag *key* (for example, `CostCenter` , `Environment` , `Project` , or `Secret` ). Tag *keys* are case-sensitive.\n- An optional field known as a tag *value* (for example, `111122223333` , `Production` , or a team name). Omitting the tag *value* is the same as using an empty string. Like tag *keys* , tag *values* are case-sensitive.\n\nTogether these are known as *key* - *value* pairs.\n\n> The string used for a *key* in a tag that you use to define your resource coverage must begin with the prefix `Devops-guru-` . The tag *key* might be `DevOps-Guru-deployment-application` or `devops-guru-rds-application` . When you create a *key* , the case of characters in the *key* can be whatever you choose. After you create a *key* , it is case-sensitive. For example, DevOps Guru works with a *key* named `devops-guru-rds` and a *key* named `DevOps-Guru-RDS` , and these act as two different *keys* . Possible *key* / *value* pairs in your application might be `Devops-Guru-production-application/RDS` or `Devops-Guru-production-application/containers` .",
+            "stability": "external",
+            "summary": "The AWS tags used to filter the resources in the resource collection."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 646
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-devopsguru.CfnResourceCollection.TagCollectionProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/devopsguru.generated:CfnResourceCollection.ResourceCollectionFilterProperty"
+    },
+    "@aws-cdk/aws-devopsguru.CfnResourceCollection.TagCollectionProperty": {
+      "assembly": "@aws-cdk/aws-devopsguru",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-resourcecollection-tagcollection.html"
+        },
+        "remarks": "Tags help you identify and organize your AWS resources. Many AWS services support tagging, so you can assign the same tag to resources from different services to indicate that the resources are related. For example, you can assign the same tag to an Amazon DynamoDB table resource that you assign to an AWS Lambda function. For more information about using tags, see the [Tagging best practices](https://docs.aws.amazon.com/https://d1.awsstatic.com/whitepapers/aws-tagging-best-practices.pdf) whitepaper.\n\nEach AWS tag has two parts.\n\n- A tag *key* (for example, `CostCenter` , `Environment` , `Project` , or `Secret` ). Tag *keys* are case-sensitive.\n- An optional field known as a tag *value* (for example, `111122223333` , `Production` , or a team name). Omitting the tag *value* is the same as using an empty string. Like tag *keys* , tag *values* are case-sensitive.\n\nTogether these are known as *key* - *value* pairs.\n\n> The string used for a *key* in a tag that you use to define your resource coverage must begin with the prefix `Devops-guru-` . The tag *key* might be `DevOps-Guru-deployment-application` or `devops-guru-rds-application` . When you create a *key* , the case of characters in the *key* can be whatever you choose. After you create a *key* , it is case-sensitive. For example, DevOps Guru works with a *key* named `devops-guru-rds` and a *key* named `DevOps-Guru-RDS` , and these act as two different *keys* . Possible *key* / *value* pairs in your application might be `Devops-Guru-production-application/RDS` or `Devops-Guru-production-application/containers` .",
+        "stability": "external",
+        "summary": "A collection of AWS tags."
+      },
+      "fqn": "@aws-cdk/aws-devopsguru.CfnResourceCollection.TagCollectionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/devopsguru.generated.ts",
+        "line": 721
+      },
+      "name": "TagCollectionProperty",
+      "namespace": "CfnResourceCollection",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-resourcecollection-tagcollection.html#cfn-devopsguru-resourcecollection-tagcollection-appboundarykey"
+            },
+            "remarks": "All AWS resources in your account and Region tagged with this *key* make up your DevOps Guru application and analysis boundary.\n\n> The string used for a *key* in a tag that you use to define your resource coverage must begin with the prefix `Devops-guru-` . The tag *key* might be `DevOps-Guru-deployment-application` or `devops-guru-rds-application` . When you create a *key* , the case of characters in the *key* can be whatever you choose. After you create a *key* , it is case-sensitive. For example, DevOps Guru works with a *key* named `devops-guru-rds` and a *key* named `DevOps-Guru-RDS` , and these act as two different *keys* . Possible *key* / *value* pairs in your application might be `Devops-Guru-production-application/RDS` or `Devops-Guru-production-application/containers` .",
+            "stability": "external",
+            "summary": "An AWS tag *key* that is used to identify the AWS resources that DevOps Guru analyzes."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 729
+          },
+          "name": "appBoundaryKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-devopsguru-resourcecollection-tagcollection.html#cfn-devopsguru-resourcecollection-tagcollection-tagvalues"
+            },
+            "remarks": "The tag's *value* is an optional field used to associate a string with the tag *key* (for example, `111122223333` , `Production` , or a team name). The *key* and *value* are the tag's *key* pair. Omitting the tag *value* is the same as using an empty string. Like tag *keys* , tag *values* are case-sensitive. You can specify a maximum of 256 characters for a tag value.",
+            "stability": "external",
+            "summary": "The values in an AWS tag collection."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 737
+          },
+          "name": "tagValues",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/devopsguru.generated:CfnResourceCollection.TagCollectionProperty"
+    },
+    "@aws-cdk/aws-devopsguru.CfnResourceCollectionProps": {
+      "assembly": "@aws-cdk/aws-devopsguru",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-devopsguru-resourcecollection.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnResourceCollection`."
+      },
+      "fqn": "@aws-cdk/aws-devopsguru.CfnResourceCollectionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/devopsguru.generated.ts",
+        "line": 406
+      },
+      "name": "CfnResourceCollectionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-devopsguru-resourcecollection.html#cfn-devopsguru-resourcecollection-resourcecollectionfilter"
+            },
+            "stability": "external",
+            "summary": "Information about a filter used to specify which AWS resources are analyzed for anomalous behavior by DevOps Guru."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/devopsguru.generated.ts",
+            "line": 413
+          },
+          "name": "resourceCollectionFilter",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-devopsguru.CfnResourceCollection.ResourceCollectionFilterProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/devopsguru.generated:CfnResourceCollectionProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "DdodqIMonJ4kdaEjYWHIoQm6ZiRAIHZHF6GnljzRdrI="
+}

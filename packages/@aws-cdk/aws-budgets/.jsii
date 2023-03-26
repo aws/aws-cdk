@@ -1,0 +1,2707 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::Budgets",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "budgets"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-budgets",
+  "readme": {
+    "markdown": "# AWS Budgets Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as budgets from '@aws-cdk/aws-budgets';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for Budgets construct libraries](https://constructs.dev/search?q=budgets)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Budgets resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Budgets.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Budgets](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Budgets.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-budgets",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Budgets",
+      "packageId": "Amazon.CDK.AWS.Budgets"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "budgets",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.budgets"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-budgets"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-budgets",
+      "module": "aws_cdk.aws_budgets"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-budgets.CfnBudget": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Budgets::Budget",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budget.html"
+        },
+        "remarks": "The `AWS::Budgets::Budget` resource allows customers to take pre-defined actions that will trigger once a budget threshold has been exceeded. creates, replaces, or deletes budgets for Billing and Cost Management. For more information, see [Managing Your Costs with Budgets](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/budgets-managing-costs.html) in the *AWS Billing and Cost Management User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Budgets::Budget`."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudget",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Budgets::Budget`."
+        },
+        "locationInModule": {
+          "filename": "lib/budgets.generated.ts",
+          "line": 142
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-budgets.CfnBudgetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 96
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 156
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 168
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnBudget",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 100
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 161
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budget.html#cfn-budgets-budget-budget"
+            },
+            "stability": "external",
+            "summary": "The budget object that you want to create."
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 126
+          },
+          "name": "budget",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudget.BudgetDataProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budget.html#cfn-budgets-budget-notificationswithsubscribers"
+            },
+            "remarks": "A budget can have up to five notifications, and each notification can have one SNS subscriber and up to 10 email subscribers. If you include notifications and subscribers in your `CreateBudget` call, AWS creates the notifications and subscribers for you.",
+            "stability": "external",
+            "summary": "A notification that you want to associate with a budget."
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 133
+          },
+          "name": "notificationsWithSubscribers",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-budgets.CfnBudget.NotificationWithSubscribersProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudget"
+    },
+    "@aws-cdk/aws-budgets.CfnBudget.AutoAdjustDataProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-autoadjustdata.html"
+        },
+        "stability": "external",
+        "summary": "The parameters that determine the budget amount for an auto-adjusting budget."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudget.AutoAdjustDataProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 182
+      },
+      "name": "AutoAdjustDataProperty",
+      "namespace": "CfnBudget",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-autoadjustdata.html#cfn-budgets-budget-autoadjustdata-autoadjusttype"
+            },
+            "stability": "external",
+            "summary": "The string that defines whether your budget auto-adjusts based on historical or forecasted data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 188
+          },
+          "name": "autoAdjustType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-autoadjustdata.html#cfn-budgets-budget-autoadjustdata-historicaloptions"
+            },
+            "stability": "external",
+            "summary": "The parameters that define or describe the historical data that your auto-adjusting budget is based on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 194
+          },
+          "name": "historicalOptions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudget.HistoricalOptionsProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudget.AutoAdjustDataProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudget.BudgetDataProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-budgetdata.html"
+        },
+        "remarks": "The content consists of the detailed metadata and data file information, and the current status of the `budget` object.\n\nThis is the Amazon Resource Name (ARN) pattern for a budget:\n\n`arn:aws:budgets::AccountId:budget/budgetName`",
+        "stability": "external",
+        "summary": "Represents the output of the `CreateBudget` operation."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudget.BudgetDataProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 263
+      },
+      "name": "BudgetDataProperty",
+      "namespace": "CfnBudget",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-budgetdata.html#cfn-budgets-budget-budgetdata-budgettype"
+            },
+            "stability": "external",
+            "summary": "Specifies whether this budget tracks costs, usage, RI utilization, RI coverage, Savings Plans utilization, or Savings Plans coverage."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 289
+          },
+          "name": "budgetType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-budgetdata.html#cfn-budgets-budget-budgetdata-timeunit"
+            },
+            "remarks": "`DAILY` is available only for `RI_UTILIZATION` and `RI_COVERAGE` budgets.",
+            "stability": "external",
+            "summary": "The length of time until a budget resets the actual and forecasted spend."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 349
+          },
+          "name": "timeUnit",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-budgetdata.html#cfn-budgets-budget-budgetdata-autoadjustdata"
+            },
+            "stability": "external",
+            "summary": "`CfnBudget.BudgetDataProperty.AutoAdjustData`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 269
+          },
+          "name": "autoAdjustData",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudget.AutoAdjustDataProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-budgetdata.html#cfn-budgets-budget-budgetdata-budgetlimit"
+            },
+            "remarks": "`BudgetLimit` is required for cost or usage budgets, but optional for RI or Savings Plans utilization or coverage budgets. RI and Savings Plans utilization or coverage budgets default to `100` . This is the only valid value for RI or Savings Plans utilization or coverage budgets. You can't use `BudgetLimit` with `PlannedBudgetLimits` for `CreateBudget` and `UpdateBudget` actions.",
+            "stability": "external",
+            "summary": "The total amount of cost, usage, RI utilization, RI coverage, Savings Plans utilization, or Savings Plans coverage that you want to track with your budget."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 277
+          },
+          "name": "budgetLimit",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudget.SpendProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-budgetdata.html#cfn-budgets-budget-budgetdata-budgetname"
+            },
+            "remarks": "The value must be unique within an account. `BudgetName` can't include `:` and `\\` characters. If you don't include value for `BudgetName` in the template, Billing and Cost Management assigns your budget a randomly generated name.",
+            "stability": "external",
+            "summary": "The name of a budget."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 283
+          },
+          "name": "budgetName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-budgetdata.html#cfn-budgets-budget-budgetdata-costfilters"
+            },
+            "remarks": "AWS Budgets supports the following services as a `Service` filter for RI budgets:\n\n- Amazon EC2\n- Amazon Redshift\n- Amazon Relational Database Service\n- Amazon ElastiCache\n- Amazon OpenSearch Service",
+            "stability": "external",
+            "summary": "The cost filters, such as `Region` , `Service` , `member account` , `Tag` , or `Cost Category` , that are applied to a budget."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 303
+          },
+          "name": "costFilters",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-budgetdata.html#cfn-budgets-budget-budgetdata-costtypes"
+            },
+            "remarks": "`USAGE` , `RI_UTILIZATION` , `RI_COVERAGE` , `SAVINGS_PLANS_UTILIZATION` , and `SAVINGS_PLANS_COVERAGE` budgets do not have `CostTypes` .",
+            "stability": "external",
+            "summary": "The types of costs that are included in this `COST` budget."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 311
+          },
+          "name": "costTypes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudget.CostTypesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-budgetdata.html#cfn-budgets-budget-budgetdata-plannedbudgetlimits"
+            },
+            "remarks": "`PlannedBudgetLimits` is available for cost or usage budget and supports both monthly and quarterly `TimeUnit` .\n\nFor monthly budgets, provide 12 months of `PlannedBudgetLimits` values. This must start from the current month and include the next 11 months. The `key` is the start of the month, `UTC` in epoch seconds.\n\nFor quarterly budgets, provide four quarters of `PlannedBudgetLimits` value entries in standard calendar quarter increments. This must start from the current quarter and include the next three quarters. The `key` is the start of the quarter, `UTC` in epoch seconds.\n\nIf the planned budget expires before 12 months for monthly or four quarters for quarterly, provide the `PlannedBudgetLimits` values only for the remaining periods.\n\nIf the budget begins at a date in the future, provide `PlannedBudgetLimits` values from the start date of the budget.\n\nAfter all of the `BudgetLimit` values in `PlannedBudgetLimits` are used, the budget continues to use the last limit as the `BudgetLimit` . At that point, the planned budget provides the same experience as a fixed budget.\n\n`DescribeBudget` and `DescribeBudgets` response along with `PlannedBudgetLimits` also contain `BudgetLimit` representing the current month or quarter limit present in `PlannedBudgetLimits` . This only applies to budgets that are created with `PlannedBudgetLimits` . Budgets that are created without `PlannedBudgetLimits` only contain `BudgetLimit` . They don't contain `PlannedBudgetLimits` .",
+            "stability": "external",
+            "summary": "A map containing multiple `BudgetLimit` , including current or future limits."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 331
+          },
+          "name": "plannedBudgetLimits",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-budgetdata.html#cfn-budgets-budget-budgetdata-timeperiod"
+            },
+            "remarks": "The period has a start date and an end date. The start date must come before the end date. There are no restrictions on the end date.\n\nThe start date for a budget. If you created your budget and didn't specify a start date, the start date defaults to the start of the chosen time period (MONTHLY, QUARTERLY, or ANNUALLY). For example, if you create your budget on January 24, 2019, choose `MONTHLY` , and don't set a start date, the start date defaults to `01/01/19 00:00 UTC` . The defaults are the same for the AWS Billing and Cost Management console and the API.\n\nYou can change your start date with the `UpdateBudget` operation.\n\nAfter the end date, AWS deletes the budget and all associated notifications and subscribers.",
+            "stability": "external",
+            "summary": "The period of time that is covered by a budget."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 343
+          },
+          "name": "timePeriod",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudget.TimePeriodProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudget.BudgetDataProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudget.CostTypesProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-costtypes.html"
+        },
+        "remarks": "`USAGE` , `RI_UTILIZATION` , `RI_COVERAGE` , `SAVINGS_PLANS_UTILIZATION` , and `SAVINGS_PLANS_COVERAGE` budgets don't have `CostTypes` .",
+        "stability": "external",
+        "summary": "The types of cost that are included in a `COST` budget, such as tax and subscriptions."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudget.CostTypesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 438
+      },
+      "name": "CostTypesProperty",
+      "namespace": "CfnBudget",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-costtypes.html#cfn-budgets-budget-costtypes-includecredit"
+            },
+            "remarks": "The default value is `true` .",
+            "stability": "external",
+            "summary": "Specifies whether a budget includes credits."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 446
+          },
+          "name": "includeCredit",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-costtypes.html#cfn-budgets-budget-costtypes-includediscount"
+            },
+            "remarks": "The default value is `true` .",
+            "stability": "external",
+            "summary": "Specifies whether a budget includes discounts."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 454
+          },
+          "name": "includeDiscount",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-costtypes.html#cfn-budgets-budget-costtypes-includeothersubscription"
+            },
+            "remarks": "The default value is `true` .",
+            "stability": "external",
+            "summary": "Specifies whether a budget includes non-RI subscription costs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 462
+          },
+          "name": "includeOtherSubscription",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-costtypes.html#cfn-budgets-budget-costtypes-includerecurring"
+            },
+            "remarks": "The default value is `true` .",
+            "stability": "external",
+            "summary": "Specifies whether a budget includes recurring fees such as monthly RI fees."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 470
+          },
+          "name": "includeRecurring",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-costtypes.html#cfn-budgets-budget-costtypes-includerefund"
+            },
+            "remarks": "The default value is `true` .",
+            "stability": "external",
+            "summary": "Specifies whether a budget includes refunds."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 478
+          },
+          "name": "includeRefund",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-costtypes.html#cfn-budgets-budget-costtypes-includesubscription"
+            },
+            "remarks": "The default value is `true` .",
+            "stability": "external",
+            "summary": "Specifies whether a budget includes subscriptions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 486
+          },
+          "name": "includeSubscription",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-costtypes.html#cfn-budgets-budget-costtypes-includesupport"
+            },
+            "remarks": "The default value is `true` .",
+            "stability": "external",
+            "summary": "Specifies whether a budget includes support subscription fees."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 494
+          },
+          "name": "includeSupport",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-costtypes.html#cfn-budgets-budget-costtypes-includetax"
+            },
+            "remarks": "The default value is `true` .",
+            "stability": "external",
+            "summary": "Specifies whether a budget includes taxes."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 502
+          },
+          "name": "includeTax",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-costtypes.html#cfn-budgets-budget-costtypes-includeupfront"
+            },
+            "remarks": "The default value is `true` .",
+            "stability": "external",
+            "summary": "Specifies whether a budget includes upfront RI costs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 510
+          },
+          "name": "includeUpfront",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-costtypes.html#cfn-budgets-budget-costtypes-useamortized"
+            },
+            "remarks": "The default value is `false` .",
+            "stability": "external",
+            "summary": "Specifies whether a budget uses the amortized rate."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 518
+          },
+          "name": "useAmortized",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-costtypes.html#cfn-budgets-budget-costtypes-useblended"
+            },
+            "remarks": "The default value is `false` .",
+            "stability": "external",
+            "summary": "Specifies whether a budget uses a blended rate."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 526
+          },
+          "name": "useBlended",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudget.CostTypesProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudget.HistoricalOptionsProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-historicaloptions.html"
+        },
+        "stability": "external",
+        "summary": "The parameters that define or describe the historical data that your auto-adjusting budget is based on."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudget.HistoricalOptionsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 617
+      },
+      "name": "HistoricalOptionsProperty",
+      "namespace": "CfnBudget",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-historicaloptions.html#cfn-budgets-budget-historicaloptions-budgetadjustmentperiod"
+            },
+            "remarks": "The maximum value depends on the `TimeUnit` granularity of the budget:\n\n- For the `DAILY` granularity, the maximum value is `60` .\n- For the `MONTHLY` granularity, the maximum value is `12` .\n- For the `QUARTERLY` granularity, the maximum value is `4` .\n- For the `ANNUALLY` granularity, the maximum value is `1` .",
+            "stability": "external",
+            "summary": "The number of budget periods included in the moving-average calculation that determines your auto-adjusted budget amount."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 628
+          },
+          "name": "budgetAdjustmentPeriod",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudget.HistoricalOptionsProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudget.NotificationProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-notification.html"
+        },
+        "remarks": "Each notification must have at least one subscriber. A notification can have one SNS subscriber and up to 10 email subscribers, for a total of 11 subscribers.\n\nFor example, if you have a budget for 200 dollars and you want to be notified when you go over 160 dollars, create a notification with the following parameters:\n\n- A notificationType of `ACTUAL`\n- A `thresholdType` of `PERCENTAGE`\n- A `comparisonOperator` of `GREATER_THAN`\n- A notification `threshold` of `80`",
+        "stability": "external",
+        "summary": "A notification that's associated with a budget. A budget can have up to ten notifications."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudget.NotificationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 699
+      },
+      "name": "NotificationProperty",
+      "namespace": "CfnBudget",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-notification.html#cfn-budgets-budget-notification-comparisonoperator"
+            },
+            "stability": "external",
+            "summary": "The comparison that's used for this notification."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 705
+          },
+          "name": "comparisonOperator",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-notification.html#cfn-budgets-budget-notification-notificationtype"
+            },
+            "stability": "external",
+            "summary": "Specifies whether the notification is for how much you have spent ( `ACTUAL` ) or for how much that you're forecasted to spend ( `FORECASTED` )."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 711
+          },
+          "name": "notificationType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-notification.html#cfn-budgets-budget-notification-threshold"
+            },
+            "remarks": "Thresholds are always a percentage, and many customers find value being alerted between 50% - 200% of the budgeted amount. The maximum limit for your threshold is 1,000,000% above the budgeted amount.",
+            "stability": "external",
+            "summary": "The threshold that's associated with a notification."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 717
+          },
+          "name": "threshold",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-notification.html#cfn-budgets-budget-notification-thresholdtype"
+            },
+            "remarks": "For `ABSOLUTE_VALUE` thresholds, AWS notifies you when you go over or are forecasted to go over your total cost threshold. For `PERCENTAGE` thresholds, AWS notifies you when you go over or are forecasted to go over a certain percentage of your forecasted spend. For example, if you have a budget for 200 dollars and you have a `PERCENTAGE` threshold of 80%, AWS notifies you when you go over 160 dollars.",
+            "stability": "external",
+            "summary": "The type of threshold for a notification."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 723
+          },
+          "name": "thresholdType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudget.NotificationProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudget.NotificationWithSubscribersProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-notificationwithsubscribers.html"
+        },
+        "remarks": "A notification can have one SNS subscriber and up to 10 email subscribers, for a total of 11 subscribers.",
+        "stability": "external",
+        "summary": "A notification with subscribers."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudget.NotificationWithSubscribersProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 796
+      },
+      "name": "NotificationWithSubscribersProperty",
+      "namespace": "CfnBudget",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-notificationwithsubscribers.html#cfn-budgets-budget-notificationwithsubscribers-notification"
+            },
+            "stability": "external",
+            "summary": "The notification that's associated with a budget."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 802
+          },
+          "name": "notification",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudget.NotificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-notificationwithsubscribers.html#cfn-budgets-budget-notificationwithsubscribers-subscribers"
+            },
+            "stability": "external",
+            "summary": "A list of subscribers who are subscribed to this notification."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 808
+          },
+          "name": "subscribers",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-budgets.CfnBudget.SubscriberProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudget.NotificationWithSubscribersProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudget.SpendProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-spend.html"
+        },
+        "remarks": "For example, a `Spend` for `3 GB` of S3 usage has the following parameters:\n\n- An `Amount` of `3`\n- A `unit` of `GB`",
+        "stability": "external",
+        "summary": "The amount of cost or usage that's measured for a budget."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudget.SpendProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 879
+      },
+      "name": "SpendProperty",
+      "namespace": "CfnBudget",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-spend.html#cfn-budgets-budget-spend-amount"
+            },
+            "stability": "external",
+            "summary": "The cost or usage amount that's associated with a budget forecast, actual spend, or budget threshold."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 885
+          },
+          "name": "amount",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-spend.html#cfn-budgets-budget-spend-unit"
+            },
+            "stability": "external",
+            "summary": "The unit of measurement that's used for the budget forecast, actual spend, or budget threshold, such as USD or GBP."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 891
+          },
+          "name": "unit",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudget.SpendProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudget.SubscriberProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-subscriber.html"
+        },
+        "remarks": "The subscriber consists of a subscription type, and either an Amazon SNS topic or an email address.\n\nFor example, an email subscriber would have the following parameters:\n\n- A `subscriptionType` of `EMAIL`\n- An `address` of `example@example.com`",
+        "stability": "external",
+        "summary": "The `Subscriber` property type specifies who to notify for a Billing and Cost Management budget notification."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudget.SubscriberProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 962
+      },
+      "name": "SubscriberProperty",
+      "namespace": "CfnBudget",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-subscriber.html#cfn-budgets-budget-subscriber-address"
+            },
+            "remarks": "When you create a subscriber, the value of `Address` can't contain line breaks.",
+            "stability": "external",
+            "summary": "The address that AWS sends budget notifications to, either an SNS topic or an email."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 970
+          },
+          "name": "address",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-subscriber.html#cfn-budgets-budget-subscriber-subscriptiontype"
+            },
+            "stability": "external",
+            "summary": "The type of notification that AWS sends to a subscriber."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 976
+          },
+          "name": "subscriptionType",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudget.SubscriberProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudget.TimePeriodProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-timeperiod.html"
+        },
+        "remarks": "The period has a start date and an end date. The start date must come before the end date. There are no restrictions on the end date.",
+        "stability": "external",
+        "summary": "The period of time that is covered by a budget."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudget.TimePeriodProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 1042
+      },
+      "name": "TimePeriodProperty",
+      "namespace": "CfnBudget",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-timeperiod.html#cfn-budgets-budget-timeperiod-end"
+            },
+            "remarks": "If you didn't specify an end date, AWS set your end date to `06/15/87 00:00 UTC` . The defaults are the same for the AWS Billing and Cost Management console and the API.\n\nAfter the end date, AWS deletes the budget and all the associated notifications and subscribers. You can change your end date with the `UpdateBudget` operation.",
+            "stability": "external",
+            "summary": "The end date for a budget."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1050
+          },
+          "name": "end",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-timeperiod.html#cfn-budgets-budget-timeperiod-start"
+            },
+            "remarks": "If you created your budget and didn't specify a start date, the start date defaults to the start of the chosen time period (MONTHLY, QUARTERLY, or ANNUALLY). For example, if you create your budget on January 24, 2019, choose `MONTHLY` , and don't set a start date, the start date defaults to `01/01/19 00:00 UTC` . The defaults are the same for the AWS Billing and Cost Management console and the API.\n\nYou can change your start date with the `UpdateBudget` operation.\n\nValid values depend on the value of `BudgetType` :\n\n- If `BudgetType` is `COST` or `USAGE` : Valid values are `MONTHLY` , `QUARTERLY` , and `ANNUALLY` .\n- If `BudgetType` is `RI_UTILIZATION` or `RI_COVERAGE` : Valid values are `DAILY` , `MONTHLY` , `QUARTERLY` , and `ANNUALLY` .",
+            "stability": "external",
+            "summary": "The start date for a budget."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1063
+          },
+          "name": "start",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudget.TimePeriodProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudgetProps": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budget.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnBudget`."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudgetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 20
+      },
+      "name": "CfnBudgetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budget.html#cfn-budgets-budget-budget"
+            },
+            "stability": "external",
+            "summary": "The budget object that you want to create."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 27
+          },
+          "name": "budget",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudget.BudgetDataProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budget.html#cfn-budgets-budget-notificationswithsubscribers"
+            },
+            "remarks": "A budget can have up to five notifications, and each notification can have one SNS subscriber and up to 10 email subscribers. If you include notifications and subscribers in your `CreateBudget` call, AWS creates the notifications and subscribers for you.",
+            "stability": "external",
+            "summary": "A notification that you want to associate with a budget."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 34
+          },
+          "name": "notificationsWithSubscribers",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-budgets.CfnBudget.NotificationWithSubscribersProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudgetProps"
+    },
+    "@aws-cdk/aws-budgets.CfnBudgetsAction": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Budgets::BudgetsAction",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html"
+        },
+        "remarks": "The `AWS::Budgets::BudgetsAction` resource enables you to take predefined actions that are initiated when a budget threshold has been exceeded. For more information, see [Managing Your Costs with Budgets](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/budgets-managing-costs.html) in the *AWS Billing and Cost Management User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Budgets::BudgetsAction`."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Budgets::BudgetsAction`."
+        },
+        "locationInModule": {
+          "filename": "lib/budgets.generated.ts",
+          "line": 1362
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-budgets.CfnBudgetsActionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 1268
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1389
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1407
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnBudgetsAction",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1272
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ActionId"
+            },
+            "stability": "external",
+            "summary": "A system-generated universally unique identifier (UUID) for the action."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1297
+          },
+          "name": "attrActionId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1394
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-actionthreshold"
+            },
+            "stability": "external",
+            "summary": "The trigger threshold of the action."
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1304
+          },
+          "name": "actionThreshold",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.ActionThresholdProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-actiontype"
+            },
+            "remarks": "This defines the type of tasks that can be carried out by this action. This field also determines the format for definition.",
+            "stability": "external",
+            "summary": "The type of action."
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1311
+          },
+          "name": "actionType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-budgetname"
+            },
+            "remarks": "\":\" and \"\\\" characters aren't allowed.",
+            "stability": "external",
+            "summary": "A string that represents the budget name."
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1318
+          },
+          "name": "budgetName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-definition"
+            },
+            "stability": "external",
+            "summary": "Specifies all of the type-specific parameters."
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1325
+          },
+          "name": "definition",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.DefinitionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-executionrolearn"
+            },
+            "remarks": "Roles and actions must be in the same account.",
+            "stability": "external",
+            "summary": "The role passed for action execution and reversion."
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1332
+          },
+          "name": "executionRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-notificationtype"
+            },
+            "stability": "external",
+            "summary": "The type of a notification."
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1339
+          },
+          "name": "notificationType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-subscribers"
+            },
+            "stability": "external",
+            "summary": "A list of subscribers."
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1346
+          },
+          "name": "subscribers",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.SubscriberProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-approvalmodel"
+            },
+            "stability": "external",
+            "summary": "This specifies if the action needs manual or automatic approval."
+          },
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1353
+          },
+          "name": "approvalModel",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudgetsAction"
+    },
+    "@aws-cdk/aws-budgets.CfnBudgetsAction.ActionThresholdProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-actionthreshold.html"
+        },
+        "stability": "external",
+        "summary": "The trigger threshold of the action."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.ActionThresholdProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 1421
+      },
+      "name": "ActionThresholdProperty",
+      "namespace": "CfnBudgetsAction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-actionthreshold.html#cfn-budgets-budgetsaction-actionthreshold-type"
+            },
+            "stability": "external",
+            "summary": "The type of threshold for a notification."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1427
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-actionthreshold.html#cfn-budgets-budgetsaction-actionthreshold-value"
+            },
+            "stability": "external",
+            "summary": "The threshold of a notification."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1433
+          },
+          "name": "value",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudgetsAction.ActionThresholdProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudgetsAction.DefinitionProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-definition.html"
+        },
+        "stability": "external",
+        "summary": "The definition is where you specify all of the type-specific parameters."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.DefinitionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 1499
+      },
+      "name": "DefinitionProperty",
+      "namespace": "CfnBudgetsAction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-definition.html#cfn-budgets-budgetsaction-definition-iamactiondefinition"
+            },
+            "stability": "external",
+            "summary": "The AWS Identity and Access Management ( IAM ) action definition details."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1505
+          },
+          "name": "iamActionDefinition",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.IamActionDefinitionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-definition.html#cfn-budgets-budgetsaction-definition-scpactiondefinition"
+            },
+            "stability": "external",
+            "summary": "The service control policies (SCP) action definition details."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1511
+          },
+          "name": "scpActionDefinition",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.ScpActionDefinitionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-definition.html#cfn-budgets-budgetsaction-definition-ssmactiondefinition"
+            },
+            "stability": "external",
+            "summary": "The Amazon EC2 Systems Manager ( SSM ) action definition details."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1517
+          },
+          "name": "ssmActionDefinition",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.SsmActionDefinitionProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudgetsAction.DefinitionProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudgetsAction.IamActionDefinitionProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-iamactiondefinition.html"
+        },
+        "stability": "external",
+        "summary": "The AWS Identity and Access Management ( IAM ) action definition details."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.IamActionDefinitionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 1584
+      },
+      "name": "IamActionDefinitionProperty",
+      "namespace": "CfnBudgetsAction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-iamactiondefinition.html#cfn-budgets-budgetsaction-iamactiondefinition-policyarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the policy to be attached."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1596
+          },
+          "name": "policyArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-iamactiondefinition.html#cfn-budgets-budgetsaction-iamactiondefinition-groups"
+            },
+            "remarks": "There must be at least one group.",
+            "stability": "external",
+            "summary": "A list of groups to be attached."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1590
+          },
+          "name": "groups",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-iamactiondefinition.html#cfn-budgets-budgetsaction-iamactiondefinition-roles"
+            },
+            "remarks": "There must be at least one role.",
+            "stability": "external",
+            "summary": "A list of roles to be attached."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1602
+          },
+          "name": "roles",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-iamactiondefinition.html#cfn-budgets-budgetsaction-iamactiondefinition-users"
+            },
+            "remarks": "There must be at least one user.",
+            "stability": "external",
+            "summary": "A list of users to be attached."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1608
+          },
+          "name": "users",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudgetsAction.IamActionDefinitionProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudgetsAction.ScpActionDefinitionProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-scpactiondefinition.html"
+        },
+        "stability": "external",
+        "summary": "The service control policies (SCP) action definition details."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.ScpActionDefinitionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 1679
+      },
+      "name": "ScpActionDefinitionProperty",
+      "namespace": "CfnBudgetsAction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-scpactiondefinition.html#cfn-budgets-budgetsaction-scpactiondefinition-policyid"
+            },
+            "stability": "external",
+            "summary": "The policy ID attached."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1685
+          },
+          "name": "policyId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-scpactiondefinition.html#cfn-budgets-budgetsaction-scpactiondefinition-targetids"
+            },
+            "stability": "external",
+            "summary": "A list of target IDs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1691
+          },
+          "name": "targetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudgetsAction.ScpActionDefinitionProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudgetsAction.SsmActionDefinitionProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-ssmactiondefinition.html"
+        },
+        "stability": "external",
+        "summary": "The Amazon EC2 Systems Manager ( SSM ) action definition details."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.SsmActionDefinitionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 1757
+      },
+      "name": "SsmActionDefinitionProperty",
+      "namespace": "CfnBudgetsAction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-ssmactiondefinition.html#cfn-budgets-budgetsaction-ssmactiondefinition-instanceids"
+            },
+            "stability": "external",
+            "summary": "The EC2 and RDS instance IDs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1763
+          },
+          "name": "instanceIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-ssmactiondefinition.html#cfn-budgets-budgetsaction-ssmactiondefinition-region"
+            },
+            "stability": "external",
+            "summary": "The Region to run the ( SSM ) document."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1769
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-ssmactiondefinition.html#cfn-budgets-budgetsaction-ssmactiondefinition-subtype"
+            },
+            "stability": "external",
+            "summary": "The action subType."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1775
+          },
+          "name": "subtype",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudgetsAction.SsmActionDefinitionProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudgetsAction.SubscriberProperty": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-subscriber.html"
+        },
+        "remarks": "The subscriber consists of a subscription type and either an Amazon SNS topic or an email address.\n\nFor example, an email subscriber has the following parameters:\n\n- A `subscriptionType` of `EMAIL`\n- An `address` of `example@example.com`",
+        "stability": "external",
+        "summary": "The subscriber to a budget notification."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.SubscriberProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 1850
+      },
+      "name": "SubscriberProperty",
+      "namespace": "CfnBudgetsAction",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-subscriber.html#cfn-budgets-budgetsaction-subscriber-address"
+            },
+            "remarks": "When you create a subscriber, the value of `Address` can't contain line breaks.",
+            "stability": "external",
+            "summary": "The address that AWS sends budget notifications to, either an SNS topic or an email."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1858
+          },
+          "name": "address",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budgetsaction-subscriber.html#cfn-budgets-budgetsaction-subscriber-type"
+            },
+            "stability": "external",
+            "summary": "The type of notification that AWS sends to a subscriber."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1864
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudgetsAction.SubscriberProperty"
+    },
+    "@aws-cdk/aws-budgets.CfnBudgetsActionProps": {
+      "assembly": "@aws-cdk/aws-budgets",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnBudgetsAction`."
+      },
+      "fqn": "@aws-cdk/aws-budgets.CfnBudgetsActionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/budgets.generated.ts",
+        "line": 1126
+      },
+      "name": "CfnBudgetsActionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-actionthreshold"
+            },
+            "stability": "external",
+            "summary": "The trigger threshold of the action."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1133
+          },
+          "name": "actionThreshold",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.ActionThresholdProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-actiontype"
+            },
+            "remarks": "This defines the type of tasks that can be carried out by this action. This field also determines the format for definition.",
+            "stability": "external",
+            "summary": "The type of action."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1140
+          },
+          "name": "actionType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-budgetname"
+            },
+            "remarks": "\":\" and \"\\\" characters aren't allowed.",
+            "stability": "external",
+            "summary": "A string that represents the budget name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1147
+          },
+          "name": "budgetName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-definition"
+            },
+            "stability": "external",
+            "summary": "Specifies all of the type-specific parameters."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1154
+          },
+          "name": "definition",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.DefinitionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-executionrolearn"
+            },
+            "remarks": "Roles and actions must be in the same account.",
+            "stability": "external",
+            "summary": "The role passed for action execution and reversion."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1161
+          },
+          "name": "executionRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-notificationtype"
+            },
+            "stability": "external",
+            "summary": "The type of a notification."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1168
+          },
+          "name": "notificationType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-subscribers"
+            },
+            "stability": "external",
+            "summary": "A list of subscribers."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1175
+          },
+          "name": "subscribers",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-budgets.CfnBudgetsAction.SubscriberProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-budgets-budgetsaction.html#cfn-budgets-budgetsaction-approvalmodel"
+            },
+            "stability": "external",
+            "summary": "This specifies if the action needs manual or automatic approval."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/budgets.generated.ts",
+            "line": 1182
+          },
+          "name": "approvalModel",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/budgets.generated:CfnBudgetsActionProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "KVbUwMVa9moEB3qvO5oy3anC+dsT6jqISjlFJT2JuWM="
+}

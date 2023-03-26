@@ -1,0 +1,2221 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::Athena",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "athena"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-athena",
+  "readme": {
+    "markdown": "# Amazon Athena Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as athena from '@aws-cdk/aws-athena';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for Athena construct libraries](https://constructs.dev/search?q=athena)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Athena resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Athena.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Athena](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Athena.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-athena",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Athena",
+      "packageId": "Amazon.CDK.AWS.Athena"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "athena",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.athena"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-athena"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-athena",
+      "module": "aws_cdk.aws_athena"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-athena.CfnDataCatalog": {
+      "assembly": "@aws-cdk/aws-athena",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Athena::DataCatalog",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html"
+        },
+        "remarks": "The AWS::Athena::DataCatalog resource specifies an Amazon Athena data catalog, which contains a name, description, type, parameters, and tags. For more information, see [DataCatalog](https://docs.aws.amazon.com/athena/latest/APIReference/API_DataCatalog.html) in the *Amazon Athena API Reference* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Athena::DataCatalog`."
+      },
+      "fqn": "@aws-cdk/aws-athena.CfnDataCatalog",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Athena::DataCatalog`."
+        },
+        "locationInModule": {
+          "filename": "lib/athena.generated.ts",
+          "line": 232
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-athena.CfnDataCatalogProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/athena.generated.ts",
+        "line": 146
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 250
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 265
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDataCatalog",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 150
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 255
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html#cfn-athena-datacatalog-tags"
+            },
+            "stability": "external",
+            "summary": "The tags (key-value pairs) to associate with this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 223
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html#cfn-athena-datacatalog-name"
+            },
+            "remarks": "The catalog name must be unique for the AWS account and can use a maximum of 128 alphanumeric, underscore, at sign, or hyphen characters.",
+            "stability": "external",
+            "summary": "The name of the data catalog."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 176
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html#cfn-athena-datacatalog-type"
+            },
+            "stability": "external",
+            "summary": "The type of data catalog: `LAMBDA` for a federated catalog, `GLUE` for AWS Glue Catalog, or `HIVE` for an external hive metastore."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 183
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html#cfn-athena-datacatalog-description"
+            },
+            "stability": "external",
+            "summary": "A description of the data catalog."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 190
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html#cfn-athena-datacatalog-parameters"
+            },
+            "remarks": "The mapping used depends on the catalog type.\n\n- The `HIVE` data catalog type uses the following syntax. The `metadata-function` parameter is required. `The sdk-version` parameter is optional and defaults to the currently supported version.\n\n`metadata-function= *lambda_arn* , sdk-version= *version_number*`\n- The `LAMBDA` data catalog type uses one of the following sets of required parameters, but not both.\n\n- When one Lambda function processes metadata and another Lambda function reads data, the following syntax is used. Both parameters are required.\n\n`metadata-function= *lambda_arn* , record-function= *lambda_arn*`\n- A composite Lambda function that processes both metadata and data uses the following syntax.\n\n`function= *lambda_arn*`\n- The `GLUE` type takes a catalog ID parameter and is required. The `*catalog_id*` is the account ID of the AWS account to which the Glue catalog belongs.\n\n`catalog-id= *catalog_id*`\n\n- The `GLUE` data catalog type also applies to the default `AwsDataCatalog` that already exists in your account, of which you can have only one and cannot modify.\n- Queries that specify a GLUE data catalog other than the default `AwsDataCatalog` must be run on Athena engine version 2.\n- In Regions where Athena engine version 2 is not available, creating new GLUE data catalogs results in an `INVALID_INPUT` error.",
+            "stability": "external",
+            "summary": "Specifies the Lambda function or functions to use for the data catalog."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 216
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/athena.generated:CfnDataCatalog"
+    },
+    "@aws-cdk/aws-athena.CfnDataCatalogProps": {
+      "assembly": "@aws-cdk/aws-athena",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDataCatalog`."
+      },
+      "fqn": "@aws-cdk/aws-athena.CfnDataCatalogProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/athena.generated.ts",
+        "line": 20
+      },
+      "name": "CfnDataCatalogProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html#cfn-athena-datacatalog-name"
+            },
+            "remarks": "The catalog name must be unique for the AWS account and can use a maximum of 128 alphanumeric, underscore, at sign, or hyphen characters.",
+            "stability": "external",
+            "summary": "The name of the data catalog."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 27
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html#cfn-athena-datacatalog-type"
+            },
+            "stability": "external",
+            "summary": "The type of data catalog: `LAMBDA` for a federated catalog, `GLUE` for AWS Glue Catalog, or `HIVE` for an external hive metastore."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 34
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html#cfn-athena-datacatalog-description"
+            },
+            "stability": "external",
+            "summary": "A description of the data catalog."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 41
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html#cfn-athena-datacatalog-parameters"
+            },
+            "remarks": "The mapping used depends on the catalog type.\n\n- The `HIVE` data catalog type uses the following syntax. The `metadata-function` parameter is required. `The sdk-version` parameter is optional and defaults to the currently supported version.\n\n`metadata-function= *lambda_arn* , sdk-version= *version_number*`\n- The `LAMBDA` data catalog type uses one of the following sets of required parameters, but not both.\n\n- When one Lambda function processes metadata and another Lambda function reads data, the following syntax is used. Both parameters are required.\n\n`metadata-function= *lambda_arn* , record-function= *lambda_arn*`\n- A composite Lambda function that processes both metadata and data uses the following syntax.\n\n`function= *lambda_arn*`\n- The `GLUE` type takes a catalog ID parameter and is required. The `*catalog_id*` is the account ID of the AWS account to which the Glue catalog belongs.\n\n`catalog-id= *catalog_id*`\n\n- The `GLUE` data catalog type also applies to the default `AwsDataCatalog` that already exists in your account, of which you can have only one and cannot modify.\n- Queries that specify a GLUE data catalog other than the default `AwsDataCatalog` must be run on Athena engine version 2.\n- In Regions where Athena engine version 2 is not available, creating new GLUE data catalogs results in an `INVALID_INPUT` error.",
+            "stability": "external",
+            "summary": "Specifies the Lambda function or functions to use for the data catalog."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 67
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-datacatalog.html#cfn-athena-datacatalog-tags"
+            },
+            "stability": "external",
+            "summary": "The tags (key-value pairs) to associate with this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 74
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/athena.generated:CfnDataCatalogProps"
+    },
+    "@aws-cdk/aws-athena.CfnNamedQuery": {
+      "assembly": "@aws-cdk/aws-athena",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Athena::NamedQuery",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-namedquery.html"
+        },
+        "remarks": "The `AWS::Athena::NamedQuery` resource specifies an Amazon Athena saved query, where `QueryString` contains the SQL query statements that make up the query.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Athena::NamedQuery`."
+      },
+      "fqn": "@aws-cdk/aws-athena.CfnNamedQuery",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Athena::NamedQuery`."
+        },
+        "locationInModule": {
+          "filename": "lib/athena.generated.ts",
+          "line": 458
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-athena.CfnNamedQueryProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/athena.generated.ts",
+        "line": 385
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 477
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 492
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnNamedQuery",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 389
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "NamedQueryId"
+            },
+            "stability": "external",
+            "summary": "The unique ID of the query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 414
+          },
+          "name": "attrNamedQueryId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 482
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-namedquery.html#cfn-athena-namedquery-database"
+            },
+            "stability": "external",
+            "summary": "The database to which the query belongs."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 421
+          },
+          "name": "database",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-namedquery.html#cfn-athena-namedquery-querystring"
+            },
+            "stability": "external",
+            "summary": "The SQL statements that make up the query."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 428
+          },
+          "name": "queryString",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-namedquery.html#cfn-athena-namedquery-description"
+            },
+            "stability": "external",
+            "summary": "The query description."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 435
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-namedquery.html#cfn-athena-namedquery-name"
+            },
+            "stability": "external",
+            "summary": "The query name."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 442
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-namedquery.html#cfn-athena-namedquery-workgroup"
+            },
+            "stability": "external",
+            "summary": "The name of the workgroup that contains the named query."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 449
+          },
+          "name": "workGroup",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/athena.generated:CfnNamedQuery"
+    },
+    "@aws-cdk/aws-athena.CfnNamedQueryProps": {
+      "assembly": "@aws-cdk/aws-athena",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-namedquery.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnNamedQuery`."
+      },
+      "fqn": "@aws-cdk/aws-athena.CfnNamedQueryProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/athena.generated.ts",
+        "line": 278
+      },
+      "name": "CfnNamedQueryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-namedquery.html#cfn-athena-namedquery-database"
+            },
+            "stability": "external",
+            "summary": "The database to which the query belongs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 285
+          },
+          "name": "database",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-namedquery.html#cfn-athena-namedquery-querystring"
+            },
+            "stability": "external",
+            "summary": "The SQL statements that make up the query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 292
+          },
+          "name": "queryString",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-namedquery.html#cfn-athena-namedquery-description"
+            },
+            "stability": "external",
+            "summary": "The query description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 299
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-namedquery.html#cfn-athena-namedquery-name"
+            },
+            "stability": "external",
+            "summary": "The query name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 306
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-namedquery.html#cfn-athena-namedquery-workgroup"
+            },
+            "stability": "external",
+            "summary": "The name of the workgroup that contains the named query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 313
+          },
+          "name": "workGroup",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/athena.generated:CfnNamedQueryProps"
+    },
+    "@aws-cdk/aws-athena.CfnPreparedStatement": {
+      "assembly": "@aws-cdk/aws-athena",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Athena::PreparedStatement",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-preparedstatement.html"
+        },
+        "remarks": "Specifies a prepared statement for use with SQL queries in Athena.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Athena::PreparedStatement`."
+      },
+      "fqn": "@aws-cdk/aws-athena.CfnPreparedStatement",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Athena::PreparedStatement`."
+        },
+        "locationInModule": {
+          "filename": "lib/athena.generated.ts",
+          "line": 663
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-athena.CfnPreparedStatementProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/athena.generated.ts",
+        "line": 603
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 681
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 695
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPreparedStatement",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 607
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 686
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-preparedstatement.html#cfn-athena-preparedstatement-querystatement"
+            },
+            "stability": "external",
+            "summary": "The query string for the prepared statement."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 633
+          },
+          "name": "queryStatement",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-preparedstatement.html#cfn-athena-preparedstatement-statementname"
+            },
+            "stability": "external",
+            "summary": "The name of the prepared statement."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 640
+          },
+          "name": "statementName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-preparedstatement.html#cfn-athena-preparedstatement-workgroup"
+            },
+            "stability": "external",
+            "summary": "The workgroup to which the prepared statement belongs."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 647
+          },
+          "name": "workGroup",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-preparedstatement.html#cfn-athena-preparedstatement-description"
+            },
+            "stability": "external",
+            "summary": "The description of the prepared statement."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 654
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/athena.generated:CfnPreparedStatement"
+    },
+    "@aws-cdk/aws-athena.CfnPreparedStatementProps": {
+      "assembly": "@aws-cdk/aws-athena",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-preparedstatement.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPreparedStatement`."
+      },
+      "fqn": "@aws-cdk/aws-athena.CfnPreparedStatementProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/athena.generated.ts",
+        "line": 505
+      },
+      "name": "CfnPreparedStatementProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-preparedstatement.html#cfn-athena-preparedstatement-querystatement"
+            },
+            "stability": "external",
+            "summary": "The query string for the prepared statement."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 512
+          },
+          "name": "queryStatement",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-preparedstatement.html#cfn-athena-preparedstatement-statementname"
+            },
+            "stability": "external",
+            "summary": "The name of the prepared statement."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 519
+          },
+          "name": "statementName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-preparedstatement.html#cfn-athena-preparedstatement-workgroup"
+            },
+            "stability": "external",
+            "summary": "The workgroup to which the prepared statement belongs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 526
+          },
+          "name": "workGroup",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-preparedstatement.html#cfn-athena-preparedstatement-description"
+            },
+            "stability": "external",
+            "summary": "The description of the prepared statement."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 533
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/athena.generated:CfnPreparedStatementProps"
+    },
+    "@aws-cdk/aws-athena.CfnWorkGroup": {
+      "assembly": "@aws-cdk/aws-athena",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Athena::WorkGroup",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html"
+        },
+        "remarks": "The AWS::Athena::WorkGroup resource specifies an Amazon Athena workgroup, which contains a name, description, creation time, state, and other configuration, listed under `WorkGroupConfiguration` . Each workgroup enables you to isolate queries for you or your group from other queries in the same account. For more information, see [CreateWorkGroup](https://docs.aws.amazon.com/athena/latest/APIReference/API_CreateWorkGroup.html) in the *Amazon Athena API Reference* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Athena::WorkGroup`."
+      },
+      "fqn": "@aws-cdk/aws-athena.CfnWorkGroup",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Athena::WorkGroup`."
+        },
+        "locationInModule": {
+          "filename": "lib/athena.generated.ts",
+          "line": 910
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-athena.CfnWorkGroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/athena.generated.ts",
+        "line": 824
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 930
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 946
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnWorkGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 828
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationTime"
+            },
+            "remarks": "For example: `1582761016` .",
+            "stability": "external",
+            "summary": "The date and time the workgroup was created, as a UNIX timestamp in seconds."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 853
+          },
+          "name": "attrCreationTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "WorkGroupConfiguration.EngineVersion.EffectiveEngineVersion"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 859
+          },
+          "name": "attrWorkGroupConfigurationEngineVersionEffectiveEngineVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 935
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html#cfn-athena-workgroup-tags"
+            },
+            "stability": "external",
+            "summary": "The tags (key-value pairs) to associate with this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 894
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html#cfn-athena-workgroup-name"
+            },
+            "stability": "external",
+            "summary": "The workgroup name."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 866
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html#cfn-athena-workgroup-description"
+            },
+            "stability": "external",
+            "summary": "The workgroup description."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 873
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html#cfn-athena-workgroup-recursivedeleteoption"
+            },
+            "remarks": "The default is false.",
+            "stability": "external",
+            "summary": "The option to delete a workgroup and its contents even if the workgroup contains any named queries."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 880
+          },
+          "name": "recursiveDeleteOption",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html#cfn-athena-workgroup-state"
+            },
+            "stability": "external",
+            "summary": "The state of the workgroup: ENABLED or DISABLED."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 887
+          },
+          "name": "state",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html#cfn-athena-workgroup-workgroupconfiguration"
+            },
+            "remarks": "The `EnforceWorkGroupConfiguration` option determines whether workgroup settings override client-side query settings.",
+            "stability": "external",
+            "summary": "The configuration of the workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether Amazon CloudWatch Metrics are enabled for the workgroup, and the limit for the amount of bytes scanned (cutoff) per query, if it is specified."
+          },
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 901
+          },
+          "name": "workGroupConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-athena.CfnWorkGroup.WorkGroupConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/athena.generated:CfnWorkGroup"
+    },
+    "@aws-cdk/aws-athena.CfnWorkGroup.EncryptionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-athena",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-encryptionconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "If query results are encrypted in Amazon S3, indicates the encryption option used (for example, `SSE_KMS` or `CSE_KMS` ) and key information."
+      },
+      "fqn": "@aws-cdk/aws-athena.CfnWorkGroup.EncryptionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/athena.generated.ts",
+        "line": 960
+      },
+      "name": "EncryptionConfigurationProperty",
+      "namespace": "CfnWorkGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-encryptionconfiguration.html#cfn-athena-workgroup-encryptionconfiguration-encryptionoption"
+            },
+            "remarks": "If a query runs in a workgroup and the workgroup overrides client-side settings, then the workgroup's setting for encryption is used. It specifies whether query results must be encrypted, for all queries that run in this workgroup.",
+            "stability": "external",
+            "summary": "Indicates whether Amazon S3 server-side encryption with Amazon S3-managed keys ( `SSE_S3` ), server-side encryption with KMS-managed keys ( `SSE_KMS` ), or client-side encryption with KMS-managed keys ( `CSE_KMS` ) is used."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 968
+          },
+          "name": "encryptionOption",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-encryptionconfiguration.html#cfn-athena-workgroup-encryptionconfiguration-kmskey"
+            },
+            "stability": "external",
+            "summary": "For `SSE_KMS` and `CSE_KMS` , this is the KMS key ARN or ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 974
+          },
+          "name": "kmsKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/athena.generated:CfnWorkGroup.EncryptionConfigurationProperty"
+    },
+    "@aws-cdk/aws-athena.CfnWorkGroup.EngineVersionProperty": {
+      "assembly": "@aws-cdk/aws-athena",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-engineversion.html"
+        },
+        "stability": "external",
+        "summary": "The Athena engine version for running queries, or the PySpark engine version for running sessions."
+      },
+      "fqn": "@aws-cdk/aws-athena.CfnWorkGroup.EngineVersionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/athena.generated.ts",
+        "line": 1039
+      },
+      "name": "EngineVersionProperty",
+      "namespace": "CfnWorkGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-engineversion.html#cfn-athena-workgroup-engineversion-effectiveengineversion"
+            },
+            "remarks": "The engine version on which the query runs. If the user requests a valid engine version other than Auto, the effective engine version is the same as the engine version that the user requested. If the user requests Auto, the effective engine version is chosen by Athena. When a request to update the engine version is made by a `CreateWorkGroup` or `UpdateWorkGroup` operation, the `EffectiveEngineVersion` field is ignored.",
+            "stability": "external",
+            "summary": "Read only."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 1045
+          },
+          "name": "effectiveEngineVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-engineversion.html#cfn-athena-workgroup-engineversion-selectedengineversion"
+            },
+            "remarks": "Possible values are determined by the output of `ListEngineVersions` , including AUTO. The default is AUTO.",
+            "stability": "external",
+            "summary": "The engine version requested by the user."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 1051
+          },
+          "name": "selectedEngineVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/athena.generated:CfnWorkGroup.EngineVersionProperty"
+    },
+    "@aws-cdk/aws-athena.CfnWorkGroup.ResultConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-athena",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-resultconfiguration.html"
+        },
+        "remarks": "These are known as \"client-side settings\". If workgroup settings override client-side settings, then the query uses the workgroup settings.",
+        "stability": "external",
+        "summary": "The location in Amazon S3 where query results are stored and the encryption option, if any, used for query results."
+      },
+      "fqn": "@aws-cdk/aws-athena.CfnWorkGroup.ResultConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/athena.generated.ts",
+        "line": 1115
+      },
+      "name": "ResultConfigurationProperty",
+      "namespace": "CfnWorkGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-resultconfiguration.html#cfn-athena-workgroup-resultconfiguration-encryptionconfiguration"
+            },
+            "remarks": "This is a client-side setting. If workgroup settings override client-side settings, then the query uses the encryption configuration that is specified for the workgroup, and also uses the location for storing query results specified in the workgroup. See `EnforceWorkGroupConfiguration` and [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
+            "stability": "external",
+            "summary": "If query results are encrypted in Amazon S3, indicates the encryption option used (for example, `SSE_KMS` or `CSE_KMS` ) and key information."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 1121
+          },
+          "name": "encryptionConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-athena.CfnWorkGroup.EncryptionConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-resultconfiguration.html#cfn-athena-workgroup-resultconfiguration-outputlocation"
+            },
+            "remarks": "To run a query, you must specify the query results location using either a client-side setting for individual queries or a location specified by the workgroup. If workgroup settings override client-side settings, then the query uses the location specified for the workgroup. If no query location is set, Athena issues an error. For more information, see [Working with Query Results, Output Files, and Query History](https://docs.aws.amazon.com/athena/latest/ug/querying.html) and `EnforceWorkGroupConfiguration` .",
+            "stability": "external",
+            "summary": "The location in Amazon S3 where your query results are stored, such as `s3://path/to/query/bucket/` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 1127
+          },
+          "name": "outputLocation",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/athena.generated:CfnWorkGroup.ResultConfigurationProperty"
+    },
+    "@aws-cdk/aws-athena.CfnWorkGroup.WorkGroupConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-athena",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfiguration.html"
+        },
+        "remarks": "The `EnforceWorkGroupConfiguration` option determines whether workgroup settings override client-side query settings.",
+        "stability": "external",
+        "summary": "The configuration of the workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether Amazon CloudWatch Metrics are enabled for the workgroup, and the limit for the amount of bytes scanned (cutoff) per query, if it is specified."
+      },
+      "fqn": "@aws-cdk/aws-athena.CfnWorkGroup.WorkGroupConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/athena.generated.ts",
+        "line": 1191
+      },
+      "name": "WorkGroupConfigurationProperty",
+      "namespace": "CfnWorkGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfiguration.html#cfn-athena-workgroup-workgroupconfiguration-bytesscannedcutoffperquery"
+            },
+            "remarks": "No default is defined.\n\n> This property currently supports integer types. Support for long values is planned.",
+            "stability": "external",
+            "summary": "The upper limit (cutoff) for the amount of bytes a single query in a workgroup is allowed to scan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 1199
+          },
+          "name": "bytesScannedCutoffPerQuery",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfiguration.html#cfn-athena-workgroup-workgroupconfiguration-enforceworkgroupconfiguration"
+            },
+            "remarks": "If set to \"false\", client-side settings are used. For more information, see [Workgroup Settings Override Client-Side Settings](https://docs.aws.amazon.com/athena/latest/ug/workgroups-settings-override.html) .",
+            "stability": "external",
+            "summary": "If set to \"true\", the settings for the workgroup override client-side settings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 1205
+          },
+          "name": "enforceWorkGroupConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfiguration.html#cfn-athena-workgroup-workgroupconfiguration-engineversion"
+            },
+            "remarks": "Queries on the `AmazonAthenaPreviewFunctionality` workgroup run on the preview engine regardless of this setting.",
+            "stability": "external",
+            "summary": "The engine version that all queries running on the workgroup use."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 1211
+          },
+          "name": "engineVersion",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-athena.CfnWorkGroup.EngineVersionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfiguration.html#cfn-athena-workgroup-workgroupconfiguration-publishcloudwatchmetricsenabled"
+            },
+            "stability": "external",
+            "summary": "Indicates that the Amazon CloudWatch metrics are enabled for the workgroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 1217
+          },
+          "name": "publishCloudWatchMetricsEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfiguration.html#cfn-athena-workgroup-workgroupconfiguration-requesterpaysenabled"
+            },
+            "remarks": "If set to `false` , workgroup members cannot query data from Requester Pays buckets, and queries that retrieve data from Requester Pays buckets cause an error. The default is `false` . For more information about Requester Pays buckets, see [Requester Pays Buckets](https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html) in the *Amazon Simple Storage Service Developer Guide* .",
+            "stability": "external",
+            "summary": "If set to `true` , allows members assigned to a workgroup to reference Amazon S3 Requester Pays buckets in queries."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 1223
+          },
+          "name": "requesterPaysEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-workgroupconfiguration.html#cfn-athena-workgroup-workgroupconfiguration-resultconfiguration"
+            },
+            "remarks": "For more information, see [Working with Query Results, Output Files, and Query History](https://docs.aws.amazon.com/athena/latest/ug/querying.html) .",
+            "stability": "external",
+            "summary": "Specifies the location in Amazon S3 where query results are stored and the encryption option, if any, used for query results."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 1229
+          },
+          "name": "resultConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-athena.CfnWorkGroup.ResultConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/athena.generated:CfnWorkGroup.WorkGroupConfigurationProperty"
+    },
+    "@aws-cdk/aws-athena.CfnWorkGroupProps": {
+      "assembly": "@aws-cdk/aws-athena",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnWorkGroup`."
+      },
+      "fqn": "@aws-cdk/aws-athena.CfnWorkGroupProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/athena.generated.ts",
+        "line": 708
+      },
+      "name": "CfnWorkGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html#cfn-athena-workgroup-name"
+            },
+            "stability": "external",
+            "summary": "The workgroup name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 715
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html#cfn-athena-workgroup-description"
+            },
+            "stability": "external",
+            "summary": "The workgroup description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 722
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html#cfn-athena-workgroup-recursivedeleteoption"
+            },
+            "remarks": "The default is false.",
+            "stability": "external",
+            "summary": "The option to delete a workgroup and its contents even if the workgroup contains any named queries."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 729
+          },
+          "name": "recursiveDeleteOption",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html#cfn-athena-workgroup-state"
+            },
+            "stability": "external",
+            "summary": "The state of the workgroup: ENABLED or DISABLED."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 736
+          },
+          "name": "state",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html#cfn-athena-workgroup-tags"
+            },
+            "stability": "external",
+            "summary": "The tags (key-value pairs) to associate with this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 743
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-athena-workgroup.html#cfn-athena-workgroup-workgroupconfiguration"
+            },
+            "remarks": "The `EnforceWorkGroupConfiguration` option determines whether workgroup settings override client-side query settings.",
+            "stability": "external",
+            "summary": "The configuration of the workgroup, which includes the location in Amazon S3 where query results are stored, the encryption option, if any, used for query results, whether Amazon CloudWatch Metrics are enabled for the workgroup, and the limit for the amount of bytes scanned (cutoff) per query, if it is specified."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/athena.generated.ts",
+            "line": 750
+          },
+          "name": "workGroupConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-athena.CfnWorkGroup.WorkGroupConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/athena.generated:CfnWorkGroupProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "0eaqzpKKZh4seMM58CX3/wrP0LVFP2pmOIkWMHdUt3w="
+}

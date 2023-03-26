@@ -1,0 +1,1498 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::ResilienceHub Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::ResilienceHub",
+    "aws-resiliencehub"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-resiliencehub",
+  "readme": {
+    "markdown": "# AWS::ResilienceHub Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as resiliencehub from '@aws-cdk/aws-resiliencehub';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for ResilienceHub construct libraries](https://constructs.dev/search?q=resiliencehub)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::ResilienceHub resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ResilienceHub.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::ResilienceHub](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ResilienceHub.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-resiliencehub",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.ResilienceHub",
+      "packageId": "Amazon.CDK.AWS.ResilienceHub",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "resiliencehub",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.resiliencehub"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-resiliencehub"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-resiliencehub",
+      "module": "aws_cdk.aws_resiliencehub"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-resiliencehub.CfnApp": {
+      "assembly": "@aws-cdk/aws-resiliencehub",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ResilienceHub::App",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html"
+        },
+        "remarks": "Creates a Resilience Hub application. A Resilience Hub application is a collection of AWS resources structured to prevent and recover AWS application disruptions. To describe a Resilience Hub application, you provide an application name, resources from one or more–up to five– AWS CloudFormation stacks, and an appropriate resiliency policy.\n\nAfter you create a Resilience Hub application, you publish it so that you can run a resiliency assessment on it. You can then use recommendations from the assessment to improve resiliency by running another assessment, comparing results, and then iterating the process until you achieve your goals for recovery time objective (RTO) and recovery point objective (RPO).",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ResilienceHub::App`."
+      },
+      "fqn": "@aws-cdk/aws-resiliencehub.CfnApp",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ResilienceHub::App`."
+        },
+        "locationInModule": {
+          "filename": "lib/resiliencehub.generated.ts",
+          "line": 237
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-resiliencehub.CfnAppProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/resiliencehub.generated.ts",
+        "line": 150
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 259
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 276
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnApp",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 154
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AppArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the app."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 179
+          },
+          "name": "attrAppArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 264
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-tags"
+            },
+            "remarks": "A tag is a label that you assign to an AWS resource. Each tag consists of a key/value pair.",
+            "stability": "external",
+            "summary": "The tags assigned to the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 228
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-apptemplatebody"
+            },
+            "stability": "external",
+            "summary": "A string containing a full Resilience Hub app template body."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 186
+          },
+          "name": "appTemplateBody",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-name"
+            },
+            "stability": "external",
+            "summary": "The name for the application."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 193
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-resourcemappings"
+            },
+            "stability": "external",
+            "summary": "An array of ResourceMapping objects."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 200
+          },
+          "name": "resourceMappings",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-resiliencehub.CfnApp.ResourceMappingProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-appassessmentschedule"
+            },
+            "stability": "external",
+            "summary": "Assessment execution schedule with 'Daily' or 'Disabled' values."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 207
+          },
+          "name": "appAssessmentSchedule",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-description"
+            },
+            "stability": "external",
+            "summary": "The optional description for an app."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 214
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-resiliencypolicyarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the resiliency policy."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 221
+          },
+          "name": "resiliencyPolicyArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/resiliencehub.generated:CfnApp"
+    },
+    "@aws-cdk/aws-resiliencehub.CfnApp.PhysicalResourceIdProperty": {
+      "assembly": "@aws-cdk/aws-resiliencehub",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-app-physicalresourceid.html"
+        },
+        "stability": "external",
+        "summary": "Defines a physical resource identifier."
+      },
+      "fqn": "@aws-cdk/aws-resiliencehub.CfnApp.PhysicalResourceIdProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resiliencehub.generated.ts",
+        "line": 290
+      },
+      "name": "PhysicalResourceIdProperty",
+      "namespace": "CfnApp",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-app-physicalresourceid.html#cfn-resiliencehub-app-physicalresourceid-identifier"
+            },
+            "stability": "external",
+            "summary": "The identifier of the physical resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 308
+          },
+          "name": "identifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-app-physicalresourceid.html#cfn-resiliencehub-app-physicalresourceid-type"
+            },
+            "remarks": "- **Arn** - The resource identifier is an Amazon Resource Name (ARN) .\n- **Native** - The resource identifier is a Resilience Hub-native identifier.",
+            "stability": "external",
+            "summary": "Specifies the type of physical resource identifier."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 317
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-app-physicalresourceid.html#cfn-resiliencehub-app-physicalresourceid-awsaccountid"
+            },
+            "stability": "external",
+            "summary": "The AWS account that owns the physical resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 296
+          },
+          "name": "awsAccountId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-app-physicalresourceid.html#cfn-resiliencehub-app-physicalresourceid-awsregion"
+            },
+            "stability": "external",
+            "summary": "The AWS Region that the physical resource is located in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 302
+          },
+          "name": "awsRegion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/resiliencehub.generated:CfnApp.PhysicalResourceIdProperty"
+    },
+    "@aws-cdk/aws-resiliencehub.CfnApp.ResourceMappingProperty": {
+      "assembly": "@aws-cdk/aws-resiliencehub",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-app-resourcemapping.html"
+        },
+        "stability": "external",
+        "summary": "Defines a resource mapping."
+      },
+      "fqn": "@aws-cdk/aws-resiliencehub.CfnApp.ResourceMappingProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resiliencehub.generated.ts",
+        "line": 389
+      },
+      "name": "ResourceMappingProperty",
+      "namespace": "CfnApp",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-app-resourcemapping.html#cfn-resiliencehub-app-resourcemapping-mappingtype"
+            },
+            "remarks": "Valid Values: CfnStack | Resource | AppRegistryApp | ResourceGroup | Terraform\n\n- **AppRegistryApp** - The resource is mapped to another application. The name of the application is contained in the `appRegistryAppName` property.\n- **CfnStack** - The resource is mapped to a CloudFormation stack. The name of the CloudFormation stack is contained in the `logicalStackName` property.\n- **Resource** - The resource is mapped to another resource. The name of the resource is contained in the `resourceName` property.\n- **ResourceGroup** - The resource is mapped to a resource group. The name of the resource group is contained in the `resourceGroupName` property.",
+            "stability": "external",
+            "summary": "Specifies the type of resource mapping."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 408
+          },
+          "name": "mappingType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-app-resourcemapping.html#cfn-resiliencehub-app-resourcemapping-physicalresourceid"
+            },
+            "stability": "external",
+            "summary": "The identifier of this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 414
+          },
+          "name": "physicalResourceId",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-resiliencehub.CfnApp.PhysicalResourceIdProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-app-resourcemapping.html#cfn-resiliencehub-app-resourcemapping-logicalstackname"
+            },
+            "stability": "external",
+            "summary": "The name of the CloudFormation stack this resource is mapped to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 395
+          },
+          "name": "logicalStackName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-app-resourcemapping.html#cfn-resiliencehub-app-resourcemapping-resourcename"
+            },
+            "stability": "external",
+            "summary": "The name of the resource this resource is mapped to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 420
+          },
+          "name": "resourceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-app-resourcemapping.html#cfn-resiliencehub-app-resourcemapping-terraformsourcename"
+            },
+            "stability": "external",
+            "summary": "The short name of the Terraform source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 426
+          },
+          "name": "terraformSourceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/resiliencehub.generated:CfnApp.ResourceMappingProperty"
+    },
+    "@aws-cdk/aws-resiliencehub.CfnAppProps": {
+      "assembly": "@aws-cdk/aws-resiliencehub",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnApp`."
+      },
+      "fqn": "@aws-cdk/aws-resiliencehub.CfnAppProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resiliencehub.generated.ts",
+        "line": 20
+      },
+      "name": "CfnAppProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-apptemplatebody"
+            },
+            "stability": "external",
+            "summary": "A string containing a full Resilience Hub app template body."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 27
+          },
+          "name": "appTemplateBody",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-name"
+            },
+            "stability": "external",
+            "summary": "The name for the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 34
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-resourcemappings"
+            },
+            "stability": "external",
+            "summary": "An array of ResourceMapping objects."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 41
+          },
+          "name": "resourceMappings",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-resiliencehub.CfnApp.ResourceMappingProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-appassessmentschedule"
+            },
+            "stability": "external",
+            "summary": "Assessment execution schedule with 'Daily' or 'Disabled' values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 48
+          },
+          "name": "appAssessmentSchedule",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-description"
+            },
+            "stability": "external",
+            "summary": "The optional description for an app."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 55
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-resiliencypolicyarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the resiliency policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 62
+          },
+          "name": "resiliencyPolicyArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-app.html#cfn-resiliencehub-app-tags"
+            },
+            "remarks": "A tag is a label that you assign to an AWS resource. Each tag consists of a key/value pair.",
+            "stability": "external",
+            "summary": "The tags assigned to the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 69
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/resiliencehub.generated:CfnAppProps"
+    },
+    "@aws-cdk/aws-resiliencehub.CfnResiliencyPolicy": {
+      "assembly": "@aws-cdk/aws-resiliencehub",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ResilienceHub::ResiliencyPolicy",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html"
+        },
+        "remarks": "Defines a resiliency policy.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ResilienceHub::ResiliencyPolicy`."
+      },
+      "fqn": "@aws-cdk/aws-resiliencehub.CfnResiliencyPolicy",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ResilienceHub::ResiliencyPolicy`."
+        },
+        "locationInModule": {
+          "filename": "lib/resiliencehub.generated.ts",
+          "line": 698
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-resiliencehub.CfnResiliencyPolicyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/resiliencehub.generated.ts",
+        "line": 618
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 719
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 735
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnResiliencyPolicy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 622
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "PolicyArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the resiliency policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 647
+          },
+          "name": "attrPolicyArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 724
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html#cfn-resiliencehub-resiliencypolicy-tags"
+            },
+            "remarks": "A tag is a label that you assign to an AWS resource. Each tag consists of a key/value pair.",
+            "stability": "external",
+            "summary": "The tags assigned to the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 689
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html#cfn-resiliencehub-resiliencypolicy-policy"
+            },
+            "stability": "external",
+            "summary": "The resiliency policy."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 654
+          },
+          "name": "policy",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-resiliencehub.CfnResiliencyPolicy.FailurePolicyProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html#cfn-resiliencehub-resiliencypolicy-policyname"
+            },
+            "stability": "external",
+            "summary": "The name of the policy."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 661
+          },
+          "name": "policyName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html#cfn-resiliencehub-resiliencypolicy-tier"
+            },
+            "stability": "external",
+            "summary": "The tier for this resiliency policy, ranging from the highest severity ( `MissionCritical` ) to lowest ( `NonCritical` )."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 668
+          },
+          "name": "tier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html#cfn-resiliencehub-resiliencypolicy-datalocationconstraint"
+            },
+            "stability": "external",
+            "summary": "Specifies a high-level geographical location constraint for where your resilience policy data can be stored."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 675
+          },
+          "name": "dataLocationConstraint",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html#cfn-resiliencehub-resiliencypolicy-policydescription"
+            },
+            "stability": "external",
+            "summary": "The description for the policy."
+          },
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 682
+          },
+          "name": "policyDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/resiliencehub.generated:CfnResiliencyPolicy"
+    },
+    "@aws-cdk/aws-resiliencehub.CfnResiliencyPolicy.FailurePolicyProperty": {
+      "assembly": "@aws-cdk/aws-resiliencehub",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-resiliencypolicy-failurepolicy.html"
+        },
+        "stability": "external",
+        "summary": "Defines a failure policy."
+      },
+      "fqn": "@aws-cdk/aws-resiliencehub.CfnResiliencyPolicy.FailurePolicyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resiliencehub.generated.ts",
+        "line": 749
+      },
+      "name": "FailurePolicyProperty",
+      "namespace": "CfnResiliencyPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-resiliencypolicy-failurepolicy.html#cfn-resiliencehub-resiliencypolicy-failurepolicy-rpoinsecs"
+            },
+            "stability": "external",
+            "summary": "The Recovery Point Objective (RPO), in seconds."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 755
+          },
+          "name": "rpoInSecs",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resiliencehub-resiliencypolicy-failurepolicy.html#cfn-resiliencehub-resiliencypolicy-failurepolicy-rtoinsecs"
+            },
+            "stability": "external",
+            "summary": "The Recovery Time Objective (RTO), in seconds."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 761
+          },
+          "name": "rtoInSecs",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/resiliencehub.generated:CfnResiliencyPolicy.FailurePolicyProperty"
+    },
+    "@aws-cdk/aws-resiliencehub.CfnResiliencyPolicyProps": {
+      "assembly": "@aws-cdk/aws-resiliencehub",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnResiliencyPolicy`."
+      },
+      "fqn": "@aws-cdk/aws-resiliencehub.CfnResiliencyPolicyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resiliencehub.generated.ts",
+        "line": 500
+      },
+      "name": "CfnResiliencyPolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html#cfn-resiliencehub-resiliencypolicy-policy"
+            },
+            "stability": "external",
+            "summary": "The resiliency policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 507
+          },
+          "name": "policy",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-resiliencehub.CfnResiliencyPolicy.FailurePolicyProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html#cfn-resiliencehub-resiliencypolicy-policyname"
+            },
+            "stability": "external",
+            "summary": "The name of the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 514
+          },
+          "name": "policyName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html#cfn-resiliencehub-resiliencypolicy-tier"
+            },
+            "stability": "external",
+            "summary": "The tier for this resiliency policy, ranging from the highest severity ( `MissionCritical` ) to lowest ( `NonCritical` )."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 521
+          },
+          "name": "tier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html#cfn-resiliencehub-resiliencypolicy-datalocationconstraint"
+            },
+            "stability": "external",
+            "summary": "Specifies a high-level geographical location constraint for where your resilience policy data can be stored."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 528
+          },
+          "name": "dataLocationConstraint",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html#cfn-resiliencehub-resiliencypolicy-policydescription"
+            },
+            "stability": "external",
+            "summary": "The description for the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 535
+          },
+          "name": "policyDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resiliencehub-resiliencypolicy.html#cfn-resiliencehub-resiliencypolicy-tags"
+            },
+            "remarks": "A tag is a label that you assign to an AWS resource. Each tag consists of a key/value pair.",
+            "stability": "external",
+            "summary": "The tags assigned to the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resiliencehub.generated.ts",
+            "line": 542
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/resiliencehub.generated:CfnResiliencyPolicyProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "IEpPHjS6IwXO3HPh7WGUR1u6dSp5y0sEVJyu/YFnpj0="
+}

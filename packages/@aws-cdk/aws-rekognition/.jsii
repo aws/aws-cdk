@@ -1,0 +1,2129 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::Rekognition",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::Rekognition",
+    "aws-rekognition"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-rekognition",
+  "readme": {
+    "markdown": "# AWS::Rekognition Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as rekognition from '@aws-cdk/aws-rekognition';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for Rekognition construct libraries](https://constructs.dev/search?q=rekognition)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Rekognition resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Rekognition.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Rekognition](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Rekognition.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-rekognition",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Rekognition",
+      "packageId": "Amazon.CDK.AWS.Rekognition",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "rekognition",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.rekognition"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-rekognition"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-rekognition",
+      "module": "aws_cdk.aws_rekognition"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-rekognition.CfnCollection": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Rekognition::Collection",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-collection.html"
+        },
+        "remarks": "The `AWS::Rekognition::Collection` type creates a server-side container called a collection. You can use a collection to store information about detected faces and search for known faces in images, stored videos, and streaming videos.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Rekognition::Collection`."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnCollection",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Rekognition::Collection`."
+        },
+        "locationInModule": {
+          "filename": "lib/rekognition.generated.ts",
+          "line": 148
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-rekognition.CfnCollectionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 96
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 163
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 175
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnCollection",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 100
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "Returns the Amazon Resource Name of the collection."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 125
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 168
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-collection.html#cfn-rekognition-collection-tags"
+            },
+            "stability": "external",
+            "summary": "A set of tags (key-value pairs) that you want to attach to the collection."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 139
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-collection.html#cfn-rekognition-collection-collectionid"
+            },
+            "stability": "external",
+            "summary": "ID for the collection that you are creating."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 132
+          },
+          "name": "collectionId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnCollection"
+    },
+    "@aws-cdk/aws-rekognition.CfnCollectionProps": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-collection.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnCollection`."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnCollectionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 20
+      },
+      "name": "CfnCollectionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-collection.html#cfn-rekognition-collection-collectionid"
+            },
+            "stability": "external",
+            "summary": "ID for the collection that you are creating."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 27
+          },
+          "name": "collectionId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-collection.html#cfn-rekognition-collection-tags"
+            },
+            "stability": "external",
+            "summary": "A set of tags (key-value pairs) that you want to attach to the collection."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 34
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnCollectionProps"
+    },
+    "@aws-cdk/aws-rekognition.CfnProject": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Rekognition::Project",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-project.html"
+        },
+        "remarks": "The `AWS::Rekognition::Project` type creates an Amazon Rekognition Custom Labels project. A project is a group of resources needed to create and manage versions of an Amazon Rekognition Custom Labels model.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Rekognition::Project`."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnProject",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Rekognition::Project`."
+        },
+        "locationInModule": {
+          "filename": "lib/rekognition.generated.ts",
+          "line": 299
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-rekognition.CfnProjectProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 254
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 313
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 324
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnProject",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 258
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "Returns the Amazon Resource Name of the project."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 283
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 318
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-project.html#cfn-rekognition-project-projectname"
+            },
+            "stability": "external",
+            "summary": "The name of the project to create."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 290
+          },
+          "name": "projectName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnProject"
+    },
+    "@aws-cdk/aws-rekognition.CfnProjectProps": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-project.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnProject`."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnProjectProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 188
+      },
+      "name": "CfnProjectProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-project.html#cfn-rekognition-project-projectname"
+            },
+            "stability": "external",
+            "summary": "The name of the project to create."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 195
+          },
+          "name": "projectName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnProjectProps"
+    },
+    "@aws-cdk/aws-rekognition.CfnStreamProcessor": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Rekognition::StreamProcessor",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html"
+        },
+        "remarks": "The `AWS::Rekognition::StreamProcessor` type creates a stream processor used to detect and recognize faces or to detect connected home labels in a streaming video. Amazon Rekognition Video is a consumer of live video from Amazon Kinesis Video Streams. There are two different settings for stream processors in Amazon Rekognition, one for detecting faces and one for connected home features.\n\nIf you are creating a stream processor for detecting faces, you provide a Kinesis video stream (input) and a Kinesis data stream (output). You also specify the face recognition criteria in FaceSearchSettings. For example, the collection containing faces that you want to recognize.\n\nIf you are creating a stream processor for detection of connected home labels, you provide a Kinesis video stream for input, and for output an Amazon S3 bucket and an Amazon SNS topic. You can also provide a KMS key ID to encrypt the data sent to your Amazon S3 bucket. You specify what you want to detect in ConnectedHomeSettings, such as people, packages, and pets.\n\nYou can also specify where in the frame you want Amazon Rekognition to monitor with BoundingBoxRegionsOfInterest and PolygonRegionsOfInterest. The Name is used to manage the stream processor and it is the identifier for the stream processor. The `AWS::Rekognition::StreamProcessor` resource creates a stream processor in the same Region where you create the Amazon CloudFormation stack.\n\nFor more information, see [CreateStreamProcessor](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_CreateStreamProcessor) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Rekognition::StreamProcessor`."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Rekognition::StreamProcessor`."
+        },
+        "locationInModule": {
+          "filename": "lib/rekognition.generated.ts",
+          "line": 673
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessorProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 532
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 702
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 725
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnStreamProcessor",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 536
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "Amazon Resource Name for the newly created stream processor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 561
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "stability": "external",
+            "summary": "Current status of the Amazon Rekognition stream processor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 567
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StatusMessage"
+            },
+            "stability": "external",
+            "summary": "Detailed status message about the stream processor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 573
+          },
+          "name": "attrStatusMessage",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 707
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-tags"
+            },
+            "remarks": "For more information, see the Tags section of [CreateStreamProcessor](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_CreateStreamProcessor) .",
+            "stability": "external",
+            "summary": "A set of tags (key-value pairs) that you want to attach to the stream processor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 664
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-kinesisvideostream"
+            },
+            "remarks": "For more information, see [KinesisVideoStream](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_KinesisVideoStream) .",
+            "stability": "external",
+            "summary": "The Kinesis video stream that provides the source of the streaming video for an Amazon Rekognition Video stream processor."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 580
+          },
+          "name": "kinesisVideoStream",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.KinesisVideoStreamProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-polygonregionsofinterest"
+            },
+            "stability": "external",
+            "summary": "A set of ordered lists of [Point](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_Point) objects. Each entry of the set contains a polygon denoting a region of interest on the screen. Each polygon is an ordered list of [Point](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_Point) objects. For more information, see the Polygon field of [RegionOfInterest](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_RegionOfInterest) ."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 650
+          },
+          "name": "polygonRegionsOfInterest",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-rolearn"
+            },
+            "remarks": "The IAM role provides Rekognition read permissions to the Kinesis stream. It also provides write permissions to an Amazon S3 bucket and Amazon Simple Notification Service topic for a connected home stream processor. This is required for both face search and connected home stream processors. For information about constraints, see the RoleArn section of [CreateStreamProcessor](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_CreateStreamProcessor) .",
+            "stability": "external",
+            "summary": "The ARN of the IAM role that allows access to the stream processor."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 587
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-boundingboxregionsofinterest"
+            },
+            "remarks": "For more information, see the BoundingBox field of [RegionOfInterest](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_RegionOfInterest) .",
+            "stability": "external",
+            "summary": "List of BoundingBox objects, each of which denotes a region of interest on screen."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 594
+          },
+          "name": "boundingBoxRegionsOfInterest",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.BoundingBoxProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-connectedhomesettings"
+            },
+            "remarks": "You can use a stream processor for connected home features and select what you want the stream processor to detect, such as people or pets. When the stream processor has started, one notification is sent for each object class specified. For more information, see the ConnectedHome section of [StreamProcessorSettings](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessorSettings) .",
+            "stability": "external",
+            "summary": "Connected home settings to use on a streaming video."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 601
+          },
+          "name": "connectedHomeSettings",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.ConnectedHomeSettingsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-datasharingpreference"
+            },
+            "remarks": "You can choose this option at the account level or on a per-stream basis. Note that if you opt out at the account level this setting is ignored on individual streams. For more information, see [StreamProcessorDataSharingPreference](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessorDataSharingPreference) .",
+            "stability": "external",
+            "summary": "Allows you to opt in or opt out to share data with Rekognition to improve model performance."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 608
+          },
+          "name": "dataSharingPreference",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.DataSharingPreferenceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-facesearchsettings"
+            },
+            "remarks": "For more information regarding the contents of the parameters, see [FaceSearchSettings](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_FaceSearchSettings) .",
+            "stability": "external",
+            "summary": "The input parameters used to recognize faces in a streaming video analyzed by an Amazon Rekognition stream processor."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 615
+          },
+          "name": "faceSearchSettings",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.FaceSearchSettingsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-kinesisdatastream"
+            },
+            "remarks": "This is the Amazon Kinesis Data Streams instance to which the Amazon Rekognition stream processor streams the analysis results. This must be created within the constraints specified at [KinesisDataStream](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_KinesisDataStream) .",
+            "stability": "external",
+            "summary": "Amazon Rekognition's Video Stream Processor takes a Kinesis video stream as input."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 622
+          },
+          "name": "kinesisDataStream",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.KinesisDataStreamProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-kmskeyid"
+            },
+            "remarks": "Optional parameter for connected home stream processors used to encrypt results and data published to your Amazon S3 bucket. For more information, see the KMSKeyId section of [CreateStreamProcessor](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_CreateStreamProcessor) .",
+            "stability": "external",
+            "summary": "The identifier for your Amazon Key Management Service key (Amazon KMS key)."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 629
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-name"
+            },
+            "stability": "external",
+            "summary": "The Name attribute specifies the name of the stream processor and it must be within the constraints described in the Name section of [StreamProcessor](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessor) . If you don't specify a name, Amazon CloudFormation generates a unique ID and uses that ID for the stream processor name."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 636
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-notificationchannel"
+            },
+            "remarks": "Amazon Rekognition publishes a notification the first time an object of interest or a person is detected in the video stream. Amazon Rekognition also publishes an end-of-session notification with a summary when the stream processing session is complete. For more information, see [StreamProcessorNotificationChannel](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessorNotificationChannel) .",
+            "stability": "external",
+            "summary": "The Amazon Simple Notification Service topic to which Amazon Rekognition publishes the object detection results and completion status of a video analysis operation."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 643
+          },
+          "name": "notificationChannel",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.NotificationChannelProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-s3destination"
+            },
+            "remarks": "For more information, see the S3Destination section of [StreamProcessorOutput](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessorOutput) .",
+            "stability": "external",
+            "summary": "The Amazon S3 bucket location to which Amazon Rekognition publishes the detailed inference results of a video analysis operation."
+          },
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 657
+          },
+          "name": "s3Destination",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.S3DestinationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnStreamProcessor"
+    },
+    "@aws-cdk/aws-rekognition.CfnStreamProcessor.BoundingBoxProperty": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-boundingbox.html"
+        },
+        "remarks": "The `left` (x-coordinate) and `top` (y-coordinate) are coordinates representing the top and left sides of the bounding box. Note that the upper-left corner of the image is the origin (0,0).\n\nThe `top` and `left` values returned are ratios of the overall image size. For example, if the input image is 700x200 pixels, and the top-left coordinate of the bounding box is 350x50 pixels, the API returns a `left` value of 0.5 (350/700) and a `top` value of 0.25 (50/200).\n\nThe `width` and `height` values represent the dimensions of the bounding box as a ratio of the overall image dimension. For example, if the input image is 700x200 pixels, and the bounding box width is 70 pixels, the width returned is 0.1. For more information, see [BoundingBox](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_BoundingBox) .\n\n> The bounding box coordinates can have negative values. For example, if Amazon Rekognition is able to detect a face that is at the image edge and is only partially visible, the service can return coordinates that are outside the image bounds and, depending on the image edge, you might get negative values or values greater than 1 for the `left` or `top` values.",
+        "stability": "external",
+        "summary": "Identifies the bounding box around the label, face, text, or personal protective equipment."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.BoundingBoxProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 745
+      },
+      "name": "BoundingBoxProperty",
+      "namespace": "CfnStreamProcessor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-boundingbox.html#cfn-rekognition-streamprocessor-boundingbox-height"
+            },
+            "stability": "external",
+            "summary": "Height of the bounding box as a ratio of the overall image height."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 751
+          },
+          "name": "height",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-boundingbox.html#cfn-rekognition-streamprocessor-boundingbox-left"
+            },
+            "stability": "external",
+            "summary": "Left coordinate of the bounding box as a ratio of overall image width."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 757
+          },
+          "name": "left",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-boundingbox.html#cfn-rekognition-streamprocessor-boundingbox-top"
+            },
+            "stability": "external",
+            "summary": "Top coordinate of the bounding box as a ratio of overall image height."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 763
+          },
+          "name": "top",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-boundingbox.html#cfn-rekognition-streamprocessor-boundingbox-width"
+            },
+            "stability": "external",
+            "summary": "Width of the bounding box as a ratio of the overall image width."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 769
+          },
+          "name": "width",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnStreamProcessor.BoundingBoxProperty"
+    },
+    "@aws-cdk/aws-rekognition.CfnStreamProcessor.ConnectedHomeSettingsProperty": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-connectedhomesettings.html"
+        },
+        "remarks": "Defining the settings is required in the request parameter for `CreateStreamProcessor` . Including this setting in the CreateStreamProcessor request lets you use the stream processor for connected home features. You can then select what you want the stream processor to detect, such as people or pets.\n\nWhen the stream processor has started, one notification is sent for each object class specified. For example, if packages and pets are selected, one SNS notification is published the first time a package is detected and one SNS notification is published the first time a pet is detected. An end-of-session summary is also published. For more information, see the ConnectedHome section of [StreamProcessorSettings](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessorSettings) .",
+        "stability": "external",
+        "summary": "Connected home settings to use on a streaming video."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.ConnectedHomeSettingsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 845
+      },
+      "name": "ConnectedHomeSettingsProperty",
+      "namespace": "CfnStreamProcessor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-connectedhomesettings.html#cfn-rekognition-streamprocessor-connectedhomesettings-labels"
+            },
+            "remarks": "The current valid labels you can include in this list are: \"PERSON\", \"PET\", \"PACKAGE\", and \"ALL\".",
+            "stability": "external",
+            "summary": "Specifies what you want to detect in the video, such as people, packages, or pets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 851
+          },
+          "name": "labels",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-connectedhomesettings.html#cfn-rekognition-streamprocessor-connectedhomesettings-minconfidence"
+            },
+            "stability": "external",
+            "summary": "The minimum confidence required to label an object in the video."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 857
+          },
+          "name": "minConfidence",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnStreamProcessor.ConnectedHomeSettingsProperty"
+    },
+    "@aws-cdk/aws-rekognition.CfnStreamProcessor.DataSharingPreferenceProperty": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-datasharingpreference.html"
+        },
+        "remarks": "You can choose this option at the account level or on a per-stream basis. Note that if you opt out at the account level, this setting is ignored on individual streams. For more information, see [StreamProcessorDataSharingPreference](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessorDataSharingPreference) .",
+        "stability": "external",
+        "summary": "Allows you to opt in or opt out to share data with Rekognition to improve model performance."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.DataSharingPreferenceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 922
+      },
+      "name": "DataSharingPreferenceProperty",
+      "namespace": "CfnStreamProcessor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-datasharingpreference.html#cfn-rekognition-streamprocessor-datasharingpreference-optin"
+            },
+            "stability": "external",
+            "summary": "Describes the opt-in status applied to a stream processor's data sharing policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 928
+          },
+          "name": "optIn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnStreamProcessor.DataSharingPreferenceProperty"
+    },
+    "@aws-cdk/aws-rekognition.CfnStreamProcessor.FaceSearchSettingsProperty": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-facesearchsettings.html"
+        },
+        "remarks": "`FaceSearchSettings` is a request parameter for [CreateStreamProcessor](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_CreateStreamProcessor) . For more information, see [FaceSearchSettings](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_FaceSearchSettings) .",
+        "stability": "external",
+        "summary": "The input parameters used to recognize faces in a streaming video analyzed by a Amazon Rekognition stream processor."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.FaceSearchSettingsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 990
+      },
+      "name": "FaceSearchSettingsProperty",
+      "namespace": "CfnStreamProcessor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-facesearchsettings.html#cfn-rekognition-streamprocessor-facesearchsettings-collectionid"
+            },
+            "stability": "external",
+            "summary": "The ID of a collection that contains faces that you want to search for."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 996
+          },
+          "name": "collectionId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-facesearchsettings.html#cfn-rekognition-streamprocessor-facesearchsettings-facematchthreshold"
+            },
+            "remarks": "The default is 80. 0 is the lowest confidence. 100 is the highest confidence. Values between 0 and 100 are accepted, and values lower than 80 are set to 80.",
+            "stability": "external",
+            "summary": "Minimum face match confidence score that must be met to return a result for a recognized face."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 1002
+          },
+          "name": "faceMatchThreshold",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnStreamProcessor.FaceSearchSettingsProperty"
+    },
+    "@aws-cdk/aws-rekognition.CfnStreamProcessor.KinesisDataStreamProperty": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-kinesisdatastream.html"
+        },
+        "remarks": "This is the Amazon Kinesis Data Streams instance to which the Amazon Rekognition stream processor streams the analysis results. This must be created within the constraints specified at [KinesisDataStream](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_KinesisDataStream) .",
+        "stability": "external",
+        "summary": "Amazon Rekognition Video Stream Processor take as input a Kinesis video stream (Input) and a Kinesis data stream (Output)."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.KinesisDataStreamProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 1067
+      },
+      "name": "KinesisDataStreamProperty",
+      "namespace": "CfnStreamProcessor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-kinesisdatastream.html#cfn-rekognition-streamprocessor-kinesisdatastream-arn"
+            },
+            "stability": "external",
+            "summary": "ARN of the output Amazon Kinesis Data Streams stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 1073
+          },
+          "name": "arn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnStreamProcessor.KinesisDataStreamProperty"
+    },
+    "@aws-cdk/aws-rekognition.CfnStreamProcessor.KinesisVideoStreamProperty": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-kinesisvideostream.html"
+        },
+        "remarks": "For more information, see [KinesisVideoStream](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_KinesisVideoStream) .",
+        "stability": "external",
+        "summary": "The Kinesis video stream that provides the source of the streaming video for an Amazon Rekognition Video stream processor."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.KinesisVideoStreamProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 1135
+      },
+      "name": "KinesisVideoStreamProperty",
+      "namespace": "CfnStreamProcessor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-kinesisvideostream.html#cfn-rekognition-streamprocessor-kinesisvideostream-arn"
+            },
+            "stability": "external",
+            "summary": "ARN of the Kinesis video stream stream that streams the source video."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 1141
+          },
+          "name": "arn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnStreamProcessor.KinesisVideoStreamProperty"
+    },
+    "@aws-cdk/aws-rekognition.CfnStreamProcessor.NotificationChannelProperty": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-notificationchannel.html"
+        },
+        "remarks": "Amazon Rekognition publishes a notification the first time an object of interest or a person is detected in the video stream. Amazon Rekognition also publishes an an end-of-session notification with a summary when the stream processing session is complete. For more information, see [StreamProcessorNotificationChannel](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessorNotificationChannel) .",
+        "stability": "external",
+        "summary": "The Amazon Simple Notification Service topic to which Amazon Rekognition publishes the object detection results and completion status of a video analysis operation."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.NotificationChannelProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 1203
+      },
+      "name": "NotificationChannelProperty",
+      "namespace": "CfnStreamProcessor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-notificationchannel.html#cfn-rekognition-streamprocessor-notificationchannel-arn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the SNS topic that receives notifications."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 1209
+          },
+          "name": "arn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnStreamProcessor.NotificationChannelProperty"
+    },
+    "@aws-cdk/aws-rekognition.CfnStreamProcessor.S3DestinationProperty": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-s3destination.html"
+        },
+        "remarks": "These results include the name of the stream processor resource, the session ID of the stream processing session, and labeled timestamps and bounding boxes for detected labels. For more information, see [S3Destination](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_S3Destination) .",
+        "stability": "external",
+        "summary": "The Amazon S3 bucket location to which Amazon Rekognition publishes the detailed inference results of a video analysis operation."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.S3DestinationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 1271
+      },
+      "name": "S3DestinationProperty",
+      "namespace": "CfnStreamProcessor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-s3destination.html#cfn-rekognition-streamprocessor-s3destination-bucketname"
+            },
+            "stability": "external",
+            "summary": "Describes the destination Amazon Simple Storage Service (Amazon S3) bucket name of a stream processor's exports."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 1277
+          },
+          "name": "bucketName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-rekognition-streamprocessor-s3destination.html#cfn-rekognition-streamprocessor-s3destination-objectkeyprefix"
+            },
+            "stability": "external",
+            "summary": "Describes the destination Amazon Simple Storage Service (Amazon S3) object keys of a stream processor's exports."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 1283
+          },
+          "name": "objectKeyPrefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnStreamProcessor.S3DestinationProperty"
+    },
+    "@aws-cdk/aws-rekognition.CfnStreamProcessorProps": {
+      "assembly": "@aws-cdk/aws-rekognition",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnStreamProcessor`."
+      },
+      "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessorProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/rekognition.generated.ts",
+        "line": 337
+      },
+      "name": "CfnStreamProcessorProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-kinesisvideostream"
+            },
+            "remarks": "For more information, see [KinesisVideoStream](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_KinesisVideoStream) .",
+            "stability": "external",
+            "summary": "The Kinesis video stream that provides the source of the streaming video for an Amazon Rekognition Video stream processor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 344
+          },
+          "name": "kinesisVideoStream",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.KinesisVideoStreamProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-rolearn"
+            },
+            "remarks": "The IAM role provides Rekognition read permissions to the Kinesis stream. It also provides write permissions to an Amazon S3 bucket and Amazon Simple Notification Service topic for a connected home stream processor. This is required for both face search and connected home stream processors. For information about constraints, see the RoleArn section of [CreateStreamProcessor](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_CreateStreamProcessor) .",
+            "stability": "external",
+            "summary": "The ARN of the IAM role that allows access to the stream processor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 351
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-boundingboxregionsofinterest"
+            },
+            "remarks": "For more information, see the BoundingBox field of [RegionOfInterest](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_RegionOfInterest) .",
+            "stability": "external",
+            "summary": "List of BoundingBox objects, each of which denotes a region of interest on screen."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 358
+          },
+          "name": "boundingBoxRegionsOfInterest",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.BoundingBoxProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-connectedhomesettings"
+            },
+            "remarks": "You can use a stream processor for connected home features and select what you want the stream processor to detect, such as people or pets. When the stream processor has started, one notification is sent for each object class specified. For more information, see the ConnectedHome section of [StreamProcessorSettings](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessorSettings) .",
+            "stability": "external",
+            "summary": "Connected home settings to use on a streaming video."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 365
+          },
+          "name": "connectedHomeSettings",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.ConnectedHomeSettingsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-datasharingpreference"
+            },
+            "remarks": "You can choose this option at the account level or on a per-stream basis. Note that if you opt out at the account level this setting is ignored on individual streams. For more information, see [StreamProcessorDataSharingPreference](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessorDataSharingPreference) .",
+            "stability": "external",
+            "summary": "Allows you to opt in or opt out to share data with Rekognition to improve model performance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 372
+          },
+          "name": "dataSharingPreference",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.DataSharingPreferenceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-facesearchsettings"
+            },
+            "remarks": "For more information regarding the contents of the parameters, see [FaceSearchSettings](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_FaceSearchSettings) .",
+            "stability": "external",
+            "summary": "The input parameters used to recognize faces in a streaming video analyzed by an Amazon Rekognition stream processor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 379
+          },
+          "name": "faceSearchSettings",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.FaceSearchSettingsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-kinesisdatastream"
+            },
+            "remarks": "This is the Amazon Kinesis Data Streams instance to which the Amazon Rekognition stream processor streams the analysis results. This must be created within the constraints specified at [KinesisDataStream](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_KinesisDataStream) .",
+            "stability": "external",
+            "summary": "Amazon Rekognition's Video Stream Processor takes a Kinesis video stream as input."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 386
+          },
+          "name": "kinesisDataStream",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.KinesisDataStreamProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-kmskeyid"
+            },
+            "remarks": "Optional parameter for connected home stream processors used to encrypt results and data published to your Amazon S3 bucket. For more information, see the KMSKeyId section of [CreateStreamProcessor](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_CreateStreamProcessor) .",
+            "stability": "external",
+            "summary": "The identifier for your Amazon Key Management Service key (Amazon KMS key)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 393
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-name"
+            },
+            "stability": "external",
+            "summary": "The Name attribute specifies the name of the stream processor and it must be within the constraints described in the Name section of [StreamProcessor](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessor) . If you don't specify a name, Amazon CloudFormation generates a unique ID and uses that ID for the stream processor name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 400
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-notificationchannel"
+            },
+            "remarks": "Amazon Rekognition publishes a notification the first time an object of interest or a person is detected in the video stream. Amazon Rekognition also publishes an end-of-session notification with a summary when the stream processing session is complete. For more information, see [StreamProcessorNotificationChannel](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessorNotificationChannel) .",
+            "stability": "external",
+            "summary": "The Amazon Simple Notification Service topic to which Amazon Rekognition publishes the object detection results and completion status of a video analysis operation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 407
+          },
+          "name": "notificationChannel",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.NotificationChannelProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-polygonregionsofinterest"
+            },
+            "stability": "external",
+            "summary": "A set of ordered lists of [Point](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_Point) objects. Each entry of the set contains a polygon denoting a region of interest on the screen. Each polygon is an ordered list of [Point](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_Point) objects. For more information, see the Polygon field of [RegionOfInterest](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_RegionOfInterest) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 414
+          },
+          "name": "polygonRegionsOfInterest",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-s3destination"
+            },
+            "remarks": "For more information, see the S3Destination section of [StreamProcessorOutput](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_StreamProcessorOutput) .",
+            "stability": "external",
+            "summary": "The Amazon S3 bucket location to which Amazon Rekognition publishes the detailed inference results of a video analysis operation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 421
+          },
+          "name": "s3Destination",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-rekognition.CfnStreamProcessor.S3DestinationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-rekognition-streamprocessor.html#cfn-rekognition-streamprocessor-tags"
+            },
+            "remarks": "For more information, see the Tags section of [CreateStreamProcessor](https://docs.aws.amazon.com/rekognition/latest/APIReference/API_CreateStreamProcessor) .",
+            "stability": "external",
+            "summary": "A set of tags (key-value pairs) that you want to attach to the stream processor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/rekognition.generated.ts",
+            "line": 428
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/rekognition.generated:CfnStreamProcessorProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "1xy++Djb+mi3Tqqfg5nTola8GzCyPjmDMjJAqjEke40="
+}

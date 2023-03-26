@@ -184,7 +184,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.216"
+              "version": "10.1.270"
             }
           },
           "BootstrapVersion": {
@@ -214,7 +214,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.216"
+          "version": "10.1.270"
         }
       }
     },

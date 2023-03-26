@@ -603,9 +603,12 @@ describe('bundling', () => {
 
   test('ensure correct Docker CLI arguments are returned', () => {
     // GIVEN
+    process.env.TEST_FIXTURE_ENV = 'abc';
     const fromSrc = DockerBuildSecret.fromSrc('path.json');
+    const fromEnvironment = DockerBuildSecret.fromEnvironment('TEST_FIXTURE_ENV');
 
     // THEN
     expect(fromSrc).toEqual('src=path.json');
+    expect(fromEnvironment).toEqual('env=TEST_FIXTURE_ENV');
   });
 });

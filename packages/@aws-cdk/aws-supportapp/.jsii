@@ -1,0 +1,1258 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::SupportApp Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::SupportApp",
+    "aws-supportapp"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-supportapp",
+  "readme": {
+    "markdown": "# AWS::SupportApp Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as supportapp from '@aws-cdk/aws-supportapp';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for SupportApp construct libraries](https://constructs.dev/search?q=supportapp)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::SupportApp resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_SupportApp.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::SupportApp](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_SupportApp.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-supportapp",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.SupportApp",
+      "packageId": "Amazon.CDK.AWS.SupportApp",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "supportapp",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.supportapp"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-supportapp"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-supportapp",
+      "module": "aws_cdk.aws_supportapp"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-supportapp.CfnAccountAlias": {
+      "assembly": "@aws-cdk/aws-supportapp",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SupportApp::AccountAlias",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-accountalias.html"
+        },
+        "remarks": "You can use the `AWS::SupportApp::AccountAlias` resource to specify your AWS account when you configure the AWS Support App in Slack. Your alias name appears on the AWS Support App page in the Support Center Console and in messages from the AWS Support App. You can use this alias to identify the account you've configured with the AWS Support App .\n\nFor more information, see [AWS Support App in Slack](https://docs.aws.amazon.com/awssupport/latest/user/aws-support-app-for-slack.html) in the *AWS Support User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SupportApp::AccountAlias`."
+      },
+      "fqn": "@aws-cdk/aws-supportapp.CfnAccountAlias",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SupportApp::AccountAlias`."
+        },
+        "locationInModule": {
+          "filename": "lib/supportapp.generated.ts",
+          "line": 135
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-supportapp.CfnAccountAliasProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/supportapp.generated.ts",
+        "line": 88
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 149
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 160
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnAccountAlias",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 92
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AccountAliasResourceId"
+            },
+            "remarks": "The `AccountAliasResourceId` will be `AccountAlias_for_accountId` . In this example, `AccountAlias_for_` is the prefix and `accountId` is your AWS account number, such as `AccountAlias_for_123456789012` .",
+            "stability": "external",
+            "summary": "The `AccountAlias` resource type has an attribute `AccountAliasResourceId` . You can use this attribute to identify the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 119
+          },
+          "name": "attrAccountAliasResourceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 154
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-accountalias.html#cfn-supportapp-accountalias-accountalias"
+            },
+            "stability": "external",
+            "summary": "An alias or short name for an AWS account ."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 126
+          },
+          "name": "accountAlias",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/supportapp.generated:CfnAccountAlias"
+    },
+    "@aws-cdk/aws-supportapp.CfnAccountAliasProps": {
+      "assembly": "@aws-cdk/aws-supportapp",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-accountalias.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnAccountAlias`."
+      },
+      "fqn": "@aws-cdk/aws-supportapp.CfnAccountAliasProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/supportapp.generated.ts",
+        "line": 20
+      },
+      "name": "CfnAccountAliasProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-accountalias.html#cfn-supportapp-accountalias-accountalias"
+            },
+            "stability": "external",
+            "summary": "An alias or short name for an AWS account ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 27
+          },
+          "name": "accountAlias",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/supportapp.generated:CfnAccountAliasProps"
+    },
+    "@aws-cdk/aws-supportapp.CfnSlackChannelConfiguration": {
+      "assembly": "@aws-cdk/aws-supportapp",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SupportApp::SlackChannelConfiguration",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html"
+        },
+        "remarks": "You can use the `AWS::SupportApp::SlackChannelConfiguration` resource to specify your AWS account when you configure the AWS Support App . This resource includes the following information:\n\n- The Slack channel name and ID\n- The team ID in Slack\n- The Amazon Resource Name (ARN) of the AWS Identity and Access Management ( IAM ) role\n- Whether you want the AWS Support App to notify you when your support cases are created, updated, resolved, or reopened\n- The case severity that you want to get notified for\n\nFor more information, see the following topics in the *AWS Support User Guide* :\n\n- [AWS Support App in Slack](https://docs.aws.amazon.com/awssupport/latest/user/aws-support-app-for-slack.html)\n- [Creating AWS Support App in Slack resources with AWS CloudFormation](https://docs.aws.amazon.com/awssupport/latest/user/creating-resources-with-cloudformation.html)",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SupportApp::SlackChannelConfiguration`."
+      },
+      "fqn": "@aws-cdk/aws-supportapp.CfnSlackChannelConfiguration",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SupportApp::SlackChannelConfiguration`."
+        },
+        "locationInModule": {
+          "filename": "lib/supportapp.generated.ts",
+          "line": 411
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-supportapp.CfnSlackChannelConfigurationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/supportapp.generated.ts",
+        "line": 323
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 434
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 452
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSlackChannelConfiguration",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 327
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 439
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-channelid"
+            },
+            "remarks": "This ID identifies a channel within a Slack workspace.",
+            "stability": "external",
+            "summary": "The channel ID in Slack."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 353
+          },
+          "name": "channelId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-channelrolearn"
+            },
+            "remarks": "The AWS Support App uses this role to perform AWS Support and Service Quotas actions on your behalf.",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role for this Slack channel configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 360
+          },
+          "name": "channelRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-notifyoncaseseverity"
+            },
+            "remarks": "You can specify `none` , `all` , or `high` .",
+            "stability": "external",
+            "summary": "The case severity for your support cases that you want to receive notifications."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 367
+          },
+          "name": "notifyOnCaseSeverity",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-teamid"
+            },
+            "remarks": "This ID uniquely identifies a Slack workspace.",
+            "stability": "external",
+            "summary": "The team ID in Slack."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 374
+          },
+          "name": "teamId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-channelname"
+            },
+            "remarks": "This is the channel where you invite the AWS Support App .",
+            "stability": "external",
+            "summary": "The channel name in Slack."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 381
+          },
+          "name": "channelName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-notifyonaddcorrespondencetocase"
+            },
+            "stability": "external",
+            "summary": "Whether to get notified when a correspondence is added to your support cases."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 388
+          },
+          "name": "notifyOnAddCorrespondenceToCase",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-notifyoncreateorreopencase"
+            },
+            "stability": "external",
+            "summary": "Whether to get notified when your support cases are created or reopened."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 395
+          },
+          "name": "notifyOnCreateOrReopenCase",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-notifyonresolvecase"
+            },
+            "stability": "external",
+            "summary": "Whether to get notified when your support cases are resolved."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 402
+          },
+          "name": "notifyOnResolveCase",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/supportapp.generated:CfnSlackChannelConfiguration"
+    },
+    "@aws-cdk/aws-supportapp.CfnSlackChannelConfigurationProps": {
+      "assembly": "@aws-cdk/aws-supportapp",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSlackChannelConfiguration`."
+      },
+      "fqn": "@aws-cdk/aws-supportapp.CfnSlackChannelConfigurationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/supportapp.generated.ts",
+        "line": 173
+      },
+      "name": "CfnSlackChannelConfigurationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-channelid"
+            },
+            "remarks": "This ID identifies a channel within a Slack workspace.",
+            "stability": "external",
+            "summary": "The channel ID in Slack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 180
+          },
+          "name": "channelId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-channelrolearn"
+            },
+            "remarks": "The AWS Support App uses this role to perform AWS Support and Service Quotas actions on your behalf.",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role for this Slack channel configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 187
+          },
+          "name": "channelRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-notifyoncaseseverity"
+            },
+            "remarks": "You can specify `none` , `all` , or `high` .",
+            "stability": "external",
+            "summary": "The case severity for your support cases that you want to receive notifications."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 194
+          },
+          "name": "notifyOnCaseSeverity",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-teamid"
+            },
+            "remarks": "This ID uniquely identifies a Slack workspace.",
+            "stability": "external",
+            "summary": "The team ID in Slack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 201
+          },
+          "name": "teamId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-channelname"
+            },
+            "remarks": "This is the channel where you invite the AWS Support App .",
+            "stability": "external",
+            "summary": "The channel name in Slack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 208
+          },
+          "name": "channelName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-notifyonaddcorrespondencetocase"
+            },
+            "stability": "external",
+            "summary": "Whether to get notified when a correspondence is added to your support cases."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 215
+          },
+          "name": "notifyOnAddCorrespondenceToCase",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-notifyoncreateorreopencase"
+            },
+            "stability": "external",
+            "summary": "Whether to get notified when your support cases are created or reopened."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 222
+          },
+          "name": "notifyOnCreateOrReopenCase",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackchannelconfiguration.html#cfn-supportapp-slackchannelconfiguration-notifyonresolvecase"
+            },
+            "stability": "external",
+            "summary": "Whether to get notified when your support cases are resolved."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 229
+          },
+          "name": "notifyOnResolveCase",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/supportapp.generated:CfnSlackChannelConfigurationProps"
+    },
+    "@aws-cdk/aws-supportapp.CfnSlackWorkspaceConfiguration": {
+      "assembly": "@aws-cdk/aws-supportapp",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SupportApp::SlackWorkspaceConfiguration",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackworkspaceconfiguration.html"
+        },
+        "remarks": "You can use the `AWS::SupportApp::SlackWorkspaceConfiguration` resource to specify your Slack workspace configuration. This resource configures your AWS account so that you can use the specified Slack workspace in the AWS Support App . This resource includes the following information:\n\n- The team ID for the Slack workspace\n- The version ID of the resource to use with AWS CloudFormation\n\nFor more information, see the following topics in the *AWS Support User Guide* :\n\n- [AWS Support App in Slack](https://docs.aws.amazon.com/awssupport/latest/user/aws-support-app-for-slack.html)\n- [Creating AWS Support App in Slack resources with AWS CloudFormation](https://docs.aws.amazon.com/awssupport/latest/user/creating-resources-with-cloudformation.html)",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SupportApp::SlackWorkspaceConfiguration`."
+      },
+      "fqn": "@aws-cdk/aws-supportapp.CfnSlackWorkspaceConfiguration",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SupportApp::SlackWorkspaceConfiguration`."
+        },
+        "locationInModule": {
+          "filename": "lib/supportapp.generated.ts",
+          "line": 595
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-supportapp.CfnSlackWorkspaceConfigurationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/supportapp.generated.ts",
+        "line": 549
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 609
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 621
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSlackWorkspaceConfiguration",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 553
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 614
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackworkspaceconfiguration.html#cfn-supportapp-slackworkspaceconfiguration-teamid"
+            },
+            "remarks": "This ID uniquely identifies a Slack workspace, such as `T012ABCDEFG` .",
+            "stability": "external",
+            "summary": "The team ID in Slack."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 579
+          },
+          "name": "teamId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackworkspaceconfiguration.html#cfn-supportapp-slackworkspaceconfiguration-versionid"
+            },
+            "stability": "external",
+            "summary": "An identifier used to update an existing Slack workspace configuration in AWS CloudFormation , such as `100` ."
+          },
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 586
+          },
+          "name": "versionId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/supportapp.generated:CfnSlackWorkspaceConfiguration"
+    },
+    "@aws-cdk/aws-supportapp.CfnSlackWorkspaceConfigurationProps": {
+      "assembly": "@aws-cdk/aws-supportapp",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackworkspaceconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSlackWorkspaceConfiguration`."
+      },
+      "fqn": "@aws-cdk/aws-supportapp.CfnSlackWorkspaceConfigurationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/supportapp.generated.ts",
+        "line": 465
+      },
+      "name": "CfnSlackWorkspaceConfigurationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackworkspaceconfiguration.html#cfn-supportapp-slackworkspaceconfiguration-teamid"
+            },
+            "remarks": "This ID uniquely identifies a Slack workspace, such as `T012ABCDEFG` .",
+            "stability": "external",
+            "summary": "The team ID in Slack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 472
+          },
+          "name": "teamId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-supportapp-slackworkspaceconfiguration.html#cfn-supportapp-slackworkspaceconfiguration-versionid"
+            },
+            "stability": "external",
+            "summary": "An identifier used to update an existing Slack workspace configuration in AWS CloudFormation , such as `100` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/supportapp.generated.ts",
+            "line": 479
+          },
+          "name": "versionId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/supportapp.generated:CfnSlackWorkspaceConfigurationProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "c/oIhOO7UGzO1r6WqpPTPM6U6aSRaT4Irg0+WDQBMvU="
+}

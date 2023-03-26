@@ -1,0 +1,2829 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::Personalize Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::Personalize",
+    "aws-personalize"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-personalize",
+  "readme": {
+    "markdown": "# AWS::Personalize Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as personalize from '@aws-cdk/aws-personalize';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for Personalize construct libraries](https://constructs.dev/search?q=personalize)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Personalize resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Personalize.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Personalize](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Personalize.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-personalize",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Personalize",
+      "packageId": "Amazon.CDK.AWS.Personalize",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "personalize",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.personalize"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-personalize"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-personalize",
+      "module": "aws_cdk.aws_personalize"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-personalize.CfnDataset": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Personalize::Dataset",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-dataset.html"
+        },
+        "remarks": "Creates an empty dataset and adds it to the specified dataset group. Use [CreateDatasetImportJob](https://docs.aws.amazon.com/personalize/latest/dg/API_CreateDatasetImportJob.html) to import your training data to a dataset.\n\nThere are three types of datasets:\n\n- Interactions\n- Items\n- Users\n\nEach dataset type has an associated schema with required field types. Only the `Interactions` dataset is required in order to train a model (also referred to as creating a solution).\n\nA dataset can be in one of the following states:\n\n- CREATE PENDING > CREATE IN_PROGRESS > ACTIVE -or- CREATE FAILED\n- DELETE PENDING > DELETE IN_PROGRESS\n\nTo get the status of the dataset, call [DescribeDataset](https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeDataset.html) .\n\n**Related APIs** - [CreateDatasetGroup](https://docs.aws.amazon.com/personalize/latest/dg/API_CreateDatasetGroup.html)\n- [ListDatasets](https://docs.aws.amazon.com/personalize/latest/dg/API_ListDatasets.html)\n- [DescribeDataset](https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeDataset.html)\n- [DeleteDataset](https://docs.aws.amazon.com/personalize/latest/dg/API_DeleteDataset.html)",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Personalize::Dataset`."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnDataset",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Personalize::Dataset`."
+        },
+        "locationInModule": {
+          "filename": "lib/personalize.generated.ts",
+          "line": 230
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-personalize.CfnDatasetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 153
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 251
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 266
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDataset",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 157
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DatasetArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the dataset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 182
+          },
+          "name": "attrDatasetArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 256
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-dataset.html#cfn-personalize-dataset-datasetgrouparn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the dataset group."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 189
+          },
+          "name": "datasetGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-dataset.html#cfn-personalize-dataset-datasettype"
+            },
+            "remarks": "- Interactions\n- Items\n- Users",
+            "stability": "external",
+            "summary": "One of the following values:."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 200
+          },
+          "name": "datasetType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-dataset.html#cfn-personalize-dataset-name"
+            },
+            "stability": "external",
+            "summary": "The name of the dataset."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 207
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-dataset.html#cfn-personalize-dataset-schemaarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the associated schema."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 214
+          },
+          "name": "schemaArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-dataset.html#cfn-personalize-dataset-datasetimportjob"
+            },
+            "stability": "external",
+            "summary": "Describes a job that imports training data from a data source (Amazon S3 bucket) to an Amazon Personalize dataset."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 221
+          },
+          "name": "datasetImportJob",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-personalize.CfnDataset.DatasetImportJobProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnDataset"
+    },
+    "@aws-cdk/aws-personalize.CfnDataset.DataSourceProperty": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-dataset-datasource.html"
+        },
+        "stability": "external",
+        "summary": "Describes the data source that contains the data to upload to a dataset."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnDataset.DataSourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 280
+      },
+      "name": "DataSourceProperty",
+      "namespace": "CfnDataset",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-dataset-datasource.html#cfn-personalize-dataset-datasource-datalocation"
+            },
+            "remarks": "For example:\n\n`s3://bucket-name/folder-name/`",
+            "stability": "external",
+            "summary": "The path to the Amazon S3 bucket where the data that you want to upload to your dataset is stored."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 288
+          },
+          "name": "dataLocation",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnDataset.DataSourceProperty"
+    },
+    "@aws-cdk/aws-personalize.CfnDataset.DatasetImportJobProperty": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-dataset-datasetimportjob.html"
+        },
+        "remarks": "For more information, see [CreateDatasetImportJob](https://docs.aws.amazon.com/personalize/latest/dg/API_CreateDatasetImportJob.html) .\n\nA dataset import job can be in one of the following states:\n\n- CREATE PENDING > CREATE IN_PROGRESS > ACTIVE -or- CREATE FAILED",
+        "stability": "external",
+        "summary": "Describes a job that imports training data from a data source (Amazon S3 bucket) to an Amazon Personalize dataset."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnDataset.DatasetImportJobProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 353
+      },
+      "name": "DatasetImportJobProperty",
+      "namespace": "CfnDataset",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-dataset-datasetimportjob.html#cfn-personalize-dataset-datasetimportjob-datasetarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the dataset that receives the imported data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 365
+          },
+          "name": "datasetArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-dataset-datasetimportjob.html#cfn-personalize-dataset-datasetimportjob-datasetimportjobarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the dataset import job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 371
+          },
+          "name": "datasetImportJobArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-dataset-datasetimportjob.html#cfn-personalize-dataset-datasetimportjob-datasource"
+            },
+            "stability": "external",
+            "summary": "The Amazon S3 bucket that contains the training data to import."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 359
+          },
+          "name": "dataSource",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-dataset-datasetimportjob.html#cfn-personalize-dataset-datasetimportjob-jobname"
+            },
+            "stability": "external",
+            "summary": "The name of the import job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 377
+          },
+          "name": "jobName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-dataset-datasetimportjob.html#cfn-personalize-dataset-datasetimportjob-rolearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the IAM role that has permissions to read from the Amazon S3 data source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 383
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnDataset.DatasetImportJobProperty"
+    },
+    "@aws-cdk/aws-personalize.CfnDatasetGroup": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Personalize::DatasetGroup",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-datasetgroup.html"
+        },
+        "remarks": "A dataset group is a collection of related datasets (Interactions, User, and Item). You create a dataset group by calling [CreateDatasetGroup](https://docs.aws.amazon.com/personalize/latest/dg/API_CreateDatasetGroup.html) . You then create a dataset and add it to a dataset group by calling [CreateDataset](https://docs.aws.amazon.com/personalize/latest/dg/API_CreateDataset.html) . The dataset group is used to create and train a solution by calling [CreateSolution](https://docs.aws.amazon.com/personalize/latest/dg/API_CreateSolution.html) . A dataset group can contain only one of each type of dataset.\n\nYou can specify an AWS Key Management Service (KMS) key to encrypt the datasets in the group.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Personalize::DatasetGroup`."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnDatasetGroup",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Personalize::DatasetGroup`."
+        },
+        "locationInModule": {
+          "filename": "lib/personalize.generated.ts",
+          "line": 619
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-personalize.CfnDatasetGroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 553
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 636
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 650
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDatasetGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 557
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DatasetGroupArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the dataset group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 582
+          },
+          "name": "attrDatasetGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 641
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-datasetgroup.html#cfn-personalize-datasetgroup-name"
+            },
+            "stability": "external",
+            "summary": "The name of the dataset group."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 589
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-datasetgroup.html#cfn-personalize-datasetgroup-domain"
+            },
+            "stability": "external",
+            "summary": "The domain of a Domain dataset group."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 596
+          },
+          "name": "domain",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-datasetgroup.html#cfn-personalize-datasetgroup-kmskeyarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the AWS Key Management Service (KMS) key used to encrypt the datasets."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 603
+          },
+          "name": "kmsKeyArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-datasetgroup.html#cfn-personalize-datasetgroup-rolearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the IAM role that has permissions to create the dataset group."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 610
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnDatasetGroup"
+    },
+    "@aws-cdk/aws-personalize.CfnDatasetGroupProps": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-datasetgroup.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDatasetGroup`."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnDatasetGroupProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 455
+      },
+      "name": "CfnDatasetGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-datasetgroup.html#cfn-personalize-datasetgroup-name"
+            },
+            "stability": "external",
+            "summary": "The name of the dataset group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 462
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-datasetgroup.html#cfn-personalize-datasetgroup-domain"
+            },
+            "stability": "external",
+            "summary": "The domain of a Domain dataset group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 469
+          },
+          "name": "domain",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-datasetgroup.html#cfn-personalize-datasetgroup-kmskeyarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the AWS Key Management Service (KMS) key used to encrypt the datasets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 476
+          },
+          "name": "kmsKeyArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-datasetgroup.html#cfn-personalize-datasetgroup-rolearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the IAM role that has permissions to create the dataset group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 483
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnDatasetGroupProps"
+    },
+    "@aws-cdk/aws-personalize.CfnDatasetProps": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-dataset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDataset`."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnDatasetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 20
+      },
+      "name": "CfnDatasetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-dataset.html#cfn-personalize-dataset-datasetgrouparn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the dataset group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 27
+          },
+          "name": "datasetGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-dataset.html#cfn-personalize-dataset-datasettype"
+            },
+            "remarks": "- Interactions\n- Items\n- Users",
+            "stability": "external",
+            "summary": "One of the following values:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 38
+          },
+          "name": "datasetType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-dataset.html#cfn-personalize-dataset-name"
+            },
+            "stability": "external",
+            "summary": "The name of the dataset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 45
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-dataset.html#cfn-personalize-dataset-schemaarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the associated schema."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 52
+          },
+          "name": "schemaArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-dataset.html#cfn-personalize-dataset-datasetimportjob"
+            },
+            "stability": "external",
+            "summary": "Describes a job that imports training data from a data source (Amazon S3 bucket) to an Amazon Personalize dataset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 59
+          },
+          "name": "datasetImportJob",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-personalize.CfnDataset.DatasetImportJobProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnDatasetProps"
+    },
+    "@aws-cdk/aws-personalize.CfnSchema": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Personalize::Schema",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-schema.html"
+        },
+        "remarks": "Creates an Amazon Personalize schema from the specified schema string. The schema you create must be in Avro JSON format.\n\nAmazon Personalize recognizes three schema variants. Each schema is associated with a dataset type and has a set of required field and keywords. If you are creating a schema for a dataset in a Domain dataset group, you provide the domain of the Domain dataset group. You specify a schema when you call [CreateDataset](https://docs.aws.amazon.com/personalize/latest/dg/API_CreateDataset.html) .\n\nFor more information on schemas, see [Datasets and schemas](https://docs.aws.amazon.com/personalize/latest/dg/how-it-works-dataset-schema.html) .\n\n**Related APIs** - [ListSchemas](https://docs.aws.amazon.com/personalize/latest/dg/API_ListSchemas.html)\n- [DescribeSchema](https://docs.aws.amazon.com/personalize/latest/dg/API_DescribeSchema.html)\n- [DeleteSchema](https://docs.aws.amazon.com/personalize/latest/dg/API_DeleteSchema.html)",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Personalize::Schema`."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSchema",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Personalize::Schema`."
+        },
+        "locationInModule": {
+          "filename": "lib/personalize.generated.ts",
+          "line": 817
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-personalize.CfnSchemaProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 758
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 834
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 847
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSchema",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 762
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SchemaArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the schema."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 787
+          },
+          "name": "attrSchemaArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 839
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-schema.html#cfn-personalize-schema-name"
+            },
+            "stability": "external",
+            "summary": "The name of the schema."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 794
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-schema.html#cfn-personalize-schema-schema"
+            },
+            "stability": "external",
+            "summary": "The schema."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 801
+          },
+          "name": "schema",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-schema.html#cfn-personalize-schema-domain"
+            },
+            "stability": "external",
+            "summary": "The domain of a schema that you created for a dataset in a Domain dataset group."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 808
+          },
+          "name": "domain",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSchema"
+    },
+    "@aws-cdk/aws-personalize.CfnSchemaProps": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-schema.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSchema`."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSchemaProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 663
+      },
+      "name": "CfnSchemaProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-schema.html#cfn-personalize-schema-name"
+            },
+            "stability": "external",
+            "summary": "The name of the schema."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 670
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-schema.html#cfn-personalize-schema-schema"
+            },
+            "stability": "external",
+            "summary": "The schema."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 677
+          },
+          "name": "schema",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-schema.html#cfn-personalize-schema-domain"
+            },
+            "stability": "external",
+            "summary": "The domain of a schema that you created for a dataset in a Domain dataset group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 684
+          },
+          "name": "domain",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSchemaProps"
+    },
+    "@aws-cdk/aws-personalize.CfnSolution": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Personalize::Solution",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html"
+        },
+        "remarks": "An object that provides information about a solution. A solution is a trained model that can be deployed as a campaign.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Personalize::Solution`."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSolution",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Personalize::Solution`."
+        },
+        "locationInModule": {
+          "filename": "lib/personalize.generated.ts",
+          "line": 1078
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-personalize.CfnSolutionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 989
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1099
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1116
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSolution",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 993
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SolutionArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the solution."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1018
+          },
+          "name": "attrSolutionArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1104
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-datasetgrouparn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the dataset group that provides the training data."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1025
+          },
+          "name": "datasetGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-name"
+            },
+            "stability": "external",
+            "summary": "The name of the solution."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1032
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-eventtype"
+            },
+            "remarks": "If no `eventType` is provided, Amazon Personalize uses all interactions for training with equal weight regardless of type.",
+            "stability": "external",
+            "summary": "The event type (for example, 'click' or 'like') that is used for training the model."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1039
+          },
+          "name": "eventType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-performautoml"
+            },
+            "remarks": "Instead, match your use case to the available Amazon Personalize recipes. For more information, see [Determining your use case.](https://docs.aws.amazon.com/personalize/latest/dg/determining-use-case.html)\n\nWhen true, Amazon Personalize performs a search for the best USER_PERSONALIZATION recipe from the list specified in the solution configuration ( `recipeArn` must not be specified). When false (the default), Amazon Personalize uses `recipeArn` for training.",
+            "stability": "external",
+            "summary": "> We don't recommend enabling automated machine learning."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1048
+          },
+          "name": "performAutoMl",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-performhpo"
+            },
+            "remarks": "The default is `false` .",
+            "stability": "external",
+            "summary": "Whether to perform hyperparameter optimization (HPO) on the chosen recipe."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1055
+          },
+          "name": "performHpo",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-recipearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the recipe used to create the solution."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1062
+          },
+          "name": "recipeArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-solutionconfig"
+            },
+            "stability": "external",
+            "summary": "Describes the configuration properties for the solution."
+          },
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1069
+          },
+          "name": "solutionConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-personalize.CfnSolution.SolutionConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSolution"
+    },
+    "@aws-cdk/aws-personalize.CfnSolution.AlgorithmHyperParameterRangesProperty": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-algorithmhyperparameterranges.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSolution.AlgorithmHyperParameterRangesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 1130
+      },
+      "name": "AlgorithmHyperParameterRangesProperty",
+      "namespace": "CfnSolution",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-algorithmhyperparameterranges.html#cfn-personalize-solution-algorithmhyperparameterranges-categoricalhyperparameterranges"
+            },
+            "stability": "external",
+            "summary": "`CfnSolution.AlgorithmHyperParameterRangesProperty.CategoricalHyperParameterRanges`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1136
+          },
+          "name": "categoricalHyperParameterRanges",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-personalize.CfnSolution.CategoricalHyperParameterRangeProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-algorithmhyperparameterranges.html#cfn-personalize-solution-algorithmhyperparameterranges-continuoushyperparameterranges"
+            },
+            "stability": "external",
+            "summary": "`CfnSolution.AlgorithmHyperParameterRangesProperty.ContinuousHyperParameterRanges`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1142
+          },
+          "name": "continuousHyperParameterRanges",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-personalize.CfnSolution.ContinuousHyperParameterRangeProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-algorithmhyperparameterranges.html#cfn-personalize-solution-algorithmhyperparameterranges-integerhyperparameterranges"
+            },
+            "stability": "external",
+            "summary": "`CfnSolution.AlgorithmHyperParameterRangesProperty.IntegerHyperParameterRanges`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1148
+          },
+          "name": "integerHyperParameterRanges",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-personalize.CfnSolution.IntegerHyperParameterRangeProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSolution.AlgorithmHyperParameterRangesProperty"
+    },
+    "@aws-cdk/aws-personalize.CfnSolution.AutoMLConfigProperty": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-automlconfig.html"
+        },
+        "stability": "external",
+        "summary": "When the solution performs AutoML ( `performAutoML` is true in [CreateSolution](https://docs.aws.amazon.com/personalize/latest/dg/API_CreateSolution.html) ), Amazon Personalize determines which recipe, from the specified list, optimizes the given metric. Amazon Personalize then uses that recipe for the solution."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSolution.AutoMLConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 1215
+      },
+      "name": "AutoMLConfigProperty",
+      "namespace": "CfnSolution",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-automlconfig.html#cfn-personalize-solution-automlconfig-metricname"
+            },
+            "stability": "external",
+            "summary": "The metric to optimize."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1221
+          },
+          "name": "metricName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-automlconfig.html#cfn-personalize-solution-automlconfig-recipelist"
+            },
+            "stability": "external",
+            "summary": "The list of candidate recipes."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1227
+          },
+          "name": "recipeList",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSolution.AutoMLConfigProperty"
+    },
+    "@aws-cdk/aws-personalize.CfnSolution.CategoricalHyperParameterRangeProperty": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-categoricalhyperparameterrange.html"
+        },
+        "stability": "external",
+        "summary": "Provides the name and range of a categorical hyperparameter."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSolution.CategoricalHyperParameterRangeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 1291
+      },
+      "name": "CategoricalHyperParameterRangeProperty",
+      "namespace": "CfnSolution",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-categoricalhyperparameterrange.html#cfn-personalize-solution-categoricalhyperparameterrange-name"
+            },
+            "stability": "external",
+            "summary": "The name of the hyperparameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1297
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-categoricalhyperparameterrange.html#cfn-personalize-solution-categoricalhyperparameterrange-values"
+            },
+            "stability": "external",
+            "summary": "A list of the categories for the hyperparameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1303
+          },
+          "name": "values",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSolution.CategoricalHyperParameterRangeProperty"
+    },
+    "@aws-cdk/aws-personalize.CfnSolution.ContinuousHyperParameterRangeProperty": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-continuoushyperparameterrange.html"
+        },
+        "stability": "external",
+        "summary": "Provides the name and range of a continuous hyperparameter."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSolution.ContinuousHyperParameterRangeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 1367
+      },
+      "name": "ContinuousHyperParameterRangeProperty",
+      "namespace": "CfnSolution",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-continuoushyperparameterrange.html#cfn-personalize-solution-continuoushyperparameterrange-maxvalue"
+            },
+            "stability": "external",
+            "summary": "The maximum allowable value for the hyperparameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1373
+          },
+          "name": "maxValue",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-continuoushyperparameterrange.html#cfn-personalize-solution-continuoushyperparameterrange-minvalue"
+            },
+            "stability": "external",
+            "summary": "The minimum allowable value for the hyperparameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1379
+          },
+          "name": "minValue",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-continuoushyperparameterrange.html#cfn-personalize-solution-continuoushyperparameterrange-name"
+            },
+            "stability": "external",
+            "summary": "The name of the hyperparameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1385
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSolution.ContinuousHyperParameterRangeProperty"
+    },
+    "@aws-cdk/aws-personalize.CfnSolution.HpoConfigProperty": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-hpoconfig.html"
+        },
+        "stability": "external",
+        "summary": "Describes the properties for hyperparameter optimization (HPO)."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSolution.HpoConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 1452
+      },
+      "name": "HpoConfigProperty",
+      "namespace": "CfnSolution",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-hpoconfig.html#cfn-personalize-solution-hpoconfig-algorithmhyperparameterranges"
+            },
+            "stability": "external",
+            "summary": "The hyperparameters and their allowable ranges."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1458
+          },
+          "name": "algorithmHyperParameterRanges",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-personalize.CfnSolution.AlgorithmHyperParameterRangesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-hpoconfig.html#cfn-personalize-solution-hpoconfig-hpoobjective"
+            },
+            "remarks": "> Amazon Personalize doesn't support configuring the `hpoObjective` at this time.",
+            "stability": "external",
+            "summary": "The metric to optimize during HPO."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1466
+          },
+          "name": "hpoObjective",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-personalize.CfnSolution.HpoObjectiveProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-hpoconfig.html#cfn-personalize-solution-hpoconfig-hporesourceconfig"
+            },
+            "stability": "external",
+            "summary": "Describes the resource configuration for HPO."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1472
+          },
+          "name": "hpoResourceConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-personalize.CfnSolution.HpoResourceConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSolution.HpoConfigProperty"
+    },
+    "@aws-cdk/aws-personalize.CfnSolution.HpoObjectiveProperty": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-hpoobjective.html"
+        },
+        "remarks": "> Amazon Personalize doesn't support configuring the `hpoObjective` at this time.",
+        "stability": "external",
+        "summary": "The metric to optimize during hyperparameter optimization (HPO)."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSolution.HpoObjectiveProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 1541
+      },
+      "name": "HpoObjectiveProperty",
+      "namespace": "CfnSolution",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-hpoobjective.html#cfn-personalize-solution-hpoobjective-metricname"
+            },
+            "stability": "external",
+            "summary": "The name of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1547
+          },
+          "name": "metricName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-hpoobjective.html#cfn-personalize-solution-hpoobjective-metricregex"
+            },
+            "stability": "external",
+            "summary": "A regular expression for finding the metric in the training job logs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1553
+          },
+          "name": "metricRegex",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-hpoobjective.html#cfn-personalize-solution-hpoobjective-type"
+            },
+            "remarks": "Valid values are `Maximize` and `Minimize` .",
+            "stability": "external",
+            "summary": "The type of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1559
+          },
+          "name": "type",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSolution.HpoObjectiveProperty"
+    },
+    "@aws-cdk/aws-personalize.CfnSolution.HpoResourceConfigProperty": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-hporesourceconfig.html"
+        },
+        "stability": "external",
+        "summary": "Describes the resource configuration for hyperparameter optimization (HPO)."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSolution.HpoResourceConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 1626
+      },
+      "name": "HpoResourceConfigProperty",
+      "namespace": "CfnSolution",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-hporesourceconfig.html#cfn-personalize-solution-hporesourceconfig-maxnumberoftrainingjobs"
+            },
+            "remarks": "The maximum value for `maxNumberOfTrainingJobs` is `40` .",
+            "stability": "external",
+            "summary": "The maximum number of training jobs when you create a solution version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1632
+          },
+          "name": "maxNumberOfTrainingJobs",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-hporesourceconfig.html#cfn-personalize-solution-hporesourceconfig-maxparalleltrainingjobs"
+            },
+            "remarks": "The maximum value for `maxParallelTrainingJobs` is `10` .",
+            "stability": "external",
+            "summary": "The maximum number of parallel training jobs when you create a solution version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1638
+          },
+          "name": "maxParallelTrainingJobs",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSolution.HpoResourceConfigProperty"
+    },
+    "@aws-cdk/aws-personalize.CfnSolution.IntegerHyperParameterRangeProperty": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-integerhyperparameterrange.html"
+        },
+        "stability": "external",
+        "summary": "Provides the name and range of an integer-valued hyperparameter."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSolution.IntegerHyperParameterRangeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 1702
+      },
+      "name": "IntegerHyperParameterRangeProperty",
+      "namespace": "CfnSolution",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-integerhyperparameterrange.html#cfn-personalize-solution-integerhyperparameterrange-maxvalue"
+            },
+            "stability": "external",
+            "summary": "The maximum allowable value for the hyperparameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1708
+          },
+          "name": "maxValue",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-integerhyperparameterrange.html#cfn-personalize-solution-integerhyperparameterrange-minvalue"
+            },
+            "stability": "external",
+            "summary": "The minimum allowable value for the hyperparameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1714
+          },
+          "name": "minValue",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-integerhyperparameterrange.html#cfn-personalize-solution-integerhyperparameterrange-name"
+            },
+            "stability": "external",
+            "summary": "The name of the hyperparameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1720
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSolution.IntegerHyperParameterRangeProperty"
+    },
+    "@aws-cdk/aws-personalize.CfnSolution.SolutionConfigProperty": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-solutionconfig.html"
+        },
+        "stability": "external",
+        "summary": "Describes the configuration properties for the solution."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSolution.SolutionConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 1787
+      },
+      "name": "SolutionConfigProperty",
+      "namespace": "CfnSolution",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-solutionconfig.html#cfn-personalize-solution-solutionconfig-algorithmhyperparameters"
+            },
+            "stability": "external",
+            "summary": "Lists the hyperparameter names and ranges."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1793
+          },
+          "name": "algorithmHyperParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-solutionconfig.html#cfn-personalize-solution-solutionconfig-automlconfig"
+            },
+            "stability": "external",
+            "summary": "The [AutoMLConfig](https://docs.aws.amazon.com/personalize/latest/dg/API_AutoMLConfig.html) object containing a list of recipes to search when AutoML is performed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1799
+          },
+          "name": "autoMlConfig",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-solutionconfig.html#cfn-personalize-solution-solutionconfig-eventvaluethreshold"
+            },
+            "stability": "external",
+            "summary": "Only events with a value greater than or equal to this threshold are used for training a model."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1805
+          },
+          "name": "eventValueThreshold",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-solutionconfig.html#cfn-personalize-solution-solutionconfig-featuretransformationparameters"
+            },
+            "stability": "external",
+            "summary": "Lists the feature transformation parameters."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1811
+          },
+          "name": "featureTransformationParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "string"
+                    },
+                    "kind": "map"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-personalize-solution-solutionconfig.html#cfn-personalize-solution-solutionconfig-hpoconfig"
+            },
+            "stability": "external",
+            "summary": "Describes the properties for hyperparameter optimization (HPO)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 1817
+          },
+          "name": "hpoConfig",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSolution.SolutionConfigProperty"
+    },
+    "@aws-cdk/aws-personalize.CfnSolutionProps": {
+      "assembly": "@aws-cdk/aws-personalize",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSolution`."
+      },
+      "fqn": "@aws-cdk/aws-personalize.CfnSolutionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/personalize.generated.ts",
+        "line": 860
+      },
+      "name": "CfnSolutionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-datasetgrouparn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the dataset group that provides the training data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 867
+          },
+          "name": "datasetGroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-name"
+            },
+            "stability": "external",
+            "summary": "The name of the solution."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 874
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-eventtype"
+            },
+            "remarks": "If no `eventType` is provided, Amazon Personalize uses all interactions for training with equal weight regardless of type.",
+            "stability": "external",
+            "summary": "The event type (for example, 'click' or 'like') that is used for training the model."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 881
+          },
+          "name": "eventType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-performautoml"
+            },
+            "remarks": "Instead, match your use case to the available Amazon Personalize recipes. For more information, see [Determining your use case.](https://docs.aws.amazon.com/personalize/latest/dg/determining-use-case.html)\n\nWhen true, Amazon Personalize performs a search for the best USER_PERSONALIZATION recipe from the list specified in the solution configuration ( `recipeArn` must not be specified). When false (the default), Amazon Personalize uses `recipeArn` for training.",
+            "stability": "external",
+            "summary": "> We don't recommend enabling automated machine learning."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 890
+          },
+          "name": "performAutoMl",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-performhpo"
+            },
+            "remarks": "The default is `false` .",
+            "stability": "external",
+            "summary": "Whether to perform hyperparameter optimization (HPO) on the chosen recipe."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 897
+          },
+          "name": "performHpo",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-recipearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the recipe used to create the solution."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 904
+          },
+          "name": "recipeArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-personalize-solution.html#cfn-personalize-solution-solutionconfig"
+            },
+            "stability": "external",
+            "summary": "Describes the configuration properties for the solution."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/personalize.generated.ts",
+            "line": 911
+          },
+          "name": "solutionConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-personalize.CfnSolution.SolutionConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/personalize.generated:CfnSolutionProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "pE3eKBBOOGdtXdsv6Mcrhhvs97fV3FbirsG/MUqVEKc="
+}

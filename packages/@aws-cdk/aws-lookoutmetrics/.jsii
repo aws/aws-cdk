@@ -1,0 +1,2823 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::LookoutMetrics",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::LookoutMetrics",
+    "aws-lookoutmetrics"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-lookoutmetrics",
+  "readme": {
+    "markdown": "# AWS::LookoutMetrics Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as lookoutmetrics from '@aws-cdk/aws-lookoutmetrics';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for LookoutMetrics construct libraries](https://constructs.dev/search?q=lookoutmetrics)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::LookoutMetrics resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_LookoutMetrics.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::LookoutMetrics](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_LookoutMetrics.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-lookoutmetrics",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.LookoutMetrics",
+      "packageId": "Amazon.CDK.AWS.LookoutMetrics",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "lookoutmetrics",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.lookoutmetrics"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-lookoutmetrics"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-lookoutmetrics",
+      "module": "aws_cdk.aws_lookoutmetrics"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-lookoutmetrics.CfnAlert": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::LookoutMetrics::Alert",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-alert.html"
+        },
+        "remarks": "The `AWS::LookoutMetrics::Alert` type creates an alert for an anomaly detector.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::LookoutMetrics::Alert`."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAlert",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::LookoutMetrics::Alert`."
+        },
+        "locationInModule": {
+          "filename": "lib/lookoutmetrics.generated.ts",
+          "line": 201
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAlertProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 128
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 221
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 236
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnAlert",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 132
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For example, `arn:aws:lookoutmetrics:us-east-2:123456789012:Alert:my-alert`",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the alert."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 157
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 226
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-alert.html#cfn-lookoutmetrics-alert-action"
+            },
+            "stability": "external",
+            "summary": "Action that will be triggered when there is an alert."
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 164
+          },
+          "name": "action",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAlert.ActionProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-alert.html#cfn-lookoutmetrics-alert-alertsensitivitythreshold"
+            },
+            "stability": "external",
+            "summary": "An integer from 0 to 100 specifying the alert sensitivity threshold."
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 171
+          },
+          "name": "alertSensitivityThreshold",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-alert.html#cfn-lookoutmetrics-alert-anomalydetectorarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the detector to which the alert is attached."
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 178
+          },
+          "name": "anomalyDetectorArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-alert.html#cfn-lookoutmetrics-alert-alertdescription"
+            },
+            "stability": "external",
+            "summary": "A description of the alert."
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 185
+          },
+          "name": "alertDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-alert.html#cfn-lookoutmetrics-alert-alertname"
+            },
+            "stability": "external",
+            "summary": "The name of the alert."
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 192
+          },
+          "name": "alertName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAlert"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAlert.ActionProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-alert-action.html"
+        },
+        "stability": "external",
+        "summary": "A configuration that specifies the action to perform when anomalies are detected."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAlert.ActionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 250
+      },
+      "name": "ActionProperty",
+      "namespace": "CfnAlert",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-alert-action.html#cfn-lookoutmetrics-alert-action-lambdaconfiguration"
+            },
+            "stability": "external",
+            "summary": "A configuration for an AWS Lambda channel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 256
+          },
+          "name": "lambdaConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAlert.LambdaConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-alert-action.html#cfn-lookoutmetrics-alert-action-snsconfiguration"
+            },
+            "stability": "external",
+            "summary": "A configuration for an Amazon SNS channel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 262
+          },
+          "name": "snsConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAlert.SNSConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAlert.ActionProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAlert.LambdaConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-alert-lambdaconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about a Lambda configuration."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAlert.LambdaConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 326
+      },
+      "name": "LambdaConfigurationProperty",
+      "namespace": "CfnAlert",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-alert-lambdaconfiguration.html#cfn-lookoutmetrics-alert-lambdaconfiguration-lambdaarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the Lambda function."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 332
+          },
+          "name": "lambdaArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-alert-lambdaconfiguration.html#cfn-lookoutmetrics-alert-lambdaconfiguration-rolearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of an IAM role that has permission to invoke the Lambda function."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 338
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAlert.LambdaConfigurationProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAlert.SNSConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-alert-snsconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about the SNS topic to which you want to send your alerts and the IAM role that has access to that topic."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAlert.SNSConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 404
+      },
+      "name": "SNSConfigurationProperty",
+      "namespace": "CfnAlert",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-alert-snsconfiguration.html#cfn-lookoutmetrics-alert-snsconfiguration-rolearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the IAM role that has access to the target SNS topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 410
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-alert-snsconfiguration.html#cfn-lookoutmetrics-alert-snsconfiguration-snstopicarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the target SNS topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 416
+          },
+          "name": "snsTopicArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAlert.SNSConfigurationProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAlertProps": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-alert.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnAlert`."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAlertProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 20
+      },
+      "name": "CfnAlertProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-alert.html#cfn-lookoutmetrics-alert-action"
+            },
+            "stability": "external",
+            "summary": "Action that will be triggered when there is an alert."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 27
+          },
+          "name": "action",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAlert.ActionProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-alert.html#cfn-lookoutmetrics-alert-alertsensitivitythreshold"
+            },
+            "stability": "external",
+            "summary": "An integer from 0 to 100 specifying the alert sensitivity threshold."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 34
+          },
+          "name": "alertSensitivityThreshold",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-alert.html#cfn-lookoutmetrics-alert-anomalydetectorarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the detector to which the alert is attached."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 41
+          },
+          "name": "anomalyDetectorArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-alert.html#cfn-lookoutmetrics-alert-alertdescription"
+            },
+            "stability": "external",
+            "summary": "A description of the alert."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 48
+          },
+          "name": "alertDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-alert.html#cfn-lookoutmetrics-alert-alertname"
+            },
+            "stability": "external",
+            "summary": "The name of the alert."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 55
+          },
+          "name": "alertName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAlertProps"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::LookoutMetrics::AnomalyDetector",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-anomalydetector.html"
+        },
+        "remarks": "The `AWS::LookoutMetrics::AnomalyDetector` type creates an anomaly detector.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::LookoutMetrics::AnomalyDetector`."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::LookoutMetrics::AnomalyDetector`."
+        },
+        "locationInModule": {
+          "filename": "lib/lookoutmetrics.generated.ts",
+          "line": 661
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetectorProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 588
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 680
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 695
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 592
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For example, `arn:aws:lookoutmetrics:us-east-2:123456789012:AnomalyDetector:my-detector`",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the detector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 617
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 685
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-anomalydetector.html#cfn-lookoutmetrics-anomalydetector-anomalydetectorconfig"
+            },
+            "stability": "external",
+            "summary": "Contains information about the configuration of the anomaly detector."
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 624
+          },
+          "name": "anomalyDetectorConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.AnomalyDetectorConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-anomalydetector.html#cfn-lookoutmetrics-anomalydetector-metricsetlist"
+            },
+            "stability": "external",
+            "summary": "The detector's dataset."
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 631
+          },
+          "name": "metricSetList",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.MetricSetProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-anomalydetector.html#cfn-lookoutmetrics-anomalydetector-anomalydetectordescription"
+            },
+            "stability": "external",
+            "summary": "A description of the detector."
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 638
+          },
+          "name": "anomalyDetectorDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-anomalydetector.html#cfn-lookoutmetrics-anomalydetector-anomalydetectorname"
+            },
+            "stability": "external",
+            "summary": "The name of the detector."
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 645
+          },
+          "name": "anomalyDetectorName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-anomalydetector.html#cfn-lookoutmetrics-anomalydetector-kmskeyarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the KMS key to use to encrypt your data."
+          },
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 652
+          },
+          "name": "kmsKeyArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.AnomalyDetectorConfigProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-anomalydetectorconfig.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about a detector's configuration."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.AnomalyDetectorConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 709
+      },
+      "name": "AnomalyDetectorConfigProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-anomalydetectorconfig.html#cfn-lookoutmetrics-anomalydetector-anomalydetectorconfig-anomalydetectorfrequency"
+            },
+            "stability": "external",
+            "summary": "The frequency at which the detector analyzes its source data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 715
+          },
+          "name": "anomalyDetectorFrequency",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.AnomalyDetectorConfigProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.AppFlowConfigProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-appflowconfig.html"
+        },
+        "stability": "external",
+        "summary": "Details about an Amazon AppFlow flow datasource."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.AppFlowConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 777
+      },
+      "name": "AppFlowConfigProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-appflowconfig.html#cfn-lookoutmetrics-anomalydetector-appflowconfig-flowname"
+            },
+            "stability": "external",
+            "summary": "name of the flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 783
+          },
+          "name": "flowName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-appflowconfig.html#cfn-lookoutmetrics-anomalydetector-appflowconfig-rolearn"
+            },
+            "stability": "external",
+            "summary": "An IAM role that gives Amazon Lookout for Metrics permission to access the flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 789
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.AppFlowConfigProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.CloudwatchConfigProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-cloudwatchconfig.html"
+        },
+        "stability": "external",
+        "summary": "Details about an Amazon CloudWatch datasource."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.CloudwatchConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 855
+      },
+      "name": "CloudwatchConfigProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-cloudwatchconfig.html#cfn-lookoutmetrics-anomalydetector-cloudwatchconfig-rolearn"
+            },
+            "stability": "external",
+            "summary": "An IAM role that gives Amazon Lookout for Metrics permission to access data in Amazon CloudWatch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 861
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.CloudwatchConfigProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.CsvFormatDescriptorProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-csvformatdescriptor.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about how a source CSV data file should be analyzed."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.CsvFormatDescriptorProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 923
+      },
+      "name": "CsvFormatDescriptorProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-csvformatdescriptor.html#cfn-lookoutmetrics-anomalydetector-csvformatdescriptor-charset"
+            },
+            "stability": "external",
+            "summary": "The character set in which the source CSV file is written."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 929
+          },
+          "name": "charset",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-csvformatdescriptor.html#cfn-lookoutmetrics-anomalydetector-csvformatdescriptor-containsheader"
+            },
+            "stability": "external",
+            "summary": "Whether or not the source CSV file contains a header."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 935
+          },
+          "name": "containsHeader",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-csvformatdescriptor.html#cfn-lookoutmetrics-anomalydetector-csvformatdescriptor-delimiter"
+            },
+            "stability": "external",
+            "summary": "The character used to delimit the source CSV file."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 941
+          },
+          "name": "delimiter",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-csvformatdescriptor.html#cfn-lookoutmetrics-anomalydetector-csvformatdescriptor-filecompression"
+            },
+            "stability": "external",
+            "summary": "The level of compression of the source CSV file."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 947
+          },
+          "name": "fileCompression",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-csvformatdescriptor.html#cfn-lookoutmetrics-anomalydetector-csvformatdescriptor-headerlist"
+            },
+            "stability": "external",
+            "summary": "A list of the source CSV file's headers, if any."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 953
+          },
+          "name": "headerList",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-csvformatdescriptor.html#cfn-lookoutmetrics-anomalydetector-csvformatdescriptor-quotesymbol"
+            },
+            "stability": "external",
+            "summary": "The character used as a quote character."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 959
+          },
+          "name": "quoteSymbol",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.CsvFormatDescriptorProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.FileFormatDescriptorProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-fileformatdescriptor.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about a source file's formatting."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.FileFormatDescriptorProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 1035
+      },
+      "name": "FileFormatDescriptorProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-fileformatdescriptor.html#cfn-lookoutmetrics-anomalydetector-fileformatdescriptor-csvformatdescriptor"
+            },
+            "stability": "external",
+            "summary": "Contains information about how a source CSV data file should be analyzed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1041
+          },
+          "name": "csvFormatDescriptor",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.CsvFormatDescriptorProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-fileformatdescriptor.html#cfn-lookoutmetrics-anomalydetector-fileformatdescriptor-jsonformatdescriptor"
+            },
+            "stability": "external",
+            "summary": "Contains information about how a source JSON data file should be analyzed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1047
+          },
+          "name": "jsonFormatDescriptor",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.JsonFormatDescriptorProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.FileFormatDescriptorProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.JsonFormatDescriptorProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-jsonformatdescriptor.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about how a source JSON data file should be analyzed."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.JsonFormatDescriptorProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 1111
+      },
+      "name": "JsonFormatDescriptorProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-jsonformatdescriptor.html#cfn-lookoutmetrics-anomalydetector-jsonformatdescriptor-charset"
+            },
+            "stability": "external",
+            "summary": "The character set in which the source JSON file is written."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1117
+          },
+          "name": "charset",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-jsonformatdescriptor.html#cfn-lookoutmetrics-anomalydetector-jsonformatdescriptor-filecompression"
+            },
+            "stability": "external",
+            "summary": "The level of compression of the source CSV file."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1123
+          },
+          "name": "fileCompression",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.JsonFormatDescriptorProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.MetricProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metric.html"
+        },
+        "stability": "external",
+        "summary": "A calculation made by contrasting a measure and a dimension from your source data."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.MetricProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 1187
+      },
+      "name": "MetricProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metric.html#cfn-lookoutmetrics-anomalydetector-metric-aggregationfunction"
+            },
+            "stability": "external",
+            "summary": "The function with which the metric is calculated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1193
+          },
+          "name": "aggregationFunction",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metric.html#cfn-lookoutmetrics-anomalydetector-metric-metricname"
+            },
+            "stability": "external",
+            "summary": "The name of the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1199
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metric.html#cfn-lookoutmetrics-anomalydetector-metric-namespace"
+            },
+            "stability": "external",
+            "summary": "The namespace for the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1205
+          },
+          "name": "namespace",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.MetricProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.MetricSetProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricset.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about a dataset."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.MetricSetProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 1274
+      },
+      "name": "MetricSetProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricset.html#cfn-lookoutmetrics-anomalydetector-metricset-metriclist"
+            },
+            "stability": "external",
+            "summary": "A list of metrics that the dataset will contain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1286
+          },
+          "name": "metricList",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.MetricProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricset.html#cfn-lookoutmetrics-anomalydetector-metricset-metricsetname"
+            },
+            "stability": "external",
+            "summary": "The name of the dataset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1304
+          },
+          "name": "metricSetName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricset.html#cfn-lookoutmetrics-anomalydetector-metricset-metricsource"
+            },
+            "stability": "external",
+            "summary": "Contains information about how the source data should be interpreted."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1310
+          },
+          "name": "metricSource",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.MetricSourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricset.html#cfn-lookoutmetrics-anomalydetector-metricset-dimensionlist"
+            },
+            "stability": "external",
+            "summary": "A list of the fields you want to treat as dimensions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1280
+          },
+          "name": "dimensionList",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricset.html#cfn-lookoutmetrics-anomalydetector-metricset-metricsetdescription"
+            },
+            "stability": "external",
+            "summary": "A description of the dataset you are creating."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1292
+          },
+          "name": "metricSetDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricset.html#cfn-lookoutmetrics-anomalydetector-metricset-metricsetfrequency"
+            },
+            "stability": "external",
+            "summary": "The frequency with which the source data will be analyzed for anomalies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1298
+          },
+          "name": "metricSetFrequency",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricset.html#cfn-lookoutmetrics-anomalydetector-metricset-offset"
+            },
+            "remarks": "Offset is only supported for S3, Redshift, Athena and datasources.",
+            "stability": "external",
+            "summary": "After an interval ends, the amount of seconds that the detector waits before importing data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1316
+          },
+          "name": "offset",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricset.html#cfn-lookoutmetrics-anomalydetector-metricset-timestampcolumn"
+            },
+            "stability": "external",
+            "summary": "Contains information about the column used for tracking time in your source data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1322
+          },
+          "name": "timestampColumn",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.TimestampColumnProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricset.html#cfn-lookoutmetrics-anomalydetector-metricset-timezone"
+            },
+            "stability": "external",
+            "summary": "The time zone in which your source data was recorded."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1328
+          },
+          "name": "timezone",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.MetricSetProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.MetricSourceProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricsource.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about how the source data should be interpreted."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.MetricSourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 1416
+      },
+      "name": "MetricSourceProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricsource.html#cfn-lookoutmetrics-anomalydetector-metricsource-appflowconfig"
+            },
+            "stability": "external",
+            "summary": "Details about an AppFlow datasource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1422
+          },
+          "name": "appFlowConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.AppFlowConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricsource.html#cfn-lookoutmetrics-anomalydetector-metricsource-cloudwatchconfig"
+            },
+            "stability": "external",
+            "summary": "Details about an Amazon CloudWatch monitoring datasource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1428
+          },
+          "name": "cloudwatchConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.CloudwatchConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricsource.html#cfn-lookoutmetrics-anomalydetector-metricsource-rdssourceconfig"
+            },
+            "stability": "external",
+            "summary": "Details about an Amazon Relational Database Service (RDS) datasource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1434
+          },
+          "name": "rdsSourceConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.RDSSourceConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricsource.html#cfn-lookoutmetrics-anomalydetector-metricsource-redshiftsourceconfig"
+            },
+            "stability": "external",
+            "summary": "Details about an Amazon Redshift database datasource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1440
+          },
+          "name": "redshiftSourceConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.RedshiftSourceConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-metricsource.html#cfn-lookoutmetrics-anomalydetector-metricsource-s3sourceconfig"
+            },
+            "stability": "external",
+            "summary": "Contains information about the configuration of the S3 bucket that contains source files."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1446
+          },
+          "name": "s3SourceConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.S3SourceConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.MetricSourceProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.RDSSourceConfigProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-rdssourceconfig.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about the Amazon Relational Database Service (RDS) configuration."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.RDSSourceConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 1519
+      },
+      "name": "RDSSourceConfigProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-rdssourceconfig.html#cfn-lookoutmetrics-anomalydetector-rdssourceconfig-databasehost"
+            },
+            "stability": "external",
+            "summary": "The host name of the database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1531
+          },
+          "name": "databaseHost",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-rdssourceconfig.html#cfn-lookoutmetrics-anomalydetector-rdssourceconfig-databasename"
+            },
+            "stability": "external",
+            "summary": "The name of the RDS database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1537
+          },
+          "name": "databaseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-rdssourceconfig.html#cfn-lookoutmetrics-anomalydetector-rdssourceconfig-databaseport"
+            },
+            "stability": "external",
+            "summary": "The port number where the database can be accessed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1543
+          },
+          "name": "databasePort",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-rdssourceconfig.html#cfn-lookoutmetrics-anomalydetector-rdssourceconfig-dbinstanceidentifier"
+            },
+            "stability": "external",
+            "summary": "A string identifying the database instance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1525
+          },
+          "name": "dbInstanceIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-rdssourceconfig.html#cfn-lookoutmetrics-anomalydetector-rdssourceconfig-rolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1549
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-rdssourceconfig.html#cfn-lookoutmetrics-anomalydetector-rdssourceconfig-secretmanagerarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the AWS Secrets Manager role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1555
+          },
+          "name": "secretManagerArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-rdssourceconfig.html#cfn-lookoutmetrics-anomalydetector-rdssourceconfig-tablename"
+            },
+            "stability": "external",
+            "summary": "The name of the table in the database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1561
+          },
+          "name": "tableName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-rdssourceconfig.html#cfn-lookoutmetrics-anomalydetector-rdssourceconfig-vpcconfiguration"
+            },
+            "stability": "external",
+            "summary": "An object containing information about the Amazon Virtual Private Cloud (VPC) configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1567
+          },
+          "name": "vpcConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.VpcConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.RDSSourceConfigProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.RedshiftSourceConfigProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-redshiftsourceconfig.html"
+        },
+        "stability": "external",
+        "summary": "Provides information about the Amazon Redshift database configuration."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.RedshiftSourceConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 1657
+      },
+      "name": "RedshiftSourceConfigProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-redshiftsourceconfig.html#cfn-lookoutmetrics-anomalydetector-redshiftsourceconfig-clusteridentifier"
+            },
+            "stability": "external",
+            "summary": "A string identifying the Redshift cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1663
+          },
+          "name": "clusterIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-redshiftsourceconfig.html#cfn-lookoutmetrics-anomalydetector-redshiftsourceconfig-databasehost"
+            },
+            "stability": "external",
+            "summary": "The name of the database host."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1669
+          },
+          "name": "databaseHost",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-redshiftsourceconfig.html#cfn-lookoutmetrics-anomalydetector-redshiftsourceconfig-databasename"
+            },
+            "stability": "external",
+            "summary": "The Redshift database name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1675
+          },
+          "name": "databaseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-redshiftsourceconfig.html#cfn-lookoutmetrics-anomalydetector-redshiftsourceconfig-databaseport"
+            },
+            "stability": "external",
+            "summary": "The port number where the database can be accessed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1681
+          },
+          "name": "databasePort",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-redshiftsourceconfig.html#cfn-lookoutmetrics-anomalydetector-redshiftsourceconfig-rolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the role providing access to the database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1687
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-redshiftsourceconfig.html#cfn-lookoutmetrics-anomalydetector-redshiftsourceconfig-secretmanagerarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the AWS Secrets Manager role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1693
+          },
+          "name": "secretManagerArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-redshiftsourceconfig.html#cfn-lookoutmetrics-anomalydetector-redshiftsourceconfig-tablename"
+            },
+            "stability": "external",
+            "summary": "The table name of the Redshift database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1699
+          },
+          "name": "tableName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-redshiftsourceconfig.html#cfn-lookoutmetrics-anomalydetector-redshiftsourceconfig-vpcconfiguration"
+            },
+            "stability": "external",
+            "summary": "Contains information about the Amazon Virtual Private Cloud (VPC) configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1705
+          },
+          "name": "vpcConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.VpcConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.RedshiftSourceConfigProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.S3SourceConfigProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-s3sourceconfig.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about the configuration of the S3 bucket that contains source files."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.S3SourceConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 1795
+      },
+      "name": "S3SourceConfigProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-s3sourceconfig.html#cfn-lookoutmetrics-anomalydetector-s3sourceconfig-fileformatdescriptor"
+            },
+            "stability": "external",
+            "summary": "Contains information about a source file's formatting."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1801
+          },
+          "name": "fileFormatDescriptor",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.FileFormatDescriptorProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-s3sourceconfig.html#cfn-lookoutmetrics-anomalydetector-s3sourceconfig-rolearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of an IAM role that has read and write access permissions to the source S3 bucket."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1813
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-s3sourceconfig.html#cfn-lookoutmetrics-anomalydetector-s3sourceconfig-historicaldatapathlist"
+            },
+            "stability": "external",
+            "summary": "A list of paths to the historical data files."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1807
+          },
+          "name": "historicalDataPathList",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-s3sourceconfig.html#cfn-lookoutmetrics-anomalydetector-s3sourceconfig-templatedpathlist"
+            },
+            "stability": "external",
+            "summary": "A list of templated paths to the source files."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1819
+          },
+          "name": "templatedPathList",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.S3SourceConfigProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.TimestampColumnProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-timestampcolumn.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about the column used to track time in a source data file."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.TimestampColumnProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 1891
+      },
+      "name": "TimestampColumnProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-timestampcolumn.html#cfn-lookoutmetrics-anomalydetector-timestampcolumn-columnformat"
+            },
+            "stability": "external",
+            "summary": "The format of the timestamp column."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1897
+          },
+          "name": "columnFormat",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-timestampcolumn.html#cfn-lookoutmetrics-anomalydetector-timestampcolumn-columnname"
+            },
+            "stability": "external",
+            "summary": "The name of the timestamp column."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1903
+          },
+          "name": "columnName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.TimestampColumnProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.VpcConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-vpcconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Contains configuration information about the Amazon Virtual Private Cloud (VPC)."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.VpcConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 1967
+      },
+      "name": "VpcConfigurationProperty",
+      "namespace": "CfnAnomalyDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-vpcconfiguration.html#cfn-lookoutmetrics-anomalydetector-vpcconfiguration-securitygroupidlist"
+            },
+            "stability": "external",
+            "summary": "An array of strings containing the list of security groups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1973
+          },
+          "name": "securityGroupIdList",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lookoutmetrics-anomalydetector-vpcconfiguration.html#cfn-lookoutmetrics-anomalydetector-vpcconfiguration-subnetidlist"
+            },
+            "stability": "external",
+            "summary": "An array of strings containing the Amazon VPC subnet IDs (e.g., `subnet-0bb1c79de3EXAMPLE` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 1979
+          },
+          "name": "subnetIdList",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetector.VpcConfigurationProperty"
+    },
+    "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetectorProps": {
+      "assembly": "@aws-cdk/aws-lookoutmetrics",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-anomalydetector.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnAnomalyDetector`."
+      },
+      "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetectorProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lookoutmetrics.generated.ts",
+        "line": 481
+      },
+      "name": "CfnAnomalyDetectorProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-anomalydetector.html#cfn-lookoutmetrics-anomalydetector-anomalydetectorconfig"
+            },
+            "stability": "external",
+            "summary": "Contains information about the configuration of the anomaly detector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 488
+          },
+          "name": "anomalyDetectorConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.AnomalyDetectorConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-anomalydetector.html#cfn-lookoutmetrics-anomalydetector-metricsetlist"
+            },
+            "stability": "external",
+            "summary": "The detector's dataset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 495
+          },
+          "name": "metricSetList",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-lookoutmetrics.CfnAnomalyDetector.MetricSetProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-anomalydetector.html#cfn-lookoutmetrics-anomalydetector-anomalydetectordescription"
+            },
+            "stability": "external",
+            "summary": "A description of the detector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 502
+          },
+          "name": "anomalyDetectorDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-anomalydetector.html#cfn-lookoutmetrics-anomalydetector-anomalydetectorname"
+            },
+            "stability": "external",
+            "summary": "The name of the detector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 509
+          },
+          "name": "anomalyDetectorName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lookoutmetrics-anomalydetector.html#cfn-lookoutmetrics-anomalydetector-kmskeyarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the KMS key to use to encrypt your data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lookoutmetrics.generated.ts",
+            "line": 516
+          },
+          "name": "kmsKeyArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lookoutmetrics.generated:CfnAnomalyDetectorProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "LmMgpOLrcgMJmDSI6QZkF4hwXQRNnHlmvjg4U8gdlls="
+}

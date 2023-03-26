@@ -1,0 +1,2963 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::Timestream",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::Timestream",
+    "aws-timestream"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-timestream",
+  "readme": {
+    "markdown": "# AWS::Timestream Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as timestream from '@aws-cdk/aws-timestream';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for Timestream construct libraries](https://constructs.dev/search?q=timestream)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Timestream resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Timestream.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Timestream](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Timestream.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-timestream",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Timestream",
+      "packageId": "Amazon.CDK.AWS.Timestream"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "timestream",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.timestream"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-timestream"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-timestream",
+      "module": "aws_cdk.aws_timestream"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-timestream.CfnDatabase": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Timestream::Database",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-database.html"
+        },
+        "remarks": "Creates a new Timestream database. If the AWS KMS key is not specified, the database will be encrypted with a Timestream managed AWS KMS key located in your account. Refer to [AWS managed AWS KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk) for more info. [Service quotas apply](https://docs.aws.amazon.com/timestream/latest/developerguide/ts-limits.html) . See [code sample](https://docs.aws.amazon.com/timestream/latest/developerguide/code-samples.create-db.html) for details.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Timestream::Database`."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnDatabase",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Timestream::Database`."
+        },
+        "locationInModule": {
+          "filename": "lib/timestream.generated.ts",
+          "line": 168
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-timestream.CfnDatabaseProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 107
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 183
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 196
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDatabase",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 111
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The `arn` of the database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 136
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 188
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-database.html#cfn-timestream-database-tags"
+            },
+            "stability": "external",
+            "summary": "The tags to add to the database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 159
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-database.html#cfn-timestream-database-databasename"
+            },
+            "remarks": "*Length Constraints* : Minimum length of 3 bytes. Maximum length of 256 bytes.",
+            "stability": "external",
+            "summary": "The name of the Timestream database."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 145
+          },
+          "name": "databaseName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-database.html#cfn-timestream-database-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the AWS KMS key used to encrypt the data stored in the database."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 152
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnDatabase"
+    },
+    "@aws-cdk/aws-timestream.CfnDatabaseProps": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-database.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDatabase`."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnDatabaseProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 20
+      },
+      "name": "CfnDatabaseProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-database.html#cfn-timestream-database-databasename"
+            },
+            "remarks": "*Length Constraints* : Minimum length of 3 bytes. Maximum length of 256 bytes.",
+            "stability": "external",
+            "summary": "The name of the Timestream database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 29
+          },
+          "name": "databaseName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-database.html#cfn-timestream-database-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The identifier of the AWS KMS key used to encrypt the data stored in the database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 36
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-database.html#cfn-timestream-database-tags"
+            },
+            "stability": "external",
+            "summary": "The tags to add to the database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 43
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnDatabaseProps"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQuery": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Timestream::ScheduledQuery",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html"
+        },
+        "remarks": "Create a scheduled query that will be run on your behalf at the configured schedule. Timestream assumes the execution role provided as part of the `ScheduledQueryExecutionRoleArn` parameter to run the query. You can use the `NotificationConfiguration` parameter to configure notification for your scheduled query operations.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Timestream::ScheduledQuery`."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Timestream::ScheduledQuery`."
+        },
+        "locationInModule": {
+          "filename": "lib/timestream.generated.ts",
+          "line": 539
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-timestream.CfnScheduledQueryProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 376
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 574
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 594
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnScheduledQuery",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 380
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The `ARN` of the scheduled query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 405
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SQErrorReportConfiguration"
+            },
+            "stability": "external",
+            "summary": "The scheduled query error reporting configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 411
+          },
+          "name": "attrSqErrorReportConfiguration",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SQKmsKeyId"
+            },
+            "stability": "external",
+            "summary": "The KMS key used to encrypt the query resource, if a customer managed KMS key was provided."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 417
+          },
+          "name": "attrSqKmsKeyId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SQName"
+            },
+            "stability": "external",
+            "summary": "The scheduled query name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 423
+          },
+          "name": "attrSqName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SQNotificationConfiguration"
+            },
+            "stability": "external",
+            "summary": "The scheduled query notification configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 429
+          },
+          "name": "attrSqNotificationConfiguration",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SQQueryString"
+            },
+            "stability": "external",
+            "summary": "The scheduled query string.."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 435
+          },
+          "name": "attrSqQueryString",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SQScheduleConfiguration"
+            },
+            "stability": "external",
+            "summary": "The scheduled query schedule configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 441
+          },
+          "name": "attrSqScheduleConfiguration",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SQScheduledQueryExecutionRoleArn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the IAM role that will be used by Timestream to run the query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 447
+          },
+          "name": "attrSqScheduledQueryExecutionRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SQTargetConfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration for query output."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 453
+          },
+          "name": "attrSqTargetConfiguration",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 579
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-tags"
+            },
+            "stability": "external",
+            "summary": "A list of key-value pairs to label the scheduled query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 523
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-errorreportconfiguration"
+            },
+            "remarks": "Error reports will be generated when a problem is encountered when writing the query results.",
+            "stability": "external",
+            "summary": "Configuration for error reporting."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 460
+          },
+          "name": "errorReportConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.ErrorReportConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-notificationconfiguration"
+            },
+            "remarks": "A notification is sent by Timestream when a query run finishes, when the state is updated or when you delete it.",
+            "stability": "external",
+            "summary": "Notification configuration for the scheduled query."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 467
+          },
+          "name": "notificationConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.NotificationConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-querystring"
+            },
+            "remarks": "Parameter names can be specified in the query string `@` character followed by an identifier. The named Parameter `@scheduled_runtime` is reserved and can be used in the query to get the time at which the query is scheduled to run.\n\nThe timestamp calculated according to the ScheduleConfiguration parameter, will be the value of `@scheduled_runtime` paramater for each query run. For example, consider an instance of a scheduled query executing on 2021-12-01 00:00:00. For this instance, the `@scheduled_runtime` parameter is initialized to the timestamp 2021-12-01 00:00:00 when invoking the query.",
+            "stability": "external",
+            "summary": "The query string to run."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 476
+          },
+          "name": "queryString",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-scheduleconfiguration"
+            },
+            "stability": "external",
+            "summary": "Schedule configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 483
+          },
+          "name": "scheduleConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.ScheduleConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-scheduledqueryexecutionrolearn"
+            },
+            "stability": "external",
+            "summary": "The ARN for the IAM role that Timestream will assume when running the scheduled query."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 490
+          },
+          "name": "scheduledQueryExecutionRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-clienttoken"
+            },
+            "remarks": "Making multiple identical CreateScheduledQuery requests has the same effect as making a single request.\n\n- If CreateScheduledQuery is called without a `ClientToken` , the Query SDK generates a `ClientToken` on your behalf.\n- After 8 hours, any request with the same `ClientToken` is treated as a new request.",
+            "stability": "external",
+            "summary": "Using a ClientToken makes the call to CreateScheduledQuery idempotent, in other words, making the same request repeatedly will produce the same result."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 500
+          },
+          "name": "clientToken",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-kmskeyid"
+            },
+            "remarks": "If the Amazon KMS key is not specified, the scheduled query resource will be encrypted with a Timestream owned Amazon KMS key. To specify a KMS key, use the key ID, key ARN, alias name, or alias ARN. When using an alias name, prefix the name with *alias/*\n\nIf ErrorReportConfiguration uses `SSE_KMS` as encryption type, the same KmsKeyId is used to encrypt the error report at rest.",
+            "stability": "external",
+            "summary": "The Amazon KMS key used to encrypt the scheduled query resource, at-rest."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 509
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-scheduledqueryname"
+            },
+            "remarks": "Scheduled query names must be unique within each Region.",
+            "stability": "external",
+            "summary": "A name for the query."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 516
+          },
+          "name": "scheduledQueryName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-targetconfiguration"
+            },
+            "stability": "external",
+            "summary": "Scheduled query target store configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 530
+          },
+          "name": "targetConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.TargetConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQuery"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQuery.DimensionMappingProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-dimensionmapping.html"
+        },
+        "stability": "external",
+        "summary": "This type is used to map column(s) from the query result to a dimension in the destination table."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.DimensionMappingProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 608
+      },
+      "name": "DimensionMappingProperty",
+      "namespace": "CfnScheduledQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-dimensionmapping.html#cfn-timestream-scheduledquery-dimensionmapping-dimensionvaluetype"
+            },
+            "stability": "external",
+            "summary": "Type for the dimension."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 614
+          },
+          "name": "dimensionValueType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-dimensionmapping.html#cfn-timestream-scheduledquery-dimensionmapping-name"
+            },
+            "stability": "external",
+            "summary": "Column name from query result."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 620
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQuery.DimensionMappingProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQuery.ErrorReportConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-errorreportconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Configuration required for error reporting."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.ErrorReportConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 686
+      },
+      "name": "ErrorReportConfigurationProperty",
+      "namespace": "CfnScheduledQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-errorreportconfiguration.html#cfn-timestream-scheduledquery-errorreportconfiguration-s3configuration"
+            },
+            "stability": "external",
+            "summary": "The S3 configuration for the error reports."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 692
+          },
+          "name": "s3Configuration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.S3ConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQuery.ErrorReportConfigurationProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQuery.MixedMeasureMappingProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-mixedmeasuremapping.html"
+        },
+        "stability": "external",
+        "summary": "MixedMeasureMappings are mappings that can be used to ingest data into a mixture of narrow and multi measures in the derived table."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.MixedMeasureMappingProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 754
+      },
+      "name": "MixedMeasureMappingProperty",
+      "namespace": "CfnScheduledQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-mixedmeasuremapping.html#cfn-timestream-scheduledquery-mixedmeasuremapping-measurevaluetype"
+            },
+            "remarks": "If the mapping is for MULTI, use MeasureValueType.MULTI.",
+            "stability": "external",
+            "summary": "Type of the value that is to be read from sourceColumn."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 766
+          },
+          "name": "measureValueType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-mixedmeasuremapping.html#cfn-timestream-scheduledquery-mixedmeasuremapping-measurename"
+            },
+            "remarks": "This field is required if MeasureNameColumn is provided.",
+            "stability": "external",
+            "summary": "Refers to the value of measure_name in a result row."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 760
+          },
+          "name": "measureName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-mixedmeasuremapping.html#cfn-timestream-scheduledquery-mixedmeasuremapping-multimeasureattributemappings"
+            },
+            "remarks": "Attribute mappings for MULTI value measures.",
+            "stability": "external",
+            "summary": "Required when measureValueType is MULTI."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 772
+          },
+          "name": "multiMeasureAttributeMappings",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.MultiMeasureAttributeMappingProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-mixedmeasuremapping.html#cfn-timestream-scheduledquery-mixedmeasuremapping-sourcecolumn"
+            },
+            "stability": "external",
+            "summary": "This field refers to the source column from which measure-value is to be read for result materialization."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 778
+          },
+          "name": "sourceColumn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-mixedmeasuremapping.html#cfn-timestream-scheduledquery-mixedmeasuremapping-targetmeasurename"
+            },
+            "remarks": "If not provided, the target measure name by default would be measure-name if provided, or sourceColumn otherwise.",
+            "stability": "external",
+            "summary": "Target measure name to be used."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 784
+          },
+          "name": "targetMeasureName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQuery.MixedMeasureMappingProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQuery.MultiMeasureAttributeMappingProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-multimeasureattributemapping.html"
+        },
+        "stability": "external",
+        "summary": "Attribute mapping for MULTI value measures."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.MultiMeasureAttributeMappingProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 858
+      },
+      "name": "MultiMeasureAttributeMappingProperty",
+      "namespace": "CfnScheduledQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-multimeasureattributemapping.html#cfn-timestream-scheduledquery-multimeasureattributemapping-measurevaluetype"
+            },
+            "stability": "external",
+            "summary": "Type of the attribute to be read from the source column."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 864
+          },
+          "name": "measureValueType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-multimeasureattributemapping.html#cfn-timestream-scheduledquery-multimeasureattributemapping-sourcecolumn"
+            },
+            "stability": "external",
+            "summary": "Source column from where the attribute value is to be read."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 870
+          },
+          "name": "sourceColumn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-multimeasureattributemapping.html#cfn-timestream-scheduledquery-multimeasureattributemapping-targetmultimeasureattributename"
+            },
+            "remarks": "If not provided, source column name would be used.",
+            "stability": "external",
+            "summary": "Custom name to be used for attribute name in derived table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 876
+          },
+          "name": "targetMultiMeasureAttributeName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQuery.MultiMeasureAttributeMappingProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQuery.MultiMeasureMappingsProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-multimeasuremappings.html"
+        },
+        "remarks": "MultiMeasureMappings can be used to ingest data as multi measures in the derived table.",
+        "stability": "external",
+        "summary": "Only one of MixedMeasureMappings or MultiMeasureMappings is to be provided."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.MultiMeasureMappingsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 945
+      },
+      "name": "MultiMeasureMappingsProperty",
+      "namespace": "CfnScheduledQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-multimeasuremappings.html#cfn-timestream-scheduledquery-multimeasuremappings-multimeasureattributemappings"
+            },
+            "remarks": "Attribute mappings to be used for mapping query results to ingest data for multi-measure attributes.",
+            "stability": "external",
+            "summary": "Required."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 951
+          },
+          "name": "multiMeasureAttributeMappings",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.MultiMeasureAttributeMappingProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-multimeasuremappings.html#cfn-timestream-scheduledquery-multimeasuremappings-targetmultimeasurename"
+            },
+            "remarks": "This input is required when measureNameColumn is not provided. If MeasureNameColumn is provided, then value from that column will be used as multi-measure name.",
+            "stability": "external",
+            "summary": "The name of the target multi-measure name in the derived table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 957
+          },
+          "name": "targetMultiMeasureName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQuery.MultiMeasureMappingsProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQuery.NotificationConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-notificationconfiguration.html"
+        },
+        "remarks": "A notification is sent by Timestream when a scheduled query is created, its state is updated or when it is deleted.",
+        "stability": "external",
+        "summary": "Notification configuration for a scheduled query."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.NotificationConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 1022
+      },
+      "name": "NotificationConfigurationProperty",
+      "namespace": "CfnScheduledQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-notificationconfiguration.html#cfn-timestream-scheduledquery-notificationconfiguration-snsconfiguration"
+            },
+            "stability": "external",
+            "summary": "Details on SNS configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1028
+          },
+          "name": "snsConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.SnsConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQuery.NotificationConfigurationProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQuery.S3ConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-s3configuration.html"
+        },
+        "stability": "external",
+        "summary": "Details on S3 location for error reports that result from running a query."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.S3ConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 1090
+      },
+      "name": "S3ConfigurationProperty",
+      "namespace": "CfnScheduledQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-s3configuration.html#cfn-timestream-scheduledquery-s3configuration-bucketname"
+            },
+            "stability": "external",
+            "summary": "Name of the S3 bucket under which error reports will be created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1096
+          },
+          "name": "bucketName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-s3configuration.html#cfn-timestream-scheduledquery-s3configuration-encryptionoption"
+            },
+            "remarks": "If no encryption option is specified, Timestream will choose SSE_S3 as default.",
+            "stability": "external",
+            "summary": "Encryption at rest options for the error reports."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1102
+          },
+          "name": "encryptionOption",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-s3configuration.html#cfn-timestream-scheduledquery-s3configuration-objectkeyprefix"
+            },
+            "remarks": "Timestream by default adds the following prefix to the error report path.",
+            "stability": "external",
+            "summary": "Prefix for the error report key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1108
+          },
+          "name": "objectKeyPrefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQuery.S3ConfigurationProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQuery.ScheduleConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-scheduleconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Configuration of the schedule of the query."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.ScheduleConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 1176
+      },
+      "name": "ScheduleConfigurationProperty",
+      "namespace": "CfnScheduledQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-scheduleconfiguration.html#cfn-timestream-scheduledquery-scheduleconfiguration-scheduleexpression"
+            },
+            "remarks": "This can be a cron expression or a rate expression.",
+            "stability": "external",
+            "summary": "An expression that denotes when to trigger the scheduled query run."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1182
+          },
+          "name": "scheduleExpression",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQuery.ScheduleConfigurationProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQuery.SnsConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-snsconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Details on SNS that are required to send the notification."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.SnsConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 1244
+      },
+      "name": "SnsConfigurationProperty",
+      "namespace": "CfnScheduledQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-snsconfiguration.html#cfn-timestream-scheduledquery-snsconfiguration-topicarn"
+            },
+            "stability": "external",
+            "summary": "SNS topic ARN that the scheduled query status notifications will be sent to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1250
+          },
+          "name": "topicArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQuery.SnsConfigurationProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQuery.TargetConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-targetconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Configuration used for writing the output of a query."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.TargetConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 1312
+      },
+      "name": "TargetConfigurationProperty",
+      "namespace": "CfnScheduledQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-targetconfiguration.html#cfn-timestream-scheduledquery-targetconfiguration-timestreamconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration needed to write data into the Timestream database and table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1318
+          },
+          "name": "timestreamConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.TimestreamConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQuery.TargetConfigurationProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQuery.TimestreamConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-timestreamconfiguration.html"
+        },
+        "remarks": "This configuration allows the user to map the query result select columns into the destination table columns.",
+        "stability": "external",
+        "summary": "Configuration to write data into Timestream database and table."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.TimestreamConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 1380
+      },
+      "name": "TimestreamConfigurationProperty",
+      "namespace": "CfnScheduledQuery",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-timestreamconfiguration.html#cfn-timestream-scheduledquery-timestreamconfiguration-databasename"
+            },
+            "stability": "external",
+            "summary": "Name of Timestream database to which the query result will be written."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1386
+          },
+          "name": "databaseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-timestreamconfiguration.html#cfn-timestream-scheduledquery-timestreamconfiguration-dimensionmappings"
+            },
+            "stability": "external",
+            "summary": "This is to allow mapping column(s) from the query result to the dimension in the destination table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1392
+          },
+          "name": "dimensionMappings",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.DimensionMappingProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-timestreamconfiguration.html#cfn-timestream-scheduledquery-timestreamconfiguration-tablename"
+            },
+            "remarks": "The table should be within the same database that is provided in Timestream configuration.",
+            "stability": "external",
+            "summary": "Name of Timestream table that the query result will be written to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1416
+          },
+          "name": "tableName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-timestreamconfiguration.html#cfn-timestream-scheduledquery-timestreamconfiguration-timecolumn"
+            },
+            "remarks": "Column type for this should be TIMESTAMP.",
+            "stability": "external",
+            "summary": "Column from query result that should be used as the time column in destination table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1422
+          },
+          "name": "timeColumn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-timestreamconfiguration.html#cfn-timestream-scheduledquery-timestreamconfiguration-measurenamecolumn"
+            },
+            "stability": "external",
+            "summary": "Name of the measure column."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1398
+          },
+          "name": "measureNameColumn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-timestreamconfiguration.html#cfn-timestream-scheduledquery-timestreamconfiguration-mixedmeasuremappings"
+            },
+            "stability": "external",
+            "summary": "Specifies how to map measures to multi-measure records."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1404
+          },
+          "name": "mixedMeasureMappings",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.MixedMeasureMappingProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-scheduledquery-timestreamconfiguration.html#cfn-timestream-scheduledquery-timestreamconfiguration-multimeasuremappings"
+            },
+            "stability": "external",
+            "summary": "Multi-measure mappings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1410
+          },
+          "name": "multiMeasureMappings",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.MultiMeasureMappingsProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQuery.TimestreamConfigurationProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnScheduledQueryProps": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnScheduledQuery`."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnScheduledQueryProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 209
+      },
+      "name": "CfnScheduledQueryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-errorreportconfiguration"
+            },
+            "remarks": "Error reports will be generated when a problem is encountered when writing the query results.",
+            "stability": "external",
+            "summary": "Configuration for error reporting."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 216
+          },
+          "name": "errorReportConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.ErrorReportConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-notificationconfiguration"
+            },
+            "remarks": "A notification is sent by Timestream when a query run finishes, when the state is updated or when you delete it.",
+            "stability": "external",
+            "summary": "Notification configuration for the scheduled query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 223
+          },
+          "name": "notificationConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.NotificationConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-querystring"
+            },
+            "remarks": "Parameter names can be specified in the query string `@` character followed by an identifier. The named Parameter `@scheduled_runtime` is reserved and can be used in the query to get the time at which the query is scheduled to run.\n\nThe timestamp calculated according to the ScheduleConfiguration parameter, will be the value of `@scheduled_runtime` paramater for each query run. For example, consider an instance of a scheduled query executing on 2021-12-01 00:00:00. For this instance, the `@scheduled_runtime` parameter is initialized to the timestamp 2021-12-01 00:00:00 when invoking the query.",
+            "stability": "external",
+            "summary": "The query string to run."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 232
+          },
+          "name": "queryString",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-scheduleconfiguration"
+            },
+            "stability": "external",
+            "summary": "Schedule configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 239
+          },
+          "name": "scheduleConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.ScheduleConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-scheduledqueryexecutionrolearn"
+            },
+            "stability": "external",
+            "summary": "The ARN for the IAM role that Timestream will assume when running the scheduled query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 246
+          },
+          "name": "scheduledQueryExecutionRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-clienttoken"
+            },
+            "remarks": "Making multiple identical CreateScheduledQuery requests has the same effect as making a single request.\n\n- If CreateScheduledQuery is called without a `ClientToken` , the Query SDK generates a `ClientToken` on your behalf.\n- After 8 hours, any request with the same `ClientToken` is treated as a new request.",
+            "stability": "external",
+            "summary": "Using a ClientToken makes the call to CreateScheduledQuery idempotent, in other words, making the same request repeatedly will produce the same result."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 256
+          },
+          "name": "clientToken",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-kmskeyid"
+            },
+            "remarks": "If the Amazon KMS key is not specified, the scheduled query resource will be encrypted with a Timestream owned Amazon KMS key. To specify a KMS key, use the key ID, key ARN, alias name, or alias ARN. When using an alias name, prefix the name with *alias/*\n\nIf ErrorReportConfiguration uses `SSE_KMS` as encryption type, the same KmsKeyId is used to encrypt the error report at rest.",
+            "stability": "external",
+            "summary": "The Amazon KMS key used to encrypt the scheduled query resource, at-rest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 265
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-scheduledqueryname"
+            },
+            "remarks": "Scheduled query names must be unique within each Region.",
+            "stability": "external",
+            "summary": "A name for the query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 272
+          },
+          "name": "scheduledQueryName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-tags"
+            },
+            "stability": "external",
+            "summary": "A list of key-value pairs to label the scheduled query."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 279
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-scheduledquery.html#cfn-timestream-scheduledquery-targetconfiguration"
+            },
+            "stability": "external",
+            "summary": "Scheduled query target store configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 286
+          },
+          "name": "targetConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnScheduledQuery.TargetConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnScheduledQueryProps"
+    },
+    "@aws-cdk/aws-timestream.CfnTable": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Timestream::Table",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html"
+        },
+        "remarks": "The CreateTable operation adds a new table to an existing database in your account. In an AWS account, table names must be at least unique within each Region if they are in the same database. You may have identical table names in the same Region if the tables are in separate databases. While creating the table, you must specify the table name, database name, and the retention properties. [Service quotas apply](https://docs.aws.amazon.com/timestream/latest/developerguide/ts-limits.html) . See [code sample](https://docs.aws.amazon.com/timestream/latest/developerguide/code-samples.create-table.html) for details.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Timestream::Table`."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnTable",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Timestream::Table`."
+        },
+        "locationInModule": {
+          "filename": "lib/timestream.generated.ts",
+          "line": 1797
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-timestream.CfnTableProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 1664
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1816
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1831
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnTable",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1668
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The `arn` of the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1693
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Name"
+            },
+            "stability": "external",
+            "summary": "The name of the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1699
+          },
+          "name": "attrName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1821
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#cfn-timestream-table-tags"
+            },
+            "stability": "external",
+            "summary": "The tags to add to the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1788
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#cfn-timestream-table-databasename"
+            },
+            "remarks": "*Length Constraints* : Minimum length of 3 bytes. Maximum length of 256 bytes.",
+            "stability": "external",
+            "summary": "The name of the Timestream database that contains this table."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1708
+          },
+          "name": "databaseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#cfn-timestream-table-magneticstorewriteproperties"
+            },
+            "remarks": "This object has the following attributes:\n\n- *EnableMagneticStoreWrites* : A `boolean` flag to enable magnetic store writes.\n- *MagneticStoreRejectedDataLocation* : The location to write error reports for records rejected, asynchronously, during magnetic store writes. Only `S3Configuration` objects are allowed. The `S3Configuration` object has the following attributes:\n\n- *BucketName* : The name of the S3 bucket.\n- *EncryptionOption* : The encryption option for the S3 location. Valid values are S3 server-side encryption with an S3 managed key ( `SSE_S3` ) or AWS managed key ( `SSE_KMS` ).\n- *KmsKeyId* : The AWS KMS key ID to use when encrypting with an AWS managed key.\n- *ObjectKeyPrefix* : The prefix to use option for the objects stored in S3.\n\nBoth `BucketName` and `EncryptionOption` are *required* when `S3Configuration` is specified. If you specify `SSE_KMS` as your `EncryptionOption` then `KmsKeyId` is *required* .\n\n`EnableMagneticStoreWrites` attribute is *required* when `MagneticStoreWriteProperties` is specified. `MagneticStoreRejectedDataLocation` attribute is *required* when `EnableMagneticStoreWrites` is set to `true` .\n\nSee the following examples:\n\n*JSON*\n\n```json\n{ \"Type\" : AWS::Timestream::Table\", \"Properties\":{ \"DatabaseName\":\"TestDatabase\", \"TableName\":\"TestTable\", \"MagneticStoreWriteProperties\":{ \"EnableMagneticStoreWrites\":true, \"MagneticStoreRejectedDataLocation\":{ \"S3Configuration\":{ \"BucketName\":\"testbucket\", \"EncryptionOption\":\"SSE_KMS\", \"KmsKeyId\":\"1234abcd-12ab-34cd-56ef-1234567890ab\", \"ObjectKeyPrefix\":\"prefix\" } } } }\n}\n```\n\n*YAML*\n\n```\nType: AWS::Timestream::Table\nDependsOn: TestDatabase\nProperties: TableName: \"TestTable\" DatabaseName: \"TestDatabase\" MagneticStoreWriteProperties: EnableMagneticStoreWrites: true MagneticStoreRejectedDataLocation: S3Configuration: BucketName: \"testbucket\" EncryptionOption: \"SSE_KMS\" KmsKeyId: \"1234abcd-12ab-34cd-56ef-1234567890ab\" ObjectKeyPrefix: \"prefix\"\n```",
+            "stability": "external",
+            "summary": "Contains properties to set on the table when enabling magnetic store writes."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1746
+          },
+          "name": "magneticStoreWriteProperties",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#cfn-timestream-table-retentionproperties"
+            },
+            "remarks": "- *MemoryStoreRetentionPeriodInHours* : Retention duration for memory store, in hours.\n- *MagneticStoreRetentionPeriodInDays* : Retention duration for magnetic store, in days.\n\nBoth attributes are of type `string` . Both attributes are *required* when `RetentionProperties` is specified.\n\nSee the following examples:\n\n*JSON*\n\n`{ \"Type\" : AWS::Timestream::Table\", \"Properties\" : { \"DatabaseName\" : \"TestDatabase\", \"TableName\" : \"TestTable\", \"RetentionProperties\" : { \"MemoryStoreRetentionPeriodInHours\": \"24\", \"MagneticStoreRetentionPeriodInDays\": \"7\" } } }`\n\n*YAML*\n\n```\nType: AWS::Timestream::Table\nDependsOn: TestDatabase\nProperties: TableName: \"TestTable\" DatabaseName: \"TestDatabase\" RetentionProperties: MemoryStoreRetentionPeriodInHours: \"24\" MagneticStoreRetentionPeriodInDays: \"7\"\n```",
+            "stability": "external",
+            "summary": "The retention duration for the memory store and magnetic store. This object has the following attributes:."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1772
+          },
+          "name": "retentionProperties",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#cfn-timestream-table-tablename"
+            },
+            "remarks": "*Length Constraints* : Minimum length of 3 bytes. Maximum length of 256 bytes.",
+            "stability": "external",
+            "summary": "The name of the Timestream table."
+          },
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1781
+          },
+          "name": "tableName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnTable"
+    },
+    "@aws-cdk/aws-timestream.CfnTable.MagneticStoreRejectedDataLocationProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-magneticstorerejecteddatalocation.html"
+        },
+        "stability": "external",
+        "summary": "The location to write error reports for records rejected, asynchronously, during magnetic store writes."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnTable.MagneticStoreRejectedDataLocationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 1845
+      },
+      "name": "MagneticStoreRejectedDataLocationProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-magneticstorerejecteddatalocation.html#cfn-timestream-table-magneticstorerejecteddatalocation-s3configuration"
+            },
+            "stability": "external",
+            "summary": "Configuration of an S3 location to write error reports for records rejected, asynchronously, during magnetic store writes."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1851
+          },
+          "name": "s3Configuration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnTable.S3ConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnTable.MagneticStoreRejectedDataLocationProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnTable.MagneticStoreWritePropertiesProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-magneticstorewriteproperties.html"
+        },
+        "stability": "external",
+        "summary": "The set of properties on a table for configuring magnetic store writes."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnTable.MagneticStoreWritePropertiesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 1912
+      },
+      "name": "MagneticStoreWritePropertiesProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-magneticstorewriteproperties.html#cfn-timestream-table-magneticstorewriteproperties-enablemagneticstorewrites"
+            },
+            "stability": "external",
+            "summary": "A flag to enable magnetic store writes."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1918
+          },
+          "name": "enableMagneticStoreWrites",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-magneticstorewriteproperties.html#cfn-timestream-table-magneticstorewriteproperties-magneticstorerejecteddatalocation"
+            },
+            "stability": "external",
+            "summary": "The location to write error reports for records rejected asynchronously during magnetic store writes."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1924
+          },
+          "name": "magneticStoreRejectedDataLocation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-timestream.CfnTable.MagneticStoreRejectedDataLocationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnTable.MagneticStoreWritePropertiesProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnTable.RetentionPropertiesProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-retentionproperties.html"
+        },
+        "stability": "external",
+        "summary": "Retention properties contain the duration for which your time-series data must be stored in the magnetic store and the memory store."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnTable.RetentionPropertiesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 1989
+      },
+      "name": "RetentionPropertiesProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-retentionproperties.html#cfn-timestream-table-retentionproperties-magneticstoreretentionperiodindays"
+            },
+            "stability": "external",
+            "summary": "The duration for which data must be stored in the magnetic store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1995
+          },
+          "name": "magneticStoreRetentionPeriodInDays",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-retentionproperties.html#cfn-timestream-table-retentionproperties-memorystoreretentionperiodinhours"
+            },
+            "stability": "external",
+            "summary": "The duration for which data must be stored in the memory store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 2001
+          },
+          "name": "memoryStoreRetentionPeriodInHours",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnTable.RetentionPropertiesProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnTable.S3ConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-s3configuration.html"
+        },
+        "stability": "external",
+        "summary": "The configuration that specifies an S3 location."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnTable.S3ConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 2065
+      },
+      "name": "S3ConfigurationProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-s3configuration.html#cfn-timestream-table-s3configuration-bucketname"
+            },
+            "stability": "external",
+            "summary": "The bucket name of the customer S3 bucket."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 2071
+          },
+          "name": "bucketName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-s3configuration.html#cfn-timestream-table-s3configuration-encryptionoption"
+            },
+            "remarks": "Options are S3 server-side encryption with an S3 managed key or AWS managed key.",
+            "stability": "external",
+            "summary": "The encryption option for the customer S3 location."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 2077
+          },
+          "name": "encryptionOption",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-s3configuration.html#cfn-timestream-table-s3configuration-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The AWS KMS key ID for the customer S3 location when encrypting with an AWS managed key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 2083
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-timestream-table-s3configuration.html#cfn-timestream-table-s3configuration-objectkeyprefix"
+            },
+            "stability": "external",
+            "summary": "The object key preview for the customer S3 location."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 2089
+          },
+          "name": "objectKeyPrefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnTable.S3ConfigurationProperty"
+    },
+    "@aws-cdk/aws-timestream.CfnTableProps": {
+      "assembly": "@aws-cdk/aws-timestream",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnTable`."
+      },
+      "fqn": "@aws-cdk/aws-timestream.CfnTableProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/timestream.generated.ts",
+        "line": 1504
+      },
+      "name": "CfnTableProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#cfn-timestream-table-databasename"
+            },
+            "remarks": "*Length Constraints* : Minimum length of 3 bytes. Maximum length of 256 bytes.",
+            "stability": "external",
+            "summary": "The name of the Timestream database that contains this table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1513
+          },
+          "name": "databaseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#cfn-timestream-table-magneticstorewriteproperties"
+            },
+            "remarks": "This object has the following attributes:\n\n- *EnableMagneticStoreWrites* : A `boolean` flag to enable magnetic store writes.\n- *MagneticStoreRejectedDataLocation* : The location to write error reports for records rejected, asynchronously, during magnetic store writes. Only `S3Configuration` objects are allowed. The `S3Configuration` object has the following attributes:\n\n- *BucketName* : The name of the S3 bucket.\n- *EncryptionOption* : The encryption option for the S3 location. Valid values are S3 server-side encryption with an S3 managed key ( `SSE_S3` ) or AWS managed key ( `SSE_KMS` ).\n- *KmsKeyId* : The AWS KMS key ID to use when encrypting with an AWS managed key.\n- *ObjectKeyPrefix* : The prefix to use option for the objects stored in S3.\n\nBoth `BucketName` and `EncryptionOption` are *required* when `S3Configuration` is specified. If you specify `SSE_KMS` as your `EncryptionOption` then `KmsKeyId` is *required* .\n\n`EnableMagneticStoreWrites` attribute is *required* when `MagneticStoreWriteProperties` is specified. `MagneticStoreRejectedDataLocation` attribute is *required* when `EnableMagneticStoreWrites` is set to `true` .\n\nSee the following examples:\n\n*JSON*\n\n```json\n{ \"Type\" : AWS::Timestream::Table\", \"Properties\":{ \"DatabaseName\":\"TestDatabase\", \"TableName\":\"TestTable\", \"MagneticStoreWriteProperties\":{ \"EnableMagneticStoreWrites\":true, \"MagneticStoreRejectedDataLocation\":{ \"S3Configuration\":{ \"BucketName\":\"testbucket\", \"EncryptionOption\":\"SSE_KMS\", \"KmsKeyId\":\"1234abcd-12ab-34cd-56ef-1234567890ab\", \"ObjectKeyPrefix\":\"prefix\" } } } }\n}\n```\n\n*YAML*\n\n```\nType: AWS::Timestream::Table\nDependsOn: TestDatabase\nProperties: TableName: \"TestTable\" DatabaseName: \"TestDatabase\" MagneticStoreWriteProperties: EnableMagneticStoreWrites: true MagneticStoreRejectedDataLocation: S3Configuration: BucketName: \"testbucket\" EncryptionOption: \"SSE_KMS\" KmsKeyId: \"1234abcd-12ab-34cd-56ef-1234567890ab\" ObjectKeyPrefix: \"prefix\"\n```",
+            "stability": "external",
+            "summary": "Contains properties to set on the table when enabling magnetic store writes."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1551
+          },
+          "name": "magneticStoreWriteProperties",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#cfn-timestream-table-retentionproperties"
+            },
+            "remarks": "- *MemoryStoreRetentionPeriodInHours* : Retention duration for memory store, in hours.\n- *MagneticStoreRetentionPeriodInDays* : Retention duration for magnetic store, in days.\n\nBoth attributes are of type `string` . Both attributes are *required* when `RetentionProperties` is specified.\n\nSee the following examples:\n\n*JSON*\n\n`{ \"Type\" : AWS::Timestream::Table\", \"Properties\" : { \"DatabaseName\" : \"TestDatabase\", \"TableName\" : \"TestTable\", \"RetentionProperties\" : { \"MemoryStoreRetentionPeriodInHours\": \"24\", \"MagneticStoreRetentionPeriodInDays\": \"7\" } } }`\n\n*YAML*\n\n```\nType: AWS::Timestream::Table\nDependsOn: TestDatabase\nProperties: TableName: \"TestTable\" DatabaseName: \"TestDatabase\" RetentionProperties: MemoryStoreRetentionPeriodInHours: \"24\" MagneticStoreRetentionPeriodInDays: \"7\"\n```",
+            "stability": "external",
+            "summary": "The retention duration for the memory store and magnetic store. This object has the following attributes:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1577
+          },
+          "name": "retentionProperties",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#cfn-timestream-table-tablename"
+            },
+            "remarks": "*Length Constraints* : Minimum length of 3 bytes. Maximum length of 256 bytes.",
+            "stability": "external",
+            "summary": "The name of the Timestream table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1586
+          },
+          "name": "tableName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-timestream-table.html#cfn-timestream-table-tags"
+            },
+            "stability": "external",
+            "summary": "The tags to add to the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/timestream.generated.ts",
+            "line": 1593
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/timestream.generated:CfnTableProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "wJJBWX8fQ0ifVzmL/skx1qUJEIOjuHDUpUXGy6McluU="
+}

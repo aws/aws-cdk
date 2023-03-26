@@ -211,7 +211,8 @@ export interface DockerImageAssetOptions extends FingerprintOptions, FileFingerp
    * @example
    *
    * {
-   *   'MY_SECRET': DockerBuildSecret.fromSrc('file.txt')
+   *   'MY_SECRET': DockerBuildSecret.fromSrc('file.txt'),
+   *   'PIP_INDEX_URL': DockerBuildSecret.fromEnvironment('PIP_INDEX_URL'),
    * }
    */
   readonly buildSecrets?: { [key: string]: string }

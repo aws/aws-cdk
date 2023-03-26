@@ -1,0 +1,5197 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::LakeFormation",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::LakeFormation",
+    "aws-lakeformation"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-lakeformation",
+  "readme": {
+    "markdown": "# AWS::LakeFormation Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as lakeformation from '@aws-cdk/aws-lakeformation';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for LakeFormation construct libraries](https://constructs.dev/search?q=lakeformation)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::LakeFormation resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_LakeFormation.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::LakeFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_LakeFormation.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-lakeformation",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.LakeFormation",
+      "packageId": "Amazon.CDK.AWS.LakeFormation"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "lakeformation",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.lakeformation"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-lakeformation"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-lakeformation",
+      "module": "aws_cdk.aws_lakeformation"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-lakeformation.CfnDataCellsFilter": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::LakeFormation::DataCellsFilter",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html"
+        },
+        "remarks": "A structure that represents a data cell filter with column-level, row-level, and/or cell-level security. Data cell filters belong to a specific table in a Data Catalog . During a stack operation, AWS CloudFormation calls the AWS Lake Formation `CreateDataCellsFilter` API operation to create a `DataCellsFilter` resource, and calls the `DeleteDataCellsFilter` API operation to delete it.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::LakeFormation::DataCellsFilter`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnDataCellsFilter",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::LakeFormation::DataCellsFilter`."
+        },
+        "locationInModule": {
+          "filename": "lib/lakeformation.generated.ts",
+          "line": 246
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-lakeformation.CfnDataCellsFilterProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 157
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 268
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 285
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDataCellsFilter",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 161
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 273
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-databasename"
+            },
+            "remarks": "A database in the Data Catalog .",
+            "stability": "external",
+            "summary": "UTF-8 string, not less than 1 or more than 255 bytes long, matching the [single-line string pattern](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-common.html#aws-glue-api-regex-oneLine) ."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 189
+          },
+          "name": "databaseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-name"
+            },
+            "remarks": "The name given by the user to the data filter cell.",
+            "stability": "external",
+            "summary": "UTF-8 string, not less than 1 or more than 255 bytes long, matching the [single-line string pattern](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-common.html#aws-glue-api-regex-oneLine) ."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 198
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-tablecatalogid"
+            },
+            "remarks": "The ID of the catalog to which the table belongs.",
+            "stability": "external",
+            "summary": "Catalog id string, not less than 1 or more than 255 bytes long, matching the [single-line string pattern](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-common.html#aws-glue-api-regex-oneLine) ."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 207
+          },
+          "name": "tableCatalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-tablename"
+            },
+            "remarks": "A table in the database.",
+            "stability": "external",
+            "summary": "UTF-8 string, not less than 1 or more than 255 bytes long, matching the [single-line string pattern](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-common.html#aws-glue-api-regex-oneLine) ."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 216
+          },
+          "name": "tableName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-columnnames"
+            },
+            "remarks": "A list of column names.",
+            "stability": "external",
+            "summary": "An array of UTF-8 strings."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 223
+          },
+          "name": "columnNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-columnwildcard"
+            },
+            "remarks": "You must specify either a `ColumnNames` list or the `ColumnWildCard` .",
+            "stability": "external",
+            "summary": "A wildcard with exclusions."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 230
+          },
+          "name": "columnWildcard",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnDataCellsFilter.ColumnWildcardProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-rowfilter"
+            },
+            "stability": "external",
+            "summary": "A PartiQL predicate."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 237
+          },
+          "name": "rowFilter",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnDataCellsFilter.RowFilterProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnDataCellsFilter"
+    },
+    "@aws-cdk/aws-lakeformation.CfnDataCellsFilter.ColumnWildcardProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-datacellsfilter-columnwildcard.html"
+        },
+        "stability": "external",
+        "summary": "A wildcard object, consisting of an optional list of excluded column names or indexes."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnDataCellsFilter.ColumnWildcardProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 299
+      },
+      "name": "ColumnWildcardProperty",
+      "namespace": "CfnDataCellsFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-datacellsfilter-columnwildcard.html#cfn-lakeformation-datacellsfilter-columnwildcard-excludedcolumnnames"
+            },
+            "remarks": "Any column with this name will be excluded.",
+            "stability": "external",
+            "summary": "Excludes column names."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 305
+          },
+          "name": "excludedColumnNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnDataCellsFilter.ColumnWildcardProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnDataCellsFilter.RowFilterProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-datacellsfilter-rowfilter.html"
+        },
+        "stability": "external",
+        "summary": "A PartiQL predicate."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnDataCellsFilter.RowFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 366
+      },
+      "name": "RowFilterProperty",
+      "namespace": "CfnDataCellsFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-datacellsfilter-rowfilter.html#cfn-lakeformation-datacellsfilter-rowfilter-allrowswildcard"
+            },
+            "stability": "external",
+            "summary": "A wildcard for all rows."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 372
+          },
+          "name": "allRowsWildcard",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-datacellsfilter-rowfilter.html#cfn-lakeformation-datacellsfilter-rowfilter-filterexpression"
+            },
+            "stability": "external",
+            "summary": "A filter expression."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 378
+          },
+          "name": "filterExpression",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnDataCellsFilter.RowFilterProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnDataCellsFilterProps": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDataCellsFilter`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnDataCellsFilterProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 20
+      },
+      "name": "CfnDataCellsFilterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-databasename"
+            },
+            "remarks": "A database in the Data Catalog .",
+            "stability": "external",
+            "summary": "UTF-8 string, not less than 1 or more than 255 bytes long, matching the [single-line string pattern](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-common.html#aws-glue-api-regex-oneLine) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 29
+          },
+          "name": "databaseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-name"
+            },
+            "remarks": "The name given by the user to the data filter cell.",
+            "stability": "external",
+            "summary": "UTF-8 string, not less than 1 or more than 255 bytes long, matching the [single-line string pattern](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-common.html#aws-glue-api-regex-oneLine) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 38
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-tablecatalogid"
+            },
+            "remarks": "The ID of the catalog to which the table belongs.",
+            "stability": "external",
+            "summary": "Catalog id string, not less than 1 or more than 255 bytes long, matching the [single-line string pattern](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-common.html#aws-glue-api-regex-oneLine) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 47
+          },
+          "name": "tableCatalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-tablename"
+            },
+            "remarks": "A table in the database.",
+            "stability": "external",
+            "summary": "UTF-8 string, not less than 1 or more than 255 bytes long, matching the [single-line string pattern](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-common.html#aws-glue-api-regex-oneLine) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 56
+          },
+          "name": "tableName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-columnnames"
+            },
+            "remarks": "A list of column names.",
+            "stability": "external",
+            "summary": "An array of UTF-8 strings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 63
+          },
+          "name": "columnNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-columnwildcard"
+            },
+            "remarks": "You must specify either a `ColumnNames` list or the `ColumnWildCard` .",
+            "stability": "external",
+            "summary": "A wildcard with exclusions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 70
+          },
+          "name": "columnWildcard",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnDataCellsFilter.ColumnWildcardProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datacellsfilter.html#cfn-lakeformation-datacellsfilter-rowfilter"
+            },
+            "stability": "external",
+            "summary": "A PartiQL predicate."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 77
+          },
+          "name": "rowFilter",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnDataCellsFilter.RowFilterProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnDataCellsFilterProps"
+    },
+    "@aws-cdk/aws-lakeformation.CfnDataLakeSettings": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::LakeFormation::DataLakeSettings",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datalakesettings.html"
+        },
+        "remarks": "The `AWS::LakeFormation::DataLakeSettings` resource is an AWS Lake Formation resource type that manages the data lake settings for your account. Note that the CloudFormation template only supports updating the `Admins` list. It does not support updating the [CreateDatabaseDefaultPermissions](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-settings.html#aws-lake-formation-api-aws-lake-formation-api-settings-DataLakeSettings) or [CreateTableDefaultPermissions](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-settings.html#aws-lake-formation-api-aws-lake-formation-api-settings-DataLakeSettings) . Those permissions can only be edited in the DataLakeSettings resource via the API.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::LakeFormation::DataLakeSettings`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnDataLakeSettings",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::LakeFormation::DataLakeSettings`."
+        },
+        "locationInModule": {
+          "filename": "lib/lakeformation.generated.ts",
+          "line": 566
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-lakeformation.CfnDataLakeSettingsProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 518
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 579
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 591
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDataLakeSettings",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 522
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 584
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datalakesettings.html#cfn-lakeformation-datalakesettings-admins"
+            },
+            "stability": "external",
+            "summary": "A list of AWS Lake Formation principals."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 548
+          },
+          "name": "admins",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-lakeformation.CfnDataLakeSettings.DataLakePrincipalProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datalakesettings.html#cfn-lakeformation-datalakesettings-trustedresourceowners"
+            },
+            "remarks": "A list of the resource-owning account IDs that the caller's account can use to share their user access details (user ARNs). The user ARNs can be logged in the resource owner's CloudTrail log. You may want to specify this property when you are in a high-trust boundary, such as the same team or company.",
+            "stability": "external",
+            "summary": "An array of UTF-8 strings."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 557
+          },
+          "name": "trustedResourceOwners",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnDataLakeSettings"
+    },
+    "@aws-cdk/aws-lakeformation.CfnDataLakeSettings.DataLakePrincipalProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-datalakesettings-datalakeprincipal.html"
+        },
+        "stability": "external",
+        "summary": "The Lake Formation principal."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnDataLakeSettings.DataLakePrincipalProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 605
+      },
+      "name": "DataLakePrincipalProperty",
+      "namespace": "CfnDataLakeSettings",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-datalakesettings-datalakeprincipal.html#cfn-lakeformation-datalakesettings-datalakeprincipal-datalakeprincipalidentifier"
+            },
+            "stability": "external",
+            "summary": "An identifier for the Lake Formation principal."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 611
+          },
+          "name": "dataLakePrincipalIdentifier",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnDataLakeSettings.DataLakePrincipalProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnDataLakeSettingsProps": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datalakesettings.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDataLakeSettings`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnDataLakeSettingsProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 441
+      },
+      "name": "CfnDataLakeSettingsProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datalakesettings.html#cfn-lakeformation-datalakesettings-admins"
+            },
+            "stability": "external",
+            "summary": "A list of AWS Lake Formation principals."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 448
+          },
+          "name": "admins",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-lakeformation.CfnDataLakeSettings.DataLakePrincipalProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-datalakesettings.html#cfn-lakeformation-datalakesettings-trustedresourceowners"
+            },
+            "remarks": "A list of the resource-owning account IDs that the caller's account can use to share their user access details (user ARNs). The user ARNs can be logged in the resource owner's CloudTrail log. You may want to specify this property when you are in a high-trust boundary, such as the same team or company.",
+            "stability": "external",
+            "summary": "An array of UTF-8 strings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 457
+          },
+          "name": "trustedResourceOwners",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnDataLakeSettingsProps"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPermissions": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::LakeFormation::Permissions",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-permissions.html"
+        },
+        "remarks": "The `AWS::LakeFormation::Permissions` resource represents the permissions that a principal has on an AWS Glue Data Catalog resource (such as AWS Glue database or AWS Glue tables). When you upload a permissions stack, the permissions are granted to the principal and when you remove the stack, the permissions are revoked from the principal. If you remove a stack, and the principal does not have the permissions referenced in the stack then AWS Lake Formation will throw an error because you can’t call revoke on non-existing permissions. To successfully remove the stack, you’ll need to regrant those permissions and then remove the stack.\n\n> New versions of AWS Lake Formation permission resources are now available. For more information, see: [AWS:LakeFormation::PrincipalPermissions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html)",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::LakeFormation::Permissions`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::LakeFormation::Permissions`."
+        },
+        "locationInModule": {
+          "filename": "lib/lakeformation.generated.ts",
+          "line": 830
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-lakeformation.CfnPermissionsProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 770
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 847
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 861
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPermissions",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 774
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 852
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-permissions.html#cfn-lakeformation-permissions-datalakeprincipal"
+            },
+            "stability": "external",
+            "summary": "The AWS Lake Formation principal."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 800
+          },
+          "name": "dataLakePrincipal",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.DataLakePrincipalProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-permissions.html#cfn-lakeformation-permissions-resource"
+            },
+            "stability": "external",
+            "summary": "A structure for the resource."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 807
+          },
+          "name": "resource",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.ResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-permissions.html#cfn-lakeformation-permissions-permissions"
+            },
+            "stability": "external",
+            "summary": "The permissions granted or revoked."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 814
+          },
+          "name": "permissions",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-permissions.html#cfn-lakeformation-permissions-permissionswithgrantoption"
+            },
+            "stability": "external",
+            "summary": "Indicates the ability to grant permissions (as a subset of permissions granted)."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 821
+          },
+          "name": "permissionsWithGrantOption",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPermissions"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPermissions.ColumnWildcardProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-columnwildcard.html"
+        },
+        "stability": "external",
+        "summary": "A wildcard object, consisting of an optional list of excluded column names or indexes."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.ColumnWildcardProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 875
+      },
+      "name": "ColumnWildcardProperty",
+      "namespace": "CfnPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-columnwildcard.html#cfn-lakeformation-permissions-columnwildcard-excludedcolumnnames"
+            },
+            "remarks": "Any column with this name will be excluded.",
+            "stability": "external",
+            "summary": "Excludes column names."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 881
+          },
+          "name": "excludedColumnNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPermissions.ColumnWildcardProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPermissions.DataLakePrincipalProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-datalakeprincipal.html"
+        },
+        "stability": "external",
+        "summary": "The Lake Formation principal."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.DataLakePrincipalProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 942
+      },
+      "name": "DataLakePrincipalProperty",
+      "namespace": "CfnPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-datalakeprincipal.html#cfn-lakeformation-permissions-datalakeprincipal-datalakeprincipalidentifier"
+            },
+            "stability": "external",
+            "summary": "An identifier for the Lake Formation principal."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 948
+          },
+          "name": "dataLakePrincipalIdentifier",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPermissions.DataLakePrincipalProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPermissions.DataLocationResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-datalocationresource.html"
+        },
+        "stability": "external",
+        "summary": "A structure for a data location object where permissions are granted or revoked."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.DataLocationResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 1009
+      },
+      "name": "DataLocationResourceProperty",
+      "namespace": "CfnPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-datalocationresource.html#cfn-lakeformation-permissions-datalocationresource-catalogid"
+            },
+            "remarks": "By default, it is the account ID of the caller.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1015
+          },
+          "name": "catalogId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-datalocationresource.html#cfn-lakeformation-permissions-datalocationresource-s3resource"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) that uniquely identifies the data location resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1021
+          },
+          "name": "s3Resource",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPermissions.DataLocationResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPermissions.DatabaseResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-databaseresource.html"
+        },
+        "stability": "external",
+        "summary": "A structure for the database object."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.DatabaseResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 1085
+      },
+      "name": "DatabaseResourceProperty",
+      "namespace": "CfnPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-databaseresource.html#cfn-lakeformation-permissions-databaseresource-catalogid"
+            },
+            "remarks": "By default, it is the account ID of the caller.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1091
+          },
+          "name": "catalogId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-databaseresource.html#cfn-lakeformation-permissions-databaseresource-name"
+            },
+            "remarks": "Unique to the Data Catalog.",
+            "stability": "external",
+            "summary": "The name of the database resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1097
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPermissions.DatabaseResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPermissions.ResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-resource.html"
+        },
+        "stability": "external",
+        "summary": "A structure for the resource."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.ResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 1161
+      },
+      "name": "ResourceProperty",
+      "namespace": "CfnPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-resource.html#cfn-lakeformation-permissions-resource-databaseresource"
+            },
+            "stability": "external",
+            "summary": "A structure for the database object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1173
+          },
+          "name": "databaseResource",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.DatabaseResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-resource.html#cfn-lakeformation-permissions-resource-datalocationresource"
+            },
+            "stability": "external",
+            "summary": "A structure for a data location object where permissions are granted or revoked."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1167
+          },
+          "name": "dataLocationResource",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.DataLocationResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-resource.html#cfn-lakeformation-permissions-resource-tableresource"
+            },
+            "remarks": "A table is a metadata definition that represents your data. You can Grant and Revoke table privileges to a principal.",
+            "stability": "external",
+            "summary": "A structure for the table object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1179
+          },
+          "name": "tableResource",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.TableResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-resource.html#cfn-lakeformation-permissions-resource-tablewithcolumnsresource"
+            },
+            "remarks": "This object is only used when granting a SELECT permission.",
+            "stability": "external",
+            "summary": "A structure for a table with columns object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1185
+          },
+          "name": "tableWithColumnsResource",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.TableWithColumnsResourceProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPermissions.ResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPermissions.TableResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tableresource.html"
+        },
+        "remarks": "A table is a metadata definition that represents your data. You can Grant and Revoke table privileges to a principal.",
+        "stability": "external",
+        "summary": "A structure for the table object."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.TableResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 1255
+      },
+      "name": "TableResourceProperty",
+      "namespace": "CfnPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tableresource.html#cfn-lakeformation-permissions-tableresource-catalogid"
+            },
+            "remarks": "By default, it is the account ID of the caller.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1261
+          },
+          "name": "catalogId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tableresource.html#cfn-lakeformation-permissions-tableresource-databasename"
+            },
+            "remarks": "Unique to a Data Catalog. A database is a set of associated table definitions organized into a logical group. You can Grant and Revoke database privileges to a principal.",
+            "stability": "external",
+            "summary": "The name of the database for the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1267
+          },
+          "name": "databaseName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tableresource.html#cfn-lakeformation-permissions-tableresource-name"
+            },
+            "stability": "external",
+            "summary": "The name of the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1273
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tableresource.html#cfn-lakeformation-permissions-tableresource-tablewildcard"
+            },
+            "remarks": "If this field is specified instead of the `Name` field, all tables under `DatabaseName` will have permission changes applied.",
+            "stability": "external",
+            "summary": "An empty object representing all tables under a database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1279
+          },
+          "name": "tableWildcard",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.TableWildcardProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPermissions.TableResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPermissions.TableWildcardProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tablewildcard.html"
+        },
+        "stability": "external",
+        "summary": "A wildcard object representing every table under a database."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.TableWildcardProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 1349
+      },
+      "name": "TableWildcardProperty",
+      "namespace": "CfnPermissions",
+      "symbolId": "lib/lakeformation.generated:CfnPermissions.TableWildcardProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPermissions.TableWithColumnsResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tablewithcolumnsresource.html"
+        },
+        "remarks": "This object must take a value for at least one of `ColumnsNames` , `ColumnsIndexes` , or `ColumnsWildcard` .",
+        "stability": "external",
+        "summary": "A structure for a table with columns object. This object is only used when granting a SELECT permission."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.TableWithColumnsResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 1409
+      },
+      "name": "TableWithColumnsResourceProperty",
+      "namespace": "CfnPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tablewithcolumnsresource.html#cfn-lakeformation-permissions-tablewithcolumnsresource-catalogid"
+            },
+            "remarks": "By default, it is the account ID of the caller.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1415
+          },
+          "name": "catalogId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tablewithcolumnsresource.html#cfn-lakeformation-permissions-tablewithcolumnsresource-columnnames"
+            },
+            "remarks": "At least one of `ColumnNames` or `ColumnWildcard` is required.",
+            "stability": "external",
+            "summary": "The list of column names for the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1421
+          },
+          "name": "columnNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tablewithcolumnsresource.html#cfn-lakeformation-permissions-tablewithcolumnsresource-columnwildcard"
+            },
+            "remarks": "At least one of `ColumnNames` or `ColumnWildcard` is required.",
+            "stability": "external",
+            "summary": "A wildcard specified by a `ColumnWildcard` object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1427
+          },
+          "name": "columnWildcard",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.ColumnWildcardProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tablewithcolumnsresource.html#cfn-lakeformation-permissions-tablewithcolumnsresource-databasename"
+            },
+            "remarks": "Unique to the Data Catalog. A database is a set of associated table definitions organized into a logical group. You can Grant and Revoke database privileges to a principal.",
+            "stability": "external",
+            "summary": "The name of the database for the table with columns resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1433
+          },
+          "name": "databaseName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tablewithcolumnsresource.html#cfn-lakeformation-permissions-tablewithcolumnsresource-name"
+            },
+            "remarks": "A table is a metadata definition that represents your data. You can Grant and Revoke table privileges to a principal.",
+            "stability": "external",
+            "summary": "The name of the table resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1439
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPermissions.TableWithColumnsResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPermissionsProps": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-permissions.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPermissions`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPermissionsProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 671
+      },
+      "name": "CfnPermissionsProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-permissions.html#cfn-lakeformation-permissions-datalakeprincipal"
+            },
+            "stability": "external",
+            "summary": "The AWS Lake Formation principal."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 678
+          },
+          "name": "dataLakePrincipal",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.DataLakePrincipalProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-permissions.html#cfn-lakeformation-permissions-resource"
+            },
+            "stability": "external",
+            "summary": "A structure for the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 685
+          },
+          "name": "resource",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPermissions.ResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-permissions.html#cfn-lakeformation-permissions-permissions"
+            },
+            "stability": "external",
+            "summary": "The permissions granted or revoked."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 692
+          },
+          "name": "permissions",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-permissions.html#cfn-lakeformation-permissions-permissionswithgrantoption"
+            },
+            "stability": "external",
+            "summary": "Indicates the ability to grant permissions (as a subset of permissions granted)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 699
+          },
+          "name": "permissionsWithGrantOption",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPermissionsProps"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::LakeFormation::PrincipalPermissions",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html"
+        },
+        "remarks": "The `AWS::LakeFormation::PrincipalPermissions` resource represents the permissions that a principal has on a Data Catalog resource (such as AWS Glue databases or AWS Glue tables). When you create a `PrincipalPermissions` resource, the permissions are granted via the AWS Lake Formation `GrantPermissions` API operation. When you delete a `PrincipalPermissions` resource, the permissions on principal-resource pair are revoked via the AWS Lake Formation `RevokePermissions` API operation.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::LakeFormation::PrincipalPermissions`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::LakeFormation::PrincipalPermissions`."
+        },
+        "locationInModule": {
+          "filename": "lib/lakeformation.generated.ts",
+          "line": 1699
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissionsProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 1620
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1721
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1736
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPrincipalPermissions",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1624
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "PrincipalIdentifier"
+            },
+            "remarks": "For example: `{\"DataLakePrincipalIdentifier\":\"arn:aws:iam::123456789012:role/ExampleRole\"}`",
+            "stability": "external",
+            "summary": "Json encoding of the input principal."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1649
+          },
+          "name": "attrPrincipalIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ResourceIdentifier"
+            },
+            "remarks": "For example: `{\"Catalog\":null,\"Database\":null,\"Table\":null,\"TableWithColumns\":null,\"DataLocation\":null,\"DataCellsFilter\":{\"TableCatalogId\":\"123456789012\",\"DatabaseName\":\"ExampleDatabase\",\"TableName\":\"ExampleTable\",\"Name\":\"ExampleFilter\"},\"LFTag\":null,\"LFTagPolicy\":null}`",
+            "stability": "external",
+            "summary": "Json encoding of the input resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1655
+          },
+          "name": "attrResourceIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1726
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html#cfn-lakeformation-principalpermissions-permissions"
+            },
+            "stability": "external",
+            "summary": "The permissions granted or revoked."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1662
+          },
+          "name": "permissions",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html#cfn-lakeformation-principalpermissions-permissionswithgrantoption"
+            },
+            "stability": "external",
+            "summary": "Indicates the ability to grant permissions (as a subset of permissions granted)."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1669
+          },
+          "name": "permissionsWithGrantOption",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html#cfn-lakeformation-principalpermissions-principal"
+            },
+            "stability": "external",
+            "summary": "The principal to be granted a permission."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1676
+          },
+          "name": "principal",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DataLakePrincipalProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html#cfn-lakeformation-principalpermissions-resource"
+            },
+            "stability": "external",
+            "summary": "The resource to be granted or revoked permissions."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1683
+          },
+          "name": "resource",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.ResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html#cfn-lakeformation-principalpermissions-catalog"
+            },
+            "remarks": "By default, the account ID. The Data Catalog is the persistent metadata store. It contains database definitions, table definitions, and other control information to manage your Lake Formation environment.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog ."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1690
+          },
+          "name": "catalog",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissions"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.ColumnWildcardProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-columnwildcard.html"
+        },
+        "stability": "external",
+        "summary": "A wildcard object, consisting of an optional list of excluded column names or indexes."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.ColumnWildcardProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 1750
+      },
+      "name": "ColumnWildcardProperty",
+      "namespace": "CfnPrincipalPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-columnwildcard.html#cfn-lakeformation-principalpermissions-columnwildcard-excludedcolumnnames"
+            },
+            "remarks": "Any column with this name will be excluded.",
+            "stability": "external",
+            "summary": "Excludes column names."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1756
+          },
+          "name": "excludedColumnNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissions.ColumnWildcardProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DataCellsFilterResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-datacellsfilterresource.html"
+        },
+        "stability": "external",
+        "summary": "A structure that describes certain columns on certain rows."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DataCellsFilterResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 1817
+      },
+      "name": "DataCellsFilterResourceProperty",
+      "namespace": "CfnPrincipalPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-datacellsfilterresource.html#cfn-lakeformation-principalpermissions-datacellsfilterresource-databasename"
+            },
+            "stability": "external",
+            "summary": "A database in the Data Catalog ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1823
+          },
+          "name": "databaseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-datacellsfilterresource.html#cfn-lakeformation-principalpermissions-datacellsfilterresource-name"
+            },
+            "stability": "external",
+            "summary": "The name given by the user to the data filter cell."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1829
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-datacellsfilterresource.html#cfn-lakeformation-principalpermissions-datacellsfilterresource-tablecatalogid"
+            },
+            "stability": "external",
+            "summary": "The ID of the catalog to which the table belongs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1835
+          },
+          "name": "tableCatalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-datacellsfilterresource.html#cfn-lakeformation-principalpermissions-datacellsfilterresource-tablename"
+            },
+            "stability": "external",
+            "summary": "The name of the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1841
+          },
+          "name": "tableName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissions.DataCellsFilterResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DataLakePrincipalProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-datalakeprincipal.html"
+        },
+        "stability": "external",
+        "summary": "The AWS Lake Formation principal."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DataLakePrincipalProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 1915
+      },
+      "name": "DataLakePrincipalProperty",
+      "namespace": "CfnPrincipalPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-datalakeprincipal.html#cfn-lakeformation-principalpermissions-datalakeprincipal-datalakeprincipalidentifier"
+            },
+            "stability": "external",
+            "summary": "An identifier for the AWS Lake Formation principal."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1921
+          },
+          "name": "dataLakePrincipalIdentifier",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissions.DataLakePrincipalProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DataLocationResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-datalocationresource.html"
+        },
+        "stability": "external",
+        "summary": "A structure for a data location object where permissions are granted or revoked."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DataLocationResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 1982
+      },
+      "name": "DataLocationResourceProperty",
+      "namespace": "CfnPrincipalPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-datalocationresource.html#cfn-lakeformation-principalpermissions-datalocationresource-catalogid"
+            },
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog where the location is registered with AWS Lake Formation ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1988
+          },
+          "name": "catalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-datalocationresource.html#cfn-lakeformation-principalpermissions-datalocationresource-resourcearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) that uniquely identifies the data location resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1994
+          },
+          "name": "resourceArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissions.DataLocationResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DatabaseResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-databaseresource.html"
+        },
+        "stability": "external",
+        "summary": "A structure for the database object."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DatabaseResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 2060
+      },
+      "name": "DatabaseResourceProperty",
+      "namespace": "CfnPrincipalPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-databaseresource.html#cfn-lakeformation-principalpermissions-databaseresource-catalogid"
+            },
+            "remarks": "By default, it is the account ID of the caller.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2066
+          },
+          "name": "catalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-databaseresource.html#cfn-lakeformation-principalpermissions-databaseresource-name"
+            },
+            "remarks": "Unique to the Data Catalog.",
+            "stability": "external",
+            "summary": "The name of the database resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2072
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissions.DatabaseResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.LFTagKeyResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-lftagkeyresource.html"
+        },
+        "stability": "external",
+        "summary": "A structure containing an LF-tag key and values for a resource."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.LFTagKeyResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 2214
+      },
+      "name": "LFTagKeyResourceProperty",
+      "namespace": "CfnPrincipalPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-lftagkeyresource.html#cfn-lakeformation-principalpermissions-lftagkeyresource-catalogid"
+            },
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog where the location is registered with Data Catalog ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2220
+          },
+          "name": "catalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-lftagkeyresource.html#cfn-lakeformation-principalpermissions-lftagkeyresource-tagkey"
+            },
+            "stability": "external",
+            "summary": "The key-name for the LF-tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2226
+          },
+          "name": "tagKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-lftagkeyresource.html#cfn-lakeformation-principalpermissions-lftagkeyresource-tagvalues"
+            },
+            "stability": "external",
+            "summary": "A list of possible values for the corresponding `TagKey` of an LF-tag key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2232
+          },
+          "name": "tagValues",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissions.LFTagKeyResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.LFTagPolicyResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-lftagpolicyresource.html"
+        },
+        "remarks": "A structure that allows an admin to grant user permissions on certain conditions. For example, granting a role access to all columns that do not have the LF-tag 'PII' in tables that have the LF-tag 'Prod'.",
+        "stability": "external",
+        "summary": "A list of LF-tag conditions that define a resource's LF-tag policy."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.LFTagPolicyResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 2304
+      },
+      "name": "LFTagPolicyResourceProperty",
+      "namespace": "CfnPrincipalPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-lftagpolicyresource.html#cfn-lakeformation-principalpermissions-lftagpolicyresource-catalogid"
+            },
+            "remarks": "The Data Catalog is the persistent metadata store. It contains database definitions, table definitions, and other control information to manage your AWS Lake Formation environment.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2310
+          },
+          "name": "catalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-lftagpolicyresource.html#cfn-lakeformation-principalpermissions-lftagpolicyresource-expression"
+            },
+            "stability": "external",
+            "summary": "A list of LF-tag conditions that apply to the resource's LF-tag policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2316
+          },
+          "name": "expression",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.LFTagProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-lftagpolicyresource.html#cfn-lakeformation-principalpermissions-lftagpolicyresource-resourcetype"
+            },
+            "stability": "external",
+            "summary": "The resource type for which the LF-tag policy applies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2322
+          },
+          "name": "resourceType",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissions.LFTagPolicyResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.LFTagProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-lftag.html"
+        },
+        "stability": "external",
+        "summary": "The LF-tag key and values attached to a resource."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.LFTagProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 2138
+      },
+      "name": "LFTagProperty",
+      "namespace": "CfnPrincipalPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-lftag.html#cfn-lakeformation-principalpermissions-lftag-tagkey"
+            },
+            "stability": "external",
+            "summary": "The key-name for the LF-tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2144
+          },
+          "name": "tagKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-lftag.html#cfn-lakeformation-principalpermissions-lftag-tagvalues"
+            },
+            "stability": "external",
+            "summary": "A list of possible values of the corresponding `TagKey` of an LF-tag key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2150
+          },
+          "name": "tagValues",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissions.LFTagProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.ResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-resource.html"
+        },
+        "stability": "external",
+        "summary": "A structure for the resource."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.ResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 2392
+      },
+      "name": "ResourceProperty",
+      "namespace": "CfnPrincipalPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-resource.html#cfn-lakeformation-principalpermissions-resource-catalog"
+            },
+            "remarks": "By default, the account ID. The Data Catalog is the persistent metadata store. It contains database definitions, table definitions, and other control information to manage your AWS Lake Formation environment.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2398
+          },
+          "name": "catalog",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-resource.html#cfn-lakeformation-principalpermissions-resource-database"
+            },
+            "remarks": "Unique to the Data Catalog. A database is a set of associated table definitions organized into a logical group. You can Grant and Revoke database permissions to a principal.",
+            "stability": "external",
+            "summary": "The database for the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2416
+          },
+          "name": "database",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DatabaseResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-resource.html#cfn-lakeformation-principalpermissions-resource-datacellsfilter"
+            },
+            "stability": "external",
+            "summary": "A data cell filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2404
+          },
+          "name": "dataCellsFilter",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DataCellsFilterResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-resource.html#cfn-lakeformation-principalpermissions-resource-datalocation"
+            },
+            "stability": "external",
+            "summary": "The location of an Amazon S3 path where permissions are granted or revoked."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2410
+          },
+          "name": "dataLocation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DataLocationResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-resource.html#cfn-lakeformation-principalpermissions-resource-lftag"
+            },
+            "stability": "external",
+            "summary": "The LF-tag key and values attached to a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2422
+          },
+          "name": "lfTag",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.LFTagKeyResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-resource.html#cfn-lakeformation-principalpermissions-resource-lftagpolicy"
+            },
+            "stability": "external",
+            "summary": "A list of LF-tag conditions that define a resource's LF-tag policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2428
+          },
+          "name": "lfTagPolicy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.LFTagPolicyResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-resource.html#cfn-lakeformation-principalpermissions-resource-table"
+            },
+            "remarks": "A table is a metadata definition that represents your data. You can Grant and Revoke table privileges to a principal.",
+            "stability": "external",
+            "summary": "The table for the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2434
+          },
+          "name": "table",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.TableResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-resource.html#cfn-lakeformation-principalpermissions-resource-tablewithcolumns"
+            },
+            "remarks": "A principal with permissions to this resource can select metadata from the columns of a table in the Data Catalog and the underlying data in Amazon S3.",
+            "stability": "external",
+            "summary": "The table with columns for the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2440
+          },
+          "name": "tableWithColumns",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.TableWithColumnsResourceProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissions.ResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.TableResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-tableresource.html"
+        },
+        "remarks": "A table is a metadata definition that represents your data. You can Grant and Revoke table privileges to a principal.",
+        "stability": "external",
+        "summary": "A structure for the table object."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.TableResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 2522
+      },
+      "name": "TableResourceProperty",
+      "namespace": "CfnPrincipalPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-tableresource.html#cfn-lakeformation-principalpermissions-tableresource-catalogid"
+            },
+            "stability": "external",
+            "summary": "`CfnPrincipalPermissions.TableResourceProperty.CatalogId`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2528
+          },
+          "name": "catalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-tableresource.html#cfn-lakeformation-principalpermissions-tableresource-databasename"
+            },
+            "remarks": "Unique to a Data Catalog. A database is a set of associated table definitions organized into a logical group. You can Grant and Revoke database privileges to a principal.",
+            "stability": "external",
+            "summary": "The name of the database for the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2534
+          },
+          "name": "databaseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-tableresource.html#cfn-lakeformation-principalpermissions-tableresource-name"
+            },
+            "stability": "external",
+            "summary": "The name of the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2540
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-tableresource.html#cfn-lakeformation-principalpermissions-tableresource-tablewildcard"
+            },
+            "remarks": "At least one of `TableResource$Name` or `TableResource$TableWildcard` is required.",
+            "stability": "external",
+            "summary": "A wildcard object representing every table under a database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2548
+          },
+          "name": "tableWildcard",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissions.TableResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.TableWithColumnsResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-tablewithcolumnsresource.html"
+        },
+        "remarks": "This object must take a value for at least one of `ColumnsNames` , `ColumnsIndexes` , or `ColumnsWildcard` .",
+        "stability": "external",
+        "summary": "A structure for a table with columns object. This object is only used when granting a SELECT permission."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.TableWithColumnsResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 2622
+      },
+      "name": "TableWithColumnsResourceProperty",
+      "namespace": "CfnPrincipalPermissions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-tablewithcolumnsresource.html#cfn-lakeformation-principalpermissions-tablewithcolumnsresource-catalogid"
+            },
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog where the location is registered with AWS Lake Formation ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2628
+          },
+          "name": "catalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-tablewithcolumnsresource.html#cfn-lakeformation-principalpermissions-tablewithcolumnsresource-databasename"
+            },
+            "remarks": "Unique to the Data Catalog. A database is a set of associated table definitions organized into a logical group. You can Grant and Revoke database privileges to a principal.",
+            "stability": "external",
+            "summary": "The name of the database for the table with columns resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2646
+          },
+          "name": "databaseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-tablewithcolumnsresource.html#cfn-lakeformation-principalpermissions-tablewithcolumnsresource-name"
+            },
+            "remarks": "A table is a metadata definition that represents your data. You can Grant and Revoke table privileges to a principal.",
+            "stability": "external",
+            "summary": "The name of the table resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2652
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-tablewithcolumnsresource.html#cfn-lakeformation-principalpermissions-tablewithcolumnsresource-columnnames"
+            },
+            "remarks": "At least one of `ColumnNames` or `ColumnWildcard` is required.",
+            "stability": "external",
+            "summary": "The list of column names for the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2634
+          },
+          "name": "columnNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-principalpermissions-tablewithcolumnsresource.html#cfn-lakeformation-principalpermissions-tablewithcolumnsresource-columnwildcard"
+            },
+            "remarks": "At least one of `ColumnNames` or `ColumnWildcard` is required.",
+            "stability": "external",
+            "summary": "A wildcard specified by a `ColumnWildcard` object."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2640
+          },
+          "name": "columnWildcard",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.ColumnWildcardProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissions.TableWithColumnsResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnPrincipalPermissionsProps": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPrincipalPermissions`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissionsProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 1511
+      },
+      "name": "CfnPrincipalPermissionsProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html#cfn-lakeformation-principalpermissions-permissions"
+            },
+            "stability": "external",
+            "summary": "The permissions granted or revoked."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1518
+          },
+          "name": "permissions",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html#cfn-lakeformation-principalpermissions-permissionswithgrantoption"
+            },
+            "stability": "external",
+            "summary": "Indicates the ability to grant permissions (as a subset of permissions granted)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1525
+          },
+          "name": "permissionsWithGrantOption",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html#cfn-lakeformation-principalpermissions-principal"
+            },
+            "stability": "external",
+            "summary": "The principal to be granted a permission."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1532
+          },
+          "name": "principal",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.DataLakePrincipalProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html#cfn-lakeformation-principalpermissions-resource"
+            },
+            "stability": "external",
+            "summary": "The resource to be granted or revoked permissions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1539
+          },
+          "name": "resource",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnPrincipalPermissions.ResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-principalpermissions.html#cfn-lakeformation-principalpermissions-catalog"
+            },
+            "remarks": "By default, the account ID. The Data Catalog is the persistent metadata store. It contains database definitions, table definitions, and other control information to manage your Lake Formation environment.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 1546
+          },
+          "name": "catalog",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnPrincipalPermissionsProps"
+    },
+    "@aws-cdk/aws-lakeformation.CfnResource": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::LakeFormation::Resource",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-resource.html"
+        },
+        "remarks": "The `AWS::LakeFormation::Resource` represents the data (  buckets and folders) that is being registered with AWS Lake Formation . During a stack operation, AWS CloudFormation calls the AWS Lake Formation [`RegisterResource`](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-credential-vending.html#aws-lake-formation-api-credential-vending-RegisterResource) API operation to register the resource. To remove a `Resource` type, AWS CloudFormation calls the AWS Lake Formation [`DeregisterResource`](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-credential-vending.html#aws-lake-formation-api-credential-vending-DeregisterResource) API operation.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::LakeFormation::Resource`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnResource",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::LakeFormation::Resource`."
+        },
+        "locationInModule": {
+          "filename": "lib/lakeformation.generated.ts",
+          "line": 2867
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-lakeformation.CfnResourceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 2814
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2883
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2896
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnResource",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2818
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2888
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-resource.html#cfn-lakeformation-resource-resourcearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the resource."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2844
+          },
+          "name": "resourceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-resource.html#cfn-lakeformation-resource-useservicelinkedrole"
+            },
+            "stability": "external",
+            "summary": "Designates a trusted caller, an IAM principal, by registering this caller with the Data Catalog ."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2851
+          },
+          "name": "useServiceLinkedRole",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-resource.html#cfn-lakeformation-resource-rolearn"
+            },
+            "stability": "external",
+            "summary": "The IAM role that registered a resource."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2858
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnResource"
+    },
+    "@aws-cdk/aws-lakeformation.CfnResourceProps": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-resource.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnResource`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnResourceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 2727
+      },
+      "name": "CfnResourceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-resource.html#cfn-lakeformation-resource-resourcearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2734
+          },
+          "name": "resourceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-resource.html#cfn-lakeformation-resource-useservicelinkedrole"
+            },
+            "stability": "external",
+            "summary": "Designates a trusted caller, an IAM principal, by registering this caller with the Data Catalog ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2741
+          },
+          "name": "useServiceLinkedRole",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-resource.html#cfn-lakeformation-resource-rolearn"
+            },
+            "stability": "external",
+            "summary": "The IAM role that registered a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2748
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnResourceProps"
+    },
+    "@aws-cdk/aws-lakeformation.CfnTag": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::LakeFormation::Tag",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tag.html"
+        },
+        "remarks": "The `AWS::LakeFormation::Tag` resource represents an LF-tag, which consists of a key and one or more possible values for the key. During a stack operation, AWS CloudFormation calls the AWS Lake Formation `CreateLFTag` API to create a tag, and `UpdateLFTag` API to update a tag resource, and a `DeleteLFTag` to delete it.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::LakeFormation::Tag`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnTag",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::LakeFormation::Tag`."
+        },
+        "locationInModule": {
+          "filename": "lib/lakeformation.generated.ts",
+          "line": 3061
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-lakeformation.CfnTagProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 3002
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3077
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3090
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnTag",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3006
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3082
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tag.html#cfn-lakeformation-tag-tagkey"
+            },
+            "remarks": "The key-name for the LF-tag.",
+            "stability": "external",
+            "summary": "UTF-8 string, not less than 1 or more than 255 bytes long, matching the [single-line string pattern](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-common.html#aws-glue-api-regex-oneLine) ."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3034
+          },
+          "name": "tagKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tag.html#cfn-lakeformation-tag-tagvalues"
+            },
+            "remarks": "A list of possible values of the corresponding `TagKey` of an LF-tag key-value pair.",
+            "stability": "external",
+            "summary": "An array of UTF-8 strings, not less than 1 or more than 50 strings."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3043
+          },
+          "name": "tagValues",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tag.html#cfn-lakeformation-tag-catalogid"
+            },
+            "remarks": "The identifier for the Data Catalog . By default, the account ID. The Data Catalog is the persistent metadata store. It contains database definitions, table definitions, and other control information to manage your AWS Lake Formation environment.",
+            "stability": "external",
+            "summary": "Catalog id string, not less than 1 or more than 255 bytes long, matching the [single-line string pattern](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-common.html#aws-glue-api-regex-oneLine) ."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3052
+          },
+          "name": "catalogId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnTag"
+    },
+    "@aws-cdk/aws-lakeformation.CfnTagAssociation": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::LakeFormation::TagAssociation",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tagassociation.html"
+        },
+        "remarks": "The `AWS::LakeFormation::TagAssociation` resource represents an assignment of an LF-tag to a Data Catalog resource (database, table, or column). During a stack operation, CloudFormation calls AWS Lake Formation `AddLFTagsToResource` API to create a `TagAssociation` resource and calls the `RemoveLFTagsToResource` API to delete it.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::LakeFormation::TagAssociation`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::LakeFormation::TagAssociation`."
+        },
+        "locationInModule": {
+          "filename": "lib/lakeformation.generated.ts",
+          "line": 3248
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 3182
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3265
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3277
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnTagAssociation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3186
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ResourceIdentifier"
+            },
+            "remarks": "**Examples** - Database: `{\"Catalog\":null,\"Database\":{\"CatalogId\":\"123456789012\",\"Name\":\"ExampleDbName\"},\"Table\":null,\"TableWithColumns\":null}`\n- Table: `{\"Catalog\":null,\"Database\":null,\"Table\":{\"CatalogId\":\"123456789012\",\"DatabaseName\":\"ExampleDbName\",\"Name\":\"ExampleTableName\",\"TableWildcard\":null},\"TableWithColumns\":null}`\n- Columns: `{\"Catalog\":null,\"Database\":null,\"Table\":null,\"TableWithColumns\":{\"CatalogId\":\"123456789012\",\"DatabaseName\":\"ExampleDbName\",\"Name\":\"ExampleTableName\",\"ColumnNames\":[\"ExampleColName1\",\"ExampleColName2\"]}}`",
+            "stability": "external",
+            "summary": "Json encoding of the input resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3215
+          },
+          "name": "attrResourceIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "TagsIdentifier"
+            },
+            "remarks": "For example: `[{\"CatalogId\":null,\"TagKey\":\"tagKey1\",\"TagValues\":null},{\"CatalogId\":null,\"TagKey\":\"tagKey2\",\"TagValues\":null}]`",
+            "stability": "external",
+            "summary": "Json encoding of the input LFTags list."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3223
+          },
+          "name": "attrTagsIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3270
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tagassociation.html#cfn-lakeformation-tagassociation-lftags"
+            },
+            "stability": "external",
+            "summary": "A structure containing an LF-tag key-value pair."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3230
+          },
+          "name": "lfTags",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation.LFTagPairProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tagassociation.html#cfn-lakeformation-tagassociation-resource"
+            },
+            "remarks": "The resource for which the LF-tag policy applies.",
+            "stability": "external",
+            "summary": "UTF-8 string (valid values: `DATABASE | TABLE` )."
+          },
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3239
+          },
+          "name": "resource",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation.ResourceProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnTagAssociation"
+    },
+    "@aws-cdk/aws-lakeformation.CfnTagAssociation.DatabaseResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-databaseresource.html"
+        },
+        "stability": "external",
+        "summary": "A structure for the database object."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation.DatabaseResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 3291
+      },
+      "name": "DatabaseResourceProperty",
+      "namespace": "CfnTagAssociation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-databaseresource.html#cfn-lakeformation-tagassociation-databaseresource-catalogid"
+            },
+            "remarks": "By default, it should be the account ID of the caller.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3297
+          },
+          "name": "catalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-databaseresource.html#cfn-lakeformation-tagassociation-databaseresource-name"
+            },
+            "remarks": "Unique to the Data Catalog.",
+            "stability": "external",
+            "summary": "The name of the database resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3303
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnTagAssociation.DatabaseResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnTagAssociation.LFTagPairProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-lftagpair.html"
+        },
+        "stability": "external",
+        "summary": "A structure containing the catalog ID, tag key, and tag values of an LF-tag key-value pair."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation.LFTagPairProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 3369
+      },
+      "name": "LFTagPairProperty",
+      "namespace": "CfnTagAssociation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-lftagpair.html#cfn-lakeformation-tagassociation-lftagpair-catalogid"
+            },
+            "remarks": "By default, it is the account ID of the caller.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3375
+          },
+          "name": "catalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-lftagpair.html#cfn-lakeformation-tagassociation-lftagpair-tagkey"
+            },
+            "stability": "external",
+            "summary": "The key-name for the LF-tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3381
+          },
+          "name": "tagKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-lftagpair.html#cfn-lakeformation-tagassociation-lftagpair-tagvalues"
+            },
+            "stability": "external",
+            "summary": "A list of possible values of the corresponding `TagKey` of an LF-tag key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3387
+          },
+          "name": "tagValues",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnTagAssociation.LFTagPairProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnTagAssociation.ResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-resource.html"
+        },
+        "stability": "external",
+        "summary": "A structure for the resource."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation.ResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 3457
+      },
+      "name": "ResourceProperty",
+      "namespace": "CfnTagAssociation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-resource.html#cfn-lakeformation-tagassociation-resource-catalog"
+            },
+            "remarks": "By default, the account ID. The Data Catalog is the persistent metadata store. It contains database definitions, table definitions, and other control information to manage your AWS Lake Formation environment.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3463
+          },
+          "name": "catalog",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-resource.html#cfn-lakeformation-tagassociation-resource-database"
+            },
+            "remarks": "Unique to the Data Catalog. A database is a set of associated table definitions organized into a logical group. You can Grant and Revoke database permissions to a principal.",
+            "stability": "external",
+            "summary": "The database for the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3469
+          },
+          "name": "database",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation.DatabaseResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-resource.html#cfn-lakeformation-tagassociation-resource-table"
+            },
+            "remarks": "A table is a metadata definition that represents your data. You can Grant and Revoke table privileges to a principal.",
+            "stability": "external",
+            "summary": "The table for the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3475
+          },
+          "name": "table",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation.TableResourceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-resource.html#cfn-lakeformation-tagassociation-resource-tablewithcolumns"
+            },
+            "remarks": "A principal with permissions to this resource can select metadata from the columns of a table in the Data Catalog and the underlying data in Amazon S3.",
+            "stability": "external",
+            "summary": "The table with columns for the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3481
+          },
+          "name": "tableWithColumns",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation.TableWithColumnsResourceProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnTagAssociation.ResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnTagAssociation.TableResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-tableresource.html"
+        },
+        "remarks": "A table is a metadata definition that represents your data. You can Grant and Revoke table privileges to a principal.",
+        "stability": "external",
+        "summary": "A structure for the table object."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation.TableResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 3551
+      },
+      "name": "TableResourceProperty",
+      "namespace": "CfnTagAssociation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-tableresource.html#cfn-lakeformation-tagassociation-tableresource-catalogid"
+            },
+            "remarks": "By default, it is the account ID of the caller.",
+            "stability": "external",
+            "summary": "The identifier for the Data Catalog ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3557
+          },
+          "name": "catalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-tableresource.html#cfn-lakeformation-tagassociation-tableresource-databasename"
+            },
+            "remarks": "Unique to a Data Catalog. A database is a set of associated table definitions organized into a logical group. You can Grant and Revoke database privileges to a principal.",
+            "stability": "external",
+            "summary": "The name of the database for the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3563
+          },
+          "name": "databaseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-tableresource.html#cfn-lakeformation-tagassociation-tableresource-name"
+            },
+            "stability": "external",
+            "summary": "The name of the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3569
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-tableresource.html#cfn-lakeformation-tagassociation-tableresource-tablewildcard"
+            },
+            "remarks": "At least one of `TableResource$Name` or `TableResource$TableWildcard` is required.",
+            "stability": "external",
+            "summary": "A wildcard object representing every table under a database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3577
+          },
+          "name": "tableWildcard",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnTagAssociation.TableResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnTagAssociation.TableWithColumnsResourceProperty": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-tablewithcolumnsresource.html"
+        },
+        "remarks": "This object must take a value for at least one of `ColumnsNames` , `ColumnsIndexes` , or `ColumnsWildcard` .",
+        "stability": "external",
+        "summary": "A structure for a table with columns object. This object is only used when granting a SELECT permission."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation.TableWithColumnsResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 3651
+      },
+      "name": "TableWithColumnsResourceProperty",
+      "namespace": "CfnTagAssociation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-tablewithcolumnsresource.html#cfn-lakeformation-tagassociation-tablewithcolumnsresource-catalogid"
+            },
+            "remarks": "At least one of TableResource$Name or TableResource$TableWildcard is required.",
+            "stability": "external",
+            "summary": "A wildcard object representing every table under a database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3659
+          },
+          "name": "catalogId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-tablewithcolumnsresource.html#cfn-lakeformation-tagassociation-tablewithcolumnsresource-columnnames"
+            },
+            "remarks": "At least one of `ColumnNames` or `ColumnWildcard` is required.",
+            "stability": "external",
+            "summary": "The list of column names for the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3665
+          },
+          "name": "columnNames",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-tablewithcolumnsresource.html#cfn-lakeformation-tagassociation-tablewithcolumnsresource-databasename"
+            },
+            "remarks": "Unique to the Data Catalog. A database is a set of associated table definitions organized into a logical group. You can Grant and Revoke database privileges to a principal.",
+            "stability": "external",
+            "summary": "The name of the database for the table with columns resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3671
+          },
+          "name": "databaseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-tagassociation-tablewithcolumnsresource.html#cfn-lakeformation-tagassociation-tablewithcolumnsresource-name"
+            },
+            "remarks": "A table is a metadata definition that represents your data. You can Grant and Revoke table privileges to a principal.",
+            "stability": "external",
+            "summary": "The name of the table resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3677
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnTagAssociation.TableWithColumnsResourceProperty"
+    },
+    "@aws-cdk/aws-lakeformation.CfnTagAssociationProps": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tagassociation.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnTagAssociation`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 3103
+      },
+      "name": "CfnTagAssociationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tagassociation.html#cfn-lakeformation-tagassociation-lftags"
+            },
+            "stability": "external",
+            "summary": "A structure containing an LF-tag key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3110
+          },
+          "name": "lfTags",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation.LFTagPairProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tagassociation.html#cfn-lakeformation-tagassociation-resource"
+            },
+            "remarks": "The resource for which the LF-tag policy applies.",
+            "stability": "external",
+            "summary": "UTF-8 string (valid values: `DATABASE | TABLE` )."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 3119
+          },
+          "name": "resource",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-lakeformation.CfnTagAssociation.ResourceProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnTagAssociationProps"
+    },
+    "@aws-cdk/aws-lakeformation.CfnTagProps": {
+      "assembly": "@aws-cdk/aws-lakeformation",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tag.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnTag`."
+      },
+      "fqn": "@aws-cdk/aws-lakeformation.CfnTagProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lakeformation.generated.ts",
+        "line": 2909
+      },
+      "name": "CfnTagProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tag.html#cfn-lakeformation-tag-tagkey"
+            },
+            "remarks": "The key-name for the LF-tag.",
+            "stability": "external",
+            "summary": "UTF-8 string, not less than 1 or more than 255 bytes long, matching the [single-line string pattern](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-common.html#aws-glue-api-regex-oneLine) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2918
+          },
+          "name": "tagKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tag.html#cfn-lakeformation-tag-tagvalues"
+            },
+            "remarks": "A list of possible values of the corresponding `TagKey` of an LF-tag key-value pair.",
+            "stability": "external",
+            "summary": "An array of UTF-8 strings, not less than 1 or more than 50 strings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2927
+          },
+          "name": "tagValues",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lakeformation-tag.html#cfn-lakeformation-tag-catalogid"
+            },
+            "remarks": "The identifier for the Data Catalog . By default, the account ID. The Data Catalog is the persistent metadata store. It contains database definitions, table definitions, and other control information to manage your AWS Lake Formation environment.",
+            "stability": "external",
+            "summary": "Catalog id string, not less than 1 or more than 255 bytes long, matching the [single-line string pattern](https://docs.aws.amazon.com/lake-formation/latest/dg/aws-lake-formation-api-aws-lake-formation-api-common.html#aws-glue-api-regex-oneLine) ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lakeformation.generated.ts",
+            "line": 2936
+          },
+          "name": "catalogId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/lakeformation.generated:CfnTagProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "SpnOv4I/2DMubomdzeGDAPQUsAufEo4KBoaTs5YCHSU="
+}

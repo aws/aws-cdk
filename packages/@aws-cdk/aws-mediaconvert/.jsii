@@ -1,0 +1,1852 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::MediaConvert",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::MediaConvert",
+    "aws-mediaconvert"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-mediaconvert",
+  "readme": {
+    "markdown": "# AWS::MediaConvert Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as mediaconvert from '@aws-cdk/aws-mediaconvert';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for MediaConvert construct libraries](https://constructs.dev/search?q=mediaconvert)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::MediaConvert resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_MediaConvert.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::MediaConvert](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_MediaConvert.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-mediaconvert",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.MediaConvert",
+      "packageId": "Amazon.CDK.AWS.MediaConvert"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "mediaconvert",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.mediaconvert"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-mediaconvert"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-mediaconvert",
+      "module": "aws_cdk.aws_mediaconvert"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-mediaconvert.CfnJobTemplate": {
+      "assembly": "@aws-cdk/aws-mediaconvert",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MediaConvert::JobTemplate",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html"
+        },
+        "remarks": "The AWS::MediaConvert::JobTemplate resource is an AWS Elemental MediaConvert resource type that you can use to generate transcoding jobs.\n\nWhen you declare this entity in your AWS CloudFormation template, you pass in your transcoding job settings in JSON or YAML format. This settings specification must be formed in a particular way that conforms to AWS Elemental MediaConvert job validation. For more information about creating a job template model for the `SettingsJson` property, see the Remarks section later in this topic.\n\nFor information about job templates, see [Working with AWS Elemental MediaConvert Job Templates](https://docs.aws.amazon.com/mediaconvert/latest/ug/working-with-job-templates.html) in the ** .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MediaConvert::JobTemplate`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconvert.CfnJobTemplate",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MediaConvert::JobTemplate`."
+        },
+        "locationInModule": {
+          "filename": "lib/mediaconvert.generated.ts",
+          "line": 366
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-mediaconvert.CfnJobTemplateProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/mediaconvert.generated.ts",
+        "line": 216
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 390
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 410
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnJobTemplate",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 220
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the job template, such as `arn:aws:mediaconvert:us-west-2:123456789012` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 245
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Name"
+            },
+            "stability": "external",
+            "summary": "The name of the job template, such as `Streaming stack DASH` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 251
+          },
+          "name": "attrName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 395
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 357
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-settingsjson"
+            },
+            "remarks": "This specification must conform to the AWS Elemental MediaConvert job validation. For information about forming this specification, see the Remarks section later in this topic.\n\nFor more information about MediaConvert job templates, see [Working with AWS Elemental MediaConvert Job Templates](https://docs.aws.amazon.com/mediaconvert/latest/ug/working-with-job-templates.html) in the ** .",
+            "stability": "external",
+            "summary": "Specify, in JSON format, the transcoding job settings for this job template."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 260
+          },
+          "name": "settingsJson",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-accelerationsettings"
+            },
+            "remarks": "Outputs that use this feature incur pro-tier pricing. For information about feature limitations, For more information, see [Job Limitations for Accelerated Transcoding in AWS Elemental MediaConvert](https://docs.aws.amazon.com/mediaconvert/latest/ug/job-requirements.html) in the *AWS Elemental MediaConvert User Guide* .",
+            "stability": "external",
+            "summary": "Accelerated transcoding can significantly speed up jobs with long, visually complex content."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 267
+          },
+          "name": "accelerationSettings",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconvert.CfnJobTemplate.AccelerationSettingsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-category"
+            },
+            "remarks": "A category for the job template you are creating",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 274
+          },
+          "name": "category",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-description"
+            },
+            "remarks": "A description of the job template you are creating.",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 281
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-hopdestinations"
+            },
+            "remarks": "Configuration for a destination queue to which the job can hop once a customer-defined minimum wait time has passed. For more information, see [Setting Up Queue Hopping to Avoid Long Waits](https://docs.aws.amazon.com/mediaconvert/latest/ug/setting-up-queue-hopping-to-avoid-long-waits.html) in the *AWS Elemental MediaConvert User Guide* .",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 288
+          },
+          "name": "hopDestinations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-mediaconvert.CfnJobTemplate.HopDestinationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-name"
+            },
+            "stability": "external",
+            "summary": "The name of the job template you are creating."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 295
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-priority"
+            },
+            "remarks": "In any given queue, the service begins processing the job with the highest value first. When more than one job has the same priority, the service begins processing the job that you submitted first. If you don't specify a priority, the service uses the default value 0. Minimum: -50 Maximum: 50",
+            "stability": "external",
+            "summary": "Specify the relative priority for this job."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 302
+          },
+          "name": "priority",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-queue"
+            },
+            "remarks": "The queue that jobs created from this template are assigned to. Specify the Amazon Resource Name (ARN) of the queue. For example, arn:aws:mediaconvert:us-west-2:505474453218:queues/Default. If you don't specify this, jobs will go to the default queue.",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 309
+          },
+          "name": "queue",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-statusupdateinterval"
+            },
+            "remarks": "Set the interval, in seconds, between status updates. MediaConvert sends an update at this interval from the time the service begins processing your job to the time it completes the transcode or encounters an error.\n\nSpecify one of the following enums:\n\nSECONDS_10\n\nSECONDS_12\n\nSECONDS_15\n\nSECONDS_20\n\nSECONDS_30\n\nSECONDS_60\n\nSECONDS_120\n\nSECONDS_180\n\nSECONDS_240\n\nSECONDS_300\n\nSECONDS_360\n\nSECONDS_420\n\nSECONDS_480\n\nSECONDS_540\n\nSECONDS_600",
+            "stability": "external",
+            "summary": "Specify how often MediaConvert sends STATUS_UPDATE events to Amazon CloudWatch Events."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 348
+          },
+          "name": "statusUpdateInterval",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconvert.generated:CfnJobTemplate"
+    },
+    "@aws-cdk/aws-mediaconvert.CfnJobTemplate.AccelerationSettingsProperty": {
+      "assembly": "@aws-cdk/aws-mediaconvert",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconvert-jobtemplate-accelerationsettings.html"
+        },
+        "remarks": "Outputs that use this feature incur pro-tier pricing. For information about feature limitations, For more information, see [Job Limitations for Accelerated Transcoding in AWS Elemental MediaConvert](https://docs.aws.amazon.com/mediaconvert/latest/ug/job-requirements.html) in the *AWS Elemental MediaConvert User Guide* .",
+        "stability": "external",
+        "summary": "Accelerated transcoding can significantly speed up jobs with long, visually complex content."
+      },
+      "fqn": "@aws-cdk/aws-mediaconvert.CfnJobTemplate.AccelerationSettingsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconvert.generated.ts",
+        "line": 424
+      },
+      "name": "AccelerationSettingsProperty",
+      "namespace": "CfnJobTemplate",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconvert-jobtemplate-accelerationsettings.html#cfn-mediaconvert-jobtemplate-accelerationsettings-mode"
+            },
+            "stability": "external",
+            "summary": "Specify the conditions when the service will run your job with accelerated transcoding."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 430
+          },
+          "name": "mode",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconvert.generated:CfnJobTemplate.AccelerationSettingsProperty"
+    },
+    "@aws-cdk/aws-mediaconvert.CfnJobTemplate.HopDestinationProperty": {
+      "assembly": "@aws-cdk/aws-mediaconvert",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconvert-jobtemplate-hopdestination.html"
+        },
+        "remarks": "Configuration for a destination queue to which the job can hop once a customer-defined minimum wait time has passed. For more information, see [Setting Up Queue Hopping to Avoid Long Waits](https://docs.aws.amazon.com/mediaconvert/latest/ug/setting-up-queue-hopping-to-avoid-long-waits.html) in the *AWS Elemental MediaConvert User Guide* .",
+        "stability": "external",
+        "summary": "Optional."
+      },
+      "fqn": "@aws-cdk/aws-mediaconvert.CfnJobTemplate.HopDestinationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconvert.generated.ts",
+        "line": 492
+      },
+      "name": "HopDestinationProperty",
+      "namespace": "CfnJobTemplate",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconvert-jobtemplate-hopdestination.html#cfn-mediaconvert-jobtemplate-hopdestination-priority"
+            },
+            "remarks": "When you set up a job to use queue hopping, you can specify a different relative priority for the job in the destination queue. If you don't specify, the relative priority will remain the same as in the previous queue.",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 498
+          },
+          "name": "priority",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconvert-jobtemplate-hopdestination.html#cfn-mediaconvert-jobtemplate-hopdestination-queue"
+            },
+            "remarks": "When you set up a job to use queue hopping, you can specify a destination queue. This queue cannot be the original queue to which the job is submitted. If the original queue isn't the default queue and you don't specify the destination queue, the job will move to the default queue.",
+            "stability": "external",
+            "summary": "Optional unless the job is submitted on the default queue."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 504
+          },
+          "name": "queue",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconvert-jobtemplate-hopdestination.html#cfn-mediaconvert-jobtemplate-hopdestination-waitminutes"
+            },
+            "remarks": "Minimum wait time in minutes until the job can hop to the destination queue. Valid range is 1 to 1440 minutes, inclusive.",
+            "stability": "external",
+            "summary": "Required for setting up a job to use queue hopping."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 510
+          },
+          "name": "waitMinutes",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconvert.generated:CfnJobTemplate.HopDestinationProperty"
+    },
+    "@aws-cdk/aws-mediaconvert.CfnJobTemplateProps": {
+      "assembly": "@aws-cdk/aws-mediaconvert",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnJobTemplate`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconvert.CfnJobTemplateProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconvert.generated.ts",
+        "line": 20
+      },
+      "name": "CfnJobTemplateProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-settingsjson"
+            },
+            "remarks": "This specification must conform to the AWS Elemental MediaConvert job validation. For information about forming this specification, see the Remarks section later in this topic.\n\nFor more information about MediaConvert job templates, see [Working with AWS Elemental MediaConvert Job Templates](https://docs.aws.amazon.com/mediaconvert/latest/ug/working-with-job-templates.html) in the ** .",
+            "stability": "external",
+            "summary": "Specify, in JSON format, the transcoding job settings for this job template."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 29
+          },
+          "name": "settingsJson",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-accelerationsettings"
+            },
+            "remarks": "Outputs that use this feature incur pro-tier pricing. For information about feature limitations, For more information, see [Job Limitations for Accelerated Transcoding in AWS Elemental MediaConvert](https://docs.aws.amazon.com/mediaconvert/latest/ug/job-requirements.html) in the *AWS Elemental MediaConvert User Guide* .",
+            "stability": "external",
+            "summary": "Accelerated transcoding can significantly speed up jobs with long, visually complex content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 36
+          },
+          "name": "accelerationSettings",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconvert.CfnJobTemplate.AccelerationSettingsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-category"
+            },
+            "remarks": "A category for the job template you are creating",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 43
+          },
+          "name": "category",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-description"
+            },
+            "remarks": "A description of the job template you are creating.",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 50
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-hopdestinations"
+            },
+            "remarks": "Configuration for a destination queue to which the job can hop once a customer-defined minimum wait time has passed. For more information, see [Setting Up Queue Hopping to Avoid Long Waits](https://docs.aws.amazon.com/mediaconvert/latest/ug/setting-up-queue-hopping-to-avoid-long-waits.html) in the *AWS Elemental MediaConvert User Guide* .",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 57
+          },
+          "name": "hopDestinations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-mediaconvert.CfnJobTemplate.HopDestinationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-name"
+            },
+            "stability": "external",
+            "summary": "The name of the job template you are creating."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 64
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-priority"
+            },
+            "remarks": "In any given queue, the service begins processing the job with the highest value first. When more than one job has the same priority, the service begins processing the job that you submitted first. If you don't specify a priority, the service uses the default value 0. Minimum: -50 Maximum: 50",
+            "stability": "external",
+            "summary": "Specify the relative priority for this job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 71
+          },
+          "name": "priority",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-queue"
+            },
+            "remarks": "The queue that jobs created from this template are assigned to. Specify the Amazon Resource Name (ARN) of the queue. For example, arn:aws:mediaconvert:us-west-2:505474453218:queues/Default. If you don't specify this, jobs will go to the default queue.",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 78
+          },
+          "name": "queue",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-statusupdateinterval"
+            },
+            "remarks": "Set the interval, in seconds, between status updates. MediaConvert sends an update at this interval from the time the service begins processing your job to the time it completes the transcode or encounters an error.\n\nSpecify one of the following enums:\n\nSECONDS_10\n\nSECONDS_12\n\nSECONDS_15\n\nSECONDS_20\n\nSECONDS_30\n\nSECONDS_60\n\nSECONDS_120\n\nSECONDS_180\n\nSECONDS_240\n\nSECONDS_300\n\nSECONDS_360\n\nSECONDS_420\n\nSECONDS_480\n\nSECONDS_540\n\nSECONDS_600",
+            "stability": "external",
+            "summary": "Specify how often MediaConvert sends STATUS_UPDATE events to Amazon CloudWatch Events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 117
+          },
+          "name": "statusUpdateInterval",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-jobtemplate.html#cfn-mediaconvert-jobtemplate-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 126
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconvert.generated:CfnJobTemplateProps"
+    },
+    "@aws-cdk/aws-mediaconvert.CfnPreset": {
+      "assembly": "@aws-cdk/aws-mediaconvert",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MediaConvert::Preset",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-preset.html"
+        },
+        "remarks": "The AWS::MediaConvert::Preset resource is an AWS Elemental MediaConvert resource type that you can use to specify encoding settings for a single output in a transcoding job.\n\nWhen you declare this entity in your AWS CloudFormation template, you pass in your transcoding job settings in JSON or YAML format. This settings specification must be formed in a particular way that conforms to AWS Elemental MediaConvert job validation. For more information about creating an output preset model for the `SettingsJson` property, see the Remarks section later in this topic.\n\nFor more information about output MediaConvert presets, see [Working with AWS Elemental MediaConvert Output Presets](https://docs.aws.amazon.com/mediaconvert/latest/ug/working-with-presets.html) in the ** .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MediaConvert::Preset`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconvert.CfnPreset",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MediaConvert::Preset`."
+        },
+        "locationInModule": {
+          "filename": "lib/mediaconvert.generated.ts",
+          "line": 773
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-mediaconvert.CfnPresetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/mediaconvert.generated.ts",
+        "line": 690
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 792
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 807
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPreset",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 694
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the output preset, such as `arn:aws:mediaconvert:us-west-2:123456789012` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 719
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Name"
+            },
+            "stability": "external",
+            "summary": "The name of the output preset, such as `HEVC high res` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 725
+          },
+          "name": "attrName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 797
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-preset.html#cfn-mediaconvert-preset-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 764
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-preset.html#cfn-mediaconvert-preset-settingsjson"
+            },
+            "remarks": "This specification must conform to the AWS Elemental MediaConvert job validation. For information about forming this specification, see the Remarks section later in this topic.\n\nFor more information about MediaConvert output presets, see [Working with AWS Elemental MediaConvert Output Presets](https://docs.aws.amazon.com/mediaconvert/latest/ug/working-with-presets.html) in the ** .",
+            "stability": "external",
+            "summary": "Specify, in JSON format, the transcoding job settings for this output preset."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 734
+          },
+          "name": "settingsJson",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-preset.html#cfn-mediaconvert-preset-category"
+            },
+            "stability": "external",
+            "summary": "The new category for the preset, if you are changing it."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 741
+          },
+          "name": "category",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-preset.html#cfn-mediaconvert-preset-description"
+            },
+            "stability": "external",
+            "summary": "The new description for the preset, if you are changing it."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 748
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-preset.html#cfn-mediaconvert-preset-name"
+            },
+            "stability": "external",
+            "summary": "The name of the preset that you are modifying."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 755
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconvert.generated:CfnPreset"
+    },
+    "@aws-cdk/aws-mediaconvert.CfnPresetProps": {
+      "assembly": "@aws-cdk/aws-mediaconvert",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-preset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPreset`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconvert.CfnPresetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconvert.generated.ts",
+        "line": 576
+      },
+      "name": "CfnPresetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-preset.html#cfn-mediaconvert-preset-settingsjson"
+            },
+            "remarks": "This specification must conform to the AWS Elemental MediaConvert job validation. For information about forming this specification, see the Remarks section later in this topic.\n\nFor more information about MediaConvert output presets, see [Working with AWS Elemental MediaConvert Output Presets](https://docs.aws.amazon.com/mediaconvert/latest/ug/working-with-presets.html) in the ** .",
+            "stability": "external",
+            "summary": "Specify, in JSON format, the transcoding job settings for this output preset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 585
+          },
+          "name": "settingsJson",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-preset.html#cfn-mediaconvert-preset-category"
+            },
+            "stability": "external",
+            "summary": "The new category for the preset, if you are changing it."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 592
+          },
+          "name": "category",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-preset.html#cfn-mediaconvert-preset-description"
+            },
+            "stability": "external",
+            "summary": "The new description for the preset, if you are changing it."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 599
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-preset.html#cfn-mediaconvert-preset-name"
+            },
+            "stability": "external",
+            "summary": "The name of the preset that you are modifying."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 606
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-preset.html#cfn-mediaconvert-preset-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 615
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconvert.generated:CfnPresetProps"
+    },
+    "@aws-cdk/aws-mediaconvert.CfnQueue": {
+      "assembly": "@aws-cdk/aws-mediaconvert",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MediaConvert::Queue",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-queue.html"
+        },
+        "remarks": "The AWS::MediaConvert::Queue resource is an AWS Elemental MediaConvert resource type that you can use to manage the resources that are available to your account for parallel processing of jobs. For more information about queues, see [Working with AWS Elemental MediaConvert Queues](https://docs.aws.amazon.com/mediaconvert/latest/ug/working-with-queues.html) in the ** .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MediaConvert::Queue`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconvert.CfnQueue",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MediaConvert::Queue`."
+        },
+        "locationInModule": {
+          "filename": "lib/mediaconvert.generated.ts",
+          "line": 1012
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-mediaconvert.CfnQueueProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/mediaconvert.generated.ts",
+        "line": 929
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 1030
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 1045
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnQueue",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 933
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the queue, such as `arn:aws:mediaconvert:us-west-2:123456789012` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 958
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Name"
+            },
+            "stability": "external",
+            "summary": "The name of the queue, such as `Queue 2` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 964
+          },
+          "name": "attrName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 1035
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-queue.html#cfn-mediaconvert-queue-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 1003
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-queue.html#cfn-mediaconvert-queue-description"
+            },
+            "remarks": "A description of the queue that you are creating.",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 971
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-queue.html#cfn-mediaconvert-queue-name"
+            },
+            "stability": "external",
+            "summary": "The name of the queue that you are creating."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 978
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-queue.html#cfn-mediaconvert-queue-pricingplan"
+            },
+            "remarks": "Therefore, always set `PricingPlan` to the value \"ON_DEMAND\" when declaring an AWS::MediaConvert::Queue in your AWS CloudFormation template.\n\nTo create a reserved queue, use the AWS Elemental MediaConvert console at https://console.aws.amazon.com/mediaconvert to set up a contract. For more information, see [Working with AWS Elemental MediaConvert Queues](https://docs.aws.amazon.com/mediaconvert/latest/ug/working-with-queues.html) in the ** .",
+            "stability": "external",
+            "summary": "When you use AWS CloudFormation , you can create only on-demand queues."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 987
+          },
+          "name": "pricingPlan",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-queue.html#cfn-mediaconvert-queue-status"
+            },
+            "remarks": "Queues can be either ACTIVE or PAUSED. If you create a paused queue, then jobs that you send to that queue won't begin.",
+            "stability": "external",
+            "summary": "Initial state of the queue."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 994
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconvert.generated:CfnQueue"
+    },
+    "@aws-cdk/aws-mediaconvert.CfnQueueProps": {
+      "assembly": "@aws-cdk/aws-mediaconvert",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-queue.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnQueue`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconvert.CfnQueueProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconvert.generated.ts",
+        "line": 820
+      },
+      "name": "CfnQueueProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-queue.html#cfn-mediaconvert-queue-description"
+            },
+            "remarks": "A description of the queue that you are creating.",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 827
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-queue.html#cfn-mediaconvert-queue-name"
+            },
+            "stability": "external",
+            "summary": "The name of the queue that you are creating."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 834
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-queue.html#cfn-mediaconvert-queue-pricingplan"
+            },
+            "remarks": "Therefore, always set `PricingPlan` to the value \"ON_DEMAND\" when declaring an AWS::MediaConvert::Queue in your AWS CloudFormation template.\n\nTo create a reserved queue, use the AWS Elemental MediaConvert console at https://console.aws.amazon.com/mediaconvert to set up a contract. For more information, see [Working with AWS Elemental MediaConvert Queues](https://docs.aws.amazon.com/mediaconvert/latest/ug/working-with-queues.html) in the ** .",
+            "stability": "external",
+            "summary": "When you use AWS CloudFormation , you can create only on-demand queues."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 843
+          },
+          "name": "pricingPlan",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-queue.html#cfn-mediaconvert-queue-status"
+            },
+            "remarks": "Queues can be either ACTIVE or PAUSED. If you create a paused queue, then jobs that you send to that queue won't begin.",
+            "stability": "external",
+            "summary": "Initial state of the queue."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 850
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconvert-queue.html#cfn-mediaconvert-queue-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconvert.generated.ts",
+            "line": 859
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconvert.generated:CfnQueueProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "uUriixTLxGtz1/1eOt7F5acRk9/vjd44pvW0gIXxYwQ="
+}

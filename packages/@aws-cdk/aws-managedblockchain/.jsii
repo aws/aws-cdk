@@ -1,0 +1,1659 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::ManagedBlockchain",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::ManagedBlockchain",
+    "aws-managedblockchain"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-managedblockchain",
+  "readme": {
+    "markdown": "# AWS::ManagedBlockchain Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as managedblockchain from '@aws-cdk/aws-managedblockchain';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for ManagedBlockchain construct libraries](https://constructs.dev/search?q=managedblockchain)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::ManagedBlockchain resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ManagedBlockchain.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::ManagedBlockchain](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ManagedBlockchain.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-managedblockchain",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.ManagedBlockchain",
+      "packageId": "Amazon.CDK.AWS.ManagedBlockchain"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "managedblockchain",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.managedblockchain"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-managedblockchain"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-managedblockchain",
+      "module": "aws_cdk.aws_managedblockchain"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-managedblockchain.CfnMember": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ManagedBlockchain::Member",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-member.html"
+        },
+        "remarks": "Creates a member within a Managed Blockchain network.\n\nApplies only to Hyperledger Fabric.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ManagedBlockchain::Member`."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnMember",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ManagedBlockchain::Member`."
+        },
+        "locationInModule": {
+          "filename": "lib/managedblockchain.generated.ts",
+          "line": 190
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-managedblockchain.CfnMemberProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 118
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 208
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 222
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnMember",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 122
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "MemberId"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the member."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 147
+          },
+          "name": "attrMemberId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "NetworkId"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the network to which the member belongs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 153
+          },
+          "name": "attrNetworkId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 213
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-member.html#cfn-managedblockchain-member-memberconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration properties of the member."
+          },
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 160
+          },
+          "name": "memberConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.MemberConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-member.html#cfn-managedblockchain-member-invitationid"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the invitation to join the network sent to the account that creates the member."
+          },
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 167
+          },
+          "name": "invitationId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-member.html#cfn-managedblockchain-member-networkconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration properties of the network to which the member belongs."
+          },
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 174
+          },
+          "name": "networkConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.NetworkConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-member.html#cfn-managedblockchain-member-networkid"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the network to which the member belongs."
+          },
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 181
+          },
+          "name": "networkId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnMember"
+    },
+    "@aws-cdk/aws-managedblockchain.CfnMember.ApprovalThresholdPolicyProperty": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-approvalthresholdpolicy.html"
+        },
+        "remarks": "The rules decide if a proposal is approved. Approval may be based on criteria such as the percentage of `YES` votes and the duration of the proposal. The policy applies to all proposals and is specified when the network is created.\n\nApplies only to Hyperledger Fabric.",
+        "stability": "external",
+        "summary": "A policy type that defines the voting rules for the network."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.ApprovalThresholdPolicyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 238
+      },
+      "name": "ApprovalThresholdPolicyProperty",
+      "namespace": "CfnMember",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-approvalthresholdpolicy.html#cfn-managedblockchain-member-approvalthresholdpolicy-proposaldurationinhours"
+            },
+            "remarks": "If members cast neither the required number of `YES` votes to approve the proposal nor the number of `NO` votes required to reject it before the duration expires, the proposal is `EXPIRED` and `ProposalActions` aren't carried out.",
+            "stability": "external",
+            "summary": "The duration from the time that a proposal is created until it expires."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 244
+          },
+          "name": "proposalDurationInHours",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-approvalthresholdpolicy.html#cfn-managedblockchain-member-approvalthresholdpolicy-thresholdcomparator"
+            },
+            "stability": "external",
+            "summary": "Determines whether the vote percentage must be greater than the `ThresholdPercentage` or must be greater than or equal to the `ThreholdPercentage` to be approved."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 250
+          },
+          "name": "thresholdComparator",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-approvalthresholdpolicy.html#cfn-managedblockchain-member-approvalthresholdpolicy-thresholdpercentage"
+            },
+            "remarks": "For example, a `ThresholdPercentage` value of `50` indicates 50%. The `ThresholdComparator` determines the precise comparison. If a `ThresholdPercentage` value of `50` is specified on a network with 10 members, along with a `ThresholdComparator` value of `GREATER_THAN` , this indicates that 6 `YES` votes are required for the proposal to be approved.",
+            "stability": "external",
+            "summary": "The percentage of votes among all members that must be `YES` for a proposal to be approved."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 256
+          },
+          "name": "thresholdPercentage",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnMember.ApprovalThresholdPolicyProperty"
+    },
+    "@aws-cdk/aws-managedblockchain.CfnMember.MemberConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-memberconfiguration.html"
+        },
+        "remarks": "Applies only to Hyperledger Fabric.",
+        "stability": "external",
+        "summary": "Configuration properties of the member."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.MemberConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 325
+      },
+      "name": "MemberConfigurationProperty",
+      "namespace": "CfnMember",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-memberconfiguration.html#cfn-managedblockchain-member-memberconfiguration-name"
+            },
+            "stability": "external",
+            "summary": "The name of the member."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 343
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-memberconfiguration.html#cfn-managedblockchain-member-memberconfiguration-description"
+            },
+            "stability": "external",
+            "summary": "An optional description of the member."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 331
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-memberconfiguration.html#cfn-managedblockchain-member-memberconfiguration-memberframeworkconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration properties of the blockchain framework relevant to the member."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 337
+          },
+          "name": "memberFrameworkConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.MemberFrameworkConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnMember.MemberConfigurationProperty"
+    },
+    "@aws-cdk/aws-managedblockchain.CfnMember.MemberFabricConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-memberfabricconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Configuration properties for Hyperledger Fabric for a member in a Managed Blockchain network using the Hyperledger Fabric framework."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.MemberFabricConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 411
+      },
+      "name": "MemberFabricConfigurationProperty",
+      "namespace": "CfnMember",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-memberfabricconfiguration.html#cfn-managedblockchain-member-memberfabricconfiguration-adminpassword"
+            },
+            "remarks": "The `AdminPassword` must be at least eight characters long and no more than 32 characters. It must contain at least one uppercase letter, one lowercase letter, and one digit. It cannot have a single quotation mark (‘), a double quotation marks (“), a forward slash(/), a backward slash(\\), @, or a space.",
+            "stability": "external",
+            "summary": "The password for the member's initial administrative user."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 417
+          },
+          "name": "adminPassword",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-memberfabricconfiguration.html#cfn-managedblockchain-member-memberfabricconfiguration-adminusername"
+            },
+            "stability": "external",
+            "summary": "The user name for the member's initial administrative user."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 423
+          },
+          "name": "adminUsername",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnMember.MemberFabricConfigurationProperty"
+    },
+    "@aws-cdk/aws-managedblockchain.CfnMember.MemberFrameworkConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-memberframeworkconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Configuration properties relevant to a member for the blockchain framework that the Managed Blockchain network uses."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.MemberFrameworkConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 489
+      },
+      "name": "MemberFrameworkConfigurationProperty",
+      "namespace": "CfnMember",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-memberframeworkconfiguration.html#cfn-managedblockchain-member-memberframeworkconfiguration-memberfabricconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration properties for Hyperledger Fabric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 495
+          },
+          "name": "memberFabricConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.MemberFabricConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnMember.MemberFrameworkConfigurationProperty"
+    },
+    "@aws-cdk/aws-managedblockchain.CfnMember.NetworkConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-networkconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Configuration properties of the network to which the member belongs."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.NetworkConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 556
+      },
+      "name": "NetworkConfigurationProperty",
+      "namespace": "CfnMember",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-networkconfiguration.html#cfn-managedblockchain-member-networkconfiguration-framework"
+            },
+            "stability": "external",
+            "summary": "The blockchain framework that the network uses."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 568
+          },
+          "name": "framework",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-networkconfiguration.html#cfn-managedblockchain-member-networkconfiguration-frameworkversion"
+            },
+            "stability": "external",
+            "summary": "The version of the blockchain framework that the network uses."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 574
+          },
+          "name": "frameworkVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-networkconfiguration.html#cfn-managedblockchain-member-networkconfiguration-name"
+            },
+            "stability": "external",
+            "summary": "The name of the network."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 580
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-networkconfiguration.html#cfn-managedblockchain-member-networkconfiguration-votingpolicy"
+            },
+            "stability": "external",
+            "summary": "The voting rules for the network to decide if a proposal is accepted."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 592
+          },
+          "name": "votingPolicy",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.VotingPolicyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-networkconfiguration.html#cfn-managedblockchain-member-networkconfiguration-description"
+            },
+            "stability": "external",
+            "summary": "Attributes of the blockchain framework for the network."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 562
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-networkconfiguration.html#cfn-managedblockchain-member-networkconfiguration-networkframeworkconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration properties relevant to the network for the blockchain framework that the network uses."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 586
+          },
+          "name": "networkFrameworkConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.NetworkFrameworkConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnMember.NetworkConfigurationProperty"
+    },
+    "@aws-cdk/aws-managedblockchain.CfnMember.NetworkFabricConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-networkfabricconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Hyperledger Fabric configuration properties for the network."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.NetworkFabricConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 672
+      },
+      "name": "NetworkFabricConfigurationProperty",
+      "namespace": "CfnMember",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-networkfabricconfiguration.html#cfn-managedblockchain-member-networkfabricconfiguration-edition"
+            },
+            "remarks": "Valid values are `standard` and `starter` . For more information, see",
+            "stability": "external",
+            "summary": "The edition of Amazon Managed Blockchain that the network uses."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 678
+          },
+          "name": "edition",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnMember.NetworkFabricConfigurationProperty"
+    },
+    "@aws-cdk/aws-managedblockchain.CfnMember.NetworkFrameworkConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-networkframeworkconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Configuration properties relevant to the network for the blockchain framework that the network uses."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.NetworkFrameworkConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 740
+      },
+      "name": "NetworkFrameworkConfigurationProperty",
+      "namespace": "CfnMember",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-networkframeworkconfiguration.html#cfn-managedblockchain-member-networkframeworkconfiguration-networkfabricconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration properties for Hyperledger Fabric for a member in a Managed Blockchain network using the Hyperledger Fabric framework."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 746
+          },
+          "name": "networkFabricConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.NetworkFabricConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnMember.NetworkFrameworkConfigurationProperty"
+    },
+    "@aws-cdk/aws-managedblockchain.CfnMember.VotingPolicyProperty": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-votingpolicy.html"
+        },
+        "remarks": "Applies only to Hyperledger Fabric.",
+        "stability": "external",
+        "summary": "The voting rules for the network to decide if a proposal is accepted."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.VotingPolicyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 809
+      },
+      "name": "VotingPolicyProperty",
+      "namespace": "CfnMember",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-member-votingpolicy.html#cfn-managedblockchain-member-votingpolicy-approvalthresholdpolicy"
+            },
+            "remarks": "The policy applies to all proposals and is specified when the network is created.",
+            "stability": "external",
+            "summary": "Defines the rules for the network for voting on proposals, such as the percentage of `YES` votes required for the proposal to be approved and the duration of the proposal."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 815
+          },
+          "name": "approvalThresholdPolicy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.ApprovalThresholdPolicyProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnMember.VotingPolicyProperty"
+    },
+    "@aws-cdk/aws-managedblockchain.CfnMemberProps": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-member.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnMember`."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnMemberProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 20
+      },
+      "name": "CfnMemberProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-member.html#cfn-managedblockchain-member-memberconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration properties of the member."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 27
+          },
+          "name": "memberConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.MemberConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-member.html#cfn-managedblockchain-member-invitationid"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the invitation to join the network sent to the account that creates the member."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 34
+          },
+          "name": "invitationId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-member.html#cfn-managedblockchain-member-networkconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration properties of the network to which the member belongs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 41
+          },
+          "name": "networkConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-managedblockchain.CfnMember.NetworkConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-member.html#cfn-managedblockchain-member-networkid"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the network to which the member belongs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 48
+          },
+          "name": "networkId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnMemberProps"
+    },
+    "@aws-cdk/aws-managedblockchain.CfnNode": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ManagedBlockchain::Node",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-node.html"
+        },
+        "remarks": "Creates a node on the specified blockchain network.\n\nApplies to Hyperledger Fabric and Ethereum.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ManagedBlockchain::Node`."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnNode",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ManagedBlockchain::Node`."
+        },
+        "locationInModule": {
+          "filename": "lib/managedblockchain.generated.ts",
+          "line": 1055
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-managedblockchain.CfnNodeProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 971
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 1075
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 1088
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnNode",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 975
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the node."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 1000
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "MemberId"
+            },
+            "remarks": "Applies only to Hyperledger Fabric.",
+            "stability": "external",
+            "summary": "The unique identifier of the member in which the node is created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 1006
+          },
+          "name": "attrMemberId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "NetworkId"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the network that the node is in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 1012
+          },
+          "name": "attrNetworkId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "NodeId"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the node."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 1018
+          },
+          "name": "attrNodeId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 1080
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-node.html#cfn-managedblockchain-node-networkid"
+            },
+            "remarks": "Ethereum public networks have the following `NetworkId` s:\n\n- `n-ethereum-mainnet`\n- `n-ethereum-goerli`\n- `n-ethereum-rinkeby`\n- `n-ethereum-ropsten`",
+            "stability": "external",
+            "summary": "The unique identifier of the network for the node."
+          },
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 1032
+          },
+          "name": "networkId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-node.html#cfn-managedblockchain-node-nodeconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration properties of a peer node."
+          },
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 1039
+          },
+          "name": "nodeConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-managedblockchain.CfnNode.NodeConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-node.html#cfn-managedblockchain-node-memberid"
+            },
+            "remarks": "Applies only to Hyperledger Fabric.",
+            "stability": "external",
+            "summary": "The unique identifier of the member to which the node belongs."
+          },
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 1046
+          },
+          "name": "memberId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnNode"
+    },
+    "@aws-cdk/aws-managedblockchain.CfnNode.NodeConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-node-nodeconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Configuration properties of a peer node within a membership."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnNode.NodeConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 1102
+      },
+      "name": "NodeConfigurationProperty",
+      "namespace": "CfnNode",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-node-nodeconfiguration.html#cfn-managedblockchain-node-nodeconfiguration-availabilityzone"
+            },
+            "remarks": "Required for Ethereum nodes.",
+            "stability": "external",
+            "summary": "The Availability Zone in which the node exists."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 1108
+          },
+          "name": "availabilityZone",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-node-nodeconfiguration.html#cfn-managedblockchain-node-nodeconfiguration-instancetype"
+            },
+            "stability": "external",
+            "summary": "The Amazon Managed Blockchain instance type for the node."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 1114
+          },
+          "name": "instanceType",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnNode.NodeConfigurationProperty"
+    },
+    "@aws-cdk/aws-managedblockchain.CfnNodeProps": {
+      "assembly": "@aws-cdk/aws-managedblockchain",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-node.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnNode`."
+      },
+      "fqn": "@aws-cdk/aws-managedblockchain.CfnNodeProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/managedblockchain.generated.ts",
+        "line": 875
+      },
+      "name": "CfnNodeProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-node.html#cfn-managedblockchain-node-networkid"
+            },
+            "remarks": "Ethereum public networks have the following `NetworkId` s:\n\n- `n-ethereum-mainnet`\n- `n-ethereum-goerli`\n- `n-ethereum-rinkeby`\n- `n-ethereum-ropsten`",
+            "stability": "external",
+            "summary": "The unique identifier of the network for the node."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 889
+          },
+          "name": "networkId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-node.html#cfn-managedblockchain-node-nodeconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration properties of a peer node."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 896
+          },
+          "name": "nodeConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-managedblockchain.CfnNode.NodeConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-managedblockchain-node.html#cfn-managedblockchain-node-memberid"
+            },
+            "remarks": "Applies only to Hyperledger Fabric.",
+            "stability": "external",
+            "summary": "The unique identifier of the member to which the node belongs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/managedblockchain.generated.ts",
+            "line": 903
+          },
+          "name": "memberId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/managedblockchain.generated:CfnNodeProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "SA/uE1l1rUk8OgFnVVeHlA9/syBtsHMwVmyM20O8Tiw="
+}

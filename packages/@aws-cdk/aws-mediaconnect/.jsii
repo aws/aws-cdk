@@ -1,0 +1,4422 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::MediaConnect",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::MediaConnect",
+    "aws-mediaconnect"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-mediaconnect",
+  "readme": {
+    "markdown": "# AWS::MediaConnect Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as mediaconnect from '@aws-cdk/aws-mediaconnect';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for MediaConnect construct libraries](https://constructs.dev/search?q=mediaconnect)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::MediaConnect resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_MediaConnect.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::MediaConnect](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_MediaConnect.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-mediaconnect",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.MediaConnect",
+      "packageId": "Amazon.CDK.AWS.MediaConnect"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "mediaconnect",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.mediaconnect"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-mediaconnect"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-mediaconnect",
+      "module": "aws_cdk.aws_mediaconnect"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-mediaconnect.CfnFlow": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MediaConnect::Flow",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flow.html"
+        },
+        "remarks": "The AWS::MediaConnect::Flow resource defines a connection between one or more video sources and one or more outputs. For each flow, you specify the transport protocol to use, encryption information, and details for any outputs or entitlements that you want. AWS Elemental MediaConnect returns an ingest endpoint where you can send your live video as a single unicast stream. The service replicates and distributes the video to every output that you specify, whether inside or outside the AWS Cloud. You can also set up entitlements on a flow to allow other AWS accounts to access your content.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MediaConnect::Flow`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlow",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MediaConnect::Flow`."
+        },
+        "locationInModule": {
+          "filename": "lib/mediaconnect.generated.ts",
+          "line": 207
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 117
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 229
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 243
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnFlow",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 121
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "FlowArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 146
+          },
+          "name": "attrFlowArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "FlowAvailabilityZone"
+            },
+            "remarks": "These options are limited to the Availability Zones within the current AWS Region.",
+            "stability": "external",
+            "summary": "The Availability Zone that the flow was created in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 152
+          },
+          "name": "attrFlowAvailabilityZone",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Source.IngestIp"
+            },
+            "stability": "external",
+            "summary": "The IP address that the flow listens on for incoming content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 158
+          },
+          "name": "attrSourceIngestIp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Source.SourceArn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 164
+          },
+          "name": "attrSourceSourceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Source.SourceIngestPort"
+            },
+            "stability": "external",
+            "summary": "The port that the flow will be listening on for incoming content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 170
+          },
+          "name": "attrSourceSourceIngestPort",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 234
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flow.html#cfn-mediaconnect-flow-name"
+            },
+            "stability": "external",
+            "summary": "The name of the flow."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 177
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flow.html#cfn-mediaconnect-flow-source"
+            },
+            "stability": "external",
+            "summary": "The settings for the source that you want to use for the new flow."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 184
+          },
+          "name": "source",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlow.SourceProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flow.html#cfn-mediaconnect-flow-availabilityzone"
+            },
+            "remarks": "These options are limited to the Availability Zones within the current AWS Region.",
+            "stability": "external",
+            "summary": "The Availability Zone that you want to create the flow in."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 191
+          },
+          "name": "availabilityZone",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flow.html#cfn-mediaconnect-flow-sourcefailoverconfig"
+            },
+            "stability": "external",
+            "summary": "The settings for source failover."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 198
+          },
+          "name": "sourceFailoverConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlow.FailoverConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlow"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlow.EncryptionProperty": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-encryption.html"
+        },
+        "stability": "external",
+        "summary": "Information about the encryption of the flow."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlow.EncryptionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 257
+      },
+      "name": "EncryptionProperty",
+      "namespace": "CfnFlow",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-encryption.html#cfn-mediaconnect-flow-encryption-rolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the role that you created during setup (when you set up MediaConnect as a trusted entity)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 299
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-encryption.html#cfn-mediaconnect-flow-encryption-algorithm"
+            },
+            "stability": "external",
+            "summary": "The type of algorithm that is used for the encryption (such as aes128, aes192, or aes256)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 263
+          },
+          "name": "algorithm",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-encryption.html#cfn-mediaconnect-flow-encryption-constantinitializationvector"
+            },
+            "remarks": "This parameter is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "A 128-bit, 16-byte hex value represented by a 32-character string, to be used with the key for encrypting content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 269
+          },
+          "name": "constantInitializationVector",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-encryption.html#cfn-mediaconnect-flow-encryption-deviceid"
+            },
+            "remarks": "This parameter is required for SPEKE encryption and is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "The value of one of the devices that you configured with your digital rights management (DRM) platform key provider."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 275
+          },
+          "name": "deviceId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-encryption.html#cfn-mediaconnect-flow-encryption-keytype"
+            },
+            "remarks": "If you don't specify a `keyType` value, the service uses the default setting ( `static-key` ).",
+            "stability": "external",
+            "summary": "The type of key that is used for the encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 281
+          },
+          "name": "keyType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-encryption.html#cfn-mediaconnect-flow-encryption-region"
+            },
+            "remarks": "This parameter is required for SPEKE encryption and is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "The AWS Region that the API Gateway proxy endpoint was created in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 287
+          },
+          "name": "region",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-encryption.html#cfn-mediaconnect-flow-encryption-resourceid"
+            },
+            "remarks": "The service sends this value to the key server to identify the current endpoint. The resource ID is also known as the content ID. This parameter is required for SPEKE encryption and is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "An identifier for the content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 293
+          },
+          "name": "resourceId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-encryption.html#cfn-mediaconnect-flow-encryption-secretarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the secret that you created in AWS Secrets Manager to store the encryption key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 305
+          },
+          "name": "secretArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-encryption.html#cfn-mediaconnect-flow-encryption-url"
+            },
+            "remarks": "This parameter is required for SPEKE encryption and is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "The URL from the API Gateway proxy that you set up to talk to your key server."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 311
+          },
+          "name": "url",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlow.EncryptionProperty"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlow.FailoverConfigProperty": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-failoverconfig.html"
+        },
+        "stability": "external",
+        "summary": "The settings for source failover."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlow.FailoverConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 397
+      },
+      "name": "FailoverConfigProperty",
+      "namespace": "CfnFlow",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-failoverconfig.html#cfn-mediaconnect-flow-failoverconfig-failovermode"
+            },
+            "remarks": "MERGE combines the source streams into a single stream, allowing graceful recovery from any single-source loss. FAILOVER allows switching between different streams.",
+            "stability": "external",
+            "summary": "The type of failover you choose for this flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 403
+          },
+          "name": "failoverMode",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-failoverconfig.html#cfn-mediaconnect-flow-failoverconfig-recoverywindow"
+            },
+            "remarks": "A larger buffer means a longer delay in transmitting the stream, but more room for error correction. A smaller buffer means a shorter delay, but less room for error correction. You can choose a value from 100-500 ms. If you keep this field blank, the service uses the default value of 200 ms. This setting only applies when Failover Mode is set to MERGE.",
+            "stability": "external",
+            "summary": "The size of the buffer (delay) that the service maintains."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 409
+          },
+          "name": "recoveryWindow",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-failoverconfig.html#cfn-mediaconnect-flow-failoverconfig-sourcepriority"
+            },
+            "remarks": "You can have a primary stream and a backup stream or two equally prioritized streams. This setting only applies when Failover Mode is set to FAILOVER.",
+            "stability": "external",
+            "summary": "The priority you want to assign to a source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 415
+          },
+          "name": "sourcePriority",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlow.SourcePriorityProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-failoverconfig.html#cfn-mediaconnect-flow-failoverconfig-state"
+            },
+            "remarks": "If the state is disabled, the flow can have only one source. If the state is enabled, the flow can have one or two sources.",
+            "stability": "external",
+            "summary": "The state of source failover on the flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 421
+          },
+          "name": "state",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlow.FailoverConfigProperty"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlow.SourcePriorityProperty": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-sourcepriority.html"
+        },
+        "remarks": "You can have a primary stream and a backup stream or two equally prioritized streams. This setting only applies when Failover Mode is set to FAILOVER.",
+        "stability": "external",
+        "summary": "The priority you want to assign to a source."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlow.SourcePriorityProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 726
+      },
+      "name": "SourcePriorityProperty",
+      "namespace": "CfnFlow",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-sourcepriority.html#cfn-mediaconnect-flow-sourcepriority-primarysource"
+            },
+            "stability": "external",
+            "summary": "The name of the source you choose as the primary source for this flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 732
+          },
+          "name": "primarySource",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlow.SourcePriorityProperty"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlow.SourceProperty": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html"
+        },
+        "remarks": "If you are creating a flow with a VPC source, you must first create the flow with a temporary standard source by doing the following:\n\n- Use CloudFormation to create a flow with a standard source that uses the flow’s public IP address.\n- Use CloudFormation to create the VPC interface to add to this flow. This can also be done as part of the previous step.\n- After CloudFormation has created the flow and the VPC interface, update the source to point to the VPC interface that you created.",
+        "stability": "external",
+        "summary": "The details of the sources of the flow."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlow.SourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 497
+      },
+      "name": "SourceProperty",
+      "namespace": "CfnFlow",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-decryption"
+            },
+            "stability": "external",
+            "summary": "The type of encryption that is used on the content ingested from the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 503
+          },
+          "name": "decryption",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlow.EncryptionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-description"
+            },
+            "remarks": "This description is not visible outside of the current AWS account.",
+            "stability": "external",
+            "summary": "A description of the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 509
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-entitlementarn"
+            },
+            "remarks": "The entitlement is set by the content originator and the ARN is generated as part of the originator’s flow.",
+            "stability": "external",
+            "summary": "The ARN of the entitlement that allows you to subscribe to content that comes from another AWS account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 515
+          },
+          "name": "entitlementArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-ingestip"
+            },
+            "stability": "external",
+            "summary": "The IP address that the flow listens on for incoming content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 521
+          },
+          "name": "ingestIp",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-ingestport"
+            },
+            "remarks": "If the protocol of the source is Zixi, the port must be set to 2088.",
+            "stability": "external",
+            "summary": "The port that the flow listens on for incoming content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 527
+          },
+          "name": "ingestPort",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-maxbitrate"
+            },
+            "stability": "external",
+            "summary": "The maximum bitrate for RIST, RTP, and RTP-FEC streams."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 533
+          },
+          "name": "maxBitrate",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-maxlatency"
+            },
+            "stability": "external",
+            "summary": "The maximum latency in milliseconds for a RIST or Zixi-based source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 539
+          },
+          "name": "maxLatency",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-minlatency"
+            },
+            "remarks": "In streams that use the SRT protocol, this value that you set on your MediaConnect source or output represents the minimal potential latency of that connection. The latency of the stream is set to the highest number between the sender’s minimum latency and the receiver’s minimum latency.",
+            "stability": "external",
+            "summary": "The minimum latency in milliseconds for SRT-based streams."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 545
+          },
+          "name": "minLatency",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-name"
+            },
+            "stability": "external",
+            "summary": "The name of the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 551
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-protocol"
+            },
+            "remarks": "AWS CloudFormation does not currently support CDI or ST 2110 JPEG XS source protocols.",
+            "stability": "external",
+            "summary": "The protocol that is used by the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 557
+          },
+          "name": "protocol",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-sendercontrolport"
+            },
+            "stability": "external",
+            "summary": "The port that the flow uses to send outbound requests to initiate connection with the sender."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 563
+          },
+          "name": "senderControlPort",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-senderipaddress"
+            },
+            "stability": "external",
+            "summary": "The IP address that the flow communicates with to initiate connection with the sender."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 569
+          },
+          "name": "senderIpAddress",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-sourcearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 575
+          },
+          "name": "sourceArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-sourceingestport"
+            },
+            "stability": "external",
+            "summary": "The port that the flow will be listening on for incoming content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 581
+          },
+          "name": "sourceIngestPort",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-sourcelisteneraddress"
+            },
+            "stability": "external",
+            "summary": "Source IP or domain name for SRT-caller protocol."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 587
+          },
+          "name": "sourceListenerAddress",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-sourcelistenerport"
+            },
+            "stability": "external",
+            "summary": "Source port for SRT-caller protocol."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 593
+          },
+          "name": "sourceListenerPort",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-streamid"
+            },
+            "remarks": "This parameter applies only to Zixi-based streams.",
+            "stability": "external",
+            "summary": "The stream ID that you want to use for the transport."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 599
+          },
+          "name": "streamId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-vpcinterfacename"
+            },
+            "stability": "external",
+            "summary": "The name of the VPC interface that the source content comes from."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 605
+          },
+          "name": "vpcInterfaceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flow-source.html#cfn-mediaconnect-flow-source-whitelistcidr"
+            },
+            "remarks": "Format the IP addresses as a Classless Inter-Domain Routing (CIDR) block; for example, 10.0.0.0/16.",
+            "stability": "external",
+            "summary": "The range of IP addresses that are allowed to contribute content to your source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 611
+          },
+          "name": "whitelistCidr",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlow.SourceProperty"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowEntitlement": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MediaConnect::FlowEntitlement",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html"
+        },
+        "remarks": "The AWS::MediaConnect::FlowEntitlement resource defines the permission that an AWS account grants to another AWS account to allow access to the content in a specific AWS Elemental MediaConnect flow. The content originator grants an entitlement to a specific AWS account (the subscriber). When an entitlement is granted, the subscriber can create a flow using the originator's flow as the source. Each flow can have up to 50 entitlements.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MediaConnect::FlowEntitlement`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowEntitlement",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MediaConnect::FlowEntitlement`."
+        },
+        "locationInModule": {
+          "filename": "lib/mediaconnect.generated.ts",
+          "line": 1009
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowEntitlementProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 922
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1032
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1049
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnFlowEntitlement",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 926
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EntitlementArn"
+            },
+            "stability": "external",
+            "summary": "The entitlement ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 951
+          },
+          "name": "attrEntitlementArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1037
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-description"
+            },
+            "remarks": "This description appears only on the MediaConnect console and is not visible outside of the current AWS account.",
+            "stability": "external",
+            "summary": "A description of the entitlement."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 958
+          },
+          "name": "description",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-flowarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the flow."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 965
+          },
+          "name": "flowArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-name"
+            },
+            "remarks": "This value must be unique within the current flow.",
+            "stability": "external",
+            "summary": "The name of the entitlement."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 972
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-subscribers"
+            },
+            "remarks": "The receiving accounts (subscribers) will be allowed to create their own flows using your content as the source.",
+            "stability": "external",
+            "summary": "The AWS account IDs that you want to share your content with."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 979
+          },
+          "name": "subscribers",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-datatransfersubscriberfeepercent"
+            },
+            "stability": "external",
+            "summary": "The percentage of the entitlement data transfer fee that you want the subscriber to be responsible for."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 986
+          },
+          "name": "dataTransferSubscriberFeePercent",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-encryption"
+            },
+            "stability": "external",
+            "summary": "The type of encryption that MediaConnect will use on the output that is associated with the entitlement."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 993
+          },
+          "name": "encryption",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowEntitlement.EncryptionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-entitlementstatus"
+            },
+            "remarks": "If you don’t specify the entitlementStatus field in your request, MediaConnect sets it to ENABLED.",
+            "stability": "external",
+            "summary": "An indication of whether the new entitlement should be enabled or disabled as soon as it is created."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1000
+          },
+          "name": "entitlementStatus",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowEntitlement"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowEntitlement.EncryptionProperty": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowentitlement-encryption.html"
+        },
+        "stability": "external",
+        "summary": "Information about the encryption of the flow."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowEntitlement.EncryptionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 1063
+      },
+      "name": "EncryptionProperty",
+      "namespace": "CfnFlowEntitlement",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowentitlement-encryption.html#cfn-mediaconnect-flowentitlement-encryption-algorithm"
+            },
+            "stability": "external",
+            "summary": "The type of algorithm that is used for the encryption (such as aes128, aes192, or aes256)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1069
+          },
+          "name": "algorithm",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowentitlement-encryption.html#cfn-mediaconnect-flowentitlement-encryption-rolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the role that you created during setup (when you set up MediaConnect as a trusted entity)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1105
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowentitlement-encryption.html#cfn-mediaconnect-flowentitlement-encryption-constantinitializationvector"
+            },
+            "remarks": "This parameter is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "A 128-bit, 16-byte hex value represented by a 32-character string, to be used with the key for encrypting content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1075
+          },
+          "name": "constantInitializationVector",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowentitlement-encryption.html#cfn-mediaconnect-flowentitlement-encryption-deviceid"
+            },
+            "remarks": "This parameter is required for SPEKE encryption and is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "The value of one of the devices that you configured with your digital rights management (DRM) platform key provider."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1081
+          },
+          "name": "deviceId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowentitlement-encryption.html#cfn-mediaconnect-flowentitlement-encryption-keytype"
+            },
+            "remarks": "If you don't specify a `keyType` value, the service uses the default setting ( `static-key` ).",
+            "stability": "external",
+            "summary": "The type of key that is used for the encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1087
+          },
+          "name": "keyType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowentitlement-encryption.html#cfn-mediaconnect-flowentitlement-encryption-region"
+            },
+            "remarks": "This parameter is required for SPEKE encryption and is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "The AWS Region that the API Gateway proxy endpoint was created in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1093
+          },
+          "name": "region",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowentitlement-encryption.html#cfn-mediaconnect-flowentitlement-encryption-resourceid"
+            },
+            "remarks": "The service sends this value to the key server to identify the current endpoint. The resource ID is also known as the content ID. This parameter is required for SPEKE encryption and is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "An identifier for the content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1099
+          },
+          "name": "resourceId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowentitlement-encryption.html#cfn-mediaconnect-flowentitlement-encryption-secretarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the secret that you created in AWS Secrets Manager to store the encryption key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1111
+          },
+          "name": "secretArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowentitlement-encryption.html#cfn-mediaconnect-flowentitlement-encryption-url"
+            },
+            "remarks": "This parameter is required for SPEKE encryption and is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "The URL from the API Gateway proxy that you set up to talk to your key server."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1117
+          },
+          "name": "url",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowEntitlement.EncryptionProperty"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowEntitlementProps": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnFlowEntitlement`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowEntitlementProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 793
+      },
+      "name": "CfnFlowEntitlementProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-description"
+            },
+            "remarks": "This description appears only on the MediaConnect console and is not visible outside of the current AWS account.",
+            "stability": "external",
+            "summary": "A description of the entitlement."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 800
+          },
+          "name": "description",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-flowarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 807
+          },
+          "name": "flowArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-name"
+            },
+            "remarks": "This value must be unique within the current flow.",
+            "stability": "external",
+            "summary": "The name of the entitlement."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 814
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-subscribers"
+            },
+            "remarks": "The receiving accounts (subscribers) will be allowed to create their own flows using your content as the source.",
+            "stability": "external",
+            "summary": "The AWS account IDs that you want to share your content with."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 821
+          },
+          "name": "subscribers",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-datatransfersubscriberfeepercent"
+            },
+            "stability": "external",
+            "summary": "The percentage of the entitlement data transfer fee that you want the subscriber to be responsible for."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 828
+          },
+          "name": "dataTransferSubscriberFeePercent",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-encryption"
+            },
+            "stability": "external",
+            "summary": "The type of encryption that MediaConnect will use on the output that is associated with the entitlement."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 835
+          },
+          "name": "encryption",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowEntitlement.EncryptionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowentitlement.html#cfn-mediaconnect-flowentitlement-entitlementstatus"
+            },
+            "remarks": "If you don’t specify the entitlementStatus field in your request, MediaConnect sets it to ENABLED.",
+            "stability": "external",
+            "summary": "An indication of whether the new entitlement should be enabled or disabled as soon as it is created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 842
+          },
+          "name": "entitlementStatus",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowEntitlementProps"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowOutput": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MediaConnect::FlowOutput",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html"
+        },
+        "remarks": "The AWS::MediaConnect::FlowOutput resource defines the destination address, protocol, and port that AWS Elemental MediaConnect sends the ingested video to. Each flow can have up to 50 outputs. An output can have the same protocol or a different protocol from the source. The following protocols are supported: RIST, RTP, RTP-FEC, SRT-listener, SRT-caller, Zixi pull, Zixi push, and Fujitsu-QoS. CDI and ST 2110 JPEG XS protocols are not currently supported by AWS CloudFormation.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MediaConnect::FlowOutput`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowOutput",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MediaConnect::FlowOutput`."
+        },
+        "locationInModule": {
+          "filename": "lib/mediaconnect.generated.ts",
+          "line": 1536
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowOutputProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 1400
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1564
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1588
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnFlowOutput",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1404
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "OutputArn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the output."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1429
+          },
+          "name": "attrOutputArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1569
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-flowarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the flow this output is attached to."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1436
+          },
+          "name": "flowArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-protocol"
+            },
+            "stability": "external",
+            "summary": "The protocol to use for the output."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1443
+          },
+          "name": "protocol",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-cidrallowlist"
+            },
+            "remarks": "Format the IP addresses as a Classless Inter-Domain Routing (CIDR) block; for example, 10.0.0.0/16.",
+            "stability": "external",
+            "summary": "The range of IP addresses that are allowed to initiate output requests to this flow."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1450
+          },
+          "name": "cidrAllowList",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-description"
+            },
+            "remarks": "This description is not visible outside of the current AWS account even if the account grants entitlements to other accounts.",
+            "stability": "external",
+            "summary": "A description of the output."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1457
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-destination"
+            },
+            "stability": "external",
+            "summary": "The IP address where you want to send the output."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1464
+          },
+          "name": "destination",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-encryption"
+            },
+            "stability": "external",
+            "summary": "The encryption credentials that you want to use for the output."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1471
+          },
+          "name": "encryption",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowOutput.EncryptionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-maxlatency"
+            },
+            "remarks": "This parameter applies only to RIST-based, Zixi-based, and Fujitsu-based streams.",
+            "stability": "external",
+            "summary": "The maximum latency in milliseconds."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1478
+          },
+          "name": "maxLatency",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-minlatency"
+            },
+            "remarks": "In streams that use the SRT protocol, this value that you set on your MediaConnect source or output represents the minimal potential latency of that connection. The latency of the stream is set to the highest number between the sender’s minimum latency and the receiver’s minimum latency.",
+            "stability": "external",
+            "summary": "The minimum latency in milliseconds for SRT-based streams."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1485
+          },
+          "name": "minLatency",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-name"
+            },
+            "stability": "external",
+            "summary": "The name of the VPC interface."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1492
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-port"
+            },
+            "stability": "external",
+            "summary": "The port to use when MediaConnect distributes content to the output."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1499
+          },
+          "name": "port",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-remoteid"
+            },
+            "remarks": "This parameter applies only to outputs that use Zixi pull.",
+            "stability": "external",
+            "summary": "The identifier that is assigned to the Zixi receiver."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1506
+          },
+          "name": "remoteId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-smoothinglatency"
+            },
+            "stability": "external",
+            "summary": "The smoothing latency in milliseconds for RIST, RTP, and RTP-FEC streams."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1513
+          },
+          "name": "smoothingLatency",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-streamid"
+            },
+            "remarks": "This parameter applies only to Zixi and SRT caller-based streams.",
+            "stability": "external",
+            "summary": "The stream ID that you want to use for this transport."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1520
+          },
+          "name": "streamId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-vpcinterfaceattachment"
+            },
+            "stability": "external",
+            "summary": "The VPC interface that you want to send your output to."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1527
+          },
+          "name": "vpcInterfaceAttachment",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowOutput.VpcInterfaceAttachmentProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowOutput"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowOutput.EncryptionProperty": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowoutput-encryption.html"
+        },
+        "stability": "external",
+        "summary": "Information about the encryption of the flow."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowOutput.EncryptionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 1602
+      },
+      "name": "EncryptionProperty",
+      "namespace": "CfnFlowOutput",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowoutput-encryption.html#cfn-mediaconnect-flowoutput-encryption-rolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the role that you created during setup (when you set up MediaConnect as a trusted entity)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1620
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowoutput-encryption.html#cfn-mediaconnect-flowoutput-encryption-secretarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the secret that you created in AWS Secrets Manager to store the encryption key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1626
+          },
+          "name": "secretArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowoutput-encryption.html#cfn-mediaconnect-flowoutput-encryption-algorithm"
+            },
+            "stability": "external",
+            "summary": "The type of algorithm that is used for the encryption (such as aes128, aes192, or aes256)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1608
+          },
+          "name": "algorithm",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowoutput-encryption.html#cfn-mediaconnect-flowoutput-encryption-keytype"
+            },
+            "remarks": "If you don't specify a `keyType` value, the service uses the default setting ( `static-key` ).",
+            "stability": "external",
+            "summary": "The type of key that is used for the encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1614
+          },
+          "name": "keyType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowOutput.EncryptionProperty"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowOutput.VpcInterfaceAttachmentProperty": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowoutput-vpcinterfaceattachment.html"
+        },
+        "stability": "external",
+        "summary": "The VPC interface that you want to send your output to."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowOutput.VpcInterfaceAttachmentProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 1698
+      },
+      "name": "VpcInterfaceAttachmentProperty",
+      "namespace": "CfnFlowOutput",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowoutput-vpcinterfaceattachment.html#cfn-mediaconnect-flowoutput-vpcinterfaceattachment-vpcinterfacename"
+            },
+            "stability": "external",
+            "summary": "The name of the VPC interface that you want to send your output to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1704
+          },
+          "name": "vpcInterfaceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowOutput.VpcInterfaceAttachmentProperty"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowOutputProps": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnFlowOutput`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowOutputProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 1203
+      },
+      "name": "CfnFlowOutputProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-flowarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the flow this output is attached to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1210
+          },
+          "name": "flowArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-protocol"
+            },
+            "stability": "external",
+            "summary": "The protocol to use for the output."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1217
+          },
+          "name": "protocol",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-cidrallowlist"
+            },
+            "remarks": "Format the IP addresses as a Classless Inter-Domain Routing (CIDR) block; for example, 10.0.0.0/16.",
+            "stability": "external",
+            "summary": "The range of IP addresses that are allowed to initiate output requests to this flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1224
+          },
+          "name": "cidrAllowList",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-description"
+            },
+            "remarks": "This description is not visible outside of the current AWS account even if the account grants entitlements to other accounts.",
+            "stability": "external",
+            "summary": "A description of the output."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1231
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-destination"
+            },
+            "stability": "external",
+            "summary": "The IP address where you want to send the output."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1238
+          },
+          "name": "destination",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-encryption"
+            },
+            "stability": "external",
+            "summary": "The encryption credentials that you want to use for the output."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1245
+          },
+          "name": "encryption",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowOutput.EncryptionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-maxlatency"
+            },
+            "remarks": "This parameter applies only to RIST-based, Zixi-based, and Fujitsu-based streams.",
+            "stability": "external",
+            "summary": "The maximum latency in milliseconds."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1252
+          },
+          "name": "maxLatency",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-minlatency"
+            },
+            "remarks": "In streams that use the SRT protocol, this value that you set on your MediaConnect source or output represents the minimal potential latency of that connection. The latency of the stream is set to the highest number between the sender’s minimum latency and the receiver’s minimum latency.",
+            "stability": "external",
+            "summary": "The minimum latency in milliseconds for SRT-based streams."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1259
+          },
+          "name": "minLatency",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-name"
+            },
+            "stability": "external",
+            "summary": "The name of the VPC interface."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1266
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-port"
+            },
+            "stability": "external",
+            "summary": "The port to use when MediaConnect distributes content to the output."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1273
+          },
+          "name": "port",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-remoteid"
+            },
+            "remarks": "This parameter applies only to outputs that use Zixi pull.",
+            "stability": "external",
+            "summary": "The identifier that is assigned to the Zixi receiver."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1280
+          },
+          "name": "remoteId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-smoothinglatency"
+            },
+            "stability": "external",
+            "summary": "The smoothing latency in milliseconds for RIST, RTP, and RTP-FEC streams."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1287
+          },
+          "name": "smoothingLatency",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-streamid"
+            },
+            "remarks": "This parameter applies only to Zixi and SRT caller-based streams.",
+            "stability": "external",
+            "summary": "The stream ID that you want to use for this transport."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1294
+          },
+          "name": "streamId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowoutput.html#cfn-mediaconnect-flowoutput-vpcinterfaceattachment"
+            },
+            "stability": "external",
+            "summary": "The VPC interface that you want to send your output to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1301
+          },
+          "name": "vpcInterfaceAttachment",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowOutput.VpcInterfaceAttachmentProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowOutputProps"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowProps": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flow.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnFlow`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 20
+      },
+      "name": "CfnFlowProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flow.html#cfn-mediaconnect-flow-name"
+            },
+            "stability": "external",
+            "summary": "The name of the flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 27
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flow.html#cfn-mediaconnect-flow-source"
+            },
+            "stability": "external",
+            "summary": "The settings for the source that you want to use for the new flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 34
+          },
+          "name": "source",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlow.SourceProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flow.html#cfn-mediaconnect-flow-availabilityzone"
+            },
+            "remarks": "These options are limited to the Availability Zones within the current AWS Region.",
+            "stability": "external",
+            "summary": "The Availability Zone that you want to create the flow in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 41
+          },
+          "name": "availabilityZone",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flow.html#cfn-mediaconnect-flow-sourcefailoverconfig"
+            },
+            "stability": "external",
+            "summary": "The settings for source failover."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 48
+          },
+          "name": "sourceFailoverConfig",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlow.FailoverConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowProps"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowSource": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MediaConnect::FlowSource",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html"
+        },
+        "remarks": "The AWS::MediaConnect::FlowSource resource is used to add additional sources to an existing flow. Adding an additional source requires Failover to be enabled. When you enable Failover, the additional source must use the same protocol as the existing source. A source is the external video content that includes configuration information (encryption and source type) and a network address. Each flow has at least one source. A standard source comes from a source other than another AWS Elemental MediaConnect flow, such as an on-premises encoder.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MediaConnect::FlowSource`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowSource",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MediaConnect::FlowSource`."
+        },
+        "locationInModule": {
+          "filename": "lib/mediaconnect.generated.ts",
+          "line": 2075
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowSourceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 1941
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2103
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2125
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnFlowSource",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1945
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "IngestIp"
+            },
+            "stability": "external",
+            "summary": "The IP address that the flow listens on for incoming content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1970
+          },
+          "name": "attrIngestIp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SourceArn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1976
+          },
+          "name": "attrSourceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SourceIngestPort"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1982
+          },
+          "name": "attrSourceIngestPort",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2108
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-description"
+            },
+            "remarks": "This description is not visible outside of the current AWS account.",
+            "stability": "external",
+            "summary": "A description of the source."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1989
+          },
+          "name": "description",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-name"
+            },
+            "stability": "external",
+            "summary": "The name of the source."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1996
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-decryption"
+            },
+            "stability": "external",
+            "summary": "The type of encryption that is used on the content ingested from the source."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2003
+          },
+          "name": "decryption",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowSource.EncryptionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-entitlementarn"
+            },
+            "remarks": "The entitlement is set by the content originator, and the ARN is generated as part of the originator's flow.",
+            "stability": "external",
+            "summary": "The ARN of the entitlement that allows you to subscribe to the flow."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2010
+          },
+          "name": "entitlementArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-flowarn"
+            },
+            "remarks": "The flow must have Failover enabled to add an additional source.",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the flow this source is connected to."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2017
+          },
+          "name": "flowArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-ingestport"
+            },
+            "remarks": "If the protocol of the source is Zixi, the port must be set to 2088.",
+            "stability": "external",
+            "summary": "The port that the flow listens on for incoming content."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2024
+          },
+          "name": "ingestPort",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-maxbitrate"
+            },
+            "stability": "external",
+            "summary": "The maximum bitrate for RIST, RTP, and RTP-FEC streams."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2031
+          },
+          "name": "maxBitrate",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-maxlatency"
+            },
+            "remarks": "This parameter applies only to RIST-based, Zixi-based, and Fujitsu-based streams.",
+            "stability": "external",
+            "summary": "The maximum latency in milliseconds."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2038
+          },
+          "name": "maxLatency",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-protocol"
+            },
+            "remarks": "Adding additional sources to an existing flow requires Failover to be enabled. When you enable Failover, the additional source must use the same protocol as the existing source. Only the following protocols support failover: Zixi-push, RTP-FEC, RTP, and RIST.",
+            "stability": "external",
+            "summary": "The protocol that the source uses to deliver the content to MediaConnect."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2045
+          },
+          "name": "protocol",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-streamid"
+            },
+            "remarks": "This parameter applies only to Zixi and SRT caller-based streams.",
+            "stability": "external",
+            "summary": "The stream ID that you want to use for this transport."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2052
+          },
+          "name": "streamId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-vpcinterfacename"
+            },
+            "stability": "external",
+            "summary": "The name of the VPC interface that you want to send your output to."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2059
+          },
+          "name": "vpcInterfaceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-whitelistcidr"
+            },
+            "remarks": "Format the IP addresses as a Classless Inter-Domain Routing (CIDR) block; for example, 10.0.0.0/16.",
+            "stability": "external",
+            "summary": "The range of IP addresses that are allowed to contribute content to your source."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2066
+          },
+          "name": "whitelistCidr",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowSource"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowSource.EncryptionProperty": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowsource-encryption.html"
+        },
+        "stability": "external",
+        "summary": "Information about the encryption of the flow."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowSource.EncryptionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 2139
+      },
+      "name": "EncryptionProperty",
+      "namespace": "CfnFlowSource",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowsource-encryption.html#cfn-mediaconnect-flowsource-encryption-algorithm"
+            },
+            "stability": "external",
+            "summary": "The type of algorithm that is used for the encryption (such as aes128, aes192, or aes256)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2145
+          },
+          "name": "algorithm",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowsource-encryption.html#cfn-mediaconnect-flowsource-encryption-rolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the role that you created during setup (when you set up MediaConnect as a trusted entity)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2181
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowsource-encryption.html#cfn-mediaconnect-flowsource-encryption-constantinitializationvector"
+            },
+            "remarks": "This parameter is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "A 128-bit, 16-byte hex value represented by a 32-character string, to be used with the key for encrypting content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2151
+          },
+          "name": "constantInitializationVector",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowsource-encryption.html#cfn-mediaconnect-flowsource-encryption-deviceid"
+            },
+            "remarks": "This parameter is required for SPEKE encryption and is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "The value of one of the devices that you configured with your digital rights management (DRM) platform key provider."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2157
+          },
+          "name": "deviceId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowsource-encryption.html#cfn-mediaconnect-flowsource-encryption-keytype"
+            },
+            "remarks": "If you don't specify a `keyType` value, the service uses the default setting ( `static-key` ).",
+            "stability": "external",
+            "summary": "The type of key that is used for the encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2163
+          },
+          "name": "keyType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowsource-encryption.html#cfn-mediaconnect-flowsource-encryption-region"
+            },
+            "remarks": "This parameter is required for SPEKE encryption and is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "The AWS Region that the API Gateway proxy endpoint was created in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2169
+          },
+          "name": "region",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowsource-encryption.html#cfn-mediaconnect-flowsource-encryption-resourceid"
+            },
+            "remarks": "The service sends this value to the key server to identify the current endpoint. The resource ID is also known as the content ID. This parameter is required for SPEKE encryption and is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "An identifier for the content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2175
+          },
+          "name": "resourceId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowsource-encryption.html#cfn-mediaconnect-flowsource-encryption-secretarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the secret that you created in AWS Secrets Manager to store the encryption key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2187
+          },
+          "name": "secretArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconnect-flowsource-encryption.html#cfn-mediaconnect-flowsource-encryption-url"
+            },
+            "remarks": "This parameter is required for SPEKE encryption and is not valid for static key encryption.",
+            "stability": "external",
+            "summary": "The URL from the API Gateway proxy that you set up to talk to your key server."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2193
+          },
+          "name": "url",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowSource.EncryptionProperty"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowSourceProps": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnFlowSource`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowSourceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 1764
+      },
+      "name": "CfnFlowSourceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-description"
+            },
+            "remarks": "This description is not visible outside of the current AWS account.",
+            "stability": "external",
+            "summary": "A description of the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1771
+          },
+          "name": "description",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-name"
+            },
+            "stability": "external",
+            "summary": "The name of the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1778
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-decryption"
+            },
+            "stability": "external",
+            "summary": "The type of encryption that is used on the content ingested from the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1785
+          },
+          "name": "decryption",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowSource.EncryptionProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-entitlementarn"
+            },
+            "remarks": "The entitlement is set by the content originator, and the ARN is generated as part of the originator's flow.",
+            "stability": "external",
+            "summary": "The ARN of the entitlement that allows you to subscribe to the flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1792
+          },
+          "name": "entitlementArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-flowarn"
+            },
+            "remarks": "The flow must have Failover enabled to add an additional source.",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the flow this source is connected to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1799
+          },
+          "name": "flowArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-ingestport"
+            },
+            "remarks": "If the protocol of the source is Zixi, the port must be set to 2088.",
+            "stability": "external",
+            "summary": "The port that the flow listens on for incoming content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1806
+          },
+          "name": "ingestPort",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-maxbitrate"
+            },
+            "stability": "external",
+            "summary": "The maximum bitrate for RIST, RTP, and RTP-FEC streams."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1813
+          },
+          "name": "maxBitrate",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-maxlatency"
+            },
+            "remarks": "This parameter applies only to RIST-based, Zixi-based, and Fujitsu-based streams.",
+            "stability": "external",
+            "summary": "The maximum latency in milliseconds."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1820
+          },
+          "name": "maxLatency",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-protocol"
+            },
+            "remarks": "Adding additional sources to an existing flow requires Failover to be enabled. When you enable Failover, the additional source must use the same protocol as the existing source. Only the following protocols support failover: Zixi-push, RTP-FEC, RTP, and RIST.",
+            "stability": "external",
+            "summary": "The protocol that the source uses to deliver the content to MediaConnect."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1827
+          },
+          "name": "protocol",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-streamid"
+            },
+            "remarks": "This parameter applies only to Zixi and SRT caller-based streams.",
+            "stability": "external",
+            "summary": "The stream ID that you want to use for this transport."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1834
+          },
+          "name": "streamId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-vpcinterfacename"
+            },
+            "stability": "external",
+            "summary": "The name of the VPC interface that you want to send your output to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1841
+          },
+          "name": "vpcInterfaceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowsource.html#cfn-mediaconnect-flowsource-whitelistcidr"
+            },
+            "remarks": "Format the IP addresses as a Classless Inter-Domain Routing (CIDR) block; for example, 10.0.0.0/16.",
+            "stability": "external",
+            "summary": "The range of IP addresses that are allowed to contribute content to your source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 1848
+          },
+          "name": "whitelistCidr",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowSourceProps"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowVpcInterface": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MediaConnect::FlowVpcInterface",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowvpcinterface.html"
+        },
+        "remarks": "The AWS::MediaConnect::FlowVpcInterface resource is a connection between your AWS Elemental MediaConnect flow and a virtual private cloud (VPC) that you created using the Amazon Virtual Private Cloud service.\n\nTo avoid streaming your content over the public internet, you can add up to two VPC interfaces to your flow and use those connections to transfer content between your VPC and MediaConnect.\n\nYou can update an existing flow to add a VPC interface. If you haven’t created the flow yet, you must create the flow with a temporary standard source by doing the following:\n\n- Use CloudFormation to create a flow with a standard source that uses to the flow’s public IP address.\n- Use CloudFormation to create a VPC interface to add to this flow. This can also be done as part of the previous step.\n- After CloudFormation has created the flow and the VPC interface, update the source to point to the VPC interface that you created.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MediaConnect::FlowVpcInterface`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowVpcInterface",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MediaConnect::FlowVpcInterface`."
+        },
+        "locationInModule": {
+          "filename": "lib/mediaconnect.generated.ts",
+          "line": 2478
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowVpcInterfaceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 2401
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2500
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2515
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnFlowVpcInterface",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2405
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "NetworkInterfaceIds"
+            },
+            "stability": "external",
+            "summary": "The IDs of the network interfaces that MediaConnect created in your account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2430
+          },
+          "name": "attrNetworkInterfaceIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2505
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowvpcinterface.html#cfn-mediaconnect-flowvpcinterface-flowarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the flow."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2437
+          },
+          "name": "flowArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowvpcinterface.html#cfn-mediaconnect-flowvpcinterface-name"
+            },
+            "remarks": "This value must be unique within the current flow.",
+            "stability": "external",
+            "summary": "The name of the VPC Interface."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2444
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowvpcinterface.html#cfn-mediaconnect-flowvpcinterface-rolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the role that you created when you set up MediaConnect as a trusted service."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2451
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowvpcinterface.html#cfn-mediaconnect-flowvpcinterface-securitygroupids"
+            },
+            "remarks": "You must include at least one security group in the request.",
+            "stability": "external",
+            "summary": "The VPC security groups that you want MediaConnect to use for your VPC configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2458
+          },
+          "name": "securityGroupIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowvpcinterface.html#cfn-mediaconnect-flowvpcinterface-subnetid"
+            },
+            "remarks": "A range of IP addresses in your VPC. When you create your VPC, you specify a range of IPv4 addresses for the VPC in the form of a Classless Inter-Domain Routing (CIDR) block; for example, 10.0.0.0/16. This is the primary CIDR block for your VPC. When you create a subnet for your VPC, you specify the CIDR block for the subnet, which is a subset of the VPC CIDR block.\n\nThe subnets that you use across all VPC interfaces on the flow must be in the same Availability Zone as the flow.",
+            "stability": "external",
+            "summary": "The subnet IDs that you want to use for your VPC interface."
+          },
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2469
+          },
+          "name": "subnetId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowVpcInterface"
+    },
+    "@aws-cdk/aws-mediaconnect.CfnFlowVpcInterfaceProps": {
+      "assembly": "@aws-cdk/aws-mediaconnect",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowvpcinterface.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnFlowVpcInterface`."
+      },
+      "fqn": "@aws-cdk/aws-mediaconnect.CfnFlowVpcInterfaceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediaconnect.generated.ts",
+        "line": 2279
+      },
+      "name": "CfnFlowVpcInterfaceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowvpcinterface.html#cfn-mediaconnect-flowvpcinterface-flowarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the flow."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2286
+          },
+          "name": "flowArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowvpcinterface.html#cfn-mediaconnect-flowvpcinterface-name"
+            },
+            "remarks": "This value must be unique within the current flow.",
+            "stability": "external",
+            "summary": "The name of the VPC Interface."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2293
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowvpcinterface.html#cfn-mediaconnect-flowvpcinterface-rolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the role that you created when you set up MediaConnect as a trusted service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2300
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowvpcinterface.html#cfn-mediaconnect-flowvpcinterface-securitygroupids"
+            },
+            "remarks": "You must include at least one security group in the request.",
+            "stability": "external",
+            "summary": "The VPC security groups that you want MediaConnect to use for your VPC configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2307
+          },
+          "name": "securityGroupIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediaconnect-flowvpcinterface.html#cfn-mediaconnect-flowvpcinterface-subnetid"
+            },
+            "remarks": "A range of IP addresses in your VPC. When you create your VPC, you specify a range of IPv4 addresses for the VPC in the form of a Classless Inter-Domain Routing (CIDR) block; for example, 10.0.0.0/16. This is the primary CIDR block for your VPC. When you create a subnet for your VPC, you specify the CIDR block for the subnet, which is a subset of the VPC CIDR block.\n\nThe subnets that you use across all VPC interfaces on the flow must be in the same Availability Zone as the flow.",
+            "stability": "external",
+            "summary": "The subnet IDs that you want to use for your VPC interface."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediaconnect.generated.ts",
+            "line": 2318
+          },
+          "name": "subnetId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediaconnect.generated:CfnFlowVpcInterfaceProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "Ma4IzYdVV1xIj7+UbD1nzBGkTrdxT5zR2j3gnMMoKUA="
+}

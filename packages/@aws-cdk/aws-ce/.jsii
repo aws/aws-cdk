@@ -1,0 +1,1911 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::CE",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::CE",
+    "aws-ce"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-ce",
+  "readme": {
+    "markdown": "# AWS::CE Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as ce from '@aws-cdk/aws-ce';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for CE construct libraries](https://constructs.dev/search?q=ce)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::CE resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_CE.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::CE](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_CE.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-ce",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.CE",
+      "packageId": "Amazon.CDK.AWS.CE"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "ce",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.ce"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-ce"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-ce",
+      "module": "aws_cdk.aws_ce"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-ce.CfnAnomalyMonitor": {
+      "assembly": "@aws-cdk/aws-ce",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::CE::AnomalyMonitor",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html"
+        },
+        "remarks": "The `AWS::CE::AnomalyMonitor` resource is a Cost Explorer resource type that continuously inspects your account's cost data for anomalies, based on `MonitorType` and `MonitorSpecification` . The content consists of detailed metadata and the current status of the monitor object.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::CE::AnomalyMonitor`."
+      },
+      "fqn": "@aws-cdk/aws-ce.CfnAnomalyMonitor",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::CE::AnomalyMonitor`."
+        },
+        "locationInModule": {
+          "filename": "lib/ce.generated.ts",
+          "line": 224
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-ce.CfnAnomalyMonitorProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ce.generated.ts",
+        "line": 127
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 247
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 262
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnAnomalyMonitor",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 131
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationDate"
+            },
+            "stability": "external",
+            "summary": "The date when the monitor was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 156
+          },
+          "name": "attrCreationDate",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DimensionalValueCount"
+            },
+            "stability": "external",
+            "summary": "The value for evaluated dimensions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 162
+          },
+          "name": "attrDimensionalValueCount",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastEvaluatedDate"
+            },
+            "stability": "external",
+            "summary": "The date when the monitor last evaluated for anomalies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 168
+          },
+          "name": "attrLastEvaluatedDate",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastUpdatedDate"
+            },
+            "stability": "external",
+            "summary": "The date when the monitor was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 174
+          },
+          "name": "attrLastUpdatedDate",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "MonitorArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) value for the monitor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 180
+          },
+          "name": "attrMonitorArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 252
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#cfn-ce-anomalymonitor-monitorname"
+            },
+            "stability": "external",
+            "summary": "The name of the monitor."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 187
+          },
+          "name": "monitorName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#cfn-ce-anomalymonitor-monitortype"
+            },
+            "stability": "external",
+            "summary": "The possible type values."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 194
+          },
+          "name": "monitorType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#cfn-ce-anomalymonitor-monitordimension"
+            },
+            "stability": "external",
+            "summary": "The dimensions to evaluate."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 201
+          },
+          "name": "monitorDimension",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#cfn-ce-anomalymonitor-monitorspecification"
+            },
+            "remarks": "For instance, you can use `MonitorSpecification` to specify a tag, Cost Category, or linked account for your custom anomaly monitor. For further information, see the [Examples](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#aws-resource-ce-anomalymonitor--examples) section of this page.",
+            "stability": "external",
+            "summary": "The array of `MonitorSpecification` in JSON array format."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 208
+          },
+          "name": "monitorSpecification",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#cfn-ce-anomalymonitor-resourcetags"
+            },
+            "stability": "external",
+            "summary": "`AWS::CE::AnomalyMonitor.ResourceTags`."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 215
+          },
+          "name": "resourceTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-ce.CfnAnomalyMonitor.ResourceTagProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ce.generated:CfnAnomalyMonitor"
+    },
+    "@aws-cdk/aws-ce.CfnAnomalyMonitor.ResourceTagProperty": {
+      "assembly": "@aws-cdk/aws-ce",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ce-anomalymonitor-resourcetag.html"
+        },
+        "remarks": "> Tagging is supported only for the following Cost Explorer resource types: [`AnomalyMonitor`](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_AnomalyMonitor.html) , [`AnomalySubscription`](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_AnomalySubscription.html) , [`CostCategory`](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_CostCategory.html) .",
+        "stability": "external",
+        "summary": "The tag structure that contains a tag key and value."
+      },
+      "fqn": "@aws-cdk/aws-ce.CfnAnomalyMonitor.ResourceTagProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ce.generated.ts",
+        "line": 278
+      },
+      "name": "ResourceTagProperty",
+      "namespace": "CfnAnomalyMonitor",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ce-anomalymonitor-resourcetag.html#cfn-ce-anomalymonitor-resourcetag-key"
+            },
+            "stability": "external",
+            "summary": "The key that's associated with the tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 284
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ce-anomalymonitor-resourcetag.html#cfn-ce-anomalymonitor-resourcetag-value"
+            },
+            "stability": "external",
+            "summary": "The value that's associated with the tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 290
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ce.generated:CfnAnomalyMonitor.ResourceTagProperty"
+    },
+    "@aws-cdk/aws-ce.CfnAnomalyMonitorProps": {
+      "assembly": "@aws-cdk/aws-ce",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnAnomalyMonitor`."
+      },
+      "fqn": "@aws-cdk/aws-ce.CfnAnomalyMonitorProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ce.generated.ts",
+        "line": 20
+      },
+      "name": "CfnAnomalyMonitorProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#cfn-ce-anomalymonitor-monitorname"
+            },
+            "stability": "external",
+            "summary": "The name of the monitor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 27
+          },
+          "name": "monitorName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#cfn-ce-anomalymonitor-monitortype"
+            },
+            "stability": "external",
+            "summary": "The possible type values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 34
+          },
+          "name": "monitorType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#cfn-ce-anomalymonitor-monitordimension"
+            },
+            "stability": "external",
+            "summary": "The dimensions to evaluate."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 41
+          },
+          "name": "monitorDimension",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#cfn-ce-anomalymonitor-monitorspecification"
+            },
+            "remarks": "For instance, you can use `MonitorSpecification` to specify a tag, Cost Category, or linked account for your custom anomaly monitor. For further information, see the [Examples](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#aws-resource-ce-anomalymonitor--examples) section of this page.",
+            "stability": "external",
+            "summary": "The array of `MonitorSpecification` in JSON array format."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 48
+          },
+          "name": "monitorSpecification",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalymonitor.html#cfn-ce-anomalymonitor-resourcetags"
+            },
+            "stability": "external",
+            "summary": "`AWS::CE::AnomalyMonitor.ResourceTags`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 55
+          },
+          "name": "resourceTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-ce.CfnAnomalyMonitor.ResourceTagProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ce.generated:CfnAnomalyMonitorProps"
+    },
+    "@aws-cdk/aws-ce.CfnAnomalySubscription": {
+      "assembly": "@aws-cdk/aws-ce",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::CE::AnomalySubscription",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html"
+        },
+        "remarks": "The `AWS::CE::AnomalySubscription` resource is a Cost Explorer resource type that associates a monitor, threshold, and list of subscribers. It delivers notifications about anomalies detected by a monitor that exceeds a threshold. The content consists of the detailed metadata and the current status of the `AnomalySubscription` object.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::CE::AnomalySubscription`."
+      },
+      "fqn": "@aws-cdk/aws-ce.CfnAnomalySubscription",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::CE::AnomalySubscription`."
+        },
+        "locationInModule": {
+          "filename": "lib/ce.generated.ts",
+          "line": 589
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-ce.CfnAnomalySubscriptionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ce.generated.ts",
+        "line": 490
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 613
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 630
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnAnomalySubscription",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 494
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AccountId"
+            },
+            "stability": "external",
+            "summary": "Your unique account identifier."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 519
+          },
+          "name": "attrAccountId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SubscriptionArn"
+            },
+            "stability": "external",
+            "summary": "The `AnomalySubscription` Amazon Resource Name (ARN)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 525
+          },
+          "name": "attrSubscriptionArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 618
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-frequency"
+            },
+            "stability": "external",
+            "summary": "The frequency that anomaly reports are sent over email."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 532
+          },
+          "name": "frequency",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-monitorarnlist"
+            },
+            "stability": "external",
+            "summary": "A list of cost anomaly monitors."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 539
+          },
+          "name": "monitorArnList",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-subscribers"
+            },
+            "stability": "external",
+            "summary": "A list of subscribers to notify."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 546
+          },
+          "name": "subscribers",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ce.CfnAnomalySubscription.SubscriberProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-subscriptionname"
+            },
+            "stability": "external",
+            "summary": "The name for the subscription."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 553
+          },
+          "name": "subscriptionName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-resourcetags"
+            },
+            "stability": "external",
+            "summary": "`AWS::CE::AnomalySubscription.ResourceTags`."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 560
+          },
+          "name": "resourceTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ce.CfnAnomalySubscription.ResourceTagProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-threshold"
+            },
+            "remarks": "The dollar value that triggers a notification if the threshold is exceeded.\n\nThis field has been deprecated. To specify a threshold, use ThresholdExpression. Continued use of Threshold will be treated as shorthand syntax for a ThresholdExpression.\n\nOne of Threshold or ThresholdExpression is required for this resource.",
+            "stability": "external",
+            "summary": "(deprecated)."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 573
+          },
+          "name": "threshold",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-thresholdexpression"
+            },
+            "stability": "external",
+            "summary": "`AWS::CE::AnomalySubscription.ThresholdExpression`."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 580
+          },
+          "name": "thresholdExpression",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ce.generated:CfnAnomalySubscription"
+    },
+    "@aws-cdk/aws-ce.CfnAnomalySubscription.ResourceTagProperty": {
+      "assembly": "@aws-cdk/aws-ce",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ce-anomalysubscription-resourcetag.html"
+        },
+        "remarks": "> Tagging is supported only for the following Cost Explorer resource types: [`AnomalyMonitor`](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_AnomalyMonitor.html) , [`AnomalySubscription`](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_AnomalySubscription.html) , [`CostCategory`](https://docs.aws.amazon.com/aws-cost-management/latest/APIReference/API_CostCategory.html) .",
+        "stability": "external",
+        "summary": "The tag structure that contains a tag key and value."
+      },
+      "fqn": "@aws-cdk/aws-ce.CfnAnomalySubscription.ResourceTagProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ce.generated.ts",
+        "line": 646
+      },
+      "name": "ResourceTagProperty",
+      "namespace": "CfnAnomalySubscription",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ce-anomalysubscription-resourcetag.html#cfn-ce-anomalysubscription-resourcetag-key"
+            },
+            "stability": "external",
+            "summary": "The key that's associated with the tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 652
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ce-anomalysubscription-resourcetag.html#cfn-ce-anomalysubscription-resourcetag-value"
+            },
+            "stability": "external",
+            "summary": "The value that's associated with the tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 658
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ce.generated:CfnAnomalySubscription.ResourceTagProperty"
+    },
+    "@aws-cdk/aws-ce.CfnAnomalySubscription.SubscriberProperty": {
+      "assembly": "@aws-cdk/aws-ce",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ce-anomalysubscription-subscriber.html"
+        },
+        "stability": "external",
+        "summary": "The recipient of `AnomalySubscription` notifications."
+      },
+      "fqn": "@aws-cdk/aws-ce.CfnAnomalySubscription.SubscriberProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ce.generated.ts",
+        "line": 724
+      },
+      "name": "SubscriberProperty",
+      "namespace": "CfnAnomalySubscription",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ce-anomalysubscription-subscriber.html#cfn-ce-anomalysubscription-subscriber-address"
+            },
+            "stability": "external",
+            "summary": "The email address or SNS Topic Amazon Resource Name (ARN), depending on the `Type` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 730
+          },
+          "name": "address",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ce-anomalysubscription-subscriber.html#cfn-ce-anomalysubscription-subscriber-type"
+            },
+            "stability": "external",
+            "summary": "The notification delivery channel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 742
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ce-anomalysubscription-subscriber.html#cfn-ce-anomalysubscription-subscriber-status"
+            },
+            "stability": "external",
+            "summary": "Indicates if the subscriber accepts the notifications."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 736
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ce.generated:CfnAnomalySubscription.SubscriberProperty"
+    },
+    "@aws-cdk/aws-ce.CfnAnomalySubscriptionProps": {
+      "assembly": "@aws-cdk/aws-ce",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnAnomalySubscription`."
+      },
+      "fqn": "@aws-cdk/aws-ce.CfnAnomalySubscriptionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ce.generated.ts",
+        "line": 355
+      },
+      "name": "CfnAnomalySubscriptionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-frequency"
+            },
+            "stability": "external",
+            "summary": "The frequency that anomaly reports are sent over email."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 362
+          },
+          "name": "frequency",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-monitorarnlist"
+            },
+            "stability": "external",
+            "summary": "A list of cost anomaly monitors."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 369
+          },
+          "name": "monitorArnList",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-subscribers"
+            },
+            "stability": "external",
+            "summary": "A list of subscribers to notify."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 376
+          },
+          "name": "subscribers",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ce.CfnAnomalySubscription.SubscriberProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-subscriptionname"
+            },
+            "stability": "external",
+            "summary": "The name for the subscription."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 383
+          },
+          "name": "subscriptionName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-resourcetags"
+            },
+            "stability": "external",
+            "summary": "`AWS::CE::AnomalySubscription.ResourceTags`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 390
+          },
+          "name": "resourceTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ce.CfnAnomalySubscription.ResourceTagProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-threshold"
+            },
+            "remarks": "The dollar value that triggers a notification if the threshold is exceeded.\n\nThis field has been deprecated. To specify a threshold, use ThresholdExpression. Continued use of Threshold will be treated as shorthand syntax for a ThresholdExpression.\n\nOne of Threshold or ThresholdExpression is required for this resource.",
+            "stability": "external",
+            "summary": "(deprecated)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 403
+          },
+          "name": "threshold",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-anomalysubscription.html#cfn-ce-anomalysubscription-thresholdexpression"
+            },
+            "stability": "external",
+            "summary": "`AWS::CE::AnomalySubscription.ThresholdExpression`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 410
+          },
+          "name": "thresholdExpression",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ce.generated:CfnAnomalySubscriptionProps"
+    },
+    "@aws-cdk/aws-ce.CfnCostCategory": {
+      "assembly": "@aws-cdk/aws-ce",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::CE::CostCategory",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-costcategory.html"
+        },
+        "remarks": "The `AWS::CE::CostCategory` resource creates groupings of cost that you can use across products in the AWS Billing and Cost Management console, such as Cost Explorer and AWS Budgets. For more information, see [Managing Your Costs with Cost Categories](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/manage-cost-categories.html) in the *AWS Billing and Cost Management User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::CE::CostCategory`."
+      },
+      "fqn": "@aws-cdk/aws-ce.CfnCostCategory",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::CE::CostCategory`."
+        },
+        "locationInModule": {
+          "filename": "lib/ce.generated.ts",
+          "line": 1001
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-ce.CfnCostCategoryProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ce.generated.ts",
+        "line": 920
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 1022
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 1037
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnCostCategory",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 924
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The unique identifier for your Cost Category."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 949
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EffectiveStart"
+            },
+            "stability": "external",
+            "summary": "The Cost Category's effective start date."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 955
+          },
+          "name": "attrEffectiveStart",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 1027
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-costcategory.html#cfn-ce-costcategory-name"
+            },
+            "stability": "external",
+            "summary": "The unique name of the Cost Category."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 962
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-costcategory.html#cfn-ce-costcategory-rules"
+            },
+            "remarks": "> Rules are processed in order. If there are multiple rules that match the line item, then the first rule to match is used to determine that Cost Category value.",
+            "stability": "external",
+            "summary": "The array of CostCategoryRule in JSON array format."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 971
+          },
+          "name": "rules",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-costcategory.html#cfn-ce-costcategory-ruleversion"
+            },
+            "stability": "external",
+            "summary": "The rule schema version in this particular Cost Category."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 978
+          },
+          "name": "ruleVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-costcategory.html#cfn-ce-costcategory-defaultvalue"
+            },
+            "stability": "external",
+            "summary": "The default value for the cost category."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 985
+          },
+          "name": "defaultValue",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-costcategory.html#cfn-ce-costcategory-splitchargerules"
+            },
+            "stability": "external",
+            "summary": "The split charge rules that are used to allocate your charges between your Cost Category values."
+          },
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 992
+          },
+          "name": "splitChargeRules",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ce.generated:CfnCostCategory"
+    },
+    "@aws-cdk/aws-ce.CfnCostCategoryProps": {
+      "assembly": "@aws-cdk/aws-ce",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-costcategory.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnCostCategory`."
+      },
+      "fqn": "@aws-cdk/aws-ce.CfnCostCategoryProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ce.generated.ts",
+        "line": 810
+      },
+      "name": "CfnCostCategoryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-costcategory.html#cfn-ce-costcategory-name"
+            },
+            "stability": "external",
+            "summary": "The unique name of the Cost Category."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 817
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-costcategory.html#cfn-ce-costcategory-rules"
+            },
+            "remarks": "> Rules are processed in order. If there are multiple rules that match the line item, then the first rule to match is used to determine that Cost Category value.",
+            "stability": "external",
+            "summary": "The array of CostCategoryRule in JSON array format."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 826
+          },
+          "name": "rules",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-costcategory.html#cfn-ce-costcategory-ruleversion"
+            },
+            "stability": "external",
+            "summary": "The rule schema version in this particular Cost Category."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 833
+          },
+          "name": "ruleVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-costcategory.html#cfn-ce-costcategory-defaultvalue"
+            },
+            "stability": "external",
+            "summary": "The default value for the cost category."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 840
+          },
+          "name": "defaultValue",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ce-costcategory.html#cfn-ce-costcategory-splitchargerules"
+            },
+            "stability": "external",
+            "summary": "The split charge rules that are used to allocate your charges between your Cost Category values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ce.generated.ts",
+            "line": 847
+          },
+          "name": "splitChargeRules",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ce.generated:CfnCostCategoryProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "ZQ2yq7fwtgjz4kCE65kkB/AZzsYWbBXlEwopE7FDdhw="
+}

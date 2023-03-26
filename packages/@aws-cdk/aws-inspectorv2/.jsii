@@ -1,0 +1,2459 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::InspectorV2 Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::InspectorV2",
+    "aws-inspectorv2"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-inspectorv2",
+  "readme": {
+    "markdown": "# AWS::InspectorV2 Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as inspector from '@aws-cdk/aws-inspectorv2';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for InspectorV2 construct libraries](https://constructs.dev/search?q=inspectorv2)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::InspectorV2 resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_InspectorV2.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::InspectorV2](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_InspectorV2.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-inspectorv2",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.InspectorV2",
+      "packageId": "Amazon.CDK.AWS.InspectorV2",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "inspectorv2",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.inspectorv2"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-inspectorv2"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-inspectorv2",
+      "module": "aws_cdk.aws_inspectorv2"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-inspectorv2.CfnFilter": {
+      "assembly": "@aws-cdk/aws-inspectorv2",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::InspectorV2::Filter",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspectorv2-filter.html"
+        },
+        "remarks": "Details about a filter.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::InspectorV2::Filter`."
+      },
+      "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::InspectorV2::Filter`."
+        },
+        "locationInModule": {
+          "filename": "lib/inspectorv2.generated.ts",
+          "line": 184
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-inspectorv2.CfnFilterProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/inspectorv2.generated.ts",
+        "line": 118
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 203
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 217
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnFilter",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 122
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Number (ARN) associated with this filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 147
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 208
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspectorv2-filter.html#cfn-inspectorv2-filter-filteraction"
+            },
+            "stability": "external",
+            "summary": "The action that is to be applied to the findings that match the filter."
+          },
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 154
+          },
+          "name": "filterAction",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspectorv2-filter.html#cfn-inspectorv2-filter-filtercriteria"
+            },
+            "stability": "external",
+            "summary": "Details on the filter criteria associated with this filter."
+          },
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 161
+          },
+          "name": "filterCriteria",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.FilterCriteriaProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspectorv2-filter.html#cfn-inspectorv2-filter-name"
+            },
+            "stability": "external",
+            "summary": "The name of the filter."
+          },
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 168
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspectorv2-filter.html#cfn-inspectorv2-filter-description"
+            },
+            "stability": "external",
+            "summary": "A description of the filter."
+          },
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 175
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/inspectorv2.generated:CfnFilter"
+    },
+    "@aws-cdk/aws-inspectorv2.CfnFilter.DateFilterProperty": {
+      "assembly": "@aws-cdk/aws-inspectorv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-datefilter.html"
+        },
+        "stability": "external",
+        "summary": "Contains details on the time range used to filter findings."
+      },
+      "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.DateFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/inspectorv2.generated.ts",
+        "line": 231
+      },
+      "name": "DateFilterProperty",
+      "namespace": "CfnFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-datefilter.html#cfn-inspectorv2-filter-datefilter-endinclusive"
+            },
+            "stability": "external",
+            "summary": "A timestamp representing the end of the time period filtered on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 237
+          },
+          "name": "endInclusive",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-datefilter.html#cfn-inspectorv2-filter-datefilter-startinclusive"
+            },
+            "stability": "external",
+            "summary": "A timestamp representing the start of the time period filtered on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 243
+          },
+          "name": "startInclusive",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/inspectorv2.generated:CfnFilter.DateFilterProperty"
+    },
+    "@aws-cdk/aws-inspectorv2.CfnFilter.FilterCriteriaProperty": {
+      "assembly": "@aws-cdk/aws-inspectorv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html"
+        },
+        "stability": "external",
+        "summary": "Details on the criteria used to define the filter."
+      },
+      "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.FilterCriteriaProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/inspectorv2.generated.ts",
+        "line": 307
+      },
+      "name": "FilterCriteriaProperty",
+      "namespace": "CfnFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-awsaccountid"
+            },
+            "stability": "external",
+            "summary": "Details of the AWS account IDs used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 313
+          },
+          "name": "awsAccountId",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-componentid"
+            },
+            "stability": "external",
+            "summary": "Details of the component IDs used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 319
+          },
+          "name": "componentId",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-componenttype"
+            },
+            "stability": "external",
+            "summary": "Details of the component types used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 325
+          },
+          "name": "componentType",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ec2instanceimageid"
+            },
+            "stability": "external",
+            "summary": "Details of the Amazon EC2 instance image IDs used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 331
+          },
+          "name": "ec2InstanceImageId",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ec2instancesubnetid"
+            },
+            "stability": "external",
+            "summary": "Details of the Amazon EC2 instance subnet IDs used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 337
+          },
+          "name": "ec2InstanceSubnetId",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ec2instancevpcid"
+            },
+            "stability": "external",
+            "summary": "Details of the Amazon EC2 instance VPC IDs used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 343
+          },
+          "name": "ec2InstanceVpcId",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ecrimagearchitecture"
+            },
+            "stability": "external",
+            "summary": "Details of the Amazon ECR image architecture types used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 349
+          },
+          "name": "ecrImageArchitecture",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ecrimagehash"
+            },
+            "stability": "external",
+            "summary": "Details of the Amazon ECR image hashes used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 355
+          },
+          "name": "ecrImageHash",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ecrimagepushedat"
+            },
+            "stability": "external",
+            "summary": "Details on the Amazon ECR image push date and time used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 361
+          },
+          "name": "ecrImagePushedAt",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.DateFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ecrimageregistry"
+            },
+            "stability": "external",
+            "summary": "Details on the Amazon ECR registry used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 367
+          },
+          "name": "ecrImageRegistry",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ecrimagerepositoryname"
+            },
+            "stability": "external",
+            "summary": "Details on the name of the Amazon ECR repository used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 373
+          },
+          "name": "ecrImageRepositoryName",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-ecrimagetags"
+            },
+            "stability": "external",
+            "summary": "The tags attached to the Amazon ECR container image."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 379
+          },
+          "name": "ecrImageTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-findingarn"
+            },
+            "stability": "external",
+            "summary": "Details on the finding ARNs used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 385
+          },
+          "name": "findingArn",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-findingstatus"
+            },
+            "stability": "external",
+            "summary": "Details on the finding status types used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 391
+          },
+          "name": "findingStatus",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-findingtype"
+            },
+            "stability": "external",
+            "summary": "Details on the finding types used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 397
+          },
+          "name": "findingType",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-firstobservedat"
+            },
+            "stability": "external",
+            "summary": "Details on the date and time a finding was first seen used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 403
+          },
+          "name": "firstObservedAt",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.DateFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-inspectorscore"
+            },
+            "stability": "external",
+            "summary": "The Amazon Inspector score to filter on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 409
+          },
+          "name": "inspectorScore",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.NumberFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-lastobservedat"
+            },
+            "stability": "external",
+            "summary": "Details on the date and time a finding was last seen used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 415
+          },
+          "name": "lastObservedAt",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.DateFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-networkprotocol"
+            },
+            "stability": "external",
+            "summary": "Details on the ingress source addresses used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 421
+          },
+          "name": "networkProtocol",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-portrange"
+            },
+            "stability": "external",
+            "summary": "Details on the port ranges used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 427
+          },
+          "name": "portRange",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.PortRangeFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-relatedvulnerabilities"
+            },
+            "stability": "external",
+            "summary": "Details on the related vulnerabilities used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 433
+          },
+          "name": "relatedVulnerabilities",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-resourceid"
+            },
+            "stability": "external",
+            "summary": "Details on the resource IDs used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 439
+          },
+          "name": "resourceId",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-resourcetags"
+            },
+            "stability": "external",
+            "summary": "Details on the resource tags used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 445
+          },
+          "name": "resourceTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.MapFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-resourcetype"
+            },
+            "stability": "external",
+            "summary": "Details on the resource types used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 451
+          },
+          "name": "resourceType",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-severity"
+            },
+            "stability": "external",
+            "summary": "Details on the severity used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 457
+          },
+          "name": "severity",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-title"
+            },
+            "stability": "external",
+            "summary": "Details on the finding title used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 463
+          },
+          "name": "title",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-updatedat"
+            },
+            "stability": "external",
+            "summary": "Details on the date and time a finding was last updated at used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 469
+          },
+          "name": "updatedAt",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.DateFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-vendorseverity"
+            },
+            "stability": "external",
+            "summary": "Details on the vendor severity used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 475
+          },
+          "name": "vendorSeverity",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-vulnerabilityid"
+            },
+            "stability": "external",
+            "summary": "Details on the vulnerability ID used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 481
+          },
+          "name": "vulnerabilityId",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-vulnerabilitysource"
+            },
+            "stability": "external",
+            "summary": "Details on the vulnerability score to filter findings by."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 487
+          },
+          "name": "vulnerabilitySource",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-filtercriteria.html#cfn-inspectorv2-filter-filtercriteria-vulnerablepackages"
+            },
+            "stability": "external",
+            "summary": "Details on the vulnerable packages used to filter findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 493
+          },
+          "name": "vulnerablePackages",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.PackageFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/inspectorv2.generated:CfnFilter.FilterCriteriaProperty"
+    },
+    "@aws-cdk/aws-inspectorv2.CfnFilter.MapFilterProperty": {
+      "assembly": "@aws-cdk/aws-inspectorv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-mapfilter.html"
+        },
+        "stability": "external",
+        "summary": "An object that describes details of a map filter."
+      },
+      "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.MapFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/inspectorv2.generated.ts",
+        "line": 644
+      },
+      "name": "MapFilterProperty",
+      "namespace": "CfnFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-mapfilter.html#cfn-inspectorv2-filter-mapfilter-comparison"
+            },
+            "stability": "external",
+            "summary": "The operator to use when comparing values in the filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 650
+          },
+          "name": "comparison",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-mapfilter.html#cfn-inspectorv2-filter-mapfilter-key"
+            },
+            "stability": "external",
+            "summary": "The tag key used in the filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 656
+          },
+          "name": "key",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-mapfilter.html#cfn-inspectorv2-filter-mapfilter-value"
+            },
+            "stability": "external",
+            "summary": "The tag value used in the filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 662
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/inspectorv2.generated:CfnFilter.MapFilterProperty"
+    },
+    "@aws-cdk/aws-inspectorv2.CfnFilter.NumberFilterProperty": {
+      "assembly": "@aws-cdk/aws-inspectorv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-numberfilter.html"
+        },
+        "stability": "external",
+        "summary": "An object that describes the details of a number filter."
+      },
+      "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.NumberFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/inspectorv2.generated.ts",
+        "line": 730
+      },
+      "name": "NumberFilterProperty",
+      "namespace": "CfnFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-numberfilter.html#cfn-inspectorv2-filter-numberfilter-lowerinclusive"
+            },
+            "stability": "external",
+            "summary": "The lowest number to be included in the filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 736
+          },
+          "name": "lowerInclusive",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-numberfilter.html#cfn-inspectorv2-filter-numberfilter-upperinclusive"
+            },
+            "stability": "external",
+            "summary": "The highest number to be included in the filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 742
+          },
+          "name": "upperInclusive",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/inspectorv2.generated:CfnFilter.NumberFilterProperty"
+    },
+    "@aws-cdk/aws-inspectorv2.CfnFilter.PackageFilterProperty": {
+      "assembly": "@aws-cdk/aws-inspectorv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-packagefilter.html"
+        },
+        "stability": "external",
+        "summary": "Contains information on the details of a package filter."
+      },
+      "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.PackageFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/inspectorv2.generated.ts",
+        "line": 806
+      },
+      "name": "PackageFilterProperty",
+      "namespace": "CfnFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-packagefilter.html#cfn-inspectorv2-filter-packagefilter-architecture"
+            },
+            "stability": "external",
+            "summary": "An object that contains details on the package architecture type to filter on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 812
+          },
+          "name": "architecture",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-packagefilter.html#cfn-inspectorv2-filter-packagefilter-epoch"
+            },
+            "stability": "external",
+            "summary": "An object that contains details on the package epoch to filter on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 818
+          },
+          "name": "epoch",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.NumberFilterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-packagefilter.html#cfn-inspectorv2-filter-packagefilter-name"
+            },
+            "stability": "external",
+            "summary": "An object that contains details on the name of the package to filter on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 824
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-packagefilter.html#cfn-inspectorv2-filter-packagefilter-release"
+            },
+            "stability": "external",
+            "summary": "An object that contains details on the package release to filter on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 830
+          },
+          "name": "release",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-packagefilter.html#cfn-inspectorv2-filter-packagefilter-sourcelayerhash"
+            },
+            "stability": "external",
+            "summary": "An object that contains details on the source layer hash to filter on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 836
+          },
+          "name": "sourceLayerHash",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-packagefilter.html#cfn-inspectorv2-filter-packagefilter-version"
+            },
+            "stability": "external",
+            "summary": "The package version to filter on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 842
+          },
+          "name": "version",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/inspectorv2.generated:CfnFilter.PackageFilterProperty"
+    },
+    "@aws-cdk/aws-inspectorv2.CfnFilter.PortRangeFilterProperty": {
+      "assembly": "@aws-cdk/aws-inspectorv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-portrangefilter.html"
+        },
+        "stability": "external",
+        "summary": "An object that describes the details of a port range filter."
+      },
+      "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.PortRangeFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/inspectorv2.generated.ts",
+        "line": 918
+      },
+      "name": "PortRangeFilterProperty",
+      "namespace": "CfnFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-portrangefilter.html#cfn-inspectorv2-filter-portrangefilter-begininclusive"
+            },
+            "stability": "external",
+            "summary": "The port number the port range begins at."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 924
+          },
+          "name": "beginInclusive",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-portrangefilter.html#cfn-inspectorv2-filter-portrangefilter-endinclusive"
+            },
+            "stability": "external",
+            "summary": "The port number the port range ends at."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 930
+          },
+          "name": "endInclusive",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/inspectorv2.generated:CfnFilter.PortRangeFilterProperty"
+    },
+    "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty": {
+      "assembly": "@aws-cdk/aws-inspectorv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-stringfilter.html"
+        },
+        "stability": "external",
+        "summary": "An object that describes the details of a string filter."
+      },
+      "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.StringFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/inspectorv2.generated.ts",
+        "line": 994
+      },
+      "name": "StringFilterProperty",
+      "namespace": "CfnFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-stringfilter.html#cfn-inspectorv2-filter-stringfilter-comparison"
+            },
+            "stability": "external",
+            "summary": "The operator to use when comparing values in the filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 1000
+          },
+          "name": "comparison",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-inspectorv2-filter-stringfilter.html#cfn-inspectorv2-filter-stringfilter-value"
+            },
+            "stability": "external",
+            "summary": "The value to filter on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 1006
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/inspectorv2.generated:CfnFilter.StringFilterProperty"
+    },
+    "@aws-cdk/aws-inspectorv2.CfnFilterProps": {
+      "assembly": "@aws-cdk/aws-inspectorv2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspectorv2-filter.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnFilter`."
+      },
+      "fqn": "@aws-cdk/aws-inspectorv2.CfnFilterProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/inspectorv2.generated.ts",
+        "line": 20
+      },
+      "name": "CfnFilterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspectorv2-filter.html#cfn-inspectorv2-filter-filteraction"
+            },
+            "stability": "external",
+            "summary": "The action that is to be applied to the findings that match the filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 27
+          },
+          "name": "filterAction",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspectorv2-filter.html#cfn-inspectorv2-filter-filtercriteria"
+            },
+            "stability": "external",
+            "summary": "Details on the filter criteria associated with this filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 34
+          },
+          "name": "filterCriteria",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-inspectorv2.CfnFilter.FilterCriteriaProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspectorv2-filter.html#cfn-inspectorv2-filter-name"
+            },
+            "stability": "external",
+            "summary": "The name of the filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 41
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-inspectorv2-filter.html#cfn-inspectorv2-filter-description"
+            },
+            "stability": "external",
+            "summary": "A description of the filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/inspectorv2.generated.ts",
+            "line": 48
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/inspectorv2.generated:CfnFilterProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "A0kfI2P9xh5jYT1L6zKKcXiedLC5EYcpN0KAw2BD9UU="
+}

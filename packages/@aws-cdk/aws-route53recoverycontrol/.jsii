@@ -1,0 +1,2141 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::Route53RecoveryControl",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::Route53RecoveryControl",
+    "aws-route53recoverycontrol"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-route53recoverycontrol",
+  "readme": {
+    "markdown": "# AWS::Route53RecoveryControl Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as route53recoverycontrol from '@aws-cdk/aws-route53recoverycontrol';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for Route53RecoveryControl construct libraries](https://constructs.dev/search?q=route53recoverycontrol)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Route53RecoveryControl resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Route53RecoveryControl.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Route53RecoveryControl](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Route53RecoveryControl.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-route53recoverycontrol",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Route53RecoveryControl",
+      "packageId": "Amazon.CDK.AWS.Route53RecoveryControl",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "route53recoverycontrol",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.route53recoverycontrol"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-route53recoverycontrol"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-route53recoverycontrol",
+      "module": "aws_cdk.aws_route53recoverycontrol"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-route53recoverycontrol.CfnCluster": {
+      "assembly": "@aws-cdk/aws-route53recoverycontrol",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Route53RecoveryControl::Cluster",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-cluster.html"
+        },
+        "remarks": "Returns an array of all the clusters in an account.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Route53RecoveryControl::Cluster`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnCluster",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Route53RecoveryControl::Cluster`."
+        },
+        "locationInModule": {
+          "filename": "lib/route53recoverycontrol.generated.ts",
+          "line": 170
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnClusterProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/route53recoverycontrol.generated.ts",
+        "line": 105
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 186
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 199
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnCluster",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 109
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ClusterArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 134
+          },
+          "name": "attrClusterArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "remarks": "Status can be one of the following: PENDING, DEPLOYED, PENDING_DELETION.",
+            "stability": "external",
+            "summary": "Deployment status of a resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 140
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 191
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-cluster.html#cfn-route53recoverycontrol-cluster-tags"
+            },
+            "stability": "external",
+            "summary": "The value for a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 161
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-cluster.html#cfn-route53recoverycontrol-cluster-clusterendpoints"
+            },
+            "stability": "external",
+            "summary": "`AWS::Route53RecoveryControl::Cluster.ClusterEndpoints`."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 147
+          },
+          "name": "clusterEndpoints",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnCluster.ClusterEndpointProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-cluster.html#cfn-route53recoverycontrol-cluster-name"
+            },
+            "remarks": "You can use any non-white space character in the name.",
+            "stability": "external",
+            "summary": "Name of the cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 154
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoverycontrol.generated:CfnCluster"
+    },
+    "@aws-cdk/aws-route53recoverycontrol.CfnCluster.ClusterEndpointProperty": {
+      "assembly": "@aws-cdk/aws-route53recoverycontrol",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-cluster-clusterendpoint.html"
+        },
+        "remarks": "Specify an endpoint when you want to set or retrieve a routing control state in the cluster.",
+        "stability": "external",
+        "summary": "A cluster endpoint."
+      },
+      "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnCluster.ClusterEndpointProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoverycontrol.generated.ts",
+        "line": 213
+      },
+      "name": "ClusterEndpointProperty",
+      "namespace": "CfnCluster",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-cluster-clusterendpoint.html#cfn-route53recoverycontrol-cluster-clusterendpoint-endpoint"
+            },
+            "remarks": "Specify an endpoint and AWS Region when you want to set or retrieve a routing control state in the cluster.\n\nTo get or update the routing control state, see the Amazon Route 53 Application Recovery Controller Routing Control Actions.",
+            "stability": "external",
+            "summary": "A cluster endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 221
+          },
+          "name": "endpoint",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-cluster-clusterendpoint.html#cfn-route53recoverycontrol-cluster-clusterendpoint-region"
+            },
+            "stability": "external",
+            "summary": "The AWS Region for a cluster endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 227
+          },
+          "name": "region",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoverycontrol.generated:CfnCluster.ClusterEndpointProperty"
+    },
+    "@aws-cdk/aws-route53recoverycontrol.CfnClusterProps": {
+      "assembly": "@aws-cdk/aws-route53recoverycontrol",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-cluster.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnCluster`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnClusterProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoverycontrol.generated.ts",
+        "line": 20
+      },
+      "name": "CfnClusterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-cluster.html#cfn-route53recoverycontrol-cluster-clusterendpoints"
+            },
+            "stability": "external",
+            "summary": "`AWS::Route53RecoveryControl::Cluster.ClusterEndpoints`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 27
+          },
+          "name": "clusterEndpoints",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnCluster.ClusterEndpointProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-cluster.html#cfn-route53recoverycontrol-cluster-name"
+            },
+            "remarks": "You can use any non-white space character in the name.",
+            "stability": "external",
+            "summary": "Name of the cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 34
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-cluster.html#cfn-route53recoverycontrol-cluster-tags"
+            },
+            "stability": "external",
+            "summary": "The value for a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 41
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoverycontrol.generated:CfnClusterProps"
+    },
+    "@aws-cdk/aws-route53recoverycontrol.CfnControlPanel": {
+      "assembly": "@aws-cdk/aws-route53recoverycontrol",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Route53RecoveryControl::ControlPanel",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-controlpanel.html"
+        },
+        "remarks": "Creates a new control panel. A control panel represents a group of routing controls that can be changed together in a single transaction. You can use a control panel to centrally view the operational status of applications across your organization, and trigger multi-app failovers in a single transaction, for example, to fail over an Availability Zone or AWS Region .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Route53RecoveryControl::ControlPanel`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnControlPanel",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Route53RecoveryControl::ControlPanel`."
+        },
+        "locationInModule": {
+          "filename": "lib/route53recoverycontrol.generated.ts",
+          "line": 453
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnControlPanelProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/route53recoverycontrol.generated.ts",
+        "line": 376
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 472
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 485
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnControlPanel",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 380
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ControlPanelArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the control panel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 405
+          },
+          "name": "attrControlPanelArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DefaultControlPanel"
+            },
+            "stability": "external",
+            "summary": "The boolean flag that is set to true for the default control panel in the cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 411
+          },
+          "name": "attrDefaultControlPanel",
+          "type": {
+            "fqn": "@aws-cdk/core.IResolvable"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "RoutingControlCount"
+            },
+            "stability": "external",
+            "summary": "The number of routing controls in the control panel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 417
+          },
+          "name": "attrRoutingControlCount",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "remarks": "Status can be one of the following: PENDING, DEPLOYED, PENDING_DELETION.",
+            "stability": "external",
+            "summary": "The deployment status of control panel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 423
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 477
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-controlpanel.html#cfn-route53recoverycontrol-controlpanel-tags"
+            },
+            "stability": "external",
+            "summary": "The value for a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 444
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-controlpanel.html#cfn-route53recoverycontrol-controlpanel-name"
+            },
+            "remarks": "You can use any non-white space character in the name.",
+            "stability": "external",
+            "summary": "The name of the control panel."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 430
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-controlpanel.html#cfn-route53recoverycontrol-controlpanel-clusterarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the cluster for the control panel."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 437
+          },
+          "name": "clusterArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoverycontrol.generated:CfnControlPanel"
+    },
+    "@aws-cdk/aws-route53recoverycontrol.CfnControlPanelProps": {
+      "assembly": "@aws-cdk/aws-route53recoverycontrol",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-controlpanel.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnControlPanel`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnControlPanelProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoverycontrol.generated.ts",
+        "line": 290
+      },
+      "name": "CfnControlPanelProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-controlpanel.html#cfn-route53recoverycontrol-controlpanel-name"
+            },
+            "remarks": "You can use any non-white space character in the name.",
+            "stability": "external",
+            "summary": "The name of the control panel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 297
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-controlpanel.html#cfn-route53recoverycontrol-controlpanel-clusterarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the cluster for the control panel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 304
+          },
+          "name": "clusterArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-controlpanel.html#cfn-route53recoverycontrol-controlpanel-tags"
+            },
+            "stability": "external",
+            "summary": "The value for a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 311
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoverycontrol.generated:CfnControlPanelProps"
+    },
+    "@aws-cdk/aws-route53recoverycontrol.CfnRoutingControl": {
+      "assembly": "@aws-cdk/aws-route53recoverycontrol",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Route53RecoveryControl::RoutingControl",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-routingcontrol.html"
+        },
+        "remarks": "Defines a routing control. To get or update the routing control state, see the Recovery Cluster (data plane) API actions for Amazon Route 53 Application Recovery Controller.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Route53RecoveryControl::RoutingControl`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnRoutingControl",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Route53RecoveryControl::RoutingControl`."
+        },
+        "locationInModule": {
+          "filename": "lib/route53recoverycontrol.generated.ts",
+          "line": 649
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnRoutingControlProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/route53recoverycontrol.generated.ts",
+        "line": 584
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 666
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 679
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRoutingControl",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 588
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "RoutingControlArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the routing control."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 613
+          },
+          "name": "attrRoutingControlArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "remarks": "Status can be one of the following: PENDING, DEPLOYED, PENDING_DELETION.",
+            "stability": "external",
+            "summary": "The deployment status of the routing control."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 619
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 671
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-routingcontrol.html#cfn-route53recoverycontrol-routingcontrol-name"
+            },
+            "remarks": "You can use any non-white space character in the name.",
+            "stability": "external",
+            "summary": "The name of the routing control."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 626
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-routingcontrol.html#cfn-route53recoverycontrol-routingcontrol-clusterarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the cluster that includes the routing control."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 633
+          },
+          "name": "clusterArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-routingcontrol.html#cfn-route53recoverycontrol-routingcontrol-controlpanelarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the control panel that includes the routing control."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 640
+          },
+          "name": "controlPanelArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoverycontrol.generated:CfnRoutingControl"
+    },
+    "@aws-cdk/aws-route53recoverycontrol.CfnRoutingControlProps": {
+      "assembly": "@aws-cdk/aws-route53recoverycontrol",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-routingcontrol.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRoutingControl`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnRoutingControlProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoverycontrol.generated.ts",
+        "line": 498
+      },
+      "name": "CfnRoutingControlProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-routingcontrol.html#cfn-route53recoverycontrol-routingcontrol-name"
+            },
+            "remarks": "You can use any non-white space character in the name.",
+            "stability": "external",
+            "summary": "The name of the routing control."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 505
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-routingcontrol.html#cfn-route53recoverycontrol-routingcontrol-clusterarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the cluster that includes the routing control."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 512
+          },
+          "name": "clusterArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-routingcontrol.html#cfn-route53recoverycontrol-routingcontrol-controlpanelarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the control panel that includes the routing control."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 519
+          },
+          "name": "controlPanelArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoverycontrol.generated:CfnRoutingControlProps"
+    },
+    "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule": {
+      "assembly": "@aws-cdk/aws-route53recoverycontrol",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Route53RecoveryControl::SafetyRule",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html"
+        },
+        "remarks": "List the safety rules (the assertion rules and gating rules) that you've defined for the routing controls in a control panel.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Route53RecoveryControl::SafetyRule`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Route53RecoveryControl::SafetyRule`."
+        },
+        "locationInModule": {
+          "filename": "lib/route53recoverycontrol.generated.ts",
+          "line": 900
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRuleProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/route53recoverycontrol.generated.ts",
+        "line": 812
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 922
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 938
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSafetyRule",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 816
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SafetyRuleArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the safety rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 841
+          },
+          "name": "attrSafetyRuleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "remarks": "Status can be one of the following: PENDING, DEPLOYED, PENDING_DELETION.",
+            "stability": "external",
+            "summary": "The deployment status of the safety rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 847
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 927
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html#cfn-route53recoverycontrol-safetyrule-tags"
+            },
+            "stability": "external",
+            "summary": "The value for a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 891
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html#cfn-route53recoverycontrol-safetyrule-controlpanelarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) for the control panel."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 854
+          },
+          "name": "controlPanelArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html#cfn-route53recoverycontrol-safetyrule-name"
+            },
+            "remarks": "The name must be unique within a control panel. You can use any non-white space character in the name except the following: & > < ' (single quote) \" (double quote) ; (semicolon)",
+            "stability": "external",
+            "summary": "The name of the assertion rule."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 861
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html#cfn-route53recoverycontrol-safetyrule-ruleconfig"
+            },
+            "remarks": "For example, if you have three assertion controls, you might specify `ATLEAST 2` for your rule configuration. This means that at least two assertion controls must be `ON` , so that at least two AWS Regions have traffic flowing to them.",
+            "stability": "external",
+            "summary": "The criteria that you set for specific assertion controls (routing controls) that designate how many control states must be `ON` as the result of a transaction."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 868
+          },
+          "name": "ruleConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule.RuleConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html#cfn-route53recoverycontrol-safetyrule-assertionrule"
+            },
+            "remarks": "Otherwise, the change to the routing control is not accepted. For example, the criteria might be that at least one routing control state is `On` after the transaction so that traffic continues to flow to at least one cell for the application. This ensures that you avoid a fail-open scenario.",
+            "stability": "external",
+            "summary": "An assertion rule enforces that, when you change a routing control state, that the criteria that you set in the rule configuration is met."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 875
+          },
+          "name": "assertionRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule.AssertionRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html#cfn-route53recoverycontrol-safetyrule-gatingrule"
+            },
+            "remarks": "For example, if you specify one gating routing control and you set the `Type` in the rule configuration to `OR` , that indicates that you must set the gating routing control to `On` for the rule to evaluate as true; that is, for the gating control \"switch\" to be \"On\". When you do that, then you can update the routing control states for the target routing controls that you specify in the gating rule.",
+            "stability": "external",
+            "summary": "A gating rule verifies that a gating routing control or set of gating routing controls, evaluates as true, based on a rule configuration that you specify, which allows a set of routing control state changes to complete."
+          },
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 884
+          },
+          "name": "gatingRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule.GatingRuleProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoverycontrol.generated:CfnSafetyRule"
+    },
+    "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule.AssertionRuleProperty": {
+      "assembly": "@aws-cdk/aws-route53recoverycontrol",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-safetyrule-assertionrule.html"
+        },
+        "remarks": "Otherwise, the change to the routing control is not accepted. For example, the criteria might be that at least one routing control state is `On` after the transaction so that traffic continues to flow to at least one cell for the application. This ensures that you avoid a fail-open scenario.",
+        "stability": "external",
+        "summary": "An assertion rule enforces that, when you change a routing control state, that the criteria that you set in the rule configuration is met."
+      },
+      "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule.AssertionRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoverycontrol.generated.ts",
+        "line": 952
+      },
+      "name": "AssertionRuleProperty",
+      "namespace": "CfnSafetyRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-safetyrule-assertionrule.html#cfn-route53recoverycontrol-safetyrule-assertionrule-assertedcontrols"
+            },
+            "remarks": "For example, you might include three routing controls, one for each of three AWS Regions.",
+            "stability": "external",
+            "summary": "The routing controls that are part of transactions that are evaluated to determine if a request to change a routing control state is allowed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 958
+          },
+          "name": "assertedControls",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-safetyrule-assertionrule.html#cfn-route53recoverycontrol-safetyrule-assertionrule-waitperiodms"
+            },
+            "remarks": "This helps prevent \"flapping\" of state. The wait period is 5000 ms by default, but you can choose a custom value.",
+            "stability": "external",
+            "summary": "An evaluation period, in milliseconds (ms), during which any request against the target routing controls will fail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 964
+          },
+          "name": "waitPeriodMs",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoverycontrol.generated:CfnSafetyRule.AssertionRuleProperty"
+    },
+    "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule.GatingRuleProperty": {
+      "assembly": "@aws-cdk/aws-route53recoverycontrol",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-safetyrule-gatingrule.html"
+        },
+        "remarks": "For example, if you specify one gating routing control and you set the `Type` in the rule configuration to `OR` , that indicates that you must set the gating routing control to `On` for the rule to evaluate as true; that is, for the gating control \"switch\" to be \"On\". When you do that, then you can update the routing control states for the target routing controls that you specify in the gating rule.",
+        "stability": "external",
+        "summary": "A gating rule verifies that a gating routing control or set of gating routing controls, evaluates as true, based on a rule configuration that you specify, which allows a set of routing control state changes to complete."
+      },
+      "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule.GatingRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoverycontrol.generated.ts",
+        "line": 1032
+      },
+      "name": "GatingRuleProperty",
+      "namespace": "CfnSafetyRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-safetyrule-gatingrule.html#cfn-route53recoverycontrol-safetyrule-gatingrule-gatingcontrols"
+            },
+            "remarks": "For a simple \"on/off\" switch, specify the ARN for one routing control. The gating routing controls are evaluated by the rule configuration that you specify to determine if the target routing control states can be changed.",
+            "stability": "external",
+            "summary": "An array of gating routing control Amazon Resource Names (ARNs)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 1038
+          },
+          "name": "gatingControls",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-safetyrule-gatingrule.html#cfn-route53recoverycontrol-safetyrule-gatingrule-targetcontrols"
+            },
+            "remarks": "As a simple example, if you have a single gating control, it acts as an overall \"on/off\" switch for a set of target routing controls. You can use this to manually override automated failover, for example.",
+            "stability": "external",
+            "summary": "An array of target routing control Amazon Resource Names (ARNs) for which the states can only be updated if the rule configuration that you specify evaluates to true for the gating routing control."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 1044
+          },
+          "name": "targetControls",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-safetyrule-gatingrule.html#cfn-route53recoverycontrol-safetyrule-gatingrule-waitperiodms"
+            },
+            "remarks": "This helps prevent \"flapping\" of state. The wait period is 5000 ms by default, but you can choose a custom value.",
+            "stability": "external",
+            "summary": "An evaluation period, in milliseconds (ms), during which any request against the target routing controls will fail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 1050
+          },
+          "name": "waitPeriodMs",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoverycontrol.generated:CfnSafetyRule.GatingRuleProperty"
+    },
+    "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule.RuleConfigProperty": {
+      "assembly": "@aws-cdk/aws-route53recoverycontrol",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-safetyrule-ruleconfig.html"
+        },
+        "remarks": "That is, the criteria that you set for specific assertion controls (routing controls) that specify how many control states must be `ON` after a transaction completes.",
+        "stability": "external",
+        "summary": "The rule configuration for an assertion rule."
+      },
+      "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule.RuleConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoverycontrol.generated.ts",
+        "line": 1120
+      },
+      "name": "RuleConfigProperty",
+      "namespace": "CfnSafetyRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-safetyrule-ruleconfig.html#cfn-route53recoverycontrol-safetyrule-ruleconfig-inverted"
+            },
+            "remarks": "If the rule would usually evaluate true, it's evaluated as false, and vice versa.",
+            "stability": "external",
+            "summary": "Logical negation of the rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 1126
+          },
+          "name": "inverted",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-safetyrule-ruleconfig.html#cfn-route53recoverycontrol-safetyrule-ruleconfig-threshold"
+            },
+            "remarks": "That is, `Threshold` is the number of controls that must be set when you specify an `ATLEAST` type.",
+            "stability": "external",
+            "summary": "The value of N, when you specify an `ATLEAST` rule type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 1132
+          },
+          "name": "threshold",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53recoverycontrol-safetyrule-ruleconfig.html#cfn-route53recoverycontrol-safetyrule-ruleconfig-type"
+            },
+            "stability": "external",
+            "summary": "A rule can be one of the following: `ATLEAST` , `AND` , or `OR` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 1138
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoverycontrol.generated:CfnSafetyRule.RuleConfigProperty"
+    },
+    "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRuleProps": {
+      "assembly": "@aws-cdk/aws-route53recoverycontrol",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSafetyRule`."
+      },
+      "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRuleProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/route53recoverycontrol.generated.ts",
+        "line": 692
+      },
+      "name": "CfnSafetyRuleProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html#cfn-route53recoverycontrol-safetyrule-controlpanelarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) for the control panel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 699
+          },
+          "name": "controlPanelArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html#cfn-route53recoverycontrol-safetyrule-name"
+            },
+            "remarks": "The name must be unique within a control panel. You can use any non-white space character in the name except the following: & > < ' (single quote) \" (double quote) ; (semicolon)",
+            "stability": "external",
+            "summary": "The name of the assertion rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 706
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html#cfn-route53recoverycontrol-safetyrule-ruleconfig"
+            },
+            "remarks": "For example, if you have three assertion controls, you might specify `ATLEAST 2` for your rule configuration. This means that at least two assertion controls must be `ON` , so that at least two AWS Regions have traffic flowing to them.",
+            "stability": "external",
+            "summary": "The criteria that you set for specific assertion controls (routing controls) that designate how many control states must be `ON` as the result of a transaction."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 713
+          },
+          "name": "ruleConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule.RuleConfigProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html#cfn-route53recoverycontrol-safetyrule-assertionrule"
+            },
+            "remarks": "Otherwise, the change to the routing control is not accepted. For example, the criteria might be that at least one routing control state is `On` after the transaction so that traffic continues to flow to at least one cell for the application. This ensures that you avoid a fail-open scenario.",
+            "stability": "external",
+            "summary": "An assertion rule enforces that, when you change a routing control state, that the criteria that you set in the rule configuration is met."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 720
+          },
+          "name": "assertionRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule.AssertionRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html#cfn-route53recoverycontrol-safetyrule-gatingrule"
+            },
+            "remarks": "For example, if you specify one gating routing control and you set the `Type` in the rule configuration to `OR` , that indicates that you must set the gating routing control to `On` for the rule to evaluate as true; that is, for the gating control \"switch\" to be \"On\". When you do that, then you can update the routing control states for the target routing controls that you specify in the gating rule.",
+            "stability": "external",
+            "summary": "A gating rule verifies that a gating routing control or set of gating routing controls, evaluates as true, based on a rule configuration that you specify, which allows a set of routing control state changes to complete."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 729
+          },
+          "name": "gatingRule",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-route53recoverycontrol.CfnSafetyRule.GatingRuleProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-route53recoverycontrol-safetyrule.html#cfn-route53recoverycontrol-safetyrule-tags"
+            },
+            "stability": "external",
+            "summary": "The value for a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/route53recoverycontrol.generated.ts",
+            "line": 736
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/route53recoverycontrol.generated:CfnSafetyRuleProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "ZB7fhcIccWU2Btzd8ECJEcgGYFkTUhuzuxHVTMBZjQs="
+}

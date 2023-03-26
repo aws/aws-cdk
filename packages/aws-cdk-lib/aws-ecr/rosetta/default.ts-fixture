@@ -1,0 +1,23 @@
+// Fixture with packages imported, but nothing else
+import { Construct } from 'constructs';
+import { Duration, Stack } from '@aws-cdk/core';
+import * as ecr from '@aws-cdk/aws-ecr';
+import * as events from '@aws-cdk/aws-events';
+import * as iam from '@aws-cdk/aws-iam';
+
+class SomeTarget implements events.IRuleTarget {
+  public bind(): events.RuleTargetConfig {
+    return {
+      arn: 'ARN1',
+    };
+  }
+}
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}
+

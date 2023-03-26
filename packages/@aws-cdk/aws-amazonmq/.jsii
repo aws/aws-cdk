@@ -1,0 +1,3135 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::AmazonMQ",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "aws-amazonmq"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-amazonmq",
+  "readme": {
+    "markdown": "# Amazon MQ Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as amazonmq from '@aws-cdk/aws-amazonmq';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for AmazonMQ construct libraries](https://constructs.dev/search?q=amazonmq)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::AmazonMQ resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_AmazonMQ.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::AmazonMQ](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_AmazonMQ.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-amazonmq",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.AmazonMQ",
+      "packageId": "Amazon.CDK.AWS.AmazonMQ"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "amazonmq",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.amazonmq"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-amazonmq"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-amazonmq",
+      "module": "aws_cdk.aws_amazonmq"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-amazonmq.CfnBroker": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AmazonMQ::Broker",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html"
+        },
+        "remarks": "A *broker* is a message broker environment running on Amazon MQ . It is the basic building block of Amazon MQ .\n\nThe `AWS::AmazonMQ::Broker` resource lets you create Amazon MQ for ActiveMQ and Amazon MQ for RabbitMQ brokers, add configuration changes or modify users for a speified ActiveMQ broker, return information about the specified broker, and delete the broker. For more information, see [How Amazon MQ works](https://docs.aws.amazon.com//amazon-mq/latest/developer-guide/amazon-mq-how-it-works.html) in the *Amazon MQ Developer Guide* .\n\n- `ec2:CreateNetworkInterface`\n\nThis permission is required to allow Amazon MQ to create an elastic network interface (ENI) on behalf of your account.\n- `ec2:CreateNetworkInterfacePermission`\n\nThis permission is required to attach the ENI to the broker instance.\n- `ec2:DeleteNetworkInterface`\n- `ec2:DeleteNetworkInterfacePermission`\n- `ec2:DetachNetworkInterface`\n- `ec2:DescribeInternetGateways`\n- `ec2:DescribeNetworkInterfaces`\n- `ec2:DescribeNetworkInterfacePermissions`\n- `ec2:DescribeRouteTables`\n- `ec2:DescribeSecurityGroups`\n- `ec2:DescribeSubnets`\n- `ec2:DescribeVpcs`",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AmazonMQ::Broker`."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnBroker",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AmazonMQ::Broker`."
+        },
+        "locationInModule": {
+          "filename": "lib/amazonmq.generated.ts",
+          "line": 528
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-amazonmq.CfnBrokerProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 290
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 574
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 602
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnBroker",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 294
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AmqpEndpoints"
+            },
+            "remarks": "`amqp+ssl://b-4aada85d-a80c-4be0-9d30-e344a01b921e-1.mq.eu-central-amazonaws.com:5671`",
+            "stability": "external",
+            "summary": "The AMQP endpoints of each broker instance as a list of strings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 321
+          },
+          "name": "attrAmqpEndpoints",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "`arn:aws:mq:us-east-2:123456789012:broker:MyBroker:b-1234a5b6-78cd-901e-2fgh-3i45j6k178l9`",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the Amazon MQ broker."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 329
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ConfigurationId"
+            },
+            "remarks": "`c-1234a5b6-78cd-901e-2fgh-3i45j6k178l9`",
+            "stability": "external",
+            "summary": "The unique ID that Amazon MQ generates for the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 337
+          },
+          "name": "attrConfigurationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ConfigurationRevision"
+            },
+            "remarks": "`1`",
+            "stability": "external",
+            "summary": "The revision number of the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 345
+          },
+          "name": "attrConfigurationRevision",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "IpAddresses"
+            },
+            "remarks": "`['198.51.100.2', '203.0.113.9']`",
+            "stability": "external",
+            "summary": "The IP addresses of each broker instance as a list of strings. Does not apply to RabbitMQ brokers."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 353
+          },
+          "name": "attrIpAddresses",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "MqttEndpoints"
+            },
+            "remarks": "`mqtt+ssl://b-4aada85d-a80c-4be0-9d30-e344a01b921e-1.mq.eu-central-amazonaws.com:8883`",
+            "stability": "external",
+            "summary": "The MQTT endpoints of each broker instance as a list of strings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 361
+          },
+          "name": "attrMqttEndpoints",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "OpenWireEndpoints"
+            },
+            "remarks": "`ssl://b-4aada85d-a80c-4be0-9d30-e344a01b921e-1.mq.eu-central-amazonaws.com:61617`",
+            "stability": "external",
+            "summary": "The OpenWire endpoints of each broker instance as a list of strings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 369
+          },
+          "name": "attrOpenWireEndpoints",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StompEndpoints"
+            },
+            "remarks": "`stomp+ssl://b-4aada85d-a80c-4be0-9d30-e344a01b921e-1.mq.eu-central-amazonaws.com:61614`",
+            "stability": "external",
+            "summary": "The STOMP endpoints of each broker instance as a list of strings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 377
+          },
+          "name": "attrStompEndpoints",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "WssEndpoints"
+            },
+            "remarks": "`wss://b-4aada85d-a80c-4be0-9d30-e344a01b921e-1.mq.eu-central-amazonaws.com:61619`",
+            "stability": "external",
+            "summary": "The WSS endpoints of each broker instance as a list of strings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 385
+          },
+          "name": "attrWssEndpoints",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 579
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-tags"
+            },
+            "remarks": "For more information, see [Using Cost Allocation Tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html) in the *Billing and Cost Management User Guide* .",
+            "stability": "external",
+            "summary": "An array of key-value pairs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 519
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-autominorversionupgrade"
+            },
+            "remarks": "Automatic upgrades occur during the scheduled maintenance window of the broker or after a manual broker reboot.",
+            "stability": "external",
+            "summary": "Enables automatic upgrades to new minor versions for brokers, as new broker engine versions are released and supported by Amazon MQ."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 392
+          },
+          "name": "autoMinorVersionUpgrade",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-brokername"
+            },
+            "remarks": "This value must be unique in your AWS account , 1-50 characters long, must contain only letters, numbers, dashes, and underscores, and must not contain white spaces, brackets, wildcard characters, or special characters.\n\n> Do not add personally identifiable information (PII) or other confidential or sensitive information in broker names. Broker names are accessible to other AWS services, including C CloudWatch Logs . Broker names are not intended to be used for private or sensitive data.",
+            "stability": "external",
+            "summary": "The name of the broker."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 401
+          },
+          "name": "brokerName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-deploymentmode"
+            },
+            "remarks": "- `SINGLE_INSTANCE`\n- `ACTIVE_STANDBY_MULTI_AZ`\n- `CLUSTER_MULTI_AZ`",
+            "stability": "external",
+            "summary": "The deployment mode of the broker. Available values:."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 412
+          },
+          "name": "deploymentMode",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-enginetype"
+            },
+            "remarks": "Currently, Amazon MQ supports `ACTIVEMQ` and `RABBITMQ` .",
+            "stability": "external",
+            "summary": "The type of broker engine."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 419
+          },
+          "name": "engineType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-engineversion"
+            },
+            "remarks": "For a list of supported engine versions, see [Engine](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/broker-engine.html) in the *Amazon MQ Developer Guide* .",
+            "stability": "external",
+            "summary": "The version of the broker engine."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 426
+          },
+          "name": "engineVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-hostinstancetype"
+            },
+            "stability": "external",
+            "summary": "The broker's instance type."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 433
+          },
+          "name": "hostInstanceType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-publiclyaccessible"
+            },
+            "stability": "external",
+            "summary": "Enables connections from applications outside of the VPC that hosts the broker's subnets."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 440
+          },
+          "name": "publiclyAccessible",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-users"
+            },
+            "remarks": "For Amazon MQ for RabbitMQ brokers, one and only one administrative user is accepted and created when a broker is first provisioned. All subsequent RabbitMQ users are created by via the RabbitMQ web console or by using the RabbitMQ management API.",
+            "stability": "external",
+            "summary": "The list of broker users (persons or applications) who can access queues and topics."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 447
+          },
+          "name": "users",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.UserProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-authenticationstrategy"
+            },
+            "remarks": "The authentication strategy used to secure the broker. The default is `SIMPLE` .",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 454
+          },
+          "name": "authenticationStrategy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-configuration"
+            },
+            "remarks": "Does not apply to RabbitMQ brokers.",
+            "stability": "external",
+            "summary": "A list of information about the configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 461
+          },
+          "name": "configuration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.ConfigurationIdProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-encryptionoptions"
+            },
+            "remarks": "Does not apply to RabbitMQ brokers.",
+            "stability": "external",
+            "summary": "Encryption options for the broker."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 468
+          },
+          "name": "encryptionOptions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.EncryptionOptionsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-ldapservermetadata"
+            },
+            "remarks": "The metadata of the LDAP server used to authenticate and authorize connections to the broker. Does not apply to RabbitMQ brokers.",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 475
+          },
+          "name": "ldapServerMetadata",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.LdapServerMetadataProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-logs"
+            },
+            "stability": "external",
+            "summary": "Enables Amazon CloudWatch logging for brokers."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 482
+          },
+          "name": "logs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.LogListProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-maintenancewindowstarttime"
+            },
+            "stability": "external",
+            "summary": "The scheduled time period relative to UTC during which Amazon MQ begins to apply pending updates or patches to the broker."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 489
+          },
+          "name": "maintenanceWindowStartTime",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.MaintenanceWindowProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-securitygroups"
+            },
+            "stability": "external",
+            "summary": "The list of rules (1 minimum, 125 maximum) that authorize connections to brokers."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 496
+          },
+          "name": "securityGroups",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-storagetype"
+            },
+            "stability": "external",
+            "summary": "The broker's storage type."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 503
+          },
+          "name": "storageType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-subnetids"
+            },
+            "remarks": "If you specify more than one subnet, the subnets must be in different Availability Zones. Amazon MQ will not be able to create VPC endpoints for your broker with multiple subnets in the same Availability Zone. A SINGLE_INSTANCE deployment requires one subnet (for example, the default subnet). An ACTIVE_STANDBY_MULTI_AZ deployment (ACTIVEMQ) requires two subnets. A CLUSTER_MULTI_AZ deployment (RABBITMQ) has no subnet requirements when deployed with public accessibility, deployment without public accessibility requires at least one subnet.\n\n> If you specify subnets in a shared VPC for a RabbitMQ broker, the associated VPC to which the specified subnets belong must be owned by your AWS account . Amazon MQ will not be able to create VPC enpoints in VPCs that are not owned by your AWS account .",
+            "stability": "external",
+            "summary": "The list of groups that define which subnets and IP ranges the broker can use from different Availability Zones."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 512
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnBroker"
+    },
+    "@aws-cdk/aws-amazonmq.CfnBroker.ConfigurationIdProperty": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-configurationid.html"
+        },
+        "remarks": "> Does not apply to RabbitMQ brokers.",
+        "stability": "external",
+        "summary": "A list of information about the configuration."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.ConfigurationIdProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 618
+      },
+      "name": "ConfigurationIdProperty",
+      "namespace": "CfnBroker",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-configurationid.html#cfn-amazonmq-broker-configurationid-id"
+            },
+            "stability": "external",
+            "summary": "The unique ID that Amazon MQ generates for the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 624
+          },
+          "name": "id",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-configurationid.html#cfn-amazonmq-broker-configurationid-revision"
+            },
+            "stability": "external",
+            "summary": "The revision number of the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 630
+          },
+          "name": "revision",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnBroker.ConfigurationIdProperty"
+    },
+    "@aws-cdk/aws-amazonmq.CfnBroker.EncryptionOptionsProperty": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-encryptionoptions.html"
+        },
+        "remarks": "> Does not apply to RabbitMQ brokers.",
+        "stability": "external",
+        "summary": "Encryption options for the broker."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.EncryptionOptionsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 698
+      },
+      "name": "EncryptionOptionsProperty",
+      "namespace": "CfnBroker",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-encryptionoptions.html#cfn-amazonmq-broker-encryptionoptions-useawsownedkey"
+            },
+            "remarks": "Set to `true` by default, if no value is provided, for example, for RabbitMQ brokers.",
+            "stability": "external",
+            "summary": "Enables the use of an AWS owned CMK using AWS KMS (KMS)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 710
+          },
+          "name": "useAwsOwnedKey",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-encryptionoptions.html#cfn-amazonmq-broker-encryptionoptions-kmskeyid"
+            },
+            "remarks": "This key is used to encrypt your data at rest. If not provided, Amazon MQ will use a default CMK to encrypt your data.",
+            "stability": "external",
+            "summary": "The customer master key (CMK) to use for the A AWS KMS (KMS)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 704
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnBroker.EncryptionOptionsProperty"
+    },
+    "@aws-cdk/aws-amazonmq.CfnBroker.LdapServerMetadataProperty": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-ldapservermetadata.html"
+        },
+        "remarks": "> Does not apply to RabbitMQ brokers.",
+        "stability": "external",
+        "summary": "Optional. The metadata of the LDAP server used to authenticate and authorize connections to the broker."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.LdapServerMetadataProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 777
+      },
+      "name": "LdapServerMetadataProperty",
+      "namespace": "CfnBroker",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-ldapservermetadata.html#cfn-amazonmq-broker-ldapservermetadata-hosts"
+            },
+            "remarks": "Optional failover server.",
+            "stability": "external",
+            "summary": "Specifies the location of the LDAP server such as AWS Directory Service for Microsoft Active Directory ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 783
+          },
+          "name": "hosts",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-ldapservermetadata.html#cfn-amazonmq-broker-ldapservermetadata-rolebase"
+            },
+            "remarks": "For example, `ou=group` , `ou=corp` , `dc=corp` , `dc=example` , `dc=com` .",
+            "stability": "external",
+            "summary": "The distinguished name of the node in the directory information tree (DIT) to search for roles or groups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 789
+          },
+          "name": "roleBase",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-ldapservermetadata.html#cfn-amazonmq-broker-ldapservermetadata-rolesearchmatching"
+            },
+            "remarks": "The distinguished name of the user matched by userSearchMatching is substituted into the `{0}` placeholder in the search filter. The client's username is substituted into the `{1}` placeholder. For example, if you set this option to `(member=uid={1})` for the user janedoe, the search filter becomes `(member=uid=janedoe)` after string substitution. It matches all role entries that have a member attribute equal to `uid=janedoe` under the subtree selected by the `RoleBases` .",
+            "stability": "external",
+            "summary": "The LDAP search filter used to find roles within the roleBase."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 801
+          },
+          "name": "roleSearchMatching",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-ldapservermetadata.html#cfn-amazonmq-broker-ldapservermetadata-serviceaccountpassword"
+            },
+            "remarks": "A service account is an account in your LDAP server that has access to initiate a connection. For example, `cn=admin` , `dc=corp` , `dc=example` , `dc=com` .",
+            "stability": "external",
+            "summary": "Service account password."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 813
+          },
+          "name": "serviceAccountPassword",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-ldapservermetadata.html#cfn-amazonmq-broker-ldapservermetadata-serviceaccountusername"
+            },
+            "remarks": "A service account is an account in your LDAP server that has access to initiate a connection. For example, `cn=admin` , `ou=corp` , `dc=corp` , `dc=example` , `dc=com` .",
+            "stability": "external",
+            "summary": "Service account username."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 819
+          },
+          "name": "serviceAccountUsername",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-ldapservermetadata.html#cfn-amazonmq-broker-ldapservermetadata-userbase"
+            },
+            "remarks": "The subtree is specified by a DN, which specifies the base node of the subtree. For example, by setting this option to `ou=Users` , `ou=corp` , `dc=corp` , `dc=example` , `dc=com` , the search for user entries is restricted to the subtree beneath `ou=Users` , `ou=corp` , `dc=corp` , `dc=example` , `dc=com` .",
+            "stability": "external",
+            "summary": "Select a particular subtree of the directory information tree (DIT) to search for user entries."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 825
+          },
+          "name": "userBase",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-ldapservermetadata.html#cfn-amazonmq-broker-ldapservermetadata-usersearchmatching"
+            },
+            "remarks": "The client's username is substituted into the `{0}` placeholder in the search filter. For example, if this option is set to `(uid={0})` and the received username is `janedoe` , the search filter becomes `(uid=janedoe)` after string substitution. It will result in matching an entry like `uid=janedoe` , `ou=Users` , `ou=corp` , `dc=corp` , `dc=example` , `dc=com` .",
+            "stability": "external",
+            "summary": "The LDAP search filter used to find users within the `userBase` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 837
+          },
+          "name": "userSearchMatching",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-ldapservermetadata.html#cfn-amazonmq-broker-ldapservermetadata-rolename"
+            },
+            "remarks": "For example, you can specify `cn` for a group entry's common name. If authentication succeeds, then the user is assigned the the value of the `cn` attribute for each role entry that they are a member of.",
+            "stability": "external",
+            "summary": "The group name attribute in a role entry whose value is the name of that role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 795
+          },
+          "name": "roleName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-ldapservermetadata.html#cfn-amazonmq-broker-ldapservermetadata-rolesearchsubtree"
+            },
+            "remarks": "If set to true, scope is to search the entire subtree.",
+            "stability": "external",
+            "summary": "The directory search scope for the role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 807
+          },
+          "name": "roleSearchSubtree",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-ldapservermetadata.html#cfn-amazonmq-broker-ldapservermetadata-userrolename"
+            },
+            "remarks": "In some cases, user roles may be identified by the value of an attribute in the user's directory entry. The `UserRoleName` option allows you to provide the name of this attribute.",
+            "stability": "external",
+            "summary": "The name of the LDAP attribute in the user's directory entry for the user's group membership."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 831
+          },
+          "name": "userRoleName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-ldapservermetadata.html#cfn-amazonmq-broker-ldapservermetadata-usersearchsubtree"
+            },
+            "remarks": "If set to true, scope is to search the entire subtree.",
+            "stability": "external",
+            "summary": "The directory search scope for the user."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 843
+          },
+          "name": "userSearchSubtree",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnBroker.LdapServerMetadataProperty"
+    },
+    "@aws-cdk/aws-amazonmq.CfnBroker.LogListProperty": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-loglist.html"
+        },
+        "stability": "external",
+        "summary": "The list of information about logs to be enabled for the specified broker."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.LogListProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 941
+      },
+      "name": "LogListProperty",
+      "namespace": "CfnBroker",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-loglist.html#cfn-amazonmq-broker-loglist-audit"
+            },
+            "remarks": "Every user management action made using JMX or the ActiveMQ Web Console is logged. Does not apply to RabbitMQ brokers.",
+            "stability": "external",
+            "summary": "Enables audit logging."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 947
+          },
+          "name": "audit",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-loglist.html#cfn-amazonmq-broker-loglist-general"
+            },
+            "stability": "external",
+            "summary": "Enables general logging."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 953
+          },
+          "name": "general",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnBroker.LogListProperty"
+    },
+    "@aws-cdk/aws-amazonmq.CfnBroker.MaintenanceWindowProperty": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-maintenancewindow.html"
+        },
+        "stability": "external",
+        "summary": "The parameters that determine the `WeeklyStartTime` to apply pending updates or patches to the broker."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.MaintenanceWindowProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 1017
+      },
+      "name": "MaintenanceWindowProperty",
+      "namespace": "CfnBroker",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-maintenancewindow.html#cfn-amazonmq-broker-maintenancewindow-dayofweek"
+            },
+            "stability": "external",
+            "summary": "The day of the week."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1023
+          },
+          "name": "dayOfWeek",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-maintenancewindow.html#cfn-amazonmq-broker-maintenancewindow-timeofday"
+            },
+            "stability": "external",
+            "summary": "The time, in 24-hour format."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1029
+          },
+          "name": "timeOfDay",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-maintenancewindow.html#cfn-amazonmq-broker-maintenancewindow-timezone"
+            },
+            "stability": "external",
+            "summary": "The time zone, UTC by default, in either the Country/City format, or the UTC offset format."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1035
+          },
+          "name": "timeZone",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnBroker.MaintenanceWindowProperty"
+    },
+    "@aws-cdk/aws-amazonmq.CfnBroker.TagsEntryProperty": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-tagsentry.html"
+        },
+        "stability": "external",
+        "summary": "A key-value pair to associate with the broker."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.TagsEntryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 1105
+      },
+      "name": "TagsEntryProperty",
+      "namespace": "CfnBroker",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-tagsentry.html#cfn-amazonmq-broker-tagsentry-key"
+            },
+            "stability": "external",
+            "summary": "The key in a key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1111
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-tagsentry.html#cfn-amazonmq-broker-tagsentry-value"
+            },
+            "stability": "external",
+            "summary": "The value in a key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1117
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnBroker.TagsEntryProperty"
+    },
+    "@aws-cdk/aws-amazonmq.CfnBroker.UserProperty": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-user.html"
+        },
+        "remarks": "For Amazon MQ for RabbitMQ brokers, one and only one administrative user is accepted and created when a broker is first provisioned. All subsequent broker users are created via the RabbitMQ web console or by using the RabbitMQ management API.",
+        "stability": "external",
+        "summary": "The list of broker users (persons or applications) who can access queues and topics."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.UserProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 1183
+      },
+      "name": "UserProperty",
+      "namespace": "CfnBroker",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-user.html#cfn-amazonmq-broker-user-password"
+            },
+            "remarks": "This value must be at least 12 characters long, must contain at least 4 unique characters, and must not contain commas, colons, or equal signs (,:=).",
+            "stability": "external",
+            "summary": "The password of the user."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1201
+          },
+          "name": "password",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-user.html#cfn-amazonmq-broker-user-username"
+            },
+            "remarks": "For Amazon MQ for ActiveMQ brokers, this value can contain only alphanumeric characters, dashes, periods, underscores, and tildes (- . _ ~). For Amazon MQ for RabbitMQ brokers, this value can contain only alphanumeric characters, dashes, periods, underscores (- . _). This value must not contain a tilde (~) character. Amazon MQ prohibts using guest as a valid usename. This value must be 2-100 characters long.\n\n> Do not add personally identifiable information (PII) or other confidential or sensitive information in broker usernames. Broker usernames are accessible to other AWS services, including CloudWatch Logs . Broker usernames are not intended to be used for private or sensitive data.",
+            "stability": "external",
+            "summary": "The username of the broker user."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1209
+          },
+          "name": "username",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-user.html#cfn-amazonmq-broker-user-consoleaccess"
+            },
+            "remarks": "Does not apply to RabbitMQ brokers.",
+            "stability": "external",
+            "summary": "Enables access to the ActiveMQ web console for the ActiveMQ user."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1189
+          },
+          "name": "consoleAccess",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-user.html#cfn-amazonmq-broker-user-groups"
+            },
+            "remarks": "This value can contain only alphanumeric characters, dashes, periods, underscores, and tildes (- . _ ~). This value must be 2-100 characters long. Does not apply to RabbitMQ brokers.",
+            "stability": "external",
+            "summary": "The list of groups (20 maximum) to which the ActiveMQ user belongs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1195
+          },
+          "name": "groups",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnBroker.UserProperty"
+    },
+    "@aws-cdk/aws-amazonmq.CfnBrokerProps": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnBroker`."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnBrokerProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 20
+      },
+      "name": "CfnBrokerProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-autominorversionupgrade"
+            },
+            "remarks": "Automatic upgrades occur during the scheduled maintenance window of the broker or after a manual broker reboot.",
+            "stability": "external",
+            "summary": "Enables automatic upgrades to new minor versions for brokers, as new broker engine versions are released and supported by Amazon MQ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 27
+          },
+          "name": "autoMinorVersionUpgrade",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-brokername"
+            },
+            "remarks": "This value must be unique in your AWS account , 1-50 characters long, must contain only letters, numbers, dashes, and underscores, and must not contain white spaces, brackets, wildcard characters, or special characters.\n\n> Do not add personally identifiable information (PII) or other confidential or sensitive information in broker names. Broker names are accessible to other AWS services, including C CloudWatch Logs . Broker names are not intended to be used for private or sensitive data.",
+            "stability": "external",
+            "summary": "The name of the broker."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 36
+          },
+          "name": "brokerName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-deploymentmode"
+            },
+            "remarks": "- `SINGLE_INSTANCE`\n- `ACTIVE_STANDBY_MULTI_AZ`\n- `CLUSTER_MULTI_AZ`",
+            "stability": "external",
+            "summary": "The deployment mode of the broker. Available values:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 47
+          },
+          "name": "deploymentMode",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-enginetype"
+            },
+            "remarks": "Currently, Amazon MQ supports `ACTIVEMQ` and `RABBITMQ` .",
+            "stability": "external",
+            "summary": "The type of broker engine."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 54
+          },
+          "name": "engineType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-engineversion"
+            },
+            "remarks": "For a list of supported engine versions, see [Engine](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/broker-engine.html) in the *Amazon MQ Developer Guide* .",
+            "stability": "external",
+            "summary": "The version of the broker engine."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 61
+          },
+          "name": "engineVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-hostinstancetype"
+            },
+            "stability": "external",
+            "summary": "The broker's instance type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 68
+          },
+          "name": "hostInstanceType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-publiclyaccessible"
+            },
+            "stability": "external",
+            "summary": "Enables connections from applications outside of the VPC that hosts the broker's subnets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 75
+          },
+          "name": "publiclyAccessible",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-users"
+            },
+            "remarks": "For Amazon MQ for RabbitMQ brokers, one and only one administrative user is accepted and created when a broker is first provisioned. All subsequent RabbitMQ users are created by via the RabbitMQ web console or by using the RabbitMQ management API.",
+            "stability": "external",
+            "summary": "The list of broker users (persons or applications) who can access queues and topics."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 82
+          },
+          "name": "users",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.UserProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-authenticationstrategy"
+            },
+            "remarks": "The authentication strategy used to secure the broker. The default is `SIMPLE` .",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 89
+          },
+          "name": "authenticationStrategy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-configuration"
+            },
+            "remarks": "Does not apply to RabbitMQ brokers.",
+            "stability": "external",
+            "summary": "A list of information about the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 96
+          },
+          "name": "configuration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.ConfigurationIdProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-encryptionoptions"
+            },
+            "remarks": "Does not apply to RabbitMQ brokers.",
+            "stability": "external",
+            "summary": "Encryption options for the broker."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 103
+          },
+          "name": "encryptionOptions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.EncryptionOptionsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-ldapservermetadata"
+            },
+            "remarks": "The metadata of the LDAP server used to authenticate and authorize connections to the broker. Does not apply to RabbitMQ brokers.",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 110
+          },
+          "name": "ldapServerMetadata",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.LdapServerMetadataProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-logs"
+            },
+            "stability": "external",
+            "summary": "Enables Amazon CloudWatch logging for brokers."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 117
+          },
+          "name": "logs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.LogListProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-maintenancewindowstarttime"
+            },
+            "stability": "external",
+            "summary": "The scheduled time period relative to UTC during which Amazon MQ begins to apply pending updates or patches to the broker."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 124
+          },
+          "name": "maintenanceWindowStartTime",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.MaintenanceWindowProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-securitygroups"
+            },
+            "stability": "external",
+            "summary": "The list of rules (1 minimum, 125 maximum) that authorize connections to brokers."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 131
+          },
+          "name": "securityGroups",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-storagetype"
+            },
+            "stability": "external",
+            "summary": "The broker's storage type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 138
+          },
+          "name": "storageType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-subnetids"
+            },
+            "remarks": "If you specify more than one subnet, the subnets must be in different Availability Zones. Amazon MQ will not be able to create VPC endpoints for your broker with multiple subnets in the same Availability Zone. A SINGLE_INSTANCE deployment requires one subnet (for example, the default subnet). An ACTIVE_STANDBY_MULTI_AZ deployment (ACTIVEMQ) requires two subnets. A CLUSTER_MULTI_AZ deployment (RABBITMQ) has no subnet requirements when deployed with public accessibility, deployment without public accessibility requires at least one subnet.\n\n> If you specify subnets in a shared VPC for a RabbitMQ broker, the associated VPC to which the specified subnets belong must be owned by your AWS account . Amazon MQ will not be able to create VPC enpoints in VPCs that are not owned by your AWS account .",
+            "stability": "external",
+            "summary": "The list of groups that define which subnets and IP ranges the broker can use from different Availability Zones."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 147
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-broker.html#cfn-amazonmq-broker-tags"
+            },
+            "remarks": "For more information, see [Using Cost Allocation Tags](https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/cost-alloc-tags.html) in the *Billing and Cost Management User Guide* .",
+            "stability": "external",
+            "summary": "An array of key-value pairs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 154
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-amazonmq.CfnBroker.TagsEntryProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnBrokerProps"
+    },
+    "@aws-cdk/aws-amazonmq.CfnConfiguration": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AmazonMQ::Configuration",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html"
+        },
+        "remarks": "Creates a new configuration for the specified configuration name. Amazon MQ uses the default configuration (the engine type and version).\n\n> Does not apply to RabbitMQ brokers.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AmazonMQ::Configuration`."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnConfiguration",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AmazonMQ::Configuration`."
+        },
+        "locationInModule": {
+          "filename": "lib/amazonmq.generated.ts",
+          "line": 1516
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-amazonmq.CfnConfigurationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 1411
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1541
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1558
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnConfiguration",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1415
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "`arn:aws:mq:us-east-2:123456789012:configuration:MyConfigurationDevelopment:c-1234a5b6-78cd-901e-2fgh-3i45j6k178l9`",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the Amazon MQ configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1442
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Id"
+            },
+            "remarks": "`c-1234a5b6-78cd-901e-2fgh-3i45j6k178l9`",
+            "stability": "external",
+            "summary": "The ID of the Amazon MQ configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1450
+          },
+          "name": "attrId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Revision"
+            },
+            "remarks": "`1`",
+            "stability": "external",
+            "summary": "The revision number of the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1458
+          },
+          "name": "attrRevision",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1546
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-tags"
+            },
+            "stability": "external",
+            "summary": "Create tags when creating the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1507
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-data"
+            },
+            "stability": "external",
+            "summary": "The base64-encoded XML configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1465
+          },
+          "name": "data",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-enginetype"
+            },
+            "remarks": "Note: Currently, Amazon MQ only supports ACTIVEMQ for creating and editing broker configurations.",
+            "stability": "external",
+            "summary": "The type of broker engine."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1472
+          },
+          "name": "engineType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-engineversion"
+            },
+            "remarks": "For a list of supported engine versions, see [](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/broker-engine.html)",
+            "stability": "external",
+            "summary": "The version of the broker engine."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1479
+          },
+          "name": "engineVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-name"
+            },
+            "remarks": "This value can contain only alphanumeric characters, dashes, periods, underscores, and tildes (- . _ ~). This value must be 1-150 characters long.",
+            "stability": "external",
+            "summary": "The name of the configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1486
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-authenticationstrategy"
+            },
+            "remarks": "The authentication strategy associated with the configuration. The default is `SIMPLE` .",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1493
+          },
+          "name": "authenticationStrategy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-description"
+            },
+            "stability": "external",
+            "summary": "The description of the configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1500
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnConfiguration"
+    },
+    "@aws-cdk/aws-amazonmq.CfnConfiguration.TagsEntryProperty": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-configuration-tagsentry.html"
+        },
+        "stability": "external",
+        "summary": "A key-value pair to associate with the configuration."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnConfiguration.TagsEntryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 1572
+      },
+      "name": "TagsEntryProperty",
+      "namespace": "CfnConfiguration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-configuration-tagsentry.html#cfn-amazonmq-configuration-tagsentry-key"
+            },
+            "stability": "external",
+            "summary": "The key in a key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1578
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-configuration-tagsentry.html#cfn-amazonmq-configuration-tagsentry-value"
+            },
+            "stability": "external",
+            "summary": "The value in a key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1584
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnConfiguration.TagsEntryProperty"
+    },
+    "@aws-cdk/aws-amazonmq.CfnConfigurationAssociation": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AmazonMQ::ConfigurationAssociation",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configurationassociation.html"
+        },
+        "remarks": "Use the AWS CloudFormation `AWS::AmazonMQ::ConfigurationAssociation` resource to associate a configuration with a broker, or return information about the specified ConfigurationAssociation. Only use one per broker, and don't use a configuration on the broker resource if you have associated a configuration with that broker.\n\n> Does not apply to RabbitMQ brokers.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AmazonMQ::ConfigurationAssociation`."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnConfigurationAssociation",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AmazonMQ::ConfigurationAssociation`."
+        },
+        "locationInModule": {
+          "filename": "lib/amazonmq.generated.ts",
+          "line": 1774
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-amazonmq.CfnConfigurationAssociationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 1728
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1789
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1801
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnConfigurationAssociation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1732
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1794
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configurationassociation.html#cfn-amazonmq-configurationassociation-broker"
+            },
+            "stability": "external",
+            "summary": "The broker to associate with a configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1758
+          },
+          "name": "broker",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configurationassociation.html#cfn-amazonmq-configurationassociation-configuration"
+            },
+            "stability": "external",
+            "summary": "The configuration to associate with a broker."
+          },
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1765
+          },
+          "name": "configuration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-amazonmq.CfnConfigurationAssociation.ConfigurationIdProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnConfigurationAssociation"
+    },
+    "@aws-cdk/aws-amazonmq.CfnConfigurationAssociation.ConfigurationIdProperty": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-configurationassociation-configurationid.html"
+        },
+        "stability": "external",
+        "summary": "The `ConfigurationId` property type specifies a configuration Id and the revision of a configuration."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnConfigurationAssociation.ConfigurationIdProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 1815
+      },
+      "name": "ConfigurationIdProperty",
+      "namespace": "CfnConfigurationAssociation",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-configurationassociation-configurationid.html#cfn-amazonmq-configurationassociation-configurationid-id"
+            },
+            "stability": "external",
+            "summary": "The unique ID that Amazon MQ generates for the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1821
+          },
+          "name": "id",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-configurationassociation-configurationid.html#cfn-amazonmq-configurationassociation-configurationid-revision"
+            },
+            "stability": "external",
+            "summary": "The revision number of the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1827
+          },
+          "name": "revision",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnConfigurationAssociation.ConfigurationIdProperty"
+    },
+    "@aws-cdk/aws-amazonmq.CfnConfigurationAssociationProps": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configurationassociation.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnConfigurationAssociation`."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnConfigurationAssociationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 1649
+      },
+      "name": "CfnConfigurationAssociationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configurationassociation.html#cfn-amazonmq-configurationassociation-broker"
+            },
+            "stability": "external",
+            "summary": "The broker to associate with a configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1656
+          },
+          "name": "broker",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configurationassociation.html#cfn-amazonmq-configurationassociation-configuration"
+            },
+            "stability": "external",
+            "summary": "The configuration to associate with a broker."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1663
+          },
+          "name": "configuration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-amazonmq.CfnConfigurationAssociation.ConfigurationIdProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnConfigurationAssociationProps"
+    },
+    "@aws-cdk/aws-amazonmq.CfnConfigurationProps": {
+      "assembly": "@aws-cdk/aws-amazonmq",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnConfiguration`."
+      },
+      "fqn": "@aws-cdk/aws-amazonmq.CfnConfigurationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/amazonmq.generated.ts",
+        "line": 1280
+      },
+      "name": "CfnConfigurationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-data"
+            },
+            "stability": "external",
+            "summary": "The base64-encoded XML configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1287
+          },
+          "name": "data",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-enginetype"
+            },
+            "remarks": "Note: Currently, Amazon MQ only supports ACTIVEMQ for creating and editing broker configurations.",
+            "stability": "external",
+            "summary": "The type of broker engine."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1294
+          },
+          "name": "engineType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-engineversion"
+            },
+            "remarks": "For a list of supported engine versions, see [](https://docs.aws.amazon.com/amazon-mq/latest/developer-guide/broker-engine.html)",
+            "stability": "external",
+            "summary": "The version of the broker engine."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1301
+          },
+          "name": "engineVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-name"
+            },
+            "remarks": "This value can contain only alphanumeric characters, dashes, periods, underscores, and tildes (- . _ ~). This value must be 1-150 characters long.",
+            "stability": "external",
+            "summary": "The name of the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1308
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-authenticationstrategy"
+            },
+            "remarks": "The authentication strategy associated with the configuration. The default is `SIMPLE` .",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1315
+          },
+          "name": "authenticationStrategy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-description"
+            },
+            "stability": "external",
+            "summary": "The description of the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1322
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-amazonmq-configuration.html#cfn-amazonmq-configuration-tags"
+            },
+            "stability": "external",
+            "summary": "Create tags when creating the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/amazonmq.generated.ts",
+            "line": 1329
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-amazonmq.CfnConfiguration.TagsEntryProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/amazonmq.generated:CfnConfigurationProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "B69EX4dx+xXD/Ze8xbPQ1l1ojdMk2IRtXXdPB18dfRc="
+}

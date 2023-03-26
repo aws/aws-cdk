@@ -1,0 +1,2578 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::ApplicationInsights",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::ApplicationInsights",
+    "aws-applicationinsights"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-applicationinsights",
+  "readme": {
+    "markdown": "# AWS::ApplicationInsights Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as applicationinsights from '@aws-cdk/aws-applicationinsights';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for ApplicationInsights construct libraries](https://constructs.dev/search?q=applicationinsights)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::ApplicationInsights resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ApplicationInsights.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::ApplicationInsights](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ApplicationInsights.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-applicationinsights",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.ApplicationInsights",
+      "packageId": "Amazon.CDK.AWS.ApplicationInsights"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "applicationinsights",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.applicationinsights"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-applicationinsights"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-applicationinsights",
+      "module": "aws_cdk.aws_applicationinsights"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-applicationinsights.CfnApplication": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ApplicationInsights::Application",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html"
+        },
+        "remarks": "The `AWS::ApplicationInsights::Application` resource adds an application that is created from a resource group.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ApplicationInsights::Application`."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ApplicationInsights::Application`."
+        },
+        "locationInModule": {
+          "filename": "lib/applicationinsights.generated.ts",
+          "line": 284
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-applicationinsights.CfnApplicationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 176
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 307
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 327
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnApplication",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 180
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationARN"
+            },
+            "stability": "external",
+            "summary": "Returns the Amazon Resource Name (ARN) of the application, such as `arn:aws:applicationinsights:us-east-1:123456789012:application/resource-group/my_resource_group` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 205
+          },
+          "name": "attrApplicationArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 312
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-tags"
+            },
+            "stability": "external",
+            "summary": "An array of `Tags` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 275
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-resourcegroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the resource group used for the application."
+          },
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 212
+          },
+          "name": "resourceGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-autoconfigurationenabled"
+            },
+            "stability": "external",
+            "summary": "If set to `true` , the application components will be configured with the monitoring configuration recommended by Application Insights."
+          },
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 219
+          },
+          "name": "autoConfigurationEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-componentmonitoringsettings"
+            },
+            "stability": "external",
+            "summary": "The monitoring settings of the components."
+          },
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 226
+          },
+          "name": "componentMonitoringSettings",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.ComponentMonitoringSettingProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-customcomponents"
+            },
+            "stability": "external",
+            "summary": "Describes a custom component by grouping similar standalone instances to monitor."
+          },
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 233
+          },
+          "name": "customComponents",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.CustomComponentProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-cwemonitorenabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether Application Insights can listen to CloudWatch events for the application resources, such as `instance terminated` , `failed deployment` , and others."
+          },
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 240
+          },
+          "name": "cweMonitorEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-groupingtype"
+            },
+            "remarks": "To create an account-based application using all of the resources in the account, set this parameter to `ACCOUNT_BASED` .",
+            "stability": "external",
+            "summary": "Application Insights can create applications based on a resource group or on an account."
+          },
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 247
+          },
+          "name": "groupingType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-logpatternsets"
+            },
+            "stability": "external",
+            "summary": "The log pattern sets."
+          },
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 254
+          },
+          "name": "logPatternSets",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.LogPatternSetProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-opscenterenabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether Application Insights will create OpsItems for any problem that is detected by Application Insights for an application."
+          },
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 261
+          },
+          "name": "opsCenterEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-opsitemsnstopicarn"
+            },
+            "stability": "external",
+            "summary": "The SNS topic provided to Application Insights that is associated with the created OpsItems to receive SNS notifications for opsItem updates."
+          },
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 268
+          },
+          "name": "opsItemSnsTopicArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.AlarmMetricProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-alarmmetric.html"
+        },
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application AlarmMetric` property type defines a metric to monitor for the component."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.AlarmMetricProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 418
+      },
+      "name": "AlarmMetricProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-alarmmetric.html#cfn-applicationinsights-application-alarmmetric-alarmmetricname"
+            },
+            "remarks": "For metrics supported by Application Insights, see [Logs and metrics supported by Amazon CloudWatch Application Insights](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/appinsights-logs-and-metrics.html) .",
+            "stability": "external",
+            "summary": "The name of the metric to be monitored for the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 424
+          },
+          "name": "alarmMetricName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.AlarmMetricProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.AlarmProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-alarm.html"
+        },
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application Alarm` property type defines a CloudWatch alarm to be monitored for the component."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.AlarmProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 341
+      },
+      "name": "AlarmProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-alarm.html#cfn-applicationinsights-application-alarm-alarmname"
+            },
+            "stability": "external",
+            "summary": "The name of the CloudWatch alarm to be monitored for the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 347
+          },
+          "name": "alarmName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-alarm.html#cfn-applicationinsights-application-alarm-severity"
+            },
+            "stability": "external",
+            "summary": "Indicates the degree of outage when the alarm goes off."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 353
+          },
+          "name": "severity",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.AlarmProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.ComponentConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-componentconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application ComponentConfiguration` property type defines the configuration settings of the component."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.ComponentConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 486
+      },
+      "name": "ComponentConfigurationProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-componentconfiguration.html#cfn-applicationinsights-application-componentconfiguration-configurationdetails"
+            },
+            "stability": "external",
+            "summary": "The configuration settings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 492
+          },
+          "name": "configurationDetails",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.ConfigurationDetailsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-componentconfiguration.html#cfn-applicationinsights-application-componentconfiguration-subcomponenttypeconfigurations"
+            },
+            "stability": "external",
+            "summary": "Sub-component configurations of the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 498
+          },
+          "name": "subComponentTypeConfigurations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.SubComponentTypeConfigurationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.ComponentConfigurationProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.ComponentMonitoringSettingProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-componentmonitoringsetting.html"
+        },
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application ComponentMonitoringSetting` property type defines the monitoring setting of the component."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.ComponentMonitoringSettingProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 562
+      },
+      "name": "ComponentMonitoringSettingProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-componentmonitoringsetting.html#cfn-applicationinsights-application-componentmonitoringsetting-componentconfigurationmode"
+            },
+            "remarks": "- `DEFAULT` : The component will be configured with the recommended default monitoring settings of the selected `Tier` .\n- `CUSTOM` : The component will be configured with the customized monitoring settings that are specified in `CustomComponentConfiguration` . If used, `CustomComponentConfiguration` must be provided.\n- `DEFAULT_WITH_OVERWRITE` : The component will be configured with the recommended default monitoring settings of the selected `Tier` , and merged with customized overwrite settings that are specified in `DefaultOverwriteComponentConfiguration` . If used, `DefaultOverwriteComponentConfiguration` must be provided.",
+            "stability": "external",
+            "summary": "Component monitoring can be configured in one of the following three modes:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 578
+          },
+          "name": "componentConfigurationMode",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-componentmonitoringsetting.html#cfn-applicationinsights-application-componentmonitoringsetting-tier"
+            },
+            "remarks": "Supported tiers include `DOT_NET_CORE` , `DOT_NET_WORKER` , `DOT_NET_WEB` , `SQL_SERVER` , `SQL_SERVER_ALWAYSON_AVAILABILITY_GROUP` , `SQL_SERVER_FAILOVER_CLUSTER_INSTANCE` , `MYSQL` , `POSTGRESQL` , `JAVA_JMX` , `ORACLE` , `SAP_HANA_MULTI_NODE` , `SAP_HANA_SINGLE_NODE` , `SAP_HANA_HIGH_AVAILABILITY` , `SHAREPOINT` . `ACTIVE_DIRECTORY` , and `DEFAULT` .",
+            "stability": "external",
+            "summary": "The tier of the application component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 602
+          },
+          "name": "tier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-componentmonitoringsetting.html#cfn-applicationinsights-application-componentmonitoringsetting-componentarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 568
+          },
+          "name": "componentArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-componentmonitoringsetting.html#cfn-applicationinsights-application-componentmonitoringsetting-componentname"
+            },
+            "stability": "external",
+            "summary": "The name of the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 584
+          },
+          "name": "componentName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-componentmonitoringsetting.html#cfn-applicationinsights-application-componentmonitoringsetting-customcomponentconfiguration"
+            },
+            "remarks": "Required if CUSTOM mode is configured in `ComponentConfigurationMode` .",
+            "stability": "external",
+            "summary": "Customized monitoring settings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 590
+          },
+          "name": "customComponentConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.ComponentConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-componentmonitoringsetting.html#cfn-applicationinsights-application-componentmonitoringsetting-defaultoverwritecomponentconfiguration"
+            },
+            "remarks": "Required if CUSTOM mode is configured in `ComponentConfigurationMode` .",
+            "stability": "external",
+            "summary": "Customized overwrite monitoring settings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 596
+          },
+          "name": "defaultOverwriteComponentConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.ComponentConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.ComponentMonitoringSettingProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.ConfigurationDetailsProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-configurationdetails.html"
+        },
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application ConfigurationDetails` property type specifies the configuration settings."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.ConfigurationDetailsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 680
+      },
+      "name": "ConfigurationDetailsProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-configurationdetails.html#cfn-applicationinsights-application-configurationdetails-alarmmetrics"
+            },
+            "remarks": "All component types can use `AlarmMetrics` .",
+            "stability": "external",
+            "summary": "A list of metrics to monitor for the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 686
+          },
+          "name": "alarmMetrics",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.AlarmMetricProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-configurationdetails.html#cfn-applicationinsights-application-configurationdetails-alarms"
+            },
+            "remarks": "All component types can use `Alarm` .",
+            "stability": "external",
+            "summary": "A list of alarms to monitor for the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 692
+          },
+          "name": "alarms",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.AlarmProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-configurationdetails.html#cfn-applicationinsights-application-configurationdetails-haclusterprometheusexporter"
+            },
+            "stability": "external",
+            "summary": "The HA cluster Prometheus Exporter settings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 698
+          },
+          "name": "haClusterPrometheusExporter",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.HAClusterPrometheusExporterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-configurationdetails.html#cfn-applicationinsights-application-configurationdetails-hanaprometheusexporter"
+            },
+            "stability": "external",
+            "summary": "The HANA DB Prometheus Exporter settings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 704
+          },
+          "name": "hanaPrometheusExporter",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.HANAPrometheusExporterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-configurationdetails.html#cfn-applicationinsights-application-configurationdetails-jmxprometheusexporter"
+            },
+            "stability": "external",
+            "summary": "A list of Java metrics to monitor for the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 710
+          },
+          "name": "jmxPrometheusExporter",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.JMXPrometheusExporterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-configurationdetails.html#cfn-applicationinsights-application-configurationdetails-logs"
+            },
+            "remarks": "Only Amazon EC2 instances can use `Logs` .",
+            "stability": "external",
+            "summary": "A list of logs to monitor for the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 716
+          },
+          "name": "logs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.LogProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-configurationdetails.html#cfn-applicationinsights-application-configurationdetails-windowsevents"
+            },
+            "remarks": "Only Amazon EC2 instances running on Windows can use `WindowsEvents` .",
+            "stability": "external",
+            "summary": "A list of Windows Events to monitor for the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 722
+          },
+          "name": "windowsEvents",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.WindowsEventProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.ConfigurationDetailsProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.CustomComponentProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-customcomponent.html"
+        },
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application CustomComponent` property type describes a custom component by grouping similar standalone instances to monitor."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.CustomComponentProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 801
+      },
+      "name": "CustomComponentProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-customcomponent.html#cfn-applicationinsights-application-customcomponent-componentname"
+            },
+            "stability": "external",
+            "summary": "The name of the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 807
+          },
+          "name": "componentName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-customcomponent.html#cfn-applicationinsights-application-customcomponent-resourcelist"
+            },
+            "stability": "external",
+            "summary": "The list of resource ARNs that belong to the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 813
+          },
+          "name": "resourceList",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.CustomComponentProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.HAClusterPrometheusExporterProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-haclusterprometheusexporter.html"
+        },
+        "remarks": "For more information, see the [component configuration](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/component-config-sections.html#component-configuration-prometheus) in the CloudWatch Application Insights documentation.",
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application HAClusterPrometheusExporter` property type defines the HA cluster Prometheus Exporter settings."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.HAClusterPrometheusExporterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 879
+      },
+      "name": "HAClusterPrometheusExporterProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-haclusterprometheusexporter.html#cfn-applicationinsights-application-haclusterprometheusexporter-prometheusport"
+            },
+            "remarks": "If not specified, the default port 9668 is used.",
+            "stability": "external",
+            "summary": "The target port to which Prometheus sends metrics."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 885
+          },
+          "name": "prometheusPort",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.HAClusterPrometheusExporterProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.HANAPrometheusExporterProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-hanaprometheusexporter.html"
+        },
+        "remarks": "For more information, see the [component configuration](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/component-config-sections.html#component-configuration-prometheus) in the CloudWatch Application Insights documentation.",
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application HANAPrometheusExporter` property type defines the HANA DB Prometheus Exporter settings."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.HANAPrometheusExporterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 946
+      },
+      "name": "HANAPrometheusExporterProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-hanaprometheusexporter.html#cfn-applicationinsights-application-hanaprometheusexporter-agreetoinstallhanadbclient"
+            },
+            "stability": "external",
+            "summary": "Designates whether you agree to install the HANA DB client."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 952
+          },
+          "name": "agreeToInstallHanadbClient",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-hanaprometheusexporter.html#cfn-applicationinsights-application-hanaprometheusexporter-hanaport"
+            },
+            "stability": "external",
+            "summary": "The HANA database port by which the exporter will query HANA metrics."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 958
+          },
+          "name": "hanaPort",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-hanaprometheusexporter.html#cfn-applicationinsights-application-hanaprometheusexporter-hanasecretname"
+            },
+            "remarks": "The HANA Prometheus exporter uses these credentials to connect to the database and query HANA metrics.",
+            "stability": "external",
+            "summary": "The AWS Secrets Manager secret that stores HANA monitoring user credentials."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 970
+          },
+          "name": "hanaSecretName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-hanaprometheusexporter.html#cfn-applicationinsights-application-hanaprometheusexporter-hanasid"
+            },
+            "stability": "external",
+            "summary": "The three-character SAP system ID (SID) of the SAP HANA system."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 964
+          },
+          "name": "hanasid",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-hanaprometheusexporter.html#cfn-applicationinsights-application-hanaprometheusexporter-prometheusport"
+            },
+            "remarks": "If not specified, the default port 9668 is used.",
+            "stability": "external",
+            "summary": "The target port to which Prometheus sends metrics."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 976
+          },
+          "name": "prometheusPort",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.HANAPrometheusExporterProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.JMXPrometheusExporterProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-jmxprometheusexporter.html"
+        },
+        "remarks": "For more information, see the [component configuration](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/component-config-sections.html#component-configuration-prometheus) in the CloudWatch Application Insights documentation.",
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application JMXPrometheusExporter` property type defines the JMXPrometheus Exporter configuration."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.JMXPrometheusExporterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 1053
+      },
+      "name": "JMXPrometheusExporterProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-jmxprometheusexporter.html#cfn-applicationinsights-application-jmxprometheusexporter-hostport"
+            },
+            "remarks": "Only one of `jmxURL` and `hostPort` can be specified.",
+            "stability": "external",
+            "summary": "The host and port to connect to through remote JMX."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1059
+          },
+          "name": "hostPort",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-jmxprometheusexporter.html#cfn-applicationinsights-application-jmxprometheusexporter-jmxurl"
+            },
+            "stability": "external",
+            "summary": "The complete JMX URL to connect to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1065
+          },
+          "name": "jmxurl",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-jmxprometheusexporter.html#cfn-applicationinsights-application-jmxprometheusexporter-prometheusport"
+            },
+            "remarks": "If not specified, the default port `9404` is used.",
+            "stability": "external",
+            "summary": "The target port to send Prometheus metrics to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1071
+          },
+          "name": "prometheusPort",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.JMXPrometheusExporterProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.LogPatternProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-logpattern.html"
+        },
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application LogPattern` property type specifies an object that defines the log patterns that belong to a `LogPatternSet` ."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.LogPatternProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 1246
+      },
+      "name": "LogPatternProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-logpattern.html#cfn-applicationinsights-application-logpattern-pattern"
+            },
+            "remarks": "A log pattern can contain up to 50 characters, and it cannot be empty.",
+            "stability": "external",
+            "summary": "A regular expression that defines the log pattern."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1252
+          },
+          "name": "pattern",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-logpattern.html#cfn-applicationinsights-application-logpattern-patternname"
+            },
+            "remarks": "A log pattern name can contain up to 50 characters, and it cannot be empty. The characters can be Unicode letters, digits, or one of the following symbols: period, dash, underscore.",
+            "stability": "external",
+            "summary": "The name of the log pattern."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1258
+          },
+          "name": "patternName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-logpattern.html#cfn-applicationinsights-application-logpattern-rank"
+            },
+            "stability": "external",
+            "summary": "The rank of the log pattern."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1264
+          },
+          "name": "rank",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.LogPatternProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.LogPatternSetProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-logpatternset.html"
+        },
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application LogPatternSet` property type specifies the log pattern set."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.LogPatternSetProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 1334
+      },
+      "name": "LogPatternSetProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-logpatternset.html#cfn-applicationinsights-application-logpatternset-logpatterns"
+            },
+            "stability": "external",
+            "summary": "A list of objects that define the log patterns that belong to `LogPatternSet` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1340
+          },
+          "name": "logPatterns",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.LogPatternProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-logpatternset.html#cfn-applicationinsights-application-logpatternset-patternsetname"
+            },
+            "remarks": "A log pattern name can contain up to 30 characters, and it cannot be empty. The characters can be Unicode letters, digits, or one of the following symbols: period, dash, underscore.",
+            "stability": "external",
+            "summary": "The name of the log pattern."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1346
+          },
+          "name": "patternSetName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.LogPatternSetProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.LogProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-log.html"
+        },
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application Log` property type specifies a log to monitor for the component."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.LogProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 1138
+      },
+      "name": "LogProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-log.html#cfn-applicationinsights-application-log-logtype"
+            },
+            "remarks": "The log type is selected from the following: `SQL_SERVER` , `MYSQL` , `MYSQL_SLOW_QUERY` , `POSTGRESQL` , `ORACLE_ALERT` , `ORACLE_LISTENER` , `IIS` , `APPLICATION` , `WINDOWS_EVENTS` , `WINDOWS_EVENTS_ACTIVE_DIRECTORY` , `WINDOWS_EVENTS_DNS` , `WINDOWS_EVENTS_IIS` , `WINDOWS_EVENTS_SHAREPOINT` , `SQL_SERVER_ALWAYSON_AVAILABILITY_GROUP` , `SQL_SERVER_FAILOVER_CLUSTER_INSTANCE` , `STEP_FUNCTION` , `API_GATEWAY_ACCESS` , `API_GATEWAY_EXECUTION` , `SAP_HANA_LOGS` , `SAP_HANA_TRACE` , `SAP_HANA_HIGH_AVAILABILITY` , and `DEFAULT` .",
+            "stability": "external",
+            "summary": "The log type decides the log patterns against which Application Insights analyzes the log."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1166
+          },
+          "name": "logType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-log.html#cfn-applicationinsights-application-log-encoding"
+            },
+            "remarks": "The specified encoding should be included in the list of CloudWatch agent supported encodings. If not provided, CloudWatch Application Insights uses the default encoding type for the log type:\n\n- `APPLICATION/DEFAULT` : utf-8 encoding\n- `SQL_SERVER` : utf-16 encoding\n- `IIS` : ascii encoding",
+            "stability": "external",
+            "summary": "The type of encoding of the logs to be monitored."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1148
+          },
+          "name": "encoding",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-log.html#cfn-applicationinsights-application-log-loggroupname"
+            },
+            "stability": "external",
+            "summary": "The CloudWatch log group name to be associated with the monitored log."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1154
+          },
+          "name": "logGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-log.html#cfn-applicationinsights-application-log-logpath"
+            },
+            "remarks": "The log path must be an absolute Windows or Linux system file path. For more information, see [CloudWatch Agent Configuration File: Logs Section](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Agent-Configuration-File-Details.html#CloudWatch-Agent-Configuration-File-Logssection) .",
+            "stability": "external",
+            "summary": "The path of the logs to be monitored."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1160
+          },
+          "name": "logPath",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-log.html#cfn-applicationinsights-application-log-patternset"
+            },
+            "stability": "external",
+            "summary": "The log pattern set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1172
+          },
+          "name": "patternSet",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.LogProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.SubComponentConfigurationDetailsProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-subcomponentconfigurationdetails.html"
+        },
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application SubComponentConfigurationDetails` property type specifies the configuration settings of the sub-components."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.SubComponentConfigurationDetailsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 1412
+      },
+      "name": "SubComponentConfigurationDetailsProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-subcomponentconfigurationdetails.html#cfn-applicationinsights-application-subcomponentconfigurationdetails-alarmmetrics"
+            },
+            "remarks": "All component types can use `AlarmMetrics` .",
+            "stability": "external",
+            "summary": "A list of metrics to monitor for the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1418
+          },
+          "name": "alarmMetrics",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.AlarmMetricProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-subcomponentconfigurationdetails.html#cfn-applicationinsights-application-subcomponentconfigurationdetails-logs"
+            },
+            "remarks": "Only Amazon EC2 instances can use `Logs` .",
+            "stability": "external",
+            "summary": "A list of logs to monitor for the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1424
+          },
+          "name": "logs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.LogProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-subcomponentconfigurationdetails.html#cfn-applicationinsights-application-subcomponentconfigurationdetails-windowsevents"
+            },
+            "remarks": "Only Amazon EC2 instances running on Windows can use `WindowsEvents` .",
+            "stability": "external",
+            "summary": "A list of Windows Events to monitor for the component."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1430
+          },
+          "name": "windowsEvents",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.WindowsEventProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.SubComponentConfigurationDetailsProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.SubComponentTypeConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-subcomponenttypeconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application SubComponentTypeConfiguration` property type specifies the sub-component configurations for a component."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.SubComponentTypeConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 1497
+      },
+      "name": "SubComponentTypeConfigurationProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-subcomponenttypeconfiguration.html#cfn-applicationinsights-application-subcomponenttypeconfiguration-subcomponentconfigurationdetails"
+            },
+            "stability": "external",
+            "summary": "The configuration settings of the sub-components."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1503
+          },
+          "name": "subComponentConfigurationDetails",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.SubComponentConfigurationDetailsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-subcomponenttypeconfiguration.html#cfn-applicationinsights-application-subcomponenttypeconfiguration-subcomponenttype"
+            },
+            "stability": "external",
+            "summary": "The sub-component type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1509
+          },
+          "name": "subComponentType",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.SubComponentTypeConfigurationProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplication.WindowsEventProperty": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-windowsevent.html"
+        },
+        "stability": "external",
+        "summary": "The `AWS::ApplicationInsights::Application WindowsEvent` property type specifies a Windows Event to monitor for the component."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.WindowsEventProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 1575
+      },
+      "name": "WindowsEventProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-windowsevent.html#cfn-applicationinsights-application-windowsevent-eventlevels"
+            },
+            "remarks": "You must specify each level to log. Possible values include `INFORMATION` , `WARNING` , `ERROR` , `CRITICAL` , and `VERBOSE` . This field is required for each type of Windows Event to log.",
+            "stability": "external",
+            "summary": "The levels of event to log."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1581
+          },
+          "name": "eventLevels",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-windowsevent.html#cfn-applicationinsights-application-windowsevent-eventname"
+            },
+            "remarks": "For example, System, Security, CustomEventName, and so on. This field is required for each type of Windows event to log.",
+            "stability": "external",
+            "summary": "The type of Windows Events to log, equivalent to the Windows Event log channel name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1587
+          },
+          "name": "eventName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-windowsevent.html#cfn-applicationinsights-application-windowsevent-loggroupname"
+            },
+            "stability": "external",
+            "summary": "The CloudWatch log group name to be associated with the monitored log."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1593
+          },
+          "name": "logGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-windowsevent.html#cfn-applicationinsights-application-windowsevent-patternset"
+            },
+            "stability": "external",
+            "summary": "The log pattern set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 1599
+          },
+          "name": "patternSet",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplication.WindowsEventProperty"
+    },
+    "@aws-cdk/aws-applicationinsights.CfnApplicationProps": {
+      "assembly": "@aws-cdk/aws-applicationinsights",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnApplication`."
+      },
+      "fqn": "@aws-cdk/aws-applicationinsights.CfnApplicationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/applicationinsights.generated.ts",
+        "line": 20
+      },
+      "name": "CfnApplicationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-resourcegroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the resource group used for the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 27
+          },
+          "name": "resourceGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-autoconfigurationenabled"
+            },
+            "stability": "external",
+            "summary": "If set to `true` , the application components will be configured with the monitoring configuration recommended by Application Insights."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 34
+          },
+          "name": "autoConfigurationEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-componentmonitoringsettings"
+            },
+            "stability": "external",
+            "summary": "The monitoring settings of the components."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 41
+          },
+          "name": "componentMonitoringSettings",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.ComponentMonitoringSettingProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-customcomponents"
+            },
+            "stability": "external",
+            "summary": "Describes a custom component by grouping similar standalone instances to monitor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 48
+          },
+          "name": "customComponents",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.CustomComponentProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-cwemonitorenabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether Application Insights can listen to CloudWatch events for the application resources, such as `instance terminated` , `failed deployment` , and others."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 55
+          },
+          "name": "cweMonitorEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-groupingtype"
+            },
+            "remarks": "To create an account-based application using all of the resources in the account, set this parameter to `ACCOUNT_BASED` .",
+            "stability": "external",
+            "summary": "Application Insights can create applications based on a resource group or on an account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 62
+          },
+          "name": "groupingType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-logpatternsets"
+            },
+            "stability": "external",
+            "summary": "The log pattern sets."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 69
+          },
+          "name": "logPatternSets",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-applicationinsights.CfnApplication.LogPatternSetProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-opscenterenabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether Application Insights will create OpsItems for any problem that is detected by Application Insights for an application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 76
+          },
+          "name": "opsCenterEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-opsitemsnstopicarn"
+            },
+            "stability": "external",
+            "summary": "The SNS topic provided to Application Insights that is associated with the created OpsItems to receive SNS notifications for opsItem updates."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 83
+          },
+          "name": "opsItemSnsTopicArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-applicationinsights-application.html#cfn-applicationinsights-application-tags"
+            },
+            "stability": "external",
+            "summary": "An array of `Tags` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/applicationinsights.generated.ts",
+            "line": 90
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/applicationinsights.generated:CfnApplicationProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "D/N7rRh6+3vE8TZCvRIoZxxZQaGPNGjYDe/lLx6EFeI="
+}

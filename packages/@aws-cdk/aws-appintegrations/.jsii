@@ -1,0 +1,1434 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::AppIntegrations",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::AppIntegrations",
+    "aws-appintegrations"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-appintegrations",
+  "readme": {
+    "markdown": "# AWS::AppIntegrations Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as appintegrations from '@aws-cdk/aws-appintegrations';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for AppIntegrations construct libraries](https://constructs.dev/search?q=appintegrations)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::AppIntegrations resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_AppIntegrations.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::AppIntegrations](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_AppIntegrations.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-appintegrations",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.AppIntegrations",
+      "packageId": "Amazon.CDK.AWS.AppIntegrations",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "appintegrations",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.appintegrations"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-appintegrations"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-appintegrations",
+      "module": "aws_cdk.aws_appintegrations"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-appintegrations.CfnDataIntegration": {
+      "assembly": "@aws-cdk/aws-appintegrations",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AppIntegrations::DataIntegration",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html"
+        },
+        "remarks": "Creates and persists a DataIntegration resource.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AppIntegrations::DataIntegration`."
+      },
+      "fqn": "@aws-cdk/aws-appintegrations.CfnDataIntegration",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AppIntegrations::DataIntegration`."
+        },
+        "locationInModule": {
+          "filename": "lib/appintegrations.generated.ts",
+          "line": 229
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-appintegrations.CfnDataIntegrationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/appintegrations.generated.ts",
+        "line": 141
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 252
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 268
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDataIntegration",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 145
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DataIntegrationArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) for the DataIntegration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 170
+          },
+          "name": "attrDataIntegrationArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Id"
+            },
+            "stability": "external",
+            "summary": "A unique identifier."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 176
+          },
+          "name": "attrId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 257
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html#cfn-appintegrations-dataintegration-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 220
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html#cfn-appintegrations-dataintegration-kmskey"
+            },
+            "stability": "external",
+            "summary": "The KMS key for the DataIntegration."
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 183
+          },
+          "name": "kmsKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html#cfn-appintegrations-dataintegration-name"
+            },
+            "stability": "external",
+            "summary": "The name of the DataIntegration."
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 190
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html#cfn-appintegrations-dataintegration-scheduleconfig"
+            },
+            "stability": "external",
+            "summary": "The name of the data and how often it should be pulled from the source."
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 197
+          },
+          "name": "scheduleConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-appintegrations.CfnDataIntegration.ScheduleConfigProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html#cfn-appintegrations-dataintegration-sourceuri"
+            },
+            "stability": "external",
+            "summary": "The URI of the data source."
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 204
+          },
+          "name": "sourceUri",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html#cfn-appintegrations-dataintegration-description"
+            },
+            "stability": "external",
+            "summary": "A description of the DataIntegration."
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 211
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appintegrations.generated:CfnDataIntegration"
+    },
+    "@aws-cdk/aws-appintegrations.CfnDataIntegration.ScheduleConfigProperty": {
+      "assembly": "@aws-cdk/aws-appintegrations",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-dataintegration-scheduleconfig.html"
+        },
+        "stability": "external",
+        "summary": "The name of the data and how often it should be pulled from the source."
+      },
+      "fqn": "@aws-cdk/aws-appintegrations.CfnDataIntegration.ScheduleConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appintegrations.generated.ts",
+        "line": 282
+      },
+      "name": "ScheduleConfigProperty",
+      "namespace": "CfnDataIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-dataintegration-scheduleconfig.html#cfn-appintegrations-dataintegration-scheduleconfig-firstexecutionfrom"
+            },
+            "stability": "external",
+            "summary": "The start date for objects to import in the first flow run as an Unix/epoch timestamp in milliseconds or in ISO-8601 format."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 288
+          },
+          "name": "firstExecutionFrom",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-dataintegration-scheduleconfig.html#cfn-appintegrations-dataintegration-scheduleconfig-object"
+            },
+            "stability": "external",
+            "summary": "The name of the object to pull from the data source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 294
+          },
+          "name": "object",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-dataintegration-scheduleconfig.html#cfn-appintegrations-dataintegration-scheduleconfig-scheduleexpression"
+            },
+            "stability": "external",
+            "summary": "How often the data should be pulled from data source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 300
+          },
+          "name": "scheduleExpression",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appintegrations.generated:CfnDataIntegration.ScheduleConfigProperty"
+    },
+    "@aws-cdk/aws-appintegrations.CfnDataIntegrationProps": {
+      "assembly": "@aws-cdk/aws-appintegrations",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDataIntegration`."
+      },
+      "fqn": "@aws-cdk/aws-appintegrations.CfnDataIntegrationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appintegrations.generated.ts",
+        "line": 20
+      },
+      "name": "CfnDataIntegrationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html#cfn-appintegrations-dataintegration-kmskey"
+            },
+            "stability": "external",
+            "summary": "The KMS key for the DataIntegration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 27
+          },
+          "name": "kmsKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html#cfn-appintegrations-dataintegration-name"
+            },
+            "stability": "external",
+            "summary": "The name of the DataIntegration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 34
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html#cfn-appintegrations-dataintegration-scheduleconfig"
+            },
+            "stability": "external",
+            "summary": "The name of the data and how often it should be pulled from the source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 41
+          },
+          "name": "scheduleConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-appintegrations.CfnDataIntegration.ScheduleConfigProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html#cfn-appintegrations-dataintegration-sourceuri"
+            },
+            "stability": "external",
+            "summary": "The URI of the data source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 48
+          },
+          "name": "sourceUri",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html#cfn-appintegrations-dataintegration-description"
+            },
+            "stability": "external",
+            "summary": "A description of the DataIntegration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 55
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-dataintegration.html#cfn-appintegrations-dataintegration-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 64
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/appintegrations.generated:CfnDataIntegrationProps"
+    },
+    "@aws-cdk/aws-appintegrations.CfnEventIntegration": {
+      "assembly": "@aws-cdk/aws-appintegrations",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AppIntegrations::EventIntegration",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-eventintegration.html"
+        },
+        "remarks": "Creates an event integration. You provide a name, description, and a reference to an Amazon EventBridge bus in your account and a partner event source that will push events to that bus. No objects are created in your account, only metadata that is persisted on the EventIntegration control plane.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AppIntegrations::EventIntegration`."
+      },
+      "fqn": "@aws-cdk/aws-appintegrations.CfnEventIntegration",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AppIntegrations::EventIntegration`."
+        },
+        "locationInModule": {
+          "filename": "lib/appintegrations.generated.ts",
+          "line": 560
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-appintegrations.CfnEventIntegrationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/appintegrations.generated.ts",
+        "line": 479
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 581
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 596
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnEventIntegration",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 483
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Associations"
+            },
+            "stability": "external",
+            "summary": "The association status of the event integration, returned as an array of EventIntegrationAssociation objects."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 508
+          },
+          "name": "attrAssociations",
+          "type": {
+            "fqn": "@aws-cdk/core.IResolvable"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EventIntegrationArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the event integration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 514
+          },
+          "name": "attrEventIntegrationArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 586
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-eventintegration.html#cfn-appintegrations-eventintegration-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 551
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-eventintegration.html#cfn-appintegrations-eventintegration-eventbridgebus"
+            },
+            "stability": "external",
+            "summary": "The Amazon EventBridge bus for the event integration."
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 521
+          },
+          "name": "eventBridgeBus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-eventintegration.html#cfn-appintegrations-eventintegration-eventfilter"
+            },
+            "stability": "external",
+            "summary": "The event integration filter."
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 528
+          },
+          "name": "eventFilter",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-appintegrations.CfnEventIntegration.EventFilterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-eventintegration.html#cfn-appintegrations-eventintegration-name"
+            },
+            "stability": "external",
+            "summary": "The name of the event integration."
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 535
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-eventintegration.html#cfn-appintegrations-eventintegration-description"
+            },
+            "stability": "external",
+            "summary": "The event integration description."
+          },
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 542
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appintegrations.generated:CfnEventIntegration"
+    },
+    "@aws-cdk/aws-appintegrations.CfnEventIntegration.EventFilterProperty": {
+      "assembly": "@aws-cdk/aws-appintegrations",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-eventintegration-eventfilter.html"
+        },
+        "stability": "external",
+        "summary": "The event integration filter."
+      },
+      "fqn": "@aws-cdk/aws-appintegrations.CfnEventIntegration.EventFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appintegrations.generated.ts",
+        "line": 610
+      },
+      "name": "EventFilterProperty",
+      "namespace": "CfnEventIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-eventintegration-eventfilter.html#cfn-appintegrations-eventintegration-eventfilter-source"
+            },
+            "stability": "external",
+            "summary": "The source of the events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 616
+          },
+          "name": "source",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appintegrations.generated:CfnEventIntegration.EventFilterProperty"
+    },
+    "@aws-cdk/aws-appintegrations.CfnEventIntegration.EventIntegrationAssociationProperty": {
+      "assembly": "@aws-cdk/aws-appintegrations",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-eventintegration-eventintegrationassociation.html"
+        },
+        "stability": "external",
+        "summary": "The event integration association."
+      },
+      "fqn": "@aws-cdk/aws-appintegrations.CfnEventIntegration.EventIntegrationAssociationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appintegrations.generated.ts",
+        "line": 678
+      },
+      "name": "EventIntegrationAssociationProperty",
+      "namespace": "CfnEventIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-eventintegration-eventintegrationassociation.html#cfn-appintegrations-eventintegration-eventintegrationassociation-clientassociationmetadata"
+            },
+            "stability": "external",
+            "summary": "The metadata associated with the client."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 684
+          },
+          "name": "clientAssociationMetadata",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-appintegrations.CfnEventIntegration.MetadataProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-eventintegration-eventintegrationassociation.html#cfn-appintegrations-eventintegration-eventintegrationassociation-clientid"
+            },
+            "stability": "external",
+            "summary": "The identifier for the client that is associated with the event integration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 690
+          },
+          "name": "clientId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-eventintegration-eventintegrationassociation.html#cfn-appintegrations-eventintegration-eventintegrationassociation-eventbridgerulename"
+            },
+            "stability": "external",
+            "summary": "The name of the EventBridge rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 696
+          },
+          "name": "eventBridgeRuleName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-eventintegration-eventintegrationassociation.html#cfn-appintegrations-eventintegration-eventintegrationassociation-eventintegrationassociationarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) for the event integration association."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 702
+          },
+          "name": "eventIntegrationAssociationArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-eventintegration-eventintegrationassociation.html#cfn-appintegrations-eventintegration-eventintegrationassociation-eventintegrationassociationid"
+            },
+            "stability": "external",
+            "summary": "The identifier for the event integration association."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 708
+          },
+          "name": "eventIntegrationAssociationId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appintegrations.generated:CfnEventIntegration.EventIntegrationAssociationProperty"
+    },
+    "@aws-cdk/aws-appintegrations.CfnEventIntegration.MetadataProperty": {
+      "assembly": "@aws-cdk/aws-appintegrations",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-eventintegration-metadata.html"
+        },
+        "stability": "external",
+        "summary": "The metadata associated with the client."
+      },
+      "fqn": "@aws-cdk/aws-appintegrations.CfnEventIntegration.MetadataProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appintegrations.generated.ts",
+        "line": 781
+      },
+      "name": "MetadataProperty",
+      "namespace": "CfnEventIntegration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-eventintegration-metadata.html#cfn-appintegrations-eventintegration-metadata-key"
+            },
+            "stability": "external",
+            "summary": "The key name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 787
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appintegrations-eventintegration-metadata.html#cfn-appintegrations-eventintegration-metadata-value"
+            },
+            "stability": "external",
+            "summary": "The value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 793
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appintegrations.generated:CfnEventIntegration.MetadataProperty"
+    },
+    "@aws-cdk/aws-appintegrations.CfnEventIntegrationProps": {
+      "assembly": "@aws-cdk/aws-appintegrations",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-eventintegration.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnEventIntegration`."
+      },
+      "fqn": "@aws-cdk/aws-appintegrations.CfnEventIntegrationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appintegrations.generated.ts",
+        "line": 369
+      },
+      "name": "CfnEventIntegrationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-eventintegration.html#cfn-appintegrations-eventintegration-eventbridgebus"
+            },
+            "stability": "external",
+            "summary": "The Amazon EventBridge bus for the event integration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 376
+          },
+          "name": "eventBridgeBus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-eventintegration.html#cfn-appintegrations-eventintegration-eventfilter"
+            },
+            "stability": "external",
+            "summary": "The event integration filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 383
+          },
+          "name": "eventFilter",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-appintegrations.CfnEventIntegration.EventFilterProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-eventintegration.html#cfn-appintegrations-eventintegration-name"
+            },
+            "stability": "external",
+            "summary": "The name of the event integration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 390
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-eventintegration.html#cfn-appintegrations-eventintegration-description"
+            },
+            "stability": "external",
+            "summary": "The event integration description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 397
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appintegrations-eventintegration.html#cfn-appintegrations-eventintegration-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appintegrations.generated.ts",
+            "line": 406
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/appintegrations.generated:CfnEventIntegrationProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "h/dzsoDdjuOg0AHBINXbDK/zxNVH7S7uC1fTYDeQlok="
+}

@@ -1,0 +1,5 @@
+"use strict";
+test('No tests are specified for this package', () => {
+    expect(true).toBe(true);
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZ2VuLnRlc3QuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJnZW4udGVzdC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsSUFBSSxDQUFDLHlDQUF5QyxFQUFFLEdBQUcsRUFBRTtJQUNuRCxNQUFNLENBQUMsSUFBSSxDQUFDLENBQUMsSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFDO0FBQzFCLENBQUMsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsidGVzdCgnTm8gdGVzdHMgYXJlIHNwZWNpZmllZCBmb3IgdGhpcyBwYWNrYWdlJywgKCkgPT4ge1xuICBleHBlY3QodHJ1ZSkudG9CZSh0cnVlKTtcbn0pO1xuIl19

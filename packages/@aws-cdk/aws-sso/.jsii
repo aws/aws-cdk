@@ -1,0 +1,1836 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::SSO",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::SSO",
+    "aws-sso"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-sso",
+  "readme": {
+    "markdown": "# AWS::SSO Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as sso from '@aws-cdk/aws-sso';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for SSO construct libraries](https://constructs.dev/search?q=sso)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::SSO resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_SSO.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::SSO](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_SSO.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-sso",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.SSO",
+      "packageId": "Amazon.CDK.AWS.SSO"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "sso",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.sso"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-sso"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-sso",
+      "module": "aws_cdk.aws_sso"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-sso.CfnAssignment": {
+      "assembly": "@aws-cdk/aws-sso",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SSO::Assignment",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html"
+        },
+        "remarks": "Assigns access to a Principal for a specified AWS account using a specified permission set.\n\n> The term *principal* here refers to a user or group that is defined in IAM Identity Center .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SSO::Assignment`."
+      },
+      "fqn": "@aws-cdk/aws-sso.CfnAssignment",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SSO::Assignment`."
+        },
+        "locationInModule": {
+          "filename": "lib/sso.generated.ts",
+          "line": 217
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-sso.CfnAssignmentProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/sso.generated.ts",
+        "line": 143
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 240
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 256
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnAssignment",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 147
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 245
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html#cfn-sso-assignment-instancearn"
+            },
+            "remarks": "For more information about ARNs, see [Amazon Resource Names (ARNs) and AWS Service Namespaces](https://docs.aws.amazon.com//general/latest/gr/aws-arns-and-namespaces.html) in the *AWS General Reference* .",
+            "stability": "external",
+            "summary": "The ARN of the IAM Identity Center instance under which the operation will be executed."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 173
+          },
+          "name": "instanceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html#cfn-sso-assignment-permissionsetarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the permission set."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 180
+          },
+          "name": "permissionSetArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html#cfn-sso-assignment-principalid"
+            },
+            "remarks": "PrincipalIds are GUIDs (For example, f81d4fae-7dec-11d0-a765-00a0c91e6bf6). For more information about PrincipalIds in IAM Identity Center, see the [IAM Identity Center Identity Store API Reference](https://docs.aws.amazon.com//singlesignon/latest/IdentityStoreAPIReference/welcome.html) .",
+            "stability": "external",
+            "summary": "An identifier for an object in IAM Identity Center, such as a user or group."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 187
+          },
+          "name": "principalId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html#cfn-sso-assignment-principaltype"
+            },
+            "stability": "external",
+            "summary": "The entity type for which the assignment will be created."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 194
+          },
+          "name": "principalType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html#cfn-sso-assignment-targetid"
+            },
+            "stability": "external",
+            "summary": "TargetID is an AWS account identifier, typically a 10-12 digit string (For example, 123456789012)."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 201
+          },
+          "name": "targetId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html#cfn-sso-assignment-targettype"
+            },
+            "stability": "external",
+            "summary": "The entity type for which the assignment will be created."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 208
+          },
+          "name": "targetType",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/sso.generated:CfnAssignment"
+    },
+    "@aws-cdk/aws-sso.CfnAssignmentProps": {
+      "assembly": "@aws-cdk/aws-sso",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnAssignment`."
+      },
+      "fqn": "@aws-cdk/aws-sso.CfnAssignmentProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sso.generated.ts",
+        "line": 20
+      },
+      "name": "CfnAssignmentProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html#cfn-sso-assignment-instancearn"
+            },
+            "remarks": "For more information about ARNs, see [Amazon Resource Names (ARNs) and AWS Service Namespaces](https://docs.aws.amazon.com//general/latest/gr/aws-arns-and-namespaces.html) in the *AWS General Reference* .",
+            "stability": "external",
+            "summary": "The ARN of the IAM Identity Center instance under which the operation will be executed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 27
+          },
+          "name": "instanceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html#cfn-sso-assignment-permissionsetarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the permission set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 34
+          },
+          "name": "permissionSetArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html#cfn-sso-assignment-principalid"
+            },
+            "remarks": "PrincipalIds are GUIDs (For example, f81d4fae-7dec-11d0-a765-00a0c91e6bf6). For more information about PrincipalIds in IAM Identity Center, see the [IAM Identity Center Identity Store API Reference](https://docs.aws.amazon.com//singlesignon/latest/IdentityStoreAPIReference/welcome.html) .",
+            "stability": "external",
+            "summary": "An identifier for an object in IAM Identity Center, such as a user or group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 41
+          },
+          "name": "principalId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html#cfn-sso-assignment-principaltype"
+            },
+            "stability": "external",
+            "summary": "The entity type for which the assignment will be created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 48
+          },
+          "name": "principalType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html#cfn-sso-assignment-targetid"
+            },
+            "stability": "external",
+            "summary": "TargetID is an AWS account identifier, typically a 10-12 digit string (For example, 123456789012)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 55
+          },
+          "name": "targetId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-assignment.html#cfn-sso-assignment-targettype"
+            },
+            "stability": "external",
+            "summary": "The entity type for which the assignment will be created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 62
+          },
+          "name": "targetType",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/sso.generated:CfnAssignmentProps"
+    },
+    "@aws-cdk/aws-sso.CfnInstanceAccessControlAttributeConfiguration": {
+      "assembly": "@aws-cdk/aws-sso",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SSO::InstanceAccessControlAttributeConfiguration",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-instanceaccesscontrolattributeconfiguration.html"
+        },
+        "remarks": "Enables the attribute-based access control (ABAC) feature for the specified IAM Identity Center instance. You can also specify new attributes to add to your ABAC configuration during the enabling process. For more information about ABAC, see [Attribute-Based Access Control](https://docs.aws.amazon.com//singlesignon/latest/userguide/abac.html) in the *IAM Identity Center User Guide* .\n\n> The `InstanceAccessControlAttributeConfiguration` property has been deprecated but is still supported for backwards compatibility purposes. We recommend that you use the `AccessControlAttributes` property instead.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SSO::InstanceAccessControlAttributeConfiguration`."
+      },
+      "fqn": "@aws-cdk/aws-sso.CfnInstanceAccessControlAttributeConfiguration",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SSO::InstanceAccessControlAttributeConfiguration`."
+        },
+        "locationInModule": {
+          "filename": "lib/sso.generated.ts",
+          "line": 393
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-sso.CfnInstanceAccessControlAttributeConfigurationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/sso.generated.ts",
+        "line": 347
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 407
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 419
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnInstanceAccessControlAttributeConfiguration",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 351
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 412
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-instanceaccesscontrolattributeconfiguration.html#cfn-sso-instanceaccesscontrolattributeconfiguration-instancearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the IAM Identity Center instance under which the operation will be executed."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 377
+          },
+          "name": "instanceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-instanceaccesscontrolattributeconfiguration.html#cfn-sso-instanceaccesscontrolattributeconfiguration-accesscontrolattributes"
+            },
+            "stability": "external",
+            "summary": "Lists the attributes that are configured for ABAC in the specified IAM Identity Center instance."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 384
+          },
+          "name": "accessControlAttributes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-sso.CfnInstanceAccessControlAttributeConfiguration.AccessControlAttributeProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/sso.generated:CfnInstanceAccessControlAttributeConfiguration"
+    },
+    "@aws-cdk/aws-sso.CfnInstanceAccessControlAttributeConfiguration.AccessControlAttributeProperty": {
+      "assembly": "@aws-cdk/aws-sso",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sso-instanceaccesscontrolattributeconfiguration-accesscontrolattribute.html"
+        },
+        "remarks": "You can create permissions policies that determine who can access your AWS resources based upon the configured attribute values. When you enable ABAC and specify `AccessControlAttributes` , IAM Identity Center passes the attribute values of the authenticated user into IAM for use in policy evaluation.",
+        "stability": "external",
+        "summary": "These are IAM Identity Center identity store attributes that you can configure for use in attributes-based access control (ABAC)."
+      },
+      "fqn": "@aws-cdk/aws-sso.CfnInstanceAccessControlAttributeConfiguration.AccessControlAttributeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sso.generated.ts",
+        "line": 433
+      },
+      "name": "AccessControlAttributeProperty",
+      "namespace": "CfnInstanceAccessControlAttributeConfiguration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sso-instanceaccesscontrolattributeconfiguration-accesscontrolattribute.html#cfn-sso-instanceaccesscontrolattributeconfiguration-accesscontrolattribute-key"
+            },
+            "remarks": "This is used to map a specified attribute in your identity source with an attribute in IAM Identity Center .",
+            "stability": "external",
+            "summary": "The name of the attribute associated with your identities in your identity source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 439
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sso-instanceaccesscontrolattributeconfiguration-accesscontrolattribute.html#cfn-sso-instanceaccesscontrolattributeconfiguration-accesscontrolattribute-value"
+            },
+            "stability": "external",
+            "summary": "The value used for mapping a specified attribute to an identity source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 445
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-sso.CfnInstanceAccessControlAttributeConfiguration.AccessControlAttributeValueProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/sso.generated:CfnInstanceAccessControlAttributeConfiguration.AccessControlAttributeProperty"
+    },
+    "@aws-cdk/aws-sso.CfnInstanceAccessControlAttributeConfiguration.AccessControlAttributeValueProperty": {
+      "assembly": "@aws-cdk/aws-sso",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sso-instanceaccesscontrolattributeconfiguration-accesscontrolattributevalue.html"
+        },
+        "stability": "external",
+        "summary": "The value used for mapping a specified attribute to an identity source."
+      },
+      "fqn": "@aws-cdk/aws-sso.CfnInstanceAccessControlAttributeConfiguration.AccessControlAttributeValueProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sso.generated.ts",
+        "line": 511
+      },
+      "name": "AccessControlAttributeValueProperty",
+      "namespace": "CfnInstanceAccessControlAttributeConfiguration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sso-instanceaccesscontrolattributeconfiguration-accesscontrolattributevalue.html#cfn-sso-instanceaccesscontrolattributeconfiguration-accesscontrolattributevalue-source"
+            },
+            "stability": "external",
+            "summary": "The identity source to use when mapping a specified attribute to IAM Identity Center ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 517
+          },
+          "name": "source",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/sso.generated:CfnInstanceAccessControlAttributeConfiguration.AccessControlAttributeValueProperty"
+    },
+    "@aws-cdk/aws-sso.CfnInstanceAccessControlAttributeConfigurationProps": {
+      "assembly": "@aws-cdk/aws-sso",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-instanceaccesscontrolattributeconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnInstanceAccessControlAttributeConfiguration`."
+      },
+      "fqn": "@aws-cdk/aws-sso.CfnInstanceAccessControlAttributeConfigurationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sso.generated.ts",
+        "line": 269
+      },
+      "name": "CfnInstanceAccessControlAttributeConfigurationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-instanceaccesscontrolattributeconfiguration.html#cfn-sso-instanceaccesscontrolattributeconfiguration-instancearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the IAM Identity Center instance under which the operation will be executed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 276
+          },
+          "name": "instanceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-instanceaccesscontrolattributeconfiguration.html#cfn-sso-instanceaccesscontrolattributeconfiguration-accesscontrolattributes"
+            },
+            "stability": "external",
+            "summary": "Lists the attributes that are configured for ABAC in the specified IAM Identity Center instance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 283
+          },
+          "name": "accessControlAttributes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-sso.CfnInstanceAccessControlAttributeConfiguration.AccessControlAttributeProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/sso.generated:CfnInstanceAccessControlAttributeConfigurationProps"
+    },
+    "@aws-cdk/aws-sso.CfnPermissionSet": {
+      "assembly": "@aws-cdk/aws-sso",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SSO::PermissionSet",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html"
+        },
+        "remarks": "Specifies a permission set within a specified IAM Identity Center instance.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SSO::PermissionSet`."
+      },
+      "fqn": "@aws-cdk/aws-sso.CfnPermissionSet",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SSO::PermissionSet`."
+        },
+        "locationInModule": {
+          "filename": "lib/sso.generated.ts",
+          "line": 851
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-sso.CfnPermissionSetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/sso.generated.ts",
+        "line": 739
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 875
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 895
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPermissionSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 743
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "PermissionSetArn"
+            },
+            "stability": "external",
+            "summary": "The permission set ARN of the permission set, such as `arn:aws:sso:::permissionSet/ins-instanceid/ps-permissionsetid` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 768
+          },
+          "name": "attrPermissionSetArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 880
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-tags"
+            },
+            "stability": "external",
+            "summary": "The tags to attach to the new `PermissionSet` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 842
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-inlinepolicy"
+            },
+            "remarks": "> For `Length Constraints` , if a valid ARN is provided for a permission set, it is possible for an empty inline policy to be returned.",
+            "stability": "external",
+            "summary": "The inline policy that is attached to the permission set."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 805
+          },
+          "name": "inlinePolicy",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-instancearn"
+            },
+            "remarks": "For more information about ARNs, see [Amazon Resource Names (ARNs) and AWS Service Namespaces](https://docs.aws.amazon.com//general/latest/gr/aws-arns-and-namespaces.html) in the *AWS General Reference* .",
+            "stability": "external",
+            "summary": "The ARN of the IAM Identity Center instance under which the operation will be executed."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 775
+          },
+          "name": "instanceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-name"
+            },
+            "stability": "external",
+            "summary": "The name of the permission set."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 782
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-customermanagedpolicyreferences"
+            },
+            "stability": "external",
+            "summary": "Specifies the names and paths of the customer managed policies that you have attached to your permission set."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 789
+          },
+          "name": "customerManagedPolicyReferences",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-sso.CfnPermissionSet.CustomerManagedPolicyReferenceProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-description"
+            },
+            "stability": "external",
+            "summary": "The description of the `PermissionSet` ."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 796
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-managedpolicies"
+            },
+            "stability": "external",
+            "summary": "A structure that stores the details of the AWS managed policy."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 812
+          },
+          "name": "managedPolicies",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-permissionsboundary"
+            },
+            "remarks": "Specify either `CustomerManagedPolicyReference` to use the name and path of a customer managed policy, or `ManagedPolicyArn` to use the ARN of an AWS managed policy. A permissions boundary represents the maximum permissions that any policy can grant your role. For more information, see [Permissions boundaries for IAM entities](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html) in the *IAM User Guide* .\n\n> Policies used as permissions boundaries don't provide permissions. You must also attach an IAM policy to the role. To learn how the effective permissions for a role are evaluated, see [IAM JSON policy evaluation logic](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html) in the *IAM User Guide* .",
+            "stability": "external",
+            "summary": "Specifies the configuration of the AWS managed or customer managed policy that you want to set as a permissions boundary."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 821
+          },
+          "name": "permissionsBoundary",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-sso.CfnPermissionSet.PermissionsBoundaryProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-relaystatetype"
+            },
+            "stability": "external",
+            "summary": "Used to redirect users within the application during the federation authentication process."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 828
+          },
+          "name": "relayStateType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-sessionduration"
+            },
+            "stability": "external",
+            "summary": "The length of time that the application user sessions are valid for in the ISO-8601 standard."
+          },
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 835
+          },
+          "name": "sessionDuration",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/sso.generated:CfnPermissionSet"
+    },
+    "@aws-cdk/aws-sso.CfnPermissionSet.CustomerManagedPolicyReferenceProperty": {
+      "assembly": "@aws-cdk/aws-sso",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sso-permissionset-customermanagedpolicyreference.html"
+        },
+        "remarks": "You must have an IAM policy that matches the name and path in each AWS account where you want to deploy your permission set.",
+        "stability": "external",
+        "summary": "Specifies the name and path of a customer managed policy."
+      },
+      "fqn": "@aws-cdk/aws-sso.CfnPermissionSet.CustomerManagedPolicyReferenceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sso.generated.ts",
+        "line": 909
+      },
+      "name": "CustomerManagedPolicyReferenceProperty",
+      "namespace": "CfnPermissionSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sso-permissionset-customermanagedpolicyreference.html#cfn-sso-permissionset-customermanagedpolicyreference-name"
+            },
+            "stability": "external",
+            "summary": "The name of the IAM policy that you have configured in each account where you want to deploy your permission set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 915
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sso-permissionset-customermanagedpolicyreference.html#cfn-sso-permissionset-customermanagedpolicyreference-path"
+            },
+            "remarks": "The default is `/` . For more information, see [Friendly names and paths](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html#identifiers-friendly-names) in the *IAM User Guide* .",
+            "stability": "external",
+            "summary": "The path to the IAM policy that you have configured in each account where you want to deploy your permission set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 921
+          },
+          "name": "path",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/sso.generated:CfnPermissionSet.CustomerManagedPolicyReferenceProperty"
+    },
+    "@aws-cdk/aws-sso.CfnPermissionSet.PermissionsBoundaryProperty": {
+      "assembly": "@aws-cdk/aws-sso",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sso-permissionset-permissionsboundary.html"
+        },
+        "remarks": "Specify either `CustomerManagedPolicyReference` to use the name and path of a customer managed policy, or `ManagedPolicyArn` to use the ARN of an AWS managed policy. A permissions boundary represents the maximum permissions that any policy can grant your role. For more information, see [Permissions boundaries for IAM entities](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html) in the *IAM User Guide* .\n\n> Policies used as permissions boundaries don't provide permissions. You must also attach an IAM policy to the role. To learn how the effective permissions for a role are evaluated, see [IAM JSON policy evaluation logic](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html) in the *IAM User Guide* .",
+        "stability": "external",
+        "summary": "Specifies the configuration of the AWS managed or customer managed policy that you want to set as a permissions boundary."
+      },
+      "fqn": "@aws-cdk/aws-sso.CfnPermissionSet.PermissionsBoundaryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sso.generated.ts",
+        "line": 988
+      },
+      "name": "PermissionsBoundaryProperty",
+      "namespace": "CfnPermissionSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sso-permissionset-permissionsboundary.html#cfn-sso-permissionset-permissionsboundary-customermanagedpolicyreference"
+            },
+            "remarks": "You must have an IAM policy that matches the name and path in each AWS account where you want to deploy your permission set.",
+            "stability": "external",
+            "summary": "Specifies the name and path of a customer managed policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 994
+          },
+          "name": "customerManagedPolicyReference",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-sso.CfnPermissionSet.CustomerManagedPolicyReferenceProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sso-permissionset-permissionsboundary.html#cfn-sso-permissionset-permissionsboundary-managedpolicyarn"
+            },
+            "stability": "external",
+            "summary": "The AWS managed policy ARN that you want to attach to a permission set as a permissions boundary."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 1000
+          },
+          "name": "managedPolicyArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/sso.generated:CfnPermissionSet.PermissionsBoundaryProperty"
+    },
+    "@aws-cdk/aws-sso.CfnPermissionSetProps": {
+      "assembly": "@aws-cdk/aws-sso",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPermissionSet`."
+      },
+      "fqn": "@aws-cdk/aws-sso.CfnPermissionSetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sso.generated.ts",
+        "line": 578
+      },
+      "name": "CfnPermissionSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-instancearn"
+            },
+            "remarks": "For more information about ARNs, see [Amazon Resource Names (ARNs) and AWS Service Namespaces](https://docs.aws.amazon.com//general/latest/gr/aws-arns-and-namespaces.html) in the *AWS General Reference* .",
+            "stability": "external",
+            "summary": "The ARN of the IAM Identity Center instance under which the operation will be executed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 585
+          },
+          "name": "instanceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-name"
+            },
+            "stability": "external",
+            "summary": "The name of the permission set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 592
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-customermanagedpolicyreferences"
+            },
+            "stability": "external",
+            "summary": "Specifies the names and paths of the customer managed policies that you have attached to your permission set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 599
+          },
+          "name": "customerManagedPolicyReferences",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-sso.CfnPermissionSet.CustomerManagedPolicyReferenceProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-description"
+            },
+            "stability": "external",
+            "summary": "The description of the `PermissionSet` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 606
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-inlinepolicy"
+            },
+            "remarks": "> For `Length Constraints` , if a valid ARN is provided for a permission set, it is possible for an empty inline policy to be returned.",
+            "stability": "external",
+            "summary": "The inline policy that is attached to the permission set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 615
+          },
+          "name": "inlinePolicy",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-managedpolicies"
+            },
+            "stability": "external",
+            "summary": "A structure that stores the details of the AWS managed policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 622
+          },
+          "name": "managedPolicies",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-permissionsboundary"
+            },
+            "remarks": "Specify either `CustomerManagedPolicyReference` to use the name and path of a customer managed policy, or `ManagedPolicyArn` to use the ARN of an AWS managed policy. A permissions boundary represents the maximum permissions that any policy can grant your role. For more information, see [Permissions boundaries for IAM entities](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html) in the *IAM User Guide* .\n\n> Policies used as permissions boundaries don't provide permissions. You must also attach an IAM policy to the role. To learn how the effective permissions for a role are evaluated, see [IAM JSON policy evaluation logic](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html) in the *IAM User Guide* .",
+            "stability": "external",
+            "summary": "Specifies the configuration of the AWS managed or customer managed policy that you want to set as a permissions boundary."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 631
+          },
+          "name": "permissionsBoundary",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-sso.CfnPermissionSet.PermissionsBoundaryProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-relaystatetype"
+            },
+            "stability": "external",
+            "summary": "Used to redirect users within the application during the federation authentication process."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 638
+          },
+          "name": "relayStateType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-sessionduration"
+            },
+            "stability": "external",
+            "summary": "The length of time that the application user sessions are valid for in the ISO-8601 standard."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 645
+          },
+          "name": "sessionDuration",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sso-permissionset.html#cfn-sso-permissionset-tags"
+            },
+            "stability": "external",
+            "summary": "The tags to attach to the new `PermissionSet` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sso.generated.ts",
+            "line": 652
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/sso.generated:CfnPermissionSetProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "6/PZOTkdpZv2D7y3JNwA3niAYJQR8REjilzx4XEdJhQ="
+}

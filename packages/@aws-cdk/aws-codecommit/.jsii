@@ -1,0 +1,3806 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-codestarnotifications": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-s3-assets": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.Assets",
+          "packageId": "Amazon.CDK.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.assets",
+          "module": "aws_cdk.assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-codestarnotifications": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodeStarNotifications",
+          "packageId": "Amazon.CDK.AWS.CodeStarNotifications"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codestarnotifications",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codestarnotifications"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codestarnotifications"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codestarnotifications",
+          "module": "aws_cdk.aws_codestarnotifications"
+        }
+      }
+    },
+    "@aws-cdk/aws-events": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-events",
+          "module": "aws_cdk.aws_events"
+        }
+      }
+    },
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      }
+    },
+    "@aws-cdk/aws-kms": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-kms",
+          "module": "aws_cdk.aws_kms"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3",
+          "packageId": "Amazon.CDK.AWS.S3"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3",
+          "module": "aws_cdk.aws_s3"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3-assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3.Assets",
+          "packageId": "Amazon.CDK.AWS.S3.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3-assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3-assets",
+          "module": "aws_cdk.aws_s3_assets"
+        }
+      }
+    },
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::CodeCommit",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "codecommit"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-codecommit",
+  "readme": {
+    "markdown": "# AWS CodeCommit Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)\n\n---\n\n<!--END STABILITY BANNER-->\n\nAWS CodeCommit is a version control service that enables you to privately store and manage Git repositories in the AWS cloud.\n\nFor further information on CodeCommit,\nsee the [AWS CodeCommit documentation](https://docs.aws.amazon.com/codecommit).\n\nTo add a CodeCommit Repository to your stack:\n\n```ts\nconst repo = new codecommit.Repository(this, 'Repository', {\n  repositoryName: 'MyRepositoryName',\n  description: 'Some description.', // optional property\n});\n```\n\nUse the `repositoryCloneUrlHttp`, `repositoryCloneUrlSsh` or `repositoryCloneUrlGrc`\nproperty to clone your repository.\n\nTo add an Amazon SNS trigger to your repository:\n\n```ts\ndeclare const repo: codecommit.Repository;\n\n// trigger is established for all repository actions on all branches by default.\nrepo.notify('arn:aws:sns:*:123456789012:my_topic');\n```\n\n## Add initial commit\n\nIt is possible to initialize the Repository via the `Code` class.\nIt provides methods for loading code from a directory, `.zip` file and from a pre-created CDK Asset.\n\nExample:\n\n```ts\nconst repo = new codecommit.Repository(this, 'Repository', {\n  repositoryName: 'MyRepositoryName',\n  code: codecommit.Code.fromDirectory(path.join(__dirname, 'directory/'), 'develop'), // optional property, branch parameter can be omitted\n});\n```\n\n## Events\n\nCodeCommit repositories emit Amazon CloudWatch events for certain activities.\nUse the `repo.onXxx` methods to define rules that trigger on these events\nand invoke targets as a result:\n\n```ts\nimport * as sns from '@aws-cdk/aws-sns';\nimport * as targets from '@aws-cdk/aws-events-targets';\n\ndeclare const repo: codecommit.Repository;\ndeclare const project: codebuild.PipelineProject;\ndeclare const myTopic: sns.Topic;\n\n// starts a CodeBuild project when a commit is pushed to the \"main\" branch of the repo\nrepo.onCommit('CommitToMain', {\n  target: new targets.CodeBuildProject(project),\n  branches: ['main'],\n});\n\n// publishes a message to an Amazon SNS topic when a comment is made on a pull request\nconst rule = repo.onCommentOnPullRequest('CommentOnPullRequest', {\n  target: new targets.SnsTopic(myTopic),\n});\n```\n\n## CodeStar Notifications\n\nTo define CodeStar Notification rules for Repositories, use one of the `notifyOnXxx()` methods.\nThey are very similar to `onXxx()` methods for CloudWatch events:\n\n```ts\nimport * as chatbot from '@aws-cdk/aws-chatbot';\n\ndeclare const repository: codecommit.Repository;\nconst target = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel', {\n  slackChannelConfigurationName: 'YOUR_CHANNEL_NAME',\n  slackWorkspaceId: 'YOUR_SLACK_WORKSPACE_ID',\n  slackChannelId: 'YOUR_SLACK_CHANNEL_ID',\n});\nconst rule = repository.notifyOnPullRequestCreated('NotifyOnPullRequestCreated', target);\n```\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-codecommit",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.CodeCommit",
+      "packageId": "Amazon.CDK.AWS.CodeCommit"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "codecommit",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.codecommit"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-codecommit"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-codecommit",
+      "module": "aws_cdk.aws_codecommit"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-codecommit.CfnRepository": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::CodeCommit::Repository",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html"
+        },
+        "remarks": "Creates a new, empty repository.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::CodeCommit::Repository`."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.CfnRepository",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::CodeCommit::Repository`."
+        },
+        "locationInModule": {
+          "filename": "lib/codecommit.generated.ts",
+          "line": 229
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.CfnRepositoryProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/codecommit.generated.ts",
+        "line": 132
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 250
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 265
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRepository",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 136
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "When you pass the logical ID of this resource, the function returns the Amazon Resource Name (ARN) of the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 161
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CloneUrlHttp"
+            },
+            "stability": "external",
+            "summary": "When you pass the logical ID of this resource, the function returns the URL to use for cloning the repository over HTTPS."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 167
+          },
+          "name": "attrCloneUrlHttp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CloneUrlSsh"
+            },
+            "stability": "external",
+            "summary": "When you pass the logical ID of this resource, the function returns the URL to use for cloning the repository over SSH."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 173
+          },
+          "name": "attrCloneUrlSsh",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Name"
+            },
+            "stability": "external",
+            "summary": "When you pass the logical ID of this resource, the function returns the repository's name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 179
+          },
+          "name": "attrName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 255
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-tags"
+            },
+            "stability": "external",
+            "summary": "One or more tag key-value pairs to use when tagging this repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 213
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-repositoryname"
+            },
+            "remarks": "> The repository name must be unique across the calling AWS account . Repository names are limited to 100 alphanumeric, dash, and underscore characters, and cannot include certain characters. For more information about the limits on repository names, see [Quotas](https://docs.aws.amazon.com/codecommit/latest/userguide/limits.html) in the *AWS CodeCommit User Guide* . The suffix .git is prohibited.",
+            "stability": "external",
+            "summary": "The name of the new repository to be created."
+          },
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 188
+          },
+          "name": "repositoryName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-code"
+            },
+            "remarks": "Information about code is only used in resource creation. Updates to a stack will not reflect changes made to code properties after initial resource creation.\n\n> You can only use this property to add code when creating a repository with a AWS CloudFormation template at creation time. This property cannot be used for updating code to an existing repository.",
+            "stability": "external",
+            "summary": "Information about code to be committed to a repository after it is created in an AWS CloudFormation stack."
+          },
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 197
+          },
+          "name": "code",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-codecommit.CfnRepository.CodeProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-repositorydescription"
+            },
+            "remarks": "> The description field for a repository accepts all HTML characters and all valid Unicode characters. Applications that do not HTML-encode the description and display it in a webpage can expose users to potentially malicious code. Make sure that you HTML-encode the description field in any application that uses this API to display the repository description on a webpage.",
+            "stability": "external",
+            "summary": "A comment or description about the new repository."
+          },
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 206
+          },
+          "name": "repositoryDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-triggers"
+            },
+            "stability": "external",
+            "summary": "The JSON block of configuration information for each trigger."
+          },
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 220
+          },
+          "name": "triggers",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-codecommit.CfnRepository.RepositoryTriggerProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/codecommit.generated:CfnRepository"
+    },
+    "@aws-cdk/aws-codecommit.CfnRepository.CodeProperty": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-code.html"
+        },
+        "stability": "external",
+        "summary": "Information about code to be committed."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.CfnRepository.CodeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/codecommit.generated.ts",
+        "line": 279
+      },
+      "name": "CodeProperty",
+      "namespace": "CfnRepository",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-code.html#cfn-codecommit-repository-code-s3"
+            },
+            "remarks": "Changes to this property are ignored after initial resource creation.",
+            "stability": "external",
+            "summary": "Information about the Amazon S3 bucket that contains a ZIP file of code to be committed to the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 291
+          },
+          "name": "s3",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-codecommit.CfnRepository.S3Property"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-code.html#cfn-codecommit-repository-code-branchname"
+            },
+            "remarks": "Specifies a branch name to be used as the default branch when importing code into a repository on initial creation. If this property is not set, the name *main* will be used for the default branch for the repository. Changes to this property are ignored after initial resource creation. We recommend using this parameter to set the name to *main* to align with the default behavior of CodeCommit unless another name is needed.",
+            "stability": "external",
+            "summary": "Optional."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 285
+          },
+          "name": "branchName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/codecommit.generated:CfnRepository.CodeProperty"
+    },
+    "@aws-cdk/aws-codecommit.CfnRepository.RepositoryTriggerProperty": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html"
+        },
+        "remarks": "> If you want to receive notifications about repository events, consider using notifications instead of triggers. For more information, see [Configuring notifications for repository events](https://docs.aws.amazon.com/codecommit/latest/userguide/how-to-repository-email.html) .",
+        "stability": "external",
+        "summary": "Information about a trigger for a repository."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.CfnRepository.RepositoryTriggerProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/codecommit.generated.ts",
+        "line": 358
+      },
+      "name": "RepositoryTriggerProperty",
+      "namespace": "CfnRepository",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-destinationarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the resource that is the target for a trigger (for example, the ARN of a topic in Amazon SNS)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 378
+          },
+          "name": "destinationArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-events"
+            },
+            "remarks": "> The valid value \"all\" cannot be used with any other values.",
+            "stability": "external",
+            "summary": "The repository events that cause the trigger to run actions in another service, such as sending a notification through Amazon SNS."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 386
+          },
+          "name": "events",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-name"
+            },
+            "stability": "external",
+            "summary": "The name of the trigger."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 392
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-branches"
+            },
+            "remarks": "If you specify an empty array, the trigger applies to all branches.\n\n> Although no content is required in the array, you must include the array itself.",
+            "stability": "external",
+            "summary": "The branches to be included in the trigger configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 366
+          },
+          "name": "branches",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-repositorytrigger.html#cfn-codecommit-repository-repositorytrigger-customdata"
+            },
+            "stability": "external",
+            "summary": "Any custom data associated with the trigger to be included in the information sent to the target of the trigger."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 372
+          },
+          "name": "customData",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/codecommit.generated:CfnRepository.RepositoryTriggerProperty"
+    },
+    "@aws-cdk/aws-codecommit.CfnRepository.S3Property": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-s3.html"
+        },
+        "remarks": "Changes to this property are ignored after initial resource creation.",
+        "stability": "external",
+        "summary": "Information about the Amazon S3 bucket that contains the code that will be committed to the new repository."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.CfnRepository.S3Property",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/codecommit.generated.ts",
+        "line": 468
+      },
+      "name": "S3Property",
+      "namespace": "CfnRepository",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-s3.html#cfn-codecommit-repository-s3-bucket"
+            },
+            "remarks": "This can be specified using the name of the bucket in the AWS account . Changes to this property are ignored after initial resource creation.",
+            "stability": "external",
+            "summary": "The name of the Amazon S3 bucket that contains the ZIP file with the content that will be committed to the new repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 474
+          },
+          "name": "bucket",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-s3.html#cfn-codecommit-repository-s3-key"
+            },
+            "remarks": "Changes to this property are ignored after initial resource creation. For more information, see [Creating object key names](https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html) and [Uploading objects](https://docs.aws.amazon.com/AmazonS3/latest/userguide/upload-objects.html) in the Amazon S3 User Guide.",
+            "stability": "external",
+            "summary": "The key to use for accessing the Amazon S3 bucket."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 480
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codecommit-repository-s3.html#cfn-codecommit-repository-s3-objectversion"
+            },
+            "remarks": "Changes to this property are ignored after initial resource creation.",
+            "stability": "external",
+            "summary": "The object version of the ZIP file, if versioning is enabled for the Amazon S3 bucket."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 486
+          },
+          "name": "objectVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/codecommit.generated:CfnRepository.S3Property"
+    },
+    "@aws-cdk/aws-codecommit.CfnRepositoryProps": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRepository`."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.CfnRepositoryProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/codecommit.generated.ts",
+        "line": 20
+      },
+      "name": "CfnRepositoryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-repositoryname"
+            },
+            "remarks": "> The repository name must be unique across the calling AWS account . Repository names are limited to 100 alphanumeric, dash, and underscore characters, and cannot include certain characters. For more information about the limits on repository names, see [Quotas](https://docs.aws.amazon.com/codecommit/latest/userguide/limits.html) in the *AWS CodeCommit User Guide* . The suffix .git is prohibited.",
+            "stability": "external",
+            "summary": "The name of the new repository to be created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 29
+          },
+          "name": "repositoryName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-code"
+            },
+            "remarks": "Information about code is only used in resource creation. Updates to a stack will not reflect changes made to code properties after initial resource creation.\n\n> You can only use this property to add code when creating a repository with a AWS CloudFormation template at creation time. This property cannot be used for updating code to an existing repository.",
+            "stability": "external",
+            "summary": "Information about code to be committed to a repository after it is created in an AWS CloudFormation stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 38
+          },
+          "name": "code",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-codecommit.CfnRepository.CodeProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-repositorydescription"
+            },
+            "remarks": "> The description field for a repository accepts all HTML characters and all valid Unicode characters. Applications that do not HTML-encode the description and display it in a webpage can expose users to potentially malicious code. Make sure that you HTML-encode the description field in any application that uses this API to display the repository description on a webpage.",
+            "stability": "external",
+            "summary": "A comment or description about the new repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 47
+          },
+          "name": "repositoryDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-tags"
+            },
+            "stability": "external",
+            "summary": "One or more tag key-value pairs to use when tagging this repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 54
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-codecommit-repository.html#cfn-codecommit-repository-triggers"
+            },
+            "stability": "external",
+            "summary": "The JSON block of configuration information for each trigger."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codecommit.generated.ts",
+            "line": 61
+          },
+          "name": "triggers",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-codecommit.CfnRepository.RepositoryTriggerProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/codecommit.generated:CfnRepositoryProps"
+    },
+    "@aws-cdk/aws-codecommit.Code": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-codecommit",
+      "docs": {
+        "stability": "stable",
+        "summary": "Represents the contents to initialize the repository with."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.Code",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        }
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/code.ts",
+        "line": 20
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Code from user-supplied asset."
+          },
+          "locationInModule": {
+            "filename": "lib/code.ts",
+            "line": 58
+          },
+          "name": "fromAsset",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "pre-existing asset."
+              },
+              "name": "asset",
+              "type": {
+                "fqn": "@aws-cdk/aws-s3-assets.Asset"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "Default is \"main\"",
+                "summary": "the name of the branch to create in the repository."
+              },
+              "name": "branch",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.Code"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Code from directory."
+          },
+          "locationInModule": {
+            "filename": "lib/code.ts",
+            "line": 26
+          },
+          "name": "fromDirectory",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the path to the local directory containing the contents to initialize the repository with."
+              },
+              "name": "directoryPath",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "Default is \"main\"",
+                "summary": "the name of the branch to create in the repository."
+              },
+              "name": "branch",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.Code"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Code from preexisting ZIP file."
+          },
+          "locationInModule": {
+            "filename": "lib/code.ts",
+            "line": 42
+          },
+          "name": "fromZipFile",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the path to the local ZIP file containing the contents to initialize the repository with."
+              },
+              "name": "filePath",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "Default is \"main\"",
+                "summary": "the name of the branch to create in the repository."
+              },
+              "name": "branch",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.Code"
+            }
+          },
+          "static": true
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "This method is called after a repository is passed this instance of Code in its 'code' property."
+          },
+          "locationInModule": {
+            "filename": "lib/code.ts",
+            "line": 67
+          },
+          "name": "bind",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the binding scope."
+              },
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.CodeConfig"
+            }
+          }
+        }
+      ],
+      "name": "Code",
+      "symbolId": "lib/code:Code"
+    },
+    "@aws-cdk/aws-codecommit.CodeConfig": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Represents the structure to pass into the underlying CfnRepository class."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.CodeConfig",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/code.ts",
+        "line": 10
+      },
+      "name": "CodeConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "represents the underlying code structure."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/code.ts",
+            "line": 14
+          },
+          "name": "code",
+          "type": {
+            "fqn": "@aws-cdk/aws-codecommit.CfnRepository.CodeProperty"
+          }
+        }
+      ],
+      "symbolId": "lib/code:CodeConfig"
+    },
+    "@aws-cdk/aws-codecommit.IRepository": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/aws-codecommit.IRepository",
+      "interfaces": [
+        "@aws-cdk/core.IResource",
+        "@aws-cdk/aws-codestarnotifications.INotificationRuleSource"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 21
+      },
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given principal identity permissions to perform the actions on this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 111
+          },
+          "name": "grant",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            },
+            {
+              "name": "actions",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          },
+          "variadic": true
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given identity permissions to pull this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 116
+          },
+          "name": "grantPull",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given identity permissions to pull and push this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 121
+          },
+          "name": "grantPullPush",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given identity permissions to read this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 126
+          },
+          "name": "grantRead",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "deprecated": "this method has a typo in its name, use notifyOnPullRequestMerged instead",
+            "stability": "deprecated",
+            "summary": "Defines a CodeStar Notification rule which triggers when a pull request is merged."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 183
+          },
+          "name": "notifiyOnPullRequestMerged",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "You can also use the methods to define rules for the specific event emitted.\neg: `notifyOnPullRequstCreated`.",
+            "returns": "CodeStar Notifications rule associated with this repository.",
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule triggered when the project events specified by you are emitted. Similar to `onEvent` API."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 137
+          },
+          "name": "notifyOn",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-codecommit.RepositoryNotifyOnOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when an approval rule is overridden."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 164
+          },
+          "name": "notifyOnApprovalRuleOverridden",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when an approval status is changed."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 155
+          },
+          "name": "notifyOnApprovalStatusChanged",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when a new branch or tag is created."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 201
+          },
+          "name": "notifyOnBranchOrTagCreated",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when a branch or tag is deleted."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 210
+          },
+          "name": "notifyOnBranchOrTagDeleted",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when a comment is made on a pull request."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 146
+          },
+          "name": "notifyOnPullRequestComment",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when a pull request is created."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 173
+          },
+          "name": "notifyOnPullRequestCreated",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when a pull request is merged."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 192
+          },
+          "name": "notifyOnPullRequestMerged",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a comment is made on a commit."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 101
+          },
+          "name": "onCommentOnCommit",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a comment is made on a pull request."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 96
+          },
+          "name": "onCommentOnPullRequest",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a commit is pushed to a branch."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 106
+          },
+          "name": "onCommit",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codecommit.OnCommitOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Use\n`rule.addEventPattern(pattern)` to specify a filter.",
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers for repository events."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 62
+          },
+          "name": "onEvent",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a pull request state is changed."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 91
+          },
+          "name": "onPullRequestStateChange",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a reference is created (i.e. a new branch/tag is created) to the repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 74
+          },
+          "name": "onReferenceCreated",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a reference is delete (i.e. a branch/tag is deleted) from the repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 86
+          },
+          "name": "onReferenceDeleted",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a reference is updated (i.e. a commit is pushed to an existing or new branch) from the repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 80
+          },
+          "name": "onReferenceUpdated",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a \"CodeCommit Repository State Change\" event occurs."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 68
+          },
+          "name": "onStateChange",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        }
+      ],
+      "name": "IRepository",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The ARN of this Repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 26
+          },
+          "name": "repositoryArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "HTTPS (GRC) is the protocol to use with git-remote-codecommit (GRC).\n\nIt is the recommended method for supporting connections made with federated\naccess, identity providers, and temporary credentials.",
+            "see": "https://docs.aws.amazon.com/codecommit/latest/userguide/setting-up-git-remote-codecommit.html",
+            "stability": "stable",
+            "summary": "The HTTPS (GRC) clone URL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 56
+          },
+          "name": "repositoryCloneUrlGrc",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The HTTP clone URL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 38
+          },
+          "name": "repositoryCloneUrlHttp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The SSH clone URL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 44
+          },
+          "name": "repositoryCloneUrlSsh",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The human-visible name of this Repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 32
+          },
+          "name": "repositoryName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/repository:IRepository"
+    },
+    "@aws-cdk/aws-codecommit.OnCommitOptions": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options for the onCommit() method."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.OnCommitOptions",
+      "interfaces": [
+        "@aws-cdk/aws-events.OnEventOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 220
+      },
+      "name": "OnCommitOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- All branches",
+            "stability": "stable",
+            "summary": "The branch to monitor."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 226
+          },
+          "name": "branches",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/repository:OnCommitOptions"
+    },
+    "@aws-cdk/aws-codecommit.ReferenceEvent": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "docs": {
+        "see": "https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#codebuild_event_type",
+        "stability": "stable",
+        "summary": "Fields of CloudWatch Events that change references."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.ReferenceEvent",
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/events.ts",
+        "line": 8
+      },
+      "name": "ReferenceEvent",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Commit id this reference now points to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/events.ts",
+            "line": 60
+          },
+          "name": "commitId",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "'referenceCreated', 'referenceUpdated' or 'referenceDeleted'",
+            "stability": "stable",
+            "summary": "The type of reference event."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/events.ts",
+            "line": 14
+          },
+          "name": "eventType",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "For example, 'refs/tags/myTag'",
+            "stability": "stable",
+            "summary": "Full reference name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/events.ts",
+            "line": 53
+          },
+          "name": "referenceFullName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Name of reference changed (branch or tag name)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/events.ts",
+            "line": 44
+          },
+          "name": "referenceName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "'branch' or 'tag'",
+            "stability": "stable",
+            "summary": "Type of reference changed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/events.ts",
+            "line": 37
+          },
+          "name": "referenceType",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Id of the CodeCommit repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/events.ts",
+            "line": 28
+          },
+          "name": "repositoryId",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Name of the CodeCommit repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/events.ts",
+            "line": 21
+          },
+          "name": "repositoryName",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/events:ReferenceEvent"
+    },
+    "@aws-cdk/aws-codecommit.Repository": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "base": "@aws-cdk/core.Resource",
+      "docs": {
+        "stability": "stable",
+        "summary": "Provides a CodeCommit Repository."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.Repository",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/repository.ts",
+          "line": 554
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.RepositoryProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-codecommit.IRepository"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 504
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Imports a codecommit repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 510
+          },
+          "name": "fromRepositoryArn",
+          "parameters": [
+            {
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "(e.g. `arn:aws:codecommit:us-east-1:123456789012:MyDemoRepo`)."
+              },
+              "name": "repositoryArn",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.IRepository"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 530
+          },
+          "name": "fromRepositoryName",
+          "parameters": [
+            {
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "repositoryName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.IRepository"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a source configuration for notification rule."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 470
+          },
+          "name": "bindAsNotificationRuleSource",
+          "overrides": "@aws-cdk/aws-codestarnotifications.INotificationRuleSource",
+          "parameters": [
+            {
+              "name": "_scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleSourceConfig"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given principal identity permissions to perform the actions on this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 347
+          },
+          "name": "grant",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            },
+            {
+              "name": "actions",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          },
+          "variadic": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given identity permissions to pull this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 355
+          },
+          "name": "grantPull",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given identity permissions to pull and push this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 359
+          },
+          "name": "grantPullPush",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given identity permissions to read this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 364
+          },
+          "name": "grantRead",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when a pull request is merged."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 429
+          },
+          "name": "notifiyOnPullRequestMerged",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Create a trigger to notify another service to run actions on repository events."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 581
+          },
+          "name": "notify",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "Arn of the resource that repository events will notify."
+              },
+              "name": "arn",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "Trigger options to run actions."
+              },
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codecommit.RepositoryTriggerOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codecommit.Repository"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "You can also use the methods to define rules for the specific event emitted.\neg: `notifyOnPullRequstCreated`.",
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule triggered when the project events specified by you are emitted. Similar to `onEvent` API."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 373
+          },
+          "name": "notifyOn",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-codecommit.RepositoryNotifyOnOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when an approval rule is overridden."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 407
+          },
+          "name": "notifyOnApprovalRuleOverridden",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when an approval status is changed."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 396
+          },
+          "name": "notifyOnApprovalStatusChanged",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when a new branch or tag is created."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 448
+          },
+          "name": "notifyOnBranchOrTagCreated",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when a branch or tag is deleted."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 459
+          },
+          "name": "notifyOnBranchOrTagDeleted",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when a comment is made on a pull request."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 385
+          },
+          "name": "notifyOnPullRequestComment",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when a pull request is created."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 418
+          },
+          "name": "notifyOnPullRequestCreated",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CodeStar Notification rule which triggers when a pull request is merged."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 437
+          },
+          "name": "notifyOnPullRequestMerged",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "target",
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.INotificationRule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a comment is made on a commit."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 330
+          },
+          "name": "onCommentOnCommit",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a comment is made on a pull request."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 321
+          },
+          "name": "onCommentOnPullRequest",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a commit is pushed to a branch."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 339
+          },
+          "name": "onCommit",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-codecommit.OnCommitOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Use\n`rule.addEventPattern(pattern)` to specify a filter.",
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers for repository events."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 257
+          },
+          "name": "onEvent",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a pull request state is changed."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 312
+          },
+          "name": "onPullRequestStateChange",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a reference is created (i.e. a new branch/tag is created) to the repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 283
+          },
+          "name": "onReferenceCreated",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a reference is delete (i.e. a branch/tag is deleted) from the repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 303
+          },
+          "name": "onReferenceDeleted",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a reference is updated (i.e. a commit is pushed to an existing or new branch) from the repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 293
+          },
+          "name": "onReferenceUpdated",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers when a \"CodeCommit Repository State Change\" event occurs."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 271
+          },
+          "name": "onStateChange",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        }
+      ],
+      "name": "Repository",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of this Repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 547
+          },
+          "name": "repositoryArn",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "HTTPS (GRC) is the protocol to use with git-remote-codecommit (GRC).\n\nIt is the recommended method for supporting connections made with federated\naccess, identity providers, and temporary credentials.",
+            "stability": "stable",
+            "summary": "The HTTPS (GRC) clone URL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 551
+          },
+          "name": "repositoryCloneUrlGrc",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The HTTP clone URL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 549
+          },
+          "name": "repositoryCloneUrlHttp",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The SSH clone URL."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 550
+          },
+          "name": "repositoryCloneUrlSsh",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The human-visible name of this Repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 548
+          },
+          "name": "repositoryName",
+          "overrides": "@aws-cdk/aws-codecommit.IRepository",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/repository:Repository"
+    },
+    "@aws-cdk/aws-codecommit.RepositoryEventTrigger": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "docs": {
+        "stability": "stable",
+        "summary": "Repository events that will cause the trigger to run actions in another service."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.RepositoryEventTrigger",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 644
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "name": "ALL"
+        },
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "name": "UPDATE_REF"
+        },
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "name": "CREATE_REF"
+        },
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "name": "DELETE_REF"
+        }
+      ],
+      "name": "RepositoryEventTrigger",
+      "symbolId": "lib/repository:RepositoryEventTrigger"
+    },
+    "@aws-cdk/aws-codecommit.RepositoryNotificationEvents": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "docs": {
+        "see": "https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#events-ref-repositories",
+        "stability": "stable",
+        "summary": "List of event types for AWS CodeCommit."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.RepositoryNotificationEvents",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 668
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Trigger notication when comment made on commit."
+          },
+          "name": "COMMIT_COMMENT"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Trigger notification when comment made on pull request."
+          },
+          "name": "PULL_REQUEST_COMMENT"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Trigger notification when approval status changed."
+          },
+          "name": "APPROVAL_STATUS_CHANGED"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Trigger notifications when approval rule is overridden."
+          },
+          "name": "APPROVAL_RULE_OVERRIDDEN"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Trigger notification when pull request created."
+          },
+          "name": "PULL_REQUEST_CREATED"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Trigger notification when pull request source updated."
+          },
+          "name": "PULL_REQUEST_SOURCE_UPDATED"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Trigger notification when pull request status is changed."
+          },
+          "name": "PULL_REQUEST_STATUS_CHANGED"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Trigger notification when pull requset is merged."
+          },
+          "name": "PULL_REQUEST_MERGED"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Trigger notification when a branch or tag is created."
+          },
+          "name": "BRANCH_OR_TAG_CREATED"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Trigger notification when a branch or tag is deleted."
+          },
+          "name": "BRANCH_OR_TAG_DELETED"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Trigger notification when a branch or tag is updated."
+          },
+          "name": "BRANCH_OR_TAG_UPDATED"
+        }
+      ],
+      "name": "RepositoryNotificationEvents",
+      "symbolId": "lib/repository:RepositoryNotificationEvents"
+    },
+    "@aws-cdk/aws-codecommit.RepositoryNotifyOnOptions": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Additional options to pass to the notification rule."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.RepositoryNotifyOnOptions",
+      "interfaces": [
+        "@aws-cdk/aws-codestarnotifications.NotificationRuleOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 12
+      },
+      "name": "RepositoryNotifyOnOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "For a complete list of event types and IDs, see Notification concepts in the Developer Tools Console User Guide.",
+            "see": "https://docs.aws.amazon.com/dtconsole/latest/userguide/concepts.html#concepts-api",
+            "stability": "stable",
+            "summary": "A list of event types associated with this notification rule for CodeCommit repositories."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 18
+          },
+          "name": "events",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-codecommit.RepositoryNotificationEvents"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/repository:RepositoryNotifyOnOptions"
+    },
+    "@aws-cdk/aws-codecommit.RepositoryProps": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/aws-codecommit.RepositoryProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 477
+      },
+      "name": "RepositoryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "This property is required for all CodeCommit repositories.",
+            "stability": "stable",
+            "summary": "Name of the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 483
+          },
+          "name": "repositoryName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No initialization (create empty repo)",
+            "stability": "stable",
+            "summary": "The contents with which to initialize the repository after it has been created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 498
+          },
+          "name": "code",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-codecommit.Code"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No description.",
+            "remarks": "Use the description to identify the\npurpose of the repository.",
+            "stability": "stable",
+            "summary": "A description of the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 491
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/repository:RepositoryProps"
+    },
+    "@aws-cdk/aws-codecommit.RepositoryTriggerOptions": {
+      "assembly": "@aws-cdk/aws-codecommit",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Creates for a repository trigger to an SNS topic or Lambda function."
+      },
+      "fqn": "@aws-cdk/aws-codecommit.RepositoryTriggerOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 614
+      },
+      "name": "RepositoryTriggerOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "If you don't specify at\nleast one branch, the trigger applies to all branches.",
+            "stability": "stable",
+            "summary": "The names of the branches in the AWS CodeCommit repository that contain events that you want to include in the trigger."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 632
+          },
+          "name": "branches",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "When an event is triggered, additional information that AWS CodeCommit includes when it sends information to the target."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 638
+          },
+          "name": "customData",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The repository events for which AWS CodeCommit sends information to the target, which you specified in the DestinationArn property.If you don't specify events, the trigger runs for all repository events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 625
+          },
+          "name": "events",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-codecommit.RepositoryEventTrigger"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "A name for the trigger.Triggers on a repository must have unique names."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 618
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/repository:RepositoryTriggerOptions"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "etW0/t4YD+wGA/B+ljlU0yaLc6ePl3Zc8Zpm/taZPUk="
+}

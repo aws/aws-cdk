@@ -1,0 +1,2006 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::LicenseManager",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::LicenseManager",
+    "aws-licensemanager"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-licensemanager",
+  "readme": {
+    "markdown": "# AWS::LicenseManager Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as licensemanager from '@aws-cdk/aws-licensemanager';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for LicenseManager construct libraries](https://constructs.dev/search?q=licensemanager)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::LicenseManager resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_LicenseManager.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::LicenseManager](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_LicenseManager.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-licensemanager",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.LicenseManager",
+      "packageId": "Amazon.CDK.AWS.LicenseManager"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "licensemanager",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.licensemanager"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-licensemanager"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-licensemanager",
+      "module": "aws_cdk.aws_licensemanager"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-licensemanager.CfnGrant": {
+      "assembly": "@aws-cdk/aws-licensemanager",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::LicenseManager::Grant",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html"
+        },
+        "remarks": "Specifies a grant.\n\nA grant shares the use of license entitlements with specific AWS accounts . For more information, see [Granted licenses](https://docs.aws.amazon.com/license-manager/latest/userguide/granted-licenses.html) in the *AWS License Manager User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::LicenseManager::Grant`."
+      },
+      "fqn": "@aws-cdk/aws-licensemanager.CfnGrant",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::LicenseManager::Grant`."
+        },
+        "locationInModule": {
+          "filename": "lib/licensemanager.generated.ts",
+          "line": 235
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-licensemanager.CfnGrantProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/licensemanager.generated.ts",
+        "line": 143
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 254
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 270
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnGrant",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 147
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "GrantArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the grant."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 172
+          },
+          "name": "attrGrantArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Version"
+            },
+            "stability": "external",
+            "summary": "The grant version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 178
+          },
+          "name": "attrVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 259
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html#cfn-licensemanager-grant-allowedoperations"
+            },
+            "stability": "external",
+            "summary": "Allowed operations for the grant."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 185
+          },
+          "name": "allowedOperations",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html#cfn-licensemanager-grant-grantname"
+            },
+            "stability": "external",
+            "summary": "Grant name."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 192
+          },
+          "name": "grantName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html#cfn-licensemanager-grant-homeregion"
+            },
+            "stability": "external",
+            "summary": "Home Region of the grant."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 199
+          },
+          "name": "homeRegion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html#cfn-licensemanager-grant-licensearn"
+            },
+            "stability": "external",
+            "summary": "License ARN."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 206
+          },
+          "name": "licenseArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html#cfn-licensemanager-grant-principals"
+            },
+            "remarks": "- An AWS account, which includes only the account specified.\n\n- An organizational unit (OU), which includes all accounts in the OU.\n\n- An organization, which will include all accounts across your organization.",
+            "stability": "external",
+            "summary": "The grant principals. You can specify one of the following as an Amazon Resource Name (ARN):."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 219
+          },
+          "name": "principals",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html#cfn-licensemanager-grant-status"
+            },
+            "stability": "external",
+            "summary": "Granted license status."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 226
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/licensemanager.generated:CfnGrant"
+    },
+    "@aws-cdk/aws-licensemanager.CfnGrantProps": {
+      "assembly": "@aws-cdk/aws-licensemanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnGrant`."
+      },
+      "fqn": "@aws-cdk/aws-licensemanager.CfnGrantProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/licensemanager.generated.ts",
+        "line": 20
+      },
+      "name": "CfnGrantProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html#cfn-licensemanager-grant-allowedoperations"
+            },
+            "stability": "external",
+            "summary": "Allowed operations for the grant."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 27
+          },
+          "name": "allowedOperations",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html#cfn-licensemanager-grant-grantname"
+            },
+            "stability": "external",
+            "summary": "Grant name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 34
+          },
+          "name": "grantName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html#cfn-licensemanager-grant-homeregion"
+            },
+            "stability": "external",
+            "summary": "Home Region of the grant."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 41
+          },
+          "name": "homeRegion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html#cfn-licensemanager-grant-licensearn"
+            },
+            "stability": "external",
+            "summary": "License ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 48
+          },
+          "name": "licenseArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html#cfn-licensemanager-grant-principals"
+            },
+            "remarks": "- An AWS account, which includes only the account specified.\n\n- An organizational unit (OU), which includes all accounts in the OU.\n\n- An organization, which will include all accounts across your organization.",
+            "stability": "external",
+            "summary": "The grant principals. You can specify one of the following as an Amazon Resource Name (ARN):."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 61
+          },
+          "name": "principals",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-grant.html#cfn-licensemanager-grant-status"
+            },
+            "stability": "external",
+            "summary": "Granted license status."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 68
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/licensemanager.generated:CfnGrantProps"
+    },
+    "@aws-cdk/aws-licensemanager.CfnLicense": {
+      "assembly": "@aws-cdk/aws-licensemanager",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::LicenseManager::License",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html"
+        },
+        "remarks": "Specifies a granted license.\n\nGranted licenses are licenses for products that your organization purchased from AWS Marketplace or directly from a seller who integrated their software with managed entitlements. For more information, see [Granted licenses](https://docs.aws.amazon.com/license-manager/latest/userguide/granted-licenses.html) in the *AWS License Manager User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::LicenseManager::License`."
+      },
+      "fqn": "@aws-cdk/aws-licensemanager.CfnLicense",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::LicenseManager::License`."
+        },
+        "locationInModule": {
+          "filename": "lib/licensemanager.generated.ts",
+          "line": 578
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-licensemanager.CfnLicenseProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/licensemanager.generated.ts",
+        "line": 457
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 609
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 630
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnLicense",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 461
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LicenseArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the license."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 486
+          },
+          "name": "attrLicenseArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Version"
+            },
+            "stability": "external",
+            "summary": "The license version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 492
+          },
+          "name": "attrVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 614
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-consumptionconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration for consumption of the license."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 499
+          },
+          "name": "consumptionConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.ConsumptionConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-entitlements"
+            },
+            "stability": "external",
+            "summary": "License entitlements."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 506
+          },
+          "name": "entitlements",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.EntitlementProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-homeregion"
+            },
+            "stability": "external",
+            "summary": "Home Region of the license."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 513
+          },
+          "name": "homeRegion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-issuer"
+            },
+            "stability": "external",
+            "summary": "License issuer."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 520
+          },
+          "name": "issuer",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.IssuerDataProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-licensename"
+            },
+            "stability": "external",
+            "summary": "License name."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 527
+          },
+          "name": "licenseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-productname"
+            },
+            "stability": "external",
+            "summary": "Product name."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 534
+          },
+          "name": "productName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-validity"
+            },
+            "stability": "external",
+            "summary": "Date and time range during which the license is valid, in ISO8601-UTC format."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 541
+          },
+          "name": "validity",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.ValidityDateFormatProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-beneficiary"
+            },
+            "stability": "external",
+            "summary": "License beneficiary."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 548
+          },
+          "name": "beneficiary",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-licensemetadata"
+            },
+            "stability": "external",
+            "summary": "License metadata."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 555
+          },
+          "name": "licenseMetadata",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.MetadataProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-productsku"
+            },
+            "stability": "external",
+            "summary": "Product SKU."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 562
+          },
+          "name": "productSku",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-status"
+            },
+            "stability": "external",
+            "summary": "License status."
+          },
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 569
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/licensemanager.generated:CfnLicense"
+    },
+    "@aws-cdk/aws-licensemanager.CfnLicense.BorrowConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-licensemanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-borrowconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Details about a borrow configuration."
+      },
+      "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.BorrowConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/licensemanager.generated.ts",
+        "line": 644
+      },
+      "name": "BorrowConfigurationProperty",
+      "namespace": "CfnLicense",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-borrowconfiguration.html#cfn-licensemanager-license-borrowconfiguration-allowearlycheckin"
+            },
+            "stability": "external",
+            "summary": "Indicates whether early check-ins are allowed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 650
+          },
+          "name": "allowEarlyCheckIn",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-borrowconfiguration.html#cfn-licensemanager-license-borrowconfiguration-maxtimetoliveinminutes"
+            },
+            "stability": "external",
+            "summary": "Maximum time for the borrow configuration, in minutes."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 656
+          },
+          "name": "maxTimeToLiveInMinutes",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/licensemanager.generated:CfnLicense.BorrowConfigurationProperty"
+    },
+    "@aws-cdk/aws-licensemanager.CfnLicense.ConsumptionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-licensemanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-consumptionconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Details about a consumption configuration."
+      },
+      "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.ConsumptionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/licensemanager.generated.ts",
+        "line": 722
+      },
+      "name": "ConsumptionConfigurationProperty",
+      "namespace": "CfnLicense",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-consumptionconfiguration.html#cfn-licensemanager-license-consumptionconfiguration-borrowconfiguration"
+            },
+            "stability": "external",
+            "summary": "Details about a borrow configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 728
+          },
+          "name": "borrowConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.BorrowConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-consumptionconfiguration.html#cfn-licensemanager-license-consumptionconfiguration-provisionalconfiguration"
+            },
+            "stability": "external",
+            "summary": "Details about a provisional configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 734
+          },
+          "name": "provisionalConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.ProvisionalConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-consumptionconfiguration.html#cfn-licensemanager-license-consumptionconfiguration-renewtype"
+            },
+            "stability": "external",
+            "summary": "Renewal frequency."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 740
+          },
+          "name": "renewType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/licensemanager.generated:CfnLicense.ConsumptionConfigurationProperty"
+    },
+    "@aws-cdk/aws-licensemanager.CfnLicense.EntitlementProperty": {
+      "assembly": "@aws-cdk/aws-licensemanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-entitlement.html"
+        },
+        "stability": "external",
+        "summary": "Describes a resource entitled for use with a license."
+      },
+      "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.EntitlementProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/licensemanager.generated.ts",
+        "line": 807
+      },
+      "name": "EntitlementProperty",
+      "namespace": "CfnLicense",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-entitlement.html#cfn-licensemanager-license-entitlement-name"
+            },
+            "stability": "external",
+            "summary": "Entitlement name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 825
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-entitlement.html#cfn-licensemanager-license-entitlement-unit"
+            },
+            "stability": "external",
+            "summary": "Entitlement unit."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 837
+          },
+          "name": "unit",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-entitlement.html#cfn-licensemanager-license-entitlement-allowcheckin"
+            },
+            "stability": "external",
+            "summary": "Indicates whether check-ins are allowed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 813
+          },
+          "name": "allowCheckIn",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-entitlement.html#cfn-licensemanager-license-entitlement-maxcount"
+            },
+            "remarks": "Use if the unit is not None.",
+            "stability": "external",
+            "summary": "Maximum entitlement count."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 819
+          },
+          "name": "maxCount",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-entitlement.html#cfn-licensemanager-license-entitlement-overage"
+            },
+            "stability": "external",
+            "summary": "Indicates whether overages are allowed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 831
+          },
+          "name": "overage",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-entitlement.html#cfn-licensemanager-license-entitlement-value"
+            },
+            "remarks": "Use only if the unit is None.",
+            "stability": "external",
+            "summary": "Entitlement resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 843
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/licensemanager.generated:CfnLicense.EntitlementProperty"
+    },
+    "@aws-cdk/aws-licensemanager.CfnLicense.IssuerDataProperty": {
+      "assembly": "@aws-cdk/aws-licensemanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-issuerdata.html"
+        },
+        "stability": "external",
+        "summary": "Details associated with the issuer of a license."
+      },
+      "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.IssuerDataProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/licensemanager.generated.ts",
+        "line": 921
+      },
+      "name": "IssuerDataProperty",
+      "namespace": "CfnLicense",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-issuerdata.html#cfn-licensemanager-license-issuerdata-name"
+            },
+            "stability": "external",
+            "summary": "Issuer name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 927
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-issuerdata.html#cfn-licensemanager-license-issuerdata-signkey"
+            },
+            "remarks": "The KMS key must have a key usage of sign and verify, and support the RSASSA-PSS SHA-256 signing algorithm.",
+            "stability": "external",
+            "summary": "Asymmetric KMS key from AWS Key Management Service ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 933
+          },
+          "name": "signKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/licensemanager.generated:CfnLicense.IssuerDataProperty"
+    },
+    "@aws-cdk/aws-licensemanager.CfnLicense.MetadataProperty": {
+      "assembly": "@aws-cdk/aws-licensemanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-metadata.html"
+        },
+        "stability": "external",
+        "summary": "Describes key/value pairs."
+      },
+      "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.MetadataProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/licensemanager.generated.ts",
+        "line": 998
+      },
+      "name": "MetadataProperty",
+      "namespace": "CfnLicense",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-metadata.html#cfn-licensemanager-license-metadata-name"
+            },
+            "stability": "external",
+            "summary": "The key name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 1004
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-metadata.html#cfn-licensemanager-license-metadata-value"
+            },
+            "stability": "external",
+            "summary": "The value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 1010
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/licensemanager.generated:CfnLicense.MetadataProperty"
+    },
+    "@aws-cdk/aws-licensemanager.CfnLicense.ProvisionalConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-licensemanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-provisionalconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Details about a provisional configuration."
+      },
+      "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.ProvisionalConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/licensemanager.generated.ts",
+        "line": 1076
+      },
+      "name": "ProvisionalConfigurationProperty",
+      "namespace": "CfnLicense",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-provisionalconfiguration.html#cfn-licensemanager-license-provisionalconfiguration-maxtimetoliveinminutes"
+            },
+            "stability": "external",
+            "summary": "Maximum time for the provisional configuration, in minutes."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 1082
+          },
+          "name": "maxTimeToLiveInMinutes",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/licensemanager.generated:CfnLicense.ProvisionalConfigurationProperty"
+    },
+    "@aws-cdk/aws-licensemanager.CfnLicense.ValidityDateFormatProperty": {
+      "assembly": "@aws-cdk/aws-licensemanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-validitydateformat.html"
+        },
+        "stability": "external",
+        "summary": "Date and time range during which the license is valid, in ISO8601-UTC format."
+      },
+      "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.ValidityDateFormatProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/licensemanager.generated.ts",
+        "line": 1144
+      },
+      "name": "ValidityDateFormatProperty",
+      "namespace": "CfnLicense",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-validitydateformat.html#cfn-licensemanager-license-validitydateformat-begin"
+            },
+            "stability": "external",
+            "summary": "Start of the time range."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 1150
+          },
+          "name": "begin",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-licensemanager-license-validitydateformat.html#cfn-licensemanager-license-validitydateformat-end"
+            },
+            "stability": "external",
+            "summary": "End of the time range."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 1156
+          },
+          "name": "end",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/licensemanager.generated:CfnLicense.ValidityDateFormatProperty"
+    },
+    "@aws-cdk/aws-licensemanager.CfnLicenseProps": {
+      "assembly": "@aws-cdk/aws-licensemanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnLicense`."
+      },
+      "fqn": "@aws-cdk/aws-licensemanager.CfnLicenseProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/licensemanager.generated.ts",
+        "line": 283
+      },
+      "name": "CfnLicenseProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-consumptionconfiguration"
+            },
+            "stability": "external",
+            "summary": "Configuration for consumption of the license."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 290
+          },
+          "name": "consumptionConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.ConsumptionConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-entitlements"
+            },
+            "stability": "external",
+            "summary": "License entitlements."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 297
+          },
+          "name": "entitlements",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.EntitlementProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-homeregion"
+            },
+            "stability": "external",
+            "summary": "Home Region of the license."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 304
+          },
+          "name": "homeRegion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-issuer"
+            },
+            "stability": "external",
+            "summary": "License issuer."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 311
+          },
+          "name": "issuer",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.IssuerDataProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-licensename"
+            },
+            "stability": "external",
+            "summary": "License name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 318
+          },
+          "name": "licenseName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-productname"
+            },
+            "stability": "external",
+            "summary": "Product name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 325
+          },
+          "name": "productName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-validity"
+            },
+            "stability": "external",
+            "summary": "Date and time range during which the license is valid, in ISO8601-UTC format."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 332
+          },
+          "name": "validity",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.ValidityDateFormatProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-beneficiary"
+            },
+            "stability": "external",
+            "summary": "License beneficiary."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 339
+          },
+          "name": "beneficiary",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-licensemetadata"
+            },
+            "stability": "external",
+            "summary": "License metadata."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 346
+          },
+          "name": "licenseMetadata",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-licensemanager.CfnLicense.MetadataProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-productsku"
+            },
+            "stability": "external",
+            "summary": "Product SKU."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 353
+          },
+          "name": "productSku",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-licensemanager-license.html#cfn-licensemanager-license-status"
+            },
+            "stability": "external",
+            "summary": "License status."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/licensemanager.generated.ts",
+            "line": 360
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/licensemanager.generated:CfnLicenseProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "p5xkKajPeLd/hv6mxfgkt4mu2GYCNctKXJ1XLxEXIyw="
+}

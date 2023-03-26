@@ -1,0 +1,3149 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::MemoryDB",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::MemoryDB",
+    "aws-memorydb"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-memorydb",
+  "readme": {
+    "markdown": "# AWS::MemoryDB Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as memorydb from '@aws-cdk/aws-memorydb';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for MemoryDB construct libraries](https://constructs.dev/search?q=memorydb)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::MemoryDB resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_MemoryDB.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::MemoryDB](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_MemoryDB.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-memorydb",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.MemoryDB",
+      "packageId": "Amazon.CDK.AWS.MemoryDB",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "memorydb",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.memorydb"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-memorydb"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-memorydb",
+      "module": "aws_cdk.aws_memorydb"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-memorydb.CfnACL": {
+      "assembly": "@aws-cdk/aws-memorydb",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MemoryDB::ACL",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-acl.html"
+        },
+        "remarks": "Specifies an Access Control List. For more information, see [Authenticating users with Access Contol Lists (ACLs)](https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MemoryDB::ACL`."
+      },
+      "fqn": "@aws-cdk/aws-memorydb.CfnACL",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MemoryDB::ACL`."
+        },
+        "locationInModule": {
+          "filename": "lib/memorydb.generated.ts",
+          "line": 177
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-memorydb.CfnACLProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/memorydb.generated.ts",
+        "line": 108
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 194
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 207
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnACL",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 112
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the ARN of the Access Control List, such as `arn:aws:memorydb:us-east-1:123456789012:acl/my-acl`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 137
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "remarks": "*Valid values* : `creating` | `active` | `modifying` | `deleting`",
+            "stability": "external",
+            "summary": "Indicates ACL status."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 145
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 199
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-acl.html#cfn-memorydb-acl-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 161
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-acl.html#cfn-memorydb-acl-aclname"
+            },
+            "stability": "external",
+            "summary": "The name of the Access Control List."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 152
+          },
+          "name": "aclName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-acl.html#cfn-memorydb-acl-usernames"
+            },
+            "stability": "external",
+            "summary": "The list of users that belong to the Access Control List."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 168
+          },
+          "name": "userNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/memorydb.generated:CfnACL"
+    },
+    "@aws-cdk/aws-memorydb.CfnACLProps": {
+      "assembly": "@aws-cdk/aws-memorydb",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-acl.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnACL`."
+      },
+      "fqn": "@aws-cdk/aws-memorydb.CfnACLProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/memorydb.generated.ts",
+        "line": 20
+      },
+      "name": "CfnACLProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-acl.html#cfn-memorydb-acl-aclname"
+            },
+            "stability": "external",
+            "summary": "The name of the Access Control List."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 27
+          },
+          "name": "aclName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-acl.html#cfn-memorydb-acl-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 36
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-acl.html#cfn-memorydb-acl-usernames"
+            },
+            "stability": "external",
+            "summary": "The list of users that belong to the Access Control List."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 43
+          },
+          "name": "userNames",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/memorydb.generated:CfnACLProps"
+    },
+    "@aws-cdk/aws-memorydb.CfnCluster": {
+      "assembly": "@aws-cdk/aws-memorydb",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MemoryDB::Cluster",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html"
+        },
+        "remarks": "Specifies a cluster . All nodes in the cluster run the same protocol-compliant engine software.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MemoryDB::Cluster`."
+      },
+      "fqn": "@aws-cdk/aws-memorydb.CfnCluster",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MemoryDB::Cluster`."
+        },
+        "locationInModule": {
+          "filename": "lib/memorydb.generated.ts",
+          "line": 781
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-memorydb.CfnClusterProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/memorydb.generated.ts",
+        "line": 536
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 825
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 860
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnCluster",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 540
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ARN"
+            },
+            "stability": "external",
+            "summary": "When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the ARN of the cluster , such as `arn:aws:memorydb:us-east-1:123456789012:cluster/my-cluster`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 565
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ClusterEndpoint.Address"
+            },
+            "stability": "external",
+            "summary": "The address of the cluster 's configuration endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 571
+          },
+          "name": "attrClusterEndpointAddress",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ClusterEndpoint.Port"
+            },
+            "stability": "external",
+            "summary": "The port used by the cluster configuration endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 577
+          },
+          "name": "attrClusterEndpointPort",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ParameterGroupStatus"
+            },
+            "stability": "external",
+            "summary": "The status of the parameter group used by the cluster , for example `active` or `applying` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 583
+          },
+          "name": "attrParameterGroupStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "remarks": "For example, 'available', 'updating' or 'creating'.",
+            "stability": "external",
+            "summary": "The status of the cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 589
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 830
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 765
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-aclname"
+            },
+            "stability": "external",
+            "summary": "The name of the Access Control List to associate with the cluster ."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 596
+          },
+          "name": "aclName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-clustername"
+            },
+            "stability": "external",
+            "summary": "The name of the cluster ."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 603
+          },
+          "name": "clusterName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-nodetype"
+            },
+            "stability": "external",
+            "summary": "The cluster 's node type."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 610
+          },
+          "name": "nodeType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-autominorversionupgrade"
+            },
+            "stability": "external",
+            "summary": "When set to true, the cluster will automatically receive minor engine version upgrades after launch."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 617
+          },
+          "name": "autoMinorVersionUpgrade",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-clusterendpoint"
+            },
+            "stability": "external",
+            "summary": "The cluster 's configuration endpoint."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 624
+          },
+          "name": "clusterEndpoint",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-memorydb.CfnCluster.EndpointProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-datatiering"
+            },
+            "remarks": "Data tiering is only supported for replication groups using the r6gd node type. This parameter must be set to true when using r6gd nodes. For more information, see [Data tiering](https://docs.aws.amazon.com/memorydb/latest/devguide/data-tiering.html) .",
+            "stability": "external",
+            "summary": "Enables data tiering."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 631
+          },
+          "name": "dataTiering",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-description"
+            },
+            "stability": "external",
+            "summary": "A description of the cluster ."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 638
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-engineversion"
+            },
+            "stability": "external",
+            "summary": "The Redis engine version used by the cluster ."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 645
+          },
+          "name": "engineVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-finalsnapshotname"
+            },
+            "remarks": "This is the unique name that identifies the snapshot. MemoryDB creates the snapshot, and then deletes the cluster immediately afterward.",
+            "stability": "external",
+            "summary": "The user-supplied name of a final cluster snapshot."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 652
+          },
+          "name": "finalSnapshotName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The ID of the KMS key used to encrypt the cluster ."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 659
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-maintenancewindow"
+            },
+            "remarks": "It is specified as a range in the format `ddd:hh24:mi-ddd:hh24:mi` (24H Clock UTC). The minimum maintenance window is a 60 minute period.\n\n*Pattern* : `ddd:hh24:mi-ddd:hh24:mi`",
+            "stability": "external",
+            "summary": "Specifies the weekly time range during which maintenance on the cluster is performed."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 668
+          },
+          "name": "maintenanceWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-numreplicaspershard"
+            },
+            "remarks": "*Default value* : `1`\n\n*Maximum value* : `5`",
+            "stability": "external",
+            "summary": "The number of replicas to apply to each shard."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 679
+          },
+          "name": "numReplicasPerShard",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-numshards"
+            },
+            "stability": "external",
+            "summary": "The number of shards in the cluster ."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 686
+          },
+          "name": "numShards",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-parametergroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the parameter group used by the cluster ."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 693
+          },
+          "name": "parameterGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-port"
+            },
+            "stability": "external",
+            "summary": "The port used by the cluster ."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 700
+          },
+          "name": "port",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-securitygroupids"
+            },
+            "stability": "external",
+            "summary": "A list of security group names to associate with this cluster ."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 707
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-snapshotarns"
+            },
+            "remarks": "The snapshot files are used to populate the new cluster . The Amazon S3 object name in the ARN cannot contain any commas.",
+            "stability": "external",
+            "summary": "A list of Amazon Resource Names (ARN) that uniquely identify the RDB snapshot files stored in Amazon S3."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 714
+          },
+          "name": "snapshotArns",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-snapshotname"
+            },
+            "remarks": "The snapshot status changes to restoring while the new cluster is being created.",
+            "stability": "external",
+            "summary": "The name of a snapshot from which to restore data into the new cluster ."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 721
+          },
+          "name": "snapshotName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-snapshotretentionlimit"
+            },
+            "remarks": "For example, if you set SnapshotRetentionLimit to 5, a snapshot that was taken today is retained for 5 days before being deleted.",
+            "stability": "external",
+            "summary": "The number of days for which MemoryDB retains automatic snapshots before deleting them."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 728
+          },
+          "name": "snapshotRetentionLimit",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-snapshotwindow"
+            },
+            "remarks": "Example: 05:00-09:00 If you do not specify this parameter, MemoryDB automatically chooses an appropriate time range.",
+            "stability": "external",
+            "summary": "The daily time range (in UTC) during which MemoryDB begins taking a daily snapshot of your shard."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 735
+          },
+          "name": "snapshotWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-snstopicarn"
+            },
+            "stability": "external",
+            "summary": "When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the ARN of the SNS topic, such as `arn:aws:memorydb:us-east-1:123456789012:mySNSTopic`."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 742
+          },
+          "name": "snsTopicArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-snstopicstatus"
+            },
+            "stability": "external",
+            "summary": "The SNS topic must be in Active status to receive notifications."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 749
+          },
+          "name": "snsTopicStatus",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-subnetgroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the subnet group used by the cluster ."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 756
+          },
+          "name": "subnetGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-tlsenabled"
+            },
+            "stability": "external",
+            "summary": "A flag to indicate if In-transit encryption is enabled."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 772
+          },
+          "name": "tlsEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/memorydb.generated:CfnCluster"
+    },
+    "@aws-cdk/aws-memorydb.CfnCluster.EndpointProperty": {
+      "assembly": "@aws-cdk/aws-memorydb",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-memorydb-cluster-endpoint.html"
+        },
+        "stability": "external",
+        "summary": "Represents the information required for client programs to connect to the cluster and its nodes."
+      },
+      "fqn": "@aws-cdk/aws-memorydb.CfnCluster.EndpointProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/memorydb.generated.ts",
+        "line": 874
+      },
+      "name": "EndpointProperty",
+      "namespace": "CfnCluster",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-memorydb-cluster-endpoint.html#cfn-memorydb-cluster-endpoint-address"
+            },
+            "stability": "external",
+            "summary": "The DNS hostname of the node."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 880
+          },
+          "name": "address",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-memorydb-cluster-endpoint.html#cfn-memorydb-cluster-endpoint-port"
+            },
+            "stability": "external",
+            "summary": "The port number that the engine is listening on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 886
+          },
+          "name": "port",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/memorydb.generated:CfnCluster.EndpointProperty"
+    },
+    "@aws-cdk/aws-memorydb.CfnClusterProps": {
+      "assembly": "@aws-cdk/aws-memorydb",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnCluster`."
+      },
+      "fqn": "@aws-cdk/aws-memorydb.CfnClusterProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/memorydb.generated.ts",
+        "line": 220
+      },
+      "name": "CfnClusterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-aclname"
+            },
+            "stability": "external",
+            "summary": "The name of the Access Control List to associate with the cluster ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 227
+          },
+          "name": "aclName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-clustername"
+            },
+            "stability": "external",
+            "summary": "The name of the cluster ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 234
+          },
+          "name": "clusterName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-nodetype"
+            },
+            "stability": "external",
+            "summary": "The cluster 's node type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 241
+          },
+          "name": "nodeType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-autominorversionupgrade"
+            },
+            "stability": "external",
+            "summary": "When set to true, the cluster will automatically receive minor engine version upgrades after launch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 248
+          },
+          "name": "autoMinorVersionUpgrade",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-clusterendpoint"
+            },
+            "stability": "external",
+            "summary": "The cluster 's configuration endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 255
+          },
+          "name": "clusterEndpoint",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-memorydb.CfnCluster.EndpointProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-datatiering"
+            },
+            "remarks": "Data tiering is only supported for replication groups using the r6gd node type. This parameter must be set to true when using r6gd nodes. For more information, see [Data tiering](https://docs.aws.amazon.com/memorydb/latest/devguide/data-tiering.html) .",
+            "stability": "external",
+            "summary": "Enables data tiering."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 262
+          },
+          "name": "dataTiering",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-description"
+            },
+            "stability": "external",
+            "summary": "A description of the cluster ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 269
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-engineversion"
+            },
+            "stability": "external",
+            "summary": "The Redis engine version used by the cluster ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 276
+          },
+          "name": "engineVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-finalsnapshotname"
+            },
+            "remarks": "This is the unique name that identifies the snapshot. MemoryDB creates the snapshot, and then deletes the cluster immediately afterward.",
+            "stability": "external",
+            "summary": "The user-supplied name of a final cluster snapshot."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 283
+          },
+          "name": "finalSnapshotName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The ID of the KMS key used to encrypt the cluster ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 290
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-maintenancewindow"
+            },
+            "remarks": "It is specified as a range in the format `ddd:hh24:mi-ddd:hh24:mi` (24H Clock UTC). The minimum maintenance window is a 60 minute period.\n\n*Pattern* : `ddd:hh24:mi-ddd:hh24:mi`",
+            "stability": "external",
+            "summary": "Specifies the weekly time range during which maintenance on the cluster is performed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 299
+          },
+          "name": "maintenanceWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-numreplicaspershard"
+            },
+            "remarks": "*Default value* : `1`\n\n*Maximum value* : `5`",
+            "stability": "external",
+            "summary": "The number of replicas to apply to each shard."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 310
+          },
+          "name": "numReplicasPerShard",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-numshards"
+            },
+            "stability": "external",
+            "summary": "The number of shards in the cluster ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 317
+          },
+          "name": "numShards",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-parametergroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the parameter group used by the cluster ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 324
+          },
+          "name": "parameterGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-port"
+            },
+            "stability": "external",
+            "summary": "The port used by the cluster ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 331
+          },
+          "name": "port",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-securitygroupids"
+            },
+            "stability": "external",
+            "summary": "A list of security group names to associate with this cluster ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 338
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-snapshotarns"
+            },
+            "remarks": "The snapshot files are used to populate the new cluster . The Amazon S3 object name in the ARN cannot contain any commas.",
+            "stability": "external",
+            "summary": "A list of Amazon Resource Names (ARN) that uniquely identify the RDB snapshot files stored in Amazon S3."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 345
+          },
+          "name": "snapshotArns",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-snapshotname"
+            },
+            "remarks": "The snapshot status changes to restoring while the new cluster is being created.",
+            "stability": "external",
+            "summary": "The name of a snapshot from which to restore data into the new cluster ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 352
+          },
+          "name": "snapshotName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-snapshotretentionlimit"
+            },
+            "remarks": "For example, if you set SnapshotRetentionLimit to 5, a snapshot that was taken today is retained for 5 days before being deleted.",
+            "stability": "external",
+            "summary": "The number of days for which MemoryDB retains automatic snapshots before deleting them."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 359
+          },
+          "name": "snapshotRetentionLimit",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-snapshotwindow"
+            },
+            "remarks": "Example: 05:00-09:00 If you do not specify this parameter, MemoryDB automatically chooses an appropriate time range.",
+            "stability": "external",
+            "summary": "The daily time range (in UTC) during which MemoryDB begins taking a daily snapshot of your shard."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 366
+          },
+          "name": "snapshotWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-snstopicarn"
+            },
+            "stability": "external",
+            "summary": "When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the ARN of the SNS topic, such as `arn:aws:memorydb:us-east-1:123456789012:mySNSTopic`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 373
+          },
+          "name": "snsTopicArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-snstopicstatus"
+            },
+            "stability": "external",
+            "summary": "The SNS topic must be in Active status to receive notifications."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 380
+          },
+          "name": "snsTopicStatus",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-subnetgroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the subnet group used by the cluster ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 387
+          },
+          "name": "subnetGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 396
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-cluster.html#cfn-memorydb-cluster-tlsenabled"
+            },
+            "stability": "external",
+            "summary": "A flag to indicate if In-transit encryption is enabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 403
+          },
+          "name": "tlsEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/memorydb.generated:CfnClusterProps"
+    },
+    "@aws-cdk/aws-memorydb.CfnParameterGroup": {
+      "assembly": "@aws-cdk/aws-memorydb",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MemoryDB::ParameterGroup",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-parametergroup.html"
+        },
+        "remarks": "Specifies a new MemoryDB parameter group. A parameter group is a collection of parameters and their values that are applied to all of the nodes in any cluster . For more information, see [Configuring engine parameters using parameter groups](https://docs.aws.amazon.com/memorydb/latest/devguide/parametergroups.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MemoryDB::ParameterGroup`."
+      },
+      "fqn": "@aws-cdk/aws-memorydb.CfnParameterGroup",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MemoryDB::ParameterGroup`."
+        },
+        "locationInModule": {
+          "filename": "lib/memorydb.generated.ts",
+          "line": 1133
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-memorydb.CfnParameterGroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/memorydb.generated.ts",
+        "line": 1058
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1152
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1167
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnParameterGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1062
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ARN"
+            },
+            "stability": "external",
+            "summary": "When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the ARN of the parameter group, such as `arn:aws:memorydb:us-east-1:123456789012:parametergroup/my-parameter-group`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1087
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1157
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-parametergroup.html#cfn-memorydb-parametergroup-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1124
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-parametergroup.html#cfn-memorydb-parametergroup-family"
+            },
+            "stability": "external",
+            "summary": "The name of the parameter group family that this parameter group is compatible with."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1094
+          },
+          "name": "family",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-parametergroup.html#cfn-memorydb-parametergroup-parametergroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the parameter group."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1101
+          },
+          "name": "parameterGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-parametergroup.html#cfn-memorydb-parametergroup-parameters"
+            },
+            "stability": "external",
+            "summary": "Returns the detailed parameter list for the parameter group."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1115
+          },
+          "name": "parameters",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-parametergroup.html#cfn-memorydb-parametergroup-description"
+            },
+            "stability": "external",
+            "summary": "A description of the parameter group."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1108
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/memorydb.generated:CfnParameterGroup"
+    },
+    "@aws-cdk/aws-memorydb.CfnParameterGroupProps": {
+      "assembly": "@aws-cdk/aws-memorydb",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-parametergroup.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnParameterGroup`."
+      },
+      "fqn": "@aws-cdk/aws-memorydb.CfnParameterGroupProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/memorydb.generated.ts",
+        "line": 949
+      },
+      "name": "CfnParameterGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-parametergroup.html#cfn-memorydb-parametergroup-family"
+            },
+            "stability": "external",
+            "summary": "The name of the parameter group family that this parameter group is compatible with."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 956
+          },
+          "name": "family",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-parametergroup.html#cfn-memorydb-parametergroup-parametergroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the parameter group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 963
+          },
+          "name": "parameterGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-parametergroup.html#cfn-memorydb-parametergroup-description"
+            },
+            "stability": "external",
+            "summary": "A description of the parameter group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 970
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-parametergroup.html#cfn-memorydb-parametergroup-parameters"
+            },
+            "stability": "external",
+            "summary": "Returns the detailed parameter list for the parameter group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 977
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-parametergroup.html#cfn-memorydb-parametergroup-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 986
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/memorydb.generated:CfnParameterGroupProps"
+    },
+    "@aws-cdk/aws-memorydb.CfnSubnetGroup": {
+      "assembly": "@aws-cdk/aws-memorydb",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MemoryDB::SubnetGroup",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-subnetgroup.html"
+        },
+        "remarks": "Specifies a subnet group. A subnet group is a collection of subnets (typically private) that you can designate for your cluster s running in an Amazon Virtual Private Cloud (VPC) environment. When you create a cluster in an Amazon VPC , you must specify a subnet group. MemoryDB uses that subnet group to choose a subnet and IP addresses within that subnet to associate with your nodes. For more information, see [Subnets and subnet groups](https://docs.aws.amazon.com/memorydb/latest/devguide/subnetgroups.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MemoryDB::SubnetGroup`."
+      },
+      "fqn": "@aws-cdk/aws-memorydb.CfnSubnetGroup",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MemoryDB::SubnetGroup`."
+        },
+        "locationInModule": {
+          "filename": "lib/memorydb.generated.ts",
+          "line": 1347
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-memorydb.CfnSubnetGroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/memorydb.generated.ts",
+        "line": 1279
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1365
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1379
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSubnetGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1283
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ARN"
+            },
+            "stability": "external",
+            "summary": "When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the ARN of the subnet group, such as `arn:aws:memorydb:us-east-1:123456789012:subnetgroup/my-subnet-group`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1308
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1370
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-subnetgroup.html#cfn-memorydb-subnetgroup-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1338
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-subnetgroup.html#cfn-memorydb-subnetgroup-subnetgroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the subnet group to be used for the cluster ."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1315
+          },
+          "name": "subnetGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-subnetgroup.html#cfn-memorydb-subnetgroup-subnetids"
+            },
+            "stability": "external",
+            "summary": "A list of Amazon VPC subnet IDs for the subnet group."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1322
+          },
+          "name": "subnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-subnetgroup.html#cfn-memorydb-subnetgroup-description"
+            },
+            "stability": "external",
+            "summary": "A description of the subnet group."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1329
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/memorydb.generated:CfnSubnetGroup"
+    },
+    "@aws-cdk/aws-memorydb.CfnSubnetGroupProps": {
+      "assembly": "@aws-cdk/aws-memorydb",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-subnetgroup.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSubnetGroup`."
+      },
+      "fqn": "@aws-cdk/aws-memorydb.CfnSubnetGroupProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/memorydb.generated.ts",
+        "line": 1180
+      },
+      "name": "CfnSubnetGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-subnetgroup.html#cfn-memorydb-subnetgroup-subnetgroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the subnet group to be used for the cluster ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1187
+          },
+          "name": "subnetGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-subnetgroup.html#cfn-memorydb-subnetgroup-subnetids"
+            },
+            "stability": "external",
+            "summary": "A list of Amazon VPC subnet IDs for the subnet group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1194
+          },
+          "name": "subnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-subnetgroup.html#cfn-memorydb-subnetgroup-description"
+            },
+            "stability": "external",
+            "summary": "A description of the subnet group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1201
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-subnetgroup.html#cfn-memorydb-subnetgroup-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1210
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/memorydb.generated:CfnSubnetGroupProps"
+    },
+    "@aws-cdk/aws-memorydb.CfnUser": {
+      "assembly": "@aws-cdk/aws-memorydb",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MemoryDB::User",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-user.html"
+        },
+        "remarks": "Specifies a MemoryDB user. For more information, see [Authenticating users with Access Contol Lists (ACLs)](https://docs.aws.amazon.com/memorydb/latest/devguide/clusters.acls.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MemoryDB::User`."
+      },
+      "fqn": "@aws-cdk/aws-memorydb.CfnUser",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MemoryDB::User`."
+        },
+        "locationInModule": {
+          "filename": "lib/memorydb.generated.ts",
+          "line": 1576
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-memorydb.CfnUserProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/memorydb.generated.ts",
+        "line": 1496
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1596
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1610
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnUser",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1500
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "When you pass the logical ID of this resource to the intrinsic `Ref` function, Ref returns the ARN of the user, such as `arn:aws:memorydb:us-east-1:123456789012:user/user1`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1525
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "remarks": "*Valid values* : `active` | `modifying` | `deleting`",
+            "stability": "external",
+            "summary": "Indicates the user status."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1533
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1601
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-user.html#cfn-memorydb-user-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1567
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-user.html#cfn-memorydb-user-accessstring"
+            },
+            "stability": "external",
+            "summary": "Access permissions string used for this user."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1540
+          },
+          "name": "accessString",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-user.html#cfn-memorydb-user-authenticationmode"
+            },
+            "remarks": "*Example:*\n\n`mynewdbuser: Type: AWS::MemoryDB::User Properties: AccessString: on ~* &* +@all AuthenticationMode: Passwords: '1234567890123456' Type: password UserName: mynewdbuser AuthenticationMode: { \"Passwords\": [\"1234567890123456\"], \"Type\": \"Password\" }`",
+            "stability": "external",
+            "summary": "Denotes whether the user requires a password to authenticate."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1551
+          },
+          "name": "authenticationMode",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-user.html#cfn-memorydb-user-username"
+            },
+            "stability": "external",
+            "summary": "The name of the user."
+          },
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1558
+          },
+          "name": "userName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/memorydb.generated:CfnUser"
+    },
+    "@aws-cdk/aws-memorydb.CfnUser.AuthenticationModeProperty": {
+      "assembly": "@aws-cdk/aws-memorydb",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-memorydb-user-authenticationmode.html"
+        },
+        "remarks": "Used in output responses.",
+        "stability": "external",
+        "summary": "Denotes the user's authentication properties, such as whether it requires a password to authenticate."
+      },
+      "fqn": "@aws-cdk/aws-memorydb.CfnUser.AuthenticationModeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/memorydb.generated.ts",
+        "line": 1624
+      },
+      "name": "AuthenticationModeProperty",
+      "namespace": "CfnUser",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-memorydb-user-authenticationmode.html#cfn-memorydb-user-authenticationmode-passwords"
+            },
+            "stability": "external",
+            "summary": "The password(s) used for authentication."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1630
+          },
+          "name": "passwords",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-memorydb-user-authenticationmode.html#cfn-memorydb-user-authenticationmode-type"
+            },
+            "remarks": "All newly-created users require a password.",
+            "stability": "external",
+            "summary": "Indicates whether the user requires a password to authenticate."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1636
+          },
+          "name": "type",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/memorydb.generated:CfnUser.AuthenticationModeProperty"
+    },
+    "@aws-cdk/aws-memorydb.CfnUserProps": {
+      "assembly": "@aws-cdk/aws-memorydb",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-user.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnUser`."
+      },
+      "fqn": "@aws-cdk/aws-memorydb.CfnUserProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/memorydb.generated.ts",
+        "line": 1392
+      },
+      "name": "CfnUserProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-user.html#cfn-memorydb-user-accessstring"
+            },
+            "stability": "external",
+            "summary": "Access permissions string used for this user."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1399
+          },
+          "name": "accessString",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-user.html#cfn-memorydb-user-authenticationmode"
+            },
+            "remarks": "*Example:*\n\n`mynewdbuser: Type: AWS::MemoryDB::User Properties: AccessString: on ~* &* +@all AuthenticationMode: Passwords: '1234567890123456' Type: password UserName: mynewdbuser AuthenticationMode: { \"Passwords\": [\"1234567890123456\"], \"Type\": \"Password\" }`",
+            "stability": "external",
+            "summary": "Denotes whether the user requires a password to authenticate."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1410
+          },
+          "name": "authenticationMode",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-user.html#cfn-memorydb-user-username"
+            },
+            "stability": "external",
+            "summary": "The name of the user."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1417
+          },
+          "name": "userName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-memorydb-user.html#cfn-memorydb-user-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/memorydb.generated.ts",
+            "line": 1426
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/memorydb.generated:CfnUserProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "qlh/iPjP4Zkpn6YgzzfHzJ2yQlsXtdB3QTcDFnAfEfg="
+}

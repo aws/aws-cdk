@@ -1,0 +1,2774 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::PinpointEmail",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::PinpointEmail",
+    "aws-pinpointemail"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-pinpointemail",
+  "readme": {
+    "markdown": "# Amazon Pinpoint Email Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as pinpointemail from '@aws-cdk/aws-pinpointemail';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for PinpointEmail construct libraries](https://constructs.dev/search?q=pinpointemail)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::PinpointEmail resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_PinpointEmail.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::PinpointEmail](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_PinpointEmail.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-pinpointemail",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.PinpointEmail",
+      "packageId": "Amazon.CDK.AWS.PinpointEmail"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "pinpointemail",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.pinpointemail"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-pinpointemail"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-pinpointemail",
+      "module": "aws_cdk.aws_pinpointemail"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSet": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::PinpointEmail::ConfigurationSet",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html"
+        },
+        "remarks": "Create a configuration set. *Configuration sets* are groups of rules that you can apply to the emails you send using Amazon Pinpoint. You apply a configuration set to an email by including a reference to the configuration set in the headers of the email. When you apply a configuration set to an email, all of the rules in that configuration set are applied to the email.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::PinpointEmail::ConfigurationSet`."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::PinpointEmail::ConfigurationSet`."
+        },
+        "locationInModule": {
+          "filename": "lib/pinpointemail.generated.ts",
+          "line": 210
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 136
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 228
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 244
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnConfigurationSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 140
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 233
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html#cfn-pinpointemail-configurationset-name"
+            },
+            "stability": "external",
+            "summary": "The name of the configuration set."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 166
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html#cfn-pinpointemail-configurationset-deliveryoptions"
+            },
+            "stability": "external",
+            "summary": "An object that defines the dedicated IP pool that is used to send emails that you send using the configuration set."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 173
+          },
+          "name": "deliveryOptions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.DeliveryOptionsProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html#cfn-pinpointemail-configurationset-reputationoptions"
+            },
+            "stability": "external",
+            "summary": "An object that defines whether or not Amazon Pinpoint collects reputation metrics for the emails that you send that use the configuration set."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 180
+          },
+          "name": "reputationOptions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.ReputationOptionsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html#cfn-pinpointemail-configurationset-sendingoptions"
+            },
+            "stability": "external",
+            "summary": "An object that defines whether or not Amazon Pinpoint can send email that you send using the configuration set."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 187
+          },
+          "name": "sendingOptions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.SendingOptionsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html#cfn-pinpointemail-configurationset-tags"
+            },
+            "stability": "external",
+            "summary": "An object that defines the tags (keys and values) that you want to associate with the configuration set."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 194
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html#cfn-pinpointemail-configurationset-trackingoptions"
+            },
+            "stability": "external",
+            "summary": "An object that defines the open and click tracking options for emails that you send using the configuration set."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 201
+          },
+          "name": "trackingOptions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.TrackingOptionsProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSet"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.DeliveryOptionsProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationset-deliveryoptions.html"
+        },
+        "stability": "external",
+        "summary": "Used to associate a configuration set with a dedicated IP pool."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.DeliveryOptionsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 258
+      },
+      "name": "DeliveryOptionsProperty",
+      "namespace": "CfnConfigurationSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationset-deliveryoptions.html#cfn-pinpointemail-configurationset-deliveryoptions-sendingpoolname"
+            },
+            "stability": "external",
+            "summary": "The name of the dedicated IP pool that you want to associate with the configuration set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 264
+          },
+          "name": "sendingPoolName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSet.DeliveryOptionsProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.ReputationOptionsProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationset-reputationoptions.html"
+        },
+        "stability": "external",
+        "summary": "Enable or disable collection of reputation metrics for emails that you send using this configuration set in the current AWS Region."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.ReputationOptionsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 325
+      },
+      "name": "ReputationOptionsProperty",
+      "namespace": "CfnConfigurationSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationset-reputationoptions.html#cfn-pinpointemail-configurationset-reputationoptions-reputationmetricsenabled"
+            },
+            "remarks": "If `false` , tracking of reputation metrics is disabled for the configuration set.",
+            "stability": "external",
+            "summary": "If `true` , tracking of reputation metrics is enabled for the configuration set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 331
+          },
+          "name": "reputationMetricsEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSet.ReputationOptionsProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.SendingOptionsProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationset-sendingoptions.html"
+        },
+        "stability": "external",
+        "summary": "Used to enable or disable email sending for messages that use this configuration set in the current AWS Region."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.SendingOptionsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 392
+      },
+      "name": "SendingOptionsProperty",
+      "namespace": "CfnConfigurationSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationset-sendingoptions.html#cfn-pinpointemail-configurationset-sendingoptions-sendingenabled"
+            },
+            "remarks": "If `false` , email sending is disabled for the configuration set.",
+            "stability": "external",
+            "summary": "If `true` , email sending is enabled for the configuration set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 398
+          },
+          "name": "sendingEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSet.SendingOptionsProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.TagsProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationset-tags.html"
+        },
+        "stability": "external",
+        "summary": "An object that defines the tags (keys and values) that you want to associate with the configuration set."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.TagsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 459
+      },
+      "name": "TagsProperty",
+      "namespace": "CfnConfigurationSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationset-tags.html#cfn-pinpointemail-configurationset-tags-key"
+            },
+            "remarks": "The maximum length of a tag key is 128 characters. The minimum length is 1 character.\n\nIf you specify tags for the configuration set, then this value is required.",
+            "stability": "external",
+            "summary": "One part of a key-value pair that defines a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 467
+          },
+          "name": "key",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationset-tags.html#cfn-pinpointemail-configurationset-tags-value"
+            },
+            "remarks": "The maximum length of a tag value is 256 characters. The minimum length is 0 characters. If you don’t want a resource to have a specific tag value, don’t specify a value for this parameter. Amazon Pinpoint will set the value to an empty string.",
+            "stability": "external",
+            "summary": "The optional part of a key-value pair that defines a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 473
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSet.TagsProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.TrackingOptionsProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationset-trackingoptions.html"
+        },
+        "remarks": "When you use Amazon Pinpoint to send an email, it contains an invisible image that's used to track when recipients open your email. If your email contains links, those links are changed slightly in order to track when recipients click them.\n\nThese images and links include references to a domain operated by AWS . You can optionally configure Amazon Pinpoint to use a domain that you operate for these images and links.",
+        "stability": "external",
+        "summary": "An object that defines the tracking options for a configuration set."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.TrackingOptionsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 539
+      },
+      "name": "TrackingOptionsProperty",
+      "namespace": "CfnConfigurationSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationset-trackingoptions.html#cfn-pinpointemail-configurationset-trackingoptions-customredirectdomain"
+            },
+            "stability": "external",
+            "summary": "The domain that you want to use for tracking open and click events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 545
+          },
+          "name": "customRedirectDomain",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSet.TrackingOptionsProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::PinpointEmail::ConfigurationSetEventDestination",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationseteventdestination.html"
+        },
+        "remarks": "Create an event destination. In Amazon Pinpoint, *events* include message sends, deliveries, opens, clicks, bounces, and complaints. *Event destinations* are places that you can send information about these events to. For example, you can send event data to Amazon SNS to receive notifications when you receive bounces or complaints, or you can use Amazon Kinesis Data Firehose to stream data to Amazon S3 for long-term storage.\n\nA single configuration set can include more than one event destination.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::PinpointEmail::ConfigurationSetEventDestination`."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::PinpointEmail::ConfigurationSetEventDestination`."
+        },
+        "locationInModule": {
+          "filename": "lib/pinpointemail.generated.ts",
+          "line": 747
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestinationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 694
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 763
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 776
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnConfigurationSetEventDestination",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 698
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 768
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationseteventdestination.html#cfn-pinpointemail-configurationseteventdestination-configurationsetname"
+            },
+            "stability": "external",
+            "summary": "The name of the configuration set that contains the event destination that you want to modify."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 724
+          },
+          "name": "configurationSetName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationseteventdestination.html#cfn-pinpointemail-configurationseteventdestination-eventdestinationname"
+            },
+            "stability": "external",
+            "summary": "The name of the event destination that you want to modify."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 731
+          },
+          "name": "eventDestinationName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationseteventdestination.html#cfn-pinpointemail-configurationseteventdestination-eventdestination"
+            },
+            "stability": "external",
+            "summary": "An object that defines the event destination."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 738
+          },
+          "name": "eventDestination",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.EventDestinationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSetEventDestination"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.CloudWatchDestinationProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-cloudwatchdestination.html"
+        },
+        "remarks": "You can use Amazon CloudWatch to monitor and gain insights on your email sending metrics.",
+        "stability": "external",
+        "summary": "An object that defines an Amazon CloudWatch destination for email events."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.CloudWatchDestinationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 790
+      },
+      "name": "CloudWatchDestinationProperty",
+      "namespace": "CfnConfigurationSetEventDestination",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-cloudwatchdestination.html#cfn-pinpointemail-configurationseteventdestination-cloudwatchdestination-dimensionconfigurations"
+            },
+            "stability": "external",
+            "summary": "An array of objects that define the dimensions to use when you send email events to Amazon CloudWatch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 796
+          },
+          "name": "dimensionConfigurations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.DimensionConfigurationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSetEventDestination.CloudWatchDestinationProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.DimensionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-dimensionconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "An array of objects that define the dimensions to use when you send email events to Amazon CloudWatch."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.DimensionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 857
+      },
+      "name": "DimensionConfigurationProperty",
+      "namespace": "CfnConfigurationSetEventDestination",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-dimensionconfiguration.html#cfn-pinpointemail-configurationseteventdestination-dimensionconfiguration-defaultdimensionvalue"
+            },
+            "remarks": "This value has to meet the following criteria:\n\n- It can only contain ASCII letters (a–z, A–Z), numbers (0–9), underscores (_), or dashes (-).\n- It can contain no more than 256 characters.",
+            "stability": "external",
+            "summary": "The default value of the dimension that is published to Amazon CloudWatch if you don't provide the value of the dimension when you send an email."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 866
+          },
+          "name": "defaultDimensionValue",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-dimensionconfiguration.html#cfn-pinpointemail-configurationseteventdestination-dimensionconfiguration-dimensionname"
+            },
+            "remarks": "The name has to meet the following criteria:\n\n- It can only contain ASCII letters (a–z, A–Z), numbers (0–9), underscores (_), or dashes (-).\n- It can contain no more than 256 characters.",
+            "stability": "external",
+            "summary": "The name of an Amazon CloudWatch dimension associated with an email sending metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 875
+          },
+          "name": "dimensionName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-dimensionconfiguration.html#cfn-pinpointemail-configurationseteventdestination-dimensionconfiguration-dimensionvaluesource"
+            },
+            "remarks": "Acceptable values: `MESSAGE_TAG` , `EMAIL_HEADER` , and `LINK_TAG` .\n\nIf you want Amazon Pinpoint to use the message tags that you specify using an `X-SES-MESSAGE-TAGS` header or a parameter to the `SendEmail` API, choose `MESSAGE_TAG` . If you want Amazon Pinpoint to use your own email headers, choose `EMAIL_HEADER` . If you want Amazon Pinpoint to use tags that are specified in your links, choose `LINK_TAG` .",
+            "stability": "external",
+            "summary": "The location where Amazon Pinpoint finds the value of a dimension to publish to Amazon CloudWatch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 883
+          },
+          "name": "dimensionValueSource",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSetEventDestination.DimensionConfigurationProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.EventDestinationProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-eventdestination.html"
+        },
+        "remarks": "*Event destinations* are places that you can send information about these events to. For example, you can send event data to Amazon SNS to receive notifications when you receive bounces or complaints, or you can use Amazon Kinesis Data Firehose to stream data to Amazon S3 for long-term storage.",
+        "stability": "external",
+        "summary": "In Amazon Pinpoint, *events* include message sends, deliveries, opens, clicks, bounces, and complaints."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.EventDestinationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 953
+      },
+      "name": "EventDestinationProperty",
+      "namespace": "CfnConfigurationSetEventDestination",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-eventdestination.html#cfn-pinpointemail-configurationseteventdestination-eventdestination-matchingeventtypes"
+            },
+            "remarks": "Acceptable values: `SEND` , `REJECT` , `BOUNCE` , `COMPLAINT` , `DELIVERY` , `OPEN` , `CLICK` , and `RENDERING_FAILURE` .",
+            "stability": "external",
+            "summary": "The types of events that Amazon Pinpoint sends to the specified event destinations."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 979
+          },
+          "name": "matchingEventTypes",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-eventdestination.html#cfn-pinpointemail-configurationseteventdestination-eventdestination-cloudwatchdestination"
+            },
+            "remarks": "You can use Amazon CloudWatch to monitor and gain insights on your email sending metrics.",
+            "stability": "external",
+            "summary": "An object that defines an Amazon CloudWatch destination for email events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 959
+          },
+          "name": "cloudWatchDestination",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.CloudWatchDestinationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-eventdestination.html#cfn-pinpointemail-configurationseteventdestination-eventdestination-enabled"
+            },
+            "remarks": "When the event destination is enabled, the specified event types are sent to the destinations in this `EventDestinationDefinition` .\n\nIf `false` , the event destination is disabled. When the event destination is disabled, events aren't sent to the specified destinations.",
+            "stability": "external",
+            "summary": "If `true` , the event destination is enabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 967
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-eventdestination.html#cfn-pinpointemail-configurationseteventdestination-eventdestination-kinesisfirehosedestination"
+            },
+            "remarks": "You can use Amazon Kinesis Data Firehose to stream data to other services, such as Amazon S3 and Amazon Redshift.",
+            "stability": "external",
+            "summary": "An object that defines an Amazon Kinesis Data Firehose destination for email events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 973
+          },
+          "name": "kinesisFirehoseDestination",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.KinesisFirehoseDestinationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-eventdestination.html#cfn-pinpointemail-configurationseteventdestination-eventdestination-pinpointdestination"
+            },
+            "remarks": "You can use Amazon Pinpoint events to create attributes in Amazon Pinpoint projects. You can use these attributes to create segments for your campaigns.",
+            "stability": "external",
+            "summary": "An object that defines a Amazon Pinpoint destination for email events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 985
+          },
+          "name": "pinpointDestination",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.PinpointDestinationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-eventdestination.html#cfn-pinpointemail-configurationseteventdestination-eventdestination-snsdestination"
+            },
+            "remarks": "You can use Amazon SNS to send notification when certain email events occur.",
+            "stability": "external",
+            "summary": "An object that defines an Amazon SNS destination for email events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 991
+          },
+          "name": "snsDestination",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.SnsDestinationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSetEventDestination.EventDestinationProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.KinesisFirehoseDestinationProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-kinesisfirehosedestination.html"
+        },
+        "remarks": "You can use Amazon Kinesis Data Firehose to stream data to other services, such as Amazon S3 and Amazon Redshift.",
+        "stability": "external",
+        "summary": "An object that defines an Amazon Kinesis Data Firehose destination for email events."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.KinesisFirehoseDestinationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 1068
+      },
+      "name": "KinesisFirehoseDestinationProperty",
+      "namespace": "CfnConfigurationSetEventDestination",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-kinesisfirehosedestination.html#cfn-pinpointemail-configurationseteventdestination-kinesisfirehosedestination-deliverystreamarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the Amazon Kinesis Data Firehose stream that Amazon Pinpoint sends email events to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1074
+          },
+          "name": "deliveryStreamArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-kinesisfirehosedestination.html#cfn-pinpointemail-configurationseteventdestination-kinesisfirehosedestination-iamrolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role that Amazon Pinpoint uses when sending email events to the Amazon Kinesis Data Firehose stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1080
+          },
+          "name": "iamRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSetEventDestination.KinesisFirehoseDestinationProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.PinpointDestinationProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-pinpointdestination.html"
+        },
+        "remarks": "You can use Amazon Pinpoint events to create attributes in Amazon Pinpoint projects. You can use these attributes to create segments for your campaigns.",
+        "stability": "external",
+        "summary": "An object that defines a Amazon Pinpoint destination for email events."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.PinpointDestinationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 1146
+      },
+      "name": "PinpointDestinationProperty",
+      "namespace": "CfnConfigurationSetEventDestination",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-pinpointdestination.html#cfn-pinpointemail-configurationseteventdestination-pinpointdestination-applicationarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the Amazon Pinpoint project that you want to send email events to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1152
+          },
+          "name": "applicationArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSetEventDestination.PinpointDestinationProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.SnsDestinationProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-snsdestination.html"
+        },
+        "remarks": "You can use Amazon SNS to send notification when certain email events occur.",
+        "stability": "external",
+        "summary": "An object that defines an Amazon SNS destination for email events."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.SnsDestinationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 1213
+      },
+      "name": "SnsDestinationProperty",
+      "namespace": "CfnConfigurationSetEventDestination",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationseteventdestination-snsdestination.html#cfn-pinpointemail-configurationseteventdestination-snsdestination-topicarn"
+            },
+            "remarks": "For more information about Amazon SNS topics, see the [Amazon SNS Developer Guide](https://docs.aws.amazon.com/sns/latest/dg/CreateTopic.html) .",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the Amazon SNS topic that you want to publish email events to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1219
+          },
+          "name": "topicArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSetEventDestination.SnsDestinationProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestinationProps": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationseteventdestination.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnConfigurationSetEventDestination`."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestinationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 605
+      },
+      "name": "CfnConfigurationSetEventDestinationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationseteventdestination.html#cfn-pinpointemail-configurationseteventdestination-configurationsetname"
+            },
+            "stability": "external",
+            "summary": "The name of the configuration set that contains the event destination that you want to modify."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 612
+          },
+          "name": "configurationSetName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationseteventdestination.html#cfn-pinpointemail-configurationseteventdestination-eventdestinationname"
+            },
+            "stability": "external",
+            "summary": "The name of the event destination that you want to modify."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 619
+          },
+          "name": "eventDestinationName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationseteventdestination.html#cfn-pinpointemail-configurationseteventdestination-eventdestination"
+            },
+            "stability": "external",
+            "summary": "An object that defines the event destination."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 626
+          },
+          "name": "eventDestination",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetEventDestination.EventDestinationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSetEventDestinationProps"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnConfigurationSetProps": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnConfigurationSet`."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 20
+      },
+      "name": "CfnConfigurationSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html#cfn-pinpointemail-configurationset-name"
+            },
+            "stability": "external",
+            "summary": "The name of the configuration set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 27
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html#cfn-pinpointemail-configurationset-deliveryoptions"
+            },
+            "stability": "external",
+            "summary": "An object that defines the dedicated IP pool that is used to send emails that you send using the configuration set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 34
+          },
+          "name": "deliveryOptions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.DeliveryOptionsProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html#cfn-pinpointemail-configurationset-reputationoptions"
+            },
+            "stability": "external",
+            "summary": "An object that defines whether or not Amazon Pinpoint collects reputation metrics for the emails that you send that use the configuration set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 41
+          },
+          "name": "reputationOptions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.ReputationOptionsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html#cfn-pinpointemail-configurationset-sendingoptions"
+            },
+            "stability": "external",
+            "summary": "An object that defines whether or not Amazon Pinpoint can send email that you send using the configuration set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 48
+          },
+          "name": "sendingOptions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.SendingOptionsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html#cfn-pinpointemail-configurationset-tags"
+            },
+            "stability": "external",
+            "summary": "An object that defines the tags (keys and values) that you want to associate with the configuration set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 55
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-configurationset.html#cfn-pinpointemail-configurationset-trackingoptions"
+            },
+            "stability": "external",
+            "summary": "An object that defines the open and click tracking options for emails that you send using the configuration set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 62
+          },
+          "name": "trackingOptions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnConfigurationSet.TrackingOptionsProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnConfigurationSetProps"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnDedicatedIpPool": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::PinpointEmail::DedicatedIpPool",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-dedicatedippool.html"
+        },
+        "remarks": "A request to create a new dedicated IP pool.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::PinpointEmail::DedicatedIpPool`."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnDedicatedIpPool",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::PinpointEmail::DedicatedIpPool`."
+        },
+        "locationInModule": {
+          "filename": "lib/pinpointemail.generated.ts",
+          "line": 1401
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-pinpointemail.CfnDedicatedIpPoolProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 1355
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1414
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1426
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDedicatedIpPool",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1359
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1419
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-dedicatedippool.html#cfn-pinpointemail-dedicatedippool-poolname"
+            },
+            "stability": "external",
+            "summary": "The name of the dedicated IP pool."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1385
+          },
+          "name": "poolName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-dedicatedippool.html#cfn-pinpointemail-dedicatedippool-tags"
+            },
+            "stability": "external",
+            "summary": "An object that defines the tags (keys and values) that you want to associate with the dedicated IP pool."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1392
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-pinpointemail.CfnDedicatedIpPool.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnDedicatedIpPool"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnDedicatedIpPool.TagsProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-dedicatedippool-tags.html"
+        },
+        "stability": "external",
+        "summary": "An object that defines the tags (keys and values) that you want to associate with the dedicated IP pool."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnDedicatedIpPool.TagsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 1440
+      },
+      "name": "TagsProperty",
+      "namespace": "CfnDedicatedIpPool",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-dedicatedippool-tags.html#cfn-pinpointemail-dedicatedippool-tags-key"
+            },
+            "remarks": "The maximum length of a tag key is 128 characters. The minimum length is 1 character.\n\nIf you specify tags for the dedicated IP pool, then this value is required.",
+            "stability": "external",
+            "summary": "One part of a key-value pair that defines a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1448
+          },
+          "name": "key",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-dedicatedippool-tags.html#cfn-pinpointemail-dedicatedippool-tags-value"
+            },
+            "remarks": "The maximum length of a tag value is 256 characters. The minimum length is 0 characters. If you don’t want a resource to have a specific tag value, don’t specify a value for this parameter. Amazon Pinpoint will set the value to an empty string.",
+            "stability": "external",
+            "summary": "The optional part of a key-value pair that defines a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1454
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnDedicatedIpPool.TagsProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnDedicatedIpPoolProps": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-dedicatedippool.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDedicatedIpPool`."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnDedicatedIpPoolProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 1280
+      },
+      "name": "CfnDedicatedIpPoolProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-dedicatedippool.html#cfn-pinpointemail-dedicatedippool-poolname"
+            },
+            "stability": "external",
+            "summary": "The name of the dedicated IP pool."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1287
+          },
+          "name": "poolName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-dedicatedippool.html#cfn-pinpointemail-dedicatedippool-tags"
+            },
+            "stability": "external",
+            "summary": "An object that defines the tags (keys and values) that you want to associate with the dedicated IP pool."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1294
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-pinpointemail.CfnDedicatedIpPool.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnDedicatedIpPoolProps"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnIdentity": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::PinpointEmail::Identity",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-identity.html"
+        },
+        "remarks": "Specifies an identity to use for sending email through Amazon Pinpoint. In Amazon Pinpoint, an *identity* is an email address or domain that you use when you send email. Before you can use Amazon Pinpoint to send an email from an identity, you first have to verify it. By verifying an identity, you demonstrate that you're the owner of the address or domain, and that you've given Amazon Pinpoint permission to send email from that identity.\n\nWhen you verify an email address, Amazon Pinpoint sends an email to the address. Your email address is verified as soon as you follow the link in the verification email.\n\nWhen you verify a domain, this operation provides a set of DKIM tokens, which you can convert into CNAME tokens. You add these CNAME tokens to the DNS configuration for your domain. Your domain is verified when Amazon Pinpoint detects these records in the DNS configuration for your domain. It usually takes around 72 hours to complete the domain verification process.\n\n> When you use CloudFormation to specify an identity, CloudFormation might indicate that the identity was created successfully. However, you have to verify the identity before you can use it to send email.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::PinpointEmail::Identity`."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnIdentity",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::PinpointEmail::Identity`."
+        },
+        "locationInModule": {
+          "filename": "lib/pinpointemail.generated.ts",
+          "line": 1746
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-pinpointemail.CfnIdentityProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 1635
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1769
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1784
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnIdentity",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1639
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "IdentityDNSRecordName1"
+            },
+            "remarks": "For more information, see [Verifying a Domain](https://docs.aws.amazon.com/pinpoint/latest/userguide/channels-email-manage-verify.html#channels-email-manage-verify-domain) in the Amazon Pinpoint User Guide.",
+            "stability": "external",
+            "summary": "The host name for the first token that you have to add to the DNS configuration for your domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1666
+          },
+          "name": "attrIdentityDnsRecordName1",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "IdentityDNSRecordName2"
+            },
+            "stability": "external",
+            "summary": "The host name for the second token that you have to add to the DNS configuration for your domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1672
+          },
+          "name": "attrIdentityDnsRecordName2",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "IdentityDNSRecordName3"
+            },
+            "stability": "external",
+            "summary": "The host name for the third token that you have to add to the DNS configuration for your domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1678
+          },
+          "name": "attrIdentityDnsRecordName3",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "IdentityDNSRecordValue1"
+            },
+            "stability": "external",
+            "summary": "The record value for the first token that you have to add to the DNS configuration for your domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1684
+          },
+          "name": "attrIdentityDnsRecordValue1",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "IdentityDNSRecordValue2"
+            },
+            "stability": "external",
+            "summary": "The record value for the second token that you have to add to the DNS configuration for your domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1690
+          },
+          "name": "attrIdentityDnsRecordValue2",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "IdentityDNSRecordValue3"
+            },
+            "stability": "external",
+            "summary": "The record value for the third token that you have to add to the DNS configuration for your domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1696
+          },
+          "name": "attrIdentityDnsRecordValue3",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1774
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-identity.html#cfn-pinpointemail-identity-name"
+            },
+            "stability": "external",
+            "summary": "The address or domain of the identity, such as *sender@example.com* or *example.co.uk* ."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1703
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-identity.html#cfn-pinpointemail-identity-dkimsigningenabled"
+            },
+            "remarks": "If the value is `true` , then the messages that you send from the domain are signed using both the DKIM keys for your domain, as well as the keys for the `amazonses.com` domain. If the value is `false` , then the messages that you send are only signed using the DKIM keys for the `amazonses.com` domain.",
+            "stability": "external",
+            "summary": "For domain identities, this attribute is used to enable or disable DomainKeys Identified Mail (DKIM) signing for the domain."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1712
+          },
+          "name": "dkimSigningEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-identity.html#cfn-pinpointemail-identity-feedbackforwardingenabled"
+            },
+            "remarks": "This setting determines what happens when an identity is used to send an email that results in a bounce or complaint event.\n\nWhen you enable feedback forwarding, Amazon Pinpoint sends you email notifications when bounce or complaint events occur. Amazon Pinpoint sends this notification to the address that you specified in the Return-Path header of the original email.\n\nWhen you disable feedback forwarding, Amazon Pinpoint sends notifications through other mechanisms, such as by notifying an Amazon SNS topic. You're required to have a method of tracking bounces and complaints. If you haven't set up another mechanism for receiving bounce or complaint notifications, Amazon Pinpoint sends an email notification when these events occur (even if this setting is disabled).",
+            "stability": "external",
+            "summary": "Used to enable or disable feedback forwarding for an identity."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1723
+          },
+          "name": "feedbackForwardingEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-identity.html#cfn-pinpointemail-identity-mailfromattributes"
+            },
+            "stability": "external",
+            "summary": "Used to enable or disable the custom Mail-From domain configuration for an email identity."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1730
+          },
+          "name": "mailFromAttributes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnIdentity.MailFromAttributesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-identity.html#cfn-pinpointemail-identity-tags"
+            },
+            "stability": "external",
+            "summary": "An object that defines the tags (keys and values) that you want to associate with the email identity."
+          },
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1737
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-pinpointemail.CfnIdentity.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnIdentity"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnIdentity.MailFromAttributesProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-identity-mailfromattributes.html"
+        },
+        "stability": "external",
+        "summary": "A list of attributes that are associated with a MAIL FROM domain."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnIdentity.MailFromAttributesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 1798
+      },
+      "name": "MailFromAttributesProperty",
+      "namespace": "CfnIdentity",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-identity-mailfromattributes.html#cfn-pinpointemail-identity-mailfromattributes-behavioronmxfailure"
+            },
+            "remarks": "When you set this value to `UseDefaultValue` , Amazon Pinpoint uses *amazonses.com* as the MAIL FROM domain. When you set this value to `RejectMessage` , Amazon Pinpoint returns a `MailFromDomainNotVerified` error, and doesn't attempt to deliver the email.\n\nThese behaviors are taken when the custom MAIL FROM domain configuration is in the `Pending` , `Failed` , and `TemporaryFailure` states.",
+            "stability": "external",
+            "summary": "The action that Amazon Pinpoint to takes if it can't read the required MX record for a custom MAIL FROM domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1806
+          },
+          "name": "behaviorOnMxFailure",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-identity-mailfromattributes.html#cfn-pinpointemail-identity-mailfromattributes-mailfromdomain"
+            },
+            "stability": "external",
+            "summary": "The name of a domain that an email identity uses as a custom MAIL FROM domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1812
+          },
+          "name": "mailFromDomain",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnIdentity.MailFromAttributesProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnIdentity.TagsProperty": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-identity-tags.html"
+        },
+        "stability": "external",
+        "summary": "An object that defines the tags (keys and values) that you want to associate with the identity."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnIdentity.TagsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 1876
+      },
+      "name": "TagsProperty",
+      "namespace": "CfnIdentity",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-identity-tags.html#cfn-pinpointemail-identity-tags-key"
+            },
+            "remarks": "The maximum length of a tag key is 128 characters. The minimum length is 1 character.\n\nIf you specify tags for the identity, then this value is required.",
+            "stability": "external",
+            "summary": "One part of a key-value pair that defines a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1884
+          },
+          "name": "key",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-identity-tags.html#cfn-pinpointemail-identity-tags-value"
+            },
+            "remarks": "The maximum length of a tag value is 256 characters. The minimum length is 0 characters. If you don’t want a resource to have a specific tag value, don’t specify a value for this parameter. Amazon Pinpoint will set the value to an empty string.",
+            "stability": "external",
+            "summary": "The optional part of a key-value pair that defines a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1890
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnIdentity.TagsProperty"
+    },
+    "@aws-cdk/aws-pinpointemail.CfnIdentityProps": {
+      "assembly": "@aws-cdk/aws-pinpointemail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-identity.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnIdentity`."
+      },
+      "fqn": "@aws-cdk/aws-pinpointemail.CfnIdentityProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/pinpointemail.generated.ts",
+        "line": 1517
+      },
+      "name": "CfnIdentityProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-identity.html#cfn-pinpointemail-identity-name"
+            },
+            "stability": "external",
+            "summary": "The address or domain of the identity, such as *sender@example.com* or *example.co.uk* ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1524
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-identity.html#cfn-pinpointemail-identity-dkimsigningenabled"
+            },
+            "remarks": "If the value is `true` , then the messages that you send from the domain are signed using both the DKIM keys for your domain, as well as the keys for the `amazonses.com` domain. If the value is `false` , then the messages that you send are only signed using the DKIM keys for the `amazonses.com` domain.",
+            "stability": "external",
+            "summary": "For domain identities, this attribute is used to enable or disable DomainKeys Identified Mail (DKIM) signing for the domain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1533
+          },
+          "name": "dkimSigningEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-identity.html#cfn-pinpointemail-identity-feedbackforwardingenabled"
+            },
+            "remarks": "This setting determines what happens when an identity is used to send an email that results in a bounce or complaint event.\n\nWhen you enable feedback forwarding, Amazon Pinpoint sends you email notifications when bounce or complaint events occur. Amazon Pinpoint sends this notification to the address that you specified in the Return-Path header of the original email.\n\nWhen you disable feedback forwarding, Amazon Pinpoint sends notifications through other mechanisms, such as by notifying an Amazon SNS topic. You're required to have a method of tracking bounces and complaints. If you haven't set up another mechanism for receiving bounce or complaint notifications, Amazon Pinpoint sends an email notification when these events occur (even if this setting is disabled).",
+            "stability": "external",
+            "summary": "Used to enable or disable feedback forwarding for an identity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1544
+          },
+          "name": "feedbackForwardingEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-identity.html#cfn-pinpointemail-identity-mailfromattributes"
+            },
+            "stability": "external",
+            "summary": "Used to enable or disable the custom Mail-From domain configuration for an email identity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1551
+          },
+          "name": "mailFromAttributes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-pinpointemail.CfnIdentity.MailFromAttributesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-pinpointemail-identity.html#cfn-pinpointemail-identity-tags"
+            },
+            "stability": "external",
+            "summary": "An object that defines the tags (keys and values) that you want to associate with the email identity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/pinpointemail.generated.ts",
+            "line": 1558
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-pinpointemail.CfnIdentity.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/pinpointemail.generated:CfnIdentityProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "MwMHUm/un8xeDl1YcN+InSXD6UPP4PQp6yiDcCizH+c="
+}

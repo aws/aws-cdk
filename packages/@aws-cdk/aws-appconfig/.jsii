@@ -1,0 +1,3296 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::AppConfig",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::AppConfig",
+    "aws-appconfig"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-appconfig",
+  "readme": {
+    "markdown": "# AWS::AppConfig Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as appconfig from '@aws-cdk/aws-appconfig';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for AppConfig construct libraries](https://constructs.dev/search?q=appconfig)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::AppConfig resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_AppConfig.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::AppConfig](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_AppConfig.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-appconfig",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.AppConfig",
+      "packageId": "Amazon.CDK.AWS.AppConfig"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "appconfig",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.appconfig"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-appconfig"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-appconfig",
+      "module": "aws_cdk.aws_appconfig"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-appconfig.CfnApplication": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AppConfig::Application",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-application.html"
+        },
+        "remarks": "The `AWS::AppConfig::Application` resource creates an application. In AWS AppConfig , an application is simply an organizational construct like a folder. This organizational construct has a relationship with some unit of executable code. For example, you could create an application called MyMobileApp to organize and manage configuration data for a mobile application installed by your users.\n\nAWS AppConfig requires that you create resources and deploy a configuration in the following order:\n\n- Create an application\n- Create an environment\n- Create a configuration profile\n- Create a deployment strategy\n- Deploy the configuration\n\nFor more information, see [AWS AppConfig](https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html) in the *AWS AppConfig User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AppConfig::Application`."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnApplication",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AppConfig::Application`."
+        },
+        "locationInModule": {
+          "filename": "lib/appconfig.generated.ts",
+          "line": 169
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-appconfig.CfnApplicationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 116
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 184
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 197
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnApplication",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 120
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 189
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-application.html#cfn-appconfig-application-name"
+            },
+            "stability": "external",
+            "summary": "A name for the application."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 146
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-application.html#cfn-appconfig-application-description"
+            },
+            "stability": "external",
+            "summary": "A description of the application."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 153
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-application.html#cfn-appconfig-application-tags"
+            },
+            "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+            "stability": "external",
+            "summary": "Metadata to assign to the application."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 160
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-appconfig.CfnApplication.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnApplication"
+    },
+    "@aws-cdk/aws-appconfig.CfnApplication.TagsProperty": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-application-tags.html"
+        },
+        "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+        "stability": "external",
+        "summary": "Metadata to assign to the application."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnApplication.TagsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 211
+      },
+      "name": "TagsProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-application-tags.html#cfn-appconfig-application-tags-key"
+            },
+            "remarks": "The valid character set is `[a-zA-Z+-=._:/]` . The tag key can be up to 128 characters and must not start with `aws:` .",
+            "stability": "external",
+            "summary": "The key-value string map."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 217
+          },
+          "name": "key",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-application-tags.html#cfn-appconfig-application-tags-value"
+            },
+            "stability": "external",
+            "summary": "The tag value can be up to 256 characters."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 223
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnApplication.TagsProperty"
+    },
+    "@aws-cdk/aws-appconfig.CfnApplicationProps": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-application.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnApplication`."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnApplicationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 20
+      },
+      "name": "CfnApplicationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-application.html#cfn-appconfig-application-name"
+            },
+            "stability": "external",
+            "summary": "A name for the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 27
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-application.html#cfn-appconfig-application-description"
+            },
+            "stability": "external",
+            "summary": "A description of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 34
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-application.html#cfn-appconfig-application-tags"
+            },
+            "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+            "stability": "external",
+            "summary": "Metadata to assign to the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 41
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-appconfig.CfnApplication.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnApplicationProps"
+    },
+    "@aws-cdk/aws-appconfig.CfnConfigurationProfile": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AppConfig::ConfigurationProfile",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html"
+        },
+        "remarks": "The `AWS::AppConfig::ConfigurationProfile` resource creates a configuration profile that enables AWS AppConfig to access the configuration source. Valid configuration sources include AWS Systems Manager (SSM) documents, SSM Parameter Store parameters, and Amazon S3 . A configuration profile includes the following information.\n\n- The Uri location of the configuration data.\n- The AWS Identity and Access Management ( IAM ) role that provides access to the configuration data.\n- A validator for the configuration data. Available validators include either a JSON Schema or the Amazon Resource Name (ARN) of an AWS Lambda function.\n\nAWS AppConfig requires that you create resources and deploy a configuration in the following order:\n\n- Create an application\n- Create an environment\n- Create a configuration profile\n- Create a deployment strategy\n- Deploy the configuration\n\nFor more information, see [AWS AppConfig](https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html) in the *AWS AppConfig User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AppConfig::ConfigurationProfile`."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnConfigurationProfile",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AppConfig::ConfigurationProfile`."
+        },
+        "locationInModule": {
+          "filename": "lib/appconfig.generated.ts",
+          "line": 538
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-appconfig.CfnConfigurationProfileProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 444
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 560
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 578
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnConfigurationProfile",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 448
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 565
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-applicationid"
+            },
+            "stability": "external",
+            "summary": "The application ID."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 474
+          },
+          "name": "applicationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-locationuri"
+            },
+            "remarks": "You can specify the AWS AppConfig hosted configuration store, Systems Manager (SSM) document, an SSM Parameter Store parameter, or an Amazon S3 object. For the hosted configuration store and for feature flags, specify `hosted` . For an SSM document, specify either the document name in the format `ssm-document://<Document_name>` or the Amazon Resource Name (ARN). For a parameter, specify either the parameter name in the format `ssm-parameter://<Parameter_name>` or the ARN. For an Amazon S3 object, specify the URI in the following format: `s3://<bucket>/<objectKey>` . Here is an example: `s3://my-bucket/my-app/us-east-1/my-config.json`",
+            "stability": "external",
+            "summary": "A URI to locate the configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 481
+          },
+          "name": "locationUri",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-name"
+            },
+            "stability": "external",
+            "summary": "A name for the configuration profile."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 488
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-description"
+            },
+            "stability": "external",
+            "summary": "A description of the configuration profile."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 495
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-retrievalrolearn"
+            },
+            "remarks": "> A retrieval role ARN is not required for configurations stored in the AWS AppConfig hosted configuration store. It is required for all other sources that store your configuration.",
+            "stability": "external",
+            "summary": "The ARN of an IAM role with permission to access the configuration at the specified `LocationUri` ."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 504
+          },
+          "name": "retrievalRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-tags"
+            },
+            "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+            "stability": "external",
+            "summary": "Metadata to assign to the configuration profile."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 511
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-appconfig.CfnConfigurationProfile.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-type"
+            },
+            "remarks": "AWS AppConfig supports `feature flags` and `freeform` configurations. We recommend you create feature flag configurations to enable or disable new features and freeform configurations to distribute configurations to an application. When calling this API, enter one of the following values for `Type` :\n\n`AWS.AppConfig.FeatureFlags`\n\n`AWS.Freeform`",
+            "stability": "external",
+            "summary": "The type of configurations contained in the profile."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 522
+          },
+          "name": "type",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-validators"
+            },
+            "stability": "external",
+            "summary": "A list of methods for validating the configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 529
+          },
+          "name": "validators",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-appconfig.CfnConfigurationProfile.ValidatorsProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnConfigurationProfile"
+    },
+    "@aws-cdk/aws-appconfig.CfnConfigurationProfile.TagsProperty": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-configurationprofile-tags.html"
+        },
+        "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+        "stability": "external",
+        "summary": "Metadata to assign to the configuration profile."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnConfigurationProfile.TagsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 592
+      },
+      "name": "TagsProperty",
+      "namespace": "CfnConfigurationProfile",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-configurationprofile-tags.html#cfn-appconfig-configurationprofile-tags-key"
+            },
+            "remarks": "The valid character set is `[a-zA-Z+-=._:/]` . The tag key can be up to 128 characters and must not start with `aws:` .",
+            "stability": "external",
+            "summary": "The key-value string map."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 598
+          },
+          "name": "key",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-configurationprofile-tags.html#cfn-appconfig-configurationprofile-tags-value"
+            },
+            "stability": "external",
+            "summary": "The tag value can be up to 256 characters."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 604
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnConfigurationProfile.TagsProperty"
+    },
+    "@aws-cdk/aws-appconfig.CfnConfigurationProfile.ValidatorsProperty": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-configurationprofile-validators.html"
+        },
+        "remarks": "To validate your application configuration data, you provide a schema or an AWS Lambda function that runs against the configuration. The configuration deployment or update can only proceed when the configuration data is valid.",
+        "stability": "external",
+        "summary": "A validator provides a syntactic or semantic check to ensure the configuration that you want to deploy functions as intended."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnConfigurationProfile.ValidatorsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 668
+      },
+      "name": "ValidatorsProperty",
+      "namespace": "CfnConfigurationProfile",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-configurationprofile-validators.html#cfn-appconfig-configurationprofile-validators-content"
+            },
+            "stability": "external",
+            "summary": "Either the JSON Schema content or the Amazon Resource Name (ARN) of an Lambda function."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 674
+          },
+          "name": "content",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-configurationprofile-validators.html#cfn-appconfig-configurationprofile-validators-type"
+            },
+            "stability": "external",
+            "summary": "AWS AppConfig supports validators of type `JSON_SCHEMA` and `LAMBDA`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 680
+          },
+          "name": "type",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnConfigurationProfile.ValidatorsProperty"
+    },
+    "@aws-cdk/aws-appconfig.CfnConfigurationProfileProps": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnConfigurationProfile`."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnConfigurationProfileProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 286
+      },
+      "name": "CfnConfigurationProfileProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-applicationid"
+            },
+            "stability": "external",
+            "summary": "The application ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 293
+          },
+          "name": "applicationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-locationuri"
+            },
+            "remarks": "You can specify the AWS AppConfig hosted configuration store, Systems Manager (SSM) document, an SSM Parameter Store parameter, or an Amazon S3 object. For the hosted configuration store and for feature flags, specify `hosted` . For an SSM document, specify either the document name in the format `ssm-document://<Document_name>` or the Amazon Resource Name (ARN). For a parameter, specify either the parameter name in the format `ssm-parameter://<Parameter_name>` or the ARN. For an Amazon S3 object, specify the URI in the following format: `s3://<bucket>/<objectKey>` . Here is an example: `s3://my-bucket/my-app/us-east-1/my-config.json`",
+            "stability": "external",
+            "summary": "A URI to locate the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 300
+          },
+          "name": "locationUri",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-name"
+            },
+            "stability": "external",
+            "summary": "A name for the configuration profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 307
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-description"
+            },
+            "stability": "external",
+            "summary": "A description of the configuration profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 314
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-retrievalrolearn"
+            },
+            "remarks": "> A retrieval role ARN is not required for configurations stored in the AWS AppConfig hosted configuration store. It is required for all other sources that store your configuration.",
+            "stability": "external",
+            "summary": "The ARN of an IAM role with permission to access the configuration at the specified `LocationUri` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 323
+          },
+          "name": "retrievalRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-tags"
+            },
+            "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+            "stability": "external",
+            "summary": "Metadata to assign to the configuration profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 330
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-appconfig.CfnConfigurationProfile.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-type"
+            },
+            "remarks": "AWS AppConfig supports `feature flags` and `freeform` configurations. We recommend you create feature flag configurations to enable or disable new features and freeform configurations to distribute configurations to an application. When calling this API, enter one of the following values for `Type` :\n\n`AWS.AppConfig.FeatureFlags`\n\n`AWS.Freeform`",
+            "stability": "external",
+            "summary": "The type of configurations contained in the profile."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 341
+          },
+          "name": "type",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-configurationprofile.html#cfn-appconfig-configurationprofile-validators"
+            },
+            "stability": "external",
+            "summary": "A list of methods for validating the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 348
+          },
+          "name": "validators",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-appconfig.CfnConfigurationProfile.ValidatorsProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnConfigurationProfileProps"
+    },
+    "@aws-cdk/aws-appconfig.CfnDeployment": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AppConfig::Deployment",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html"
+        },
+        "remarks": "The `AWS::AppConfig::Deployment` resource starts a deployment. Starting a deployment in AWS AppConfig calls the `StartDeployment` API action. This call includes the IDs of the AWS AppConfig application, the environment, the configuration profile, and (optionally) the configuration data version to deploy. The call also includes the ID of the deployment strategy to use, which determines how the configuration data is deployed.\n\nAWS AppConfig monitors the distribution to all hosts and reports status. If a distribution fails, then AWS AppConfig rolls back the configuration.\n\nAWS AppConfig requires that you create resources and deploy a configuration in the following order:\n\n- Create an application\n- Create an environment\n- Create a configuration profile\n- Create a deployment strategy\n- Deploy the configuration\n\nFor more information, see [AWS AppConfig](https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html) in the *AWS AppConfig User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AppConfig::Deployment`."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnDeployment",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AppConfig::Deployment`."
+        },
+        "locationInModule": {
+          "filename": "lib/appconfig.generated.ts",
+          "line": 966
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-appconfig.CfnDeploymentProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 885
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 989
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1006
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDeployment",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 889
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 994
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-applicationid"
+            },
+            "stability": "external",
+            "summary": "The application ID."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 915
+          },
+          "name": "applicationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-configurationprofileid"
+            },
+            "stability": "external",
+            "summary": "The configuration profile ID."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 922
+          },
+          "name": "configurationProfileId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-configurationversion"
+            },
+            "stability": "external",
+            "summary": "The configuration version to deploy."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 929
+          },
+          "name": "configurationVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-deploymentstrategyid"
+            },
+            "stability": "external",
+            "summary": "The deployment strategy ID."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 936
+          },
+          "name": "deploymentStrategyId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-environmentid"
+            },
+            "stability": "external",
+            "summary": "The environment ID."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 943
+          },
+          "name": "environmentId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-description"
+            },
+            "stability": "external",
+            "summary": "A description of the deployment."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 950
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-tags"
+            },
+            "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+            "stability": "external",
+            "summary": "Metadata to assign to the deployment."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 957
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-appconfig.CfnDeployment.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnDeployment"
+    },
+    "@aws-cdk/aws-appconfig.CfnDeployment.TagsProperty": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-deployment-tags.html"
+        },
+        "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+        "stability": "external",
+        "summary": "Metadata to assign to the deployment strategy."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnDeployment.TagsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 1020
+      },
+      "name": "TagsProperty",
+      "namespace": "CfnDeployment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-deployment-tags.html#cfn-appconfig-deployment-tags-key"
+            },
+            "remarks": "The valid character set is `[a-zA-Z+-=._:/]` . The tag key can be up to 128 characters and must not start with `aws:` .",
+            "stability": "external",
+            "summary": "The key-value string map."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1026
+          },
+          "name": "key",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-deployment-tags.html#cfn-appconfig-deployment-tags-value"
+            },
+            "stability": "external",
+            "summary": "The tag value can be up to 256 characters."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1032
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnDeployment.TagsProperty"
+    },
+    "@aws-cdk/aws-appconfig.CfnDeploymentProps": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDeployment`."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnDeploymentProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 743
+      },
+      "name": "CfnDeploymentProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-applicationid"
+            },
+            "stability": "external",
+            "summary": "The application ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 750
+          },
+          "name": "applicationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-configurationprofileid"
+            },
+            "stability": "external",
+            "summary": "The configuration profile ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 757
+          },
+          "name": "configurationProfileId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-configurationversion"
+            },
+            "stability": "external",
+            "summary": "The configuration version to deploy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 764
+          },
+          "name": "configurationVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-deploymentstrategyid"
+            },
+            "stability": "external",
+            "summary": "The deployment strategy ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 771
+          },
+          "name": "deploymentStrategyId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-environmentid"
+            },
+            "stability": "external",
+            "summary": "The environment ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 778
+          },
+          "name": "environmentId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-description"
+            },
+            "stability": "external",
+            "summary": "A description of the deployment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 785
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deployment.html#cfn-appconfig-deployment-tags"
+            },
+            "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+            "stability": "external",
+            "summary": "Metadata to assign to the deployment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 792
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-appconfig.CfnDeployment.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnDeploymentProps"
+    },
+    "@aws-cdk/aws-appconfig.CfnDeploymentStrategy": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AppConfig::DeploymentStrategy",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html"
+        },
+        "remarks": "The `AWS::AppConfig::DeploymentStrategy` resource creates an AWS AppConfig deployment strategy. A deployment strategy defines important criteria for rolling out your configuration to the designated targets. A deployment strategy includes: the overall duration required, a percentage of targets to receive the deployment during each interval, an algorithm that defines how percentage grows, and bake time.\n\nAWS AppConfig requires that you create resources and deploy a configuration in the following order:\n\n- Create an application\n- Create an environment\n- Create a configuration profile\n- Create a deployment strategy\n- Deploy the configuration\n\nFor more information, see [AWS AppConfig](https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html) in the *AWS AppConfig User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AppConfig::DeploymentStrategy`."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnDeploymentStrategy",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AppConfig::DeploymentStrategy`."
+        },
+        "locationInModule": {
+          "filename": "lib/appconfig.generated.ts",
+          "line": 1356
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-appconfig.CfnDeploymentStrategyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 1256
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1379
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1397
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDeploymentStrategy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1260
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1384
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-deploymentdurationinminutes"
+            },
+            "stability": "external",
+            "summary": "Total amount of time for a deployment to last."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1286
+          },
+          "name": "deploymentDurationInMinutes",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-growthfactor"
+            },
+            "stability": "external",
+            "summary": "The percentage of targets to receive a deployed configuration during each interval."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1293
+          },
+          "name": "growthFactor",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-name"
+            },
+            "stability": "external",
+            "summary": "A name for the deployment strategy."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1300
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-replicateto"
+            },
+            "stability": "external",
+            "summary": "Save the deployment strategy to a Systems Manager (SSM) document."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1307
+          },
+          "name": "replicateTo",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-description"
+            },
+            "stability": "external",
+            "summary": "A description of the deployment strategy."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1314
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-finalbaketimeinminutes"
+            },
+            "remarks": "If an alarm is triggered during this time, AWS AppConfig rolls back the deployment. You must configure permissions for AWS AppConfig to roll back based on CloudWatch alarms. For more information, see [Configuring permissions for rollback based on Amazon CloudWatch alarms](https://docs.aws.amazon.com/appconfig/latest/userguide/getting-started-with-appconfig-cloudwatch-alarms-permissions.html) in the *AWS AppConfig User Guide* .",
+            "stability": "external",
+            "summary": "Specifies the amount of time AWS AppConfig monitors for Amazon CloudWatch alarms after the configuration has been deployed to 100% of its targets, before considering the deployment to be complete."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1321
+          },
+          "name": "finalBakeTimeInMinutes",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-growthtype"
+            },
+            "remarks": "*Linear* : For this type, AWS AppConfig processes the deployment by dividing the total number of targets by the value specified for `Step percentage` . For example, a linear deployment that uses a `Step percentage` of 10 deploys the configuration to 10 percent of the hosts. After those deployments are complete, the system deploys the configuration to the next 10 percent. This continues until 100% of the targets have successfully received the configuration.\n\n*Exponential* : For this type, AWS AppConfig processes the deployment exponentially using the following formula: `G*(2^N)` . In this formula, `G` is the growth factor specified by the user and `N` is the number of steps until the configuration is deployed to all targets. For example, if you specify a growth factor of 2, then the system rolls out the configuration as follows:\n\n`2*(2^0)`\n\n`2*(2^1)`\n\n`2*(2^2)`\n\nExpressed numerically, the deployment rolls out as follows: 2% of the targets, 4% of the targets, 8% of the targets, and continues until the configuration has been deployed to all targets.",
+            "stability": "external",
+            "summary": "The algorithm used to define how percentage grows over time. AWS AppConfig supports the following growth types:."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1340
+          },
+          "name": "growthType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-tags"
+            },
+            "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define. You can specify a maximum of 50 tags for a resource.",
+            "stability": "external",
+            "summary": "Assigns metadata to an AWS AppConfig resource."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1347
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-appconfig.CfnDeploymentStrategy.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnDeploymentStrategy"
+    },
+    "@aws-cdk/aws-appconfig.CfnDeploymentStrategy.TagsProperty": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-deploymentstrategy-tags.html"
+        },
+        "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+        "stability": "external",
+        "summary": "Metadata to assign to the deployment strategy."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnDeploymentStrategy.TagsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 1411
+      },
+      "name": "TagsProperty",
+      "namespace": "CfnDeploymentStrategy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-deploymentstrategy-tags.html#cfn-appconfig-deploymentstrategy-tags-key"
+            },
+            "remarks": "The valid character set is `[a-zA-Z+-=._:/]` . The tag key can be up to 128 characters and must not start with `aws:` .",
+            "stability": "external",
+            "summary": "The key-value string map."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1417
+          },
+          "name": "key",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-deploymentstrategy-tags.html#cfn-appconfig-deploymentstrategy-tags-value"
+            },
+            "stability": "external",
+            "summary": "The tag value can be up to 256 characters."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1423
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnDeploymentStrategy.TagsProperty"
+    },
+    "@aws-cdk/aws-appconfig.CfnDeploymentStrategyProps": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDeploymentStrategy`."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnDeploymentStrategyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 1095
+      },
+      "name": "CfnDeploymentStrategyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-deploymentdurationinminutes"
+            },
+            "stability": "external",
+            "summary": "Total amount of time for a deployment to last."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1102
+          },
+          "name": "deploymentDurationInMinutes",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-growthfactor"
+            },
+            "stability": "external",
+            "summary": "The percentage of targets to receive a deployed configuration during each interval."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1109
+          },
+          "name": "growthFactor",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-name"
+            },
+            "stability": "external",
+            "summary": "A name for the deployment strategy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1116
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-replicateto"
+            },
+            "stability": "external",
+            "summary": "Save the deployment strategy to a Systems Manager (SSM) document."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1123
+          },
+          "name": "replicateTo",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-description"
+            },
+            "stability": "external",
+            "summary": "A description of the deployment strategy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1130
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-finalbaketimeinminutes"
+            },
+            "remarks": "If an alarm is triggered during this time, AWS AppConfig rolls back the deployment. You must configure permissions for AWS AppConfig to roll back based on CloudWatch alarms. For more information, see [Configuring permissions for rollback based on Amazon CloudWatch alarms](https://docs.aws.amazon.com/appconfig/latest/userguide/getting-started-with-appconfig-cloudwatch-alarms-permissions.html) in the *AWS AppConfig User Guide* .",
+            "stability": "external",
+            "summary": "Specifies the amount of time AWS AppConfig monitors for Amazon CloudWatch alarms after the configuration has been deployed to 100% of its targets, before considering the deployment to be complete."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1137
+          },
+          "name": "finalBakeTimeInMinutes",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-growthtype"
+            },
+            "remarks": "*Linear* : For this type, AWS AppConfig processes the deployment by dividing the total number of targets by the value specified for `Step percentage` . For example, a linear deployment that uses a `Step percentage` of 10 deploys the configuration to 10 percent of the hosts. After those deployments are complete, the system deploys the configuration to the next 10 percent. This continues until 100% of the targets have successfully received the configuration.\n\n*Exponential* : For this type, AWS AppConfig processes the deployment exponentially using the following formula: `G*(2^N)` . In this formula, `G` is the growth factor specified by the user and `N` is the number of steps until the configuration is deployed to all targets. For example, if you specify a growth factor of 2, then the system rolls out the configuration as follows:\n\n`2*(2^0)`\n\n`2*(2^1)`\n\n`2*(2^2)`\n\nExpressed numerically, the deployment rolls out as follows: 2% of the targets, 4% of the targets, 8% of the targets, and continues until the configuration has been deployed to all targets.",
+            "stability": "external",
+            "summary": "The algorithm used to define how percentage grows over time. AWS AppConfig supports the following growth types:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1156
+          },
+          "name": "growthType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-deploymentstrategy.html#cfn-appconfig-deploymentstrategy-tags"
+            },
+            "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define. You can specify a maximum of 50 tags for a resource.",
+            "stability": "external",
+            "summary": "Assigns metadata to an AWS AppConfig resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1163
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-appconfig.CfnDeploymentStrategy.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnDeploymentStrategyProps"
+    },
+    "@aws-cdk/aws-appconfig.CfnEnvironment": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AppConfig::Environment",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-environment.html"
+        },
+        "remarks": "The `AWS::AppConfig::Environment` resource creates an environment, which is a logical deployment group of AWS AppConfig targets, such as applications in a `Beta` or `Production` environment. You define one or more environments for each AWS AppConfig application. You can also define environments for application subcomponents such as the `Web` , `Mobile` and `Back-end` components for your application. You can configure Amazon CloudWatch alarms for each environment. The system monitors alarms during a configuration deployment. If an alarm is triggered, the system rolls back the configuration.\n\nAWS AppConfig requires that you create resources and deploy a configuration in the following order:\n\n- Create an application\n- Create an environment\n- Create a configuration profile\n- Create a deployment strategy\n- Deploy the configuration\n\nFor more information, see [AWS AppConfig](https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html) in the *AWS AppConfig User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AppConfig::Environment`."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnEnvironment",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AppConfig::Environment`."
+        },
+        "locationInModule": {
+          "filename": "lib/appconfig.generated.ts",
+          "line": 1670
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-appconfig.CfnEnvironmentProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 1603
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1688
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1703
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnEnvironment",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1607
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1693
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-environment.html#cfn-appconfig-environment-applicationid"
+            },
+            "stability": "external",
+            "summary": "The application ID."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1633
+          },
+          "name": "applicationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-environment.html#cfn-appconfig-environment-name"
+            },
+            "stability": "external",
+            "summary": "A name for the environment."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1640
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-environment.html#cfn-appconfig-environment-description"
+            },
+            "stability": "external",
+            "summary": "A description of the environment."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1647
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-environment.html#cfn-appconfig-environment-monitors"
+            },
+            "stability": "external",
+            "summary": "Amazon CloudWatch alarms to monitor during the deployment process."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1654
+          },
+          "name": "monitors",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-appconfig.CfnEnvironment.MonitorsProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-environment.html#cfn-appconfig-environment-tags"
+            },
+            "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+            "stability": "external",
+            "summary": "Metadata to assign to the environment."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1661
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-appconfig.CfnEnvironment.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnEnvironment"
+    },
+    "@aws-cdk/aws-appconfig.CfnEnvironment.MonitorsProperty": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-environment-monitors.html"
+        },
+        "stability": "external",
+        "summary": "Amazon CloudWatch alarms to monitor during the deployment process."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnEnvironment.MonitorsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 1717
+      },
+      "name": "MonitorsProperty",
+      "namespace": "CfnEnvironment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-environment-monitors.html#cfn-appconfig-environment-monitors-alarmarn"
+            },
+            "stability": "external",
+            "summary": "Amazon Resource Name (ARN) of the Amazon CloudWatch alarm."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1723
+          },
+          "name": "alarmArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-environment-monitors.html#cfn-appconfig-environment-monitors-alarmrolearn"
+            },
+            "stability": "external",
+            "summary": "ARN of an AWS Identity and Access Management (IAM) role for AWS AppConfig to monitor `AlarmArn` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1729
+          },
+          "name": "alarmRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnEnvironment.MonitorsProperty"
+    },
+    "@aws-cdk/aws-appconfig.CfnEnvironment.TagsProperty": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-environment-tags.html"
+        },
+        "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+        "stability": "external",
+        "summary": "Metadata to assign to the environment."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnEnvironment.TagsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 1793
+      },
+      "name": "TagsProperty",
+      "namespace": "CfnEnvironment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-environment-tags.html#cfn-appconfig-environment-tags-key"
+            },
+            "remarks": "The valid character set is `[a-zA-Z+-=._:/]` . The tag key can be up to 128 characters and must not start with `aws:` .",
+            "stability": "external",
+            "summary": "The key-value string map."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1799
+          },
+          "name": "key",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-environment-tags.html#cfn-appconfig-environment-tags-value"
+            },
+            "stability": "external",
+            "summary": "The tag value can be up to 256 characters."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1805
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnEnvironment.TagsProperty"
+    },
+    "@aws-cdk/aws-appconfig.CfnEnvironmentProps": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-environment.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnEnvironment`."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnEnvironmentProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 1486
+      },
+      "name": "CfnEnvironmentProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-environment.html#cfn-appconfig-environment-applicationid"
+            },
+            "stability": "external",
+            "summary": "The application ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1493
+          },
+          "name": "applicationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-environment.html#cfn-appconfig-environment-name"
+            },
+            "stability": "external",
+            "summary": "A name for the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1500
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-environment.html#cfn-appconfig-environment-description"
+            },
+            "stability": "external",
+            "summary": "A description of the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1507
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-environment.html#cfn-appconfig-environment-monitors"
+            },
+            "stability": "external",
+            "summary": "Amazon CloudWatch alarms to monitor during the deployment process."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1514
+          },
+          "name": "monitors",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-appconfig.CfnEnvironment.MonitorsProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-environment.html#cfn-appconfig-environment-tags"
+            },
+            "remarks": "Tags help organize and categorize your AWS AppConfig resources. Each tag consists of a key and an optional value, both of which you define.",
+            "stability": "external",
+            "summary": "Metadata to assign to the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1521
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-appconfig.CfnEnvironment.TagsProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnEnvironmentProps"
+    },
+    "@aws-cdk/aws-appconfig.CfnHostedConfigurationVersion": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AppConfig::HostedConfigurationVersion",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html"
+        },
+        "remarks": "Create a new configuration in the AWS AppConfig hosted configuration store. Configurations must be 1 MB or smaller. The AWS AppConfig hosted configuration store provides the following benefits over other configuration store options.\n\n- You don't need to set up and configure other services such as Amazon Simple Storage Service ( Amazon S3 ) or Parameter Store.\n- You don't need to configure AWS Identity and Access Management ( IAM ) permissions to use the configuration store.\n- You can store configurations in any content type.\n- There is no cost to use the store.\n- You can create a configuration and add it to the store when you create a configuration profile.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AppConfig::HostedConfigurationVersion`."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnHostedConfigurationVersion",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AppConfig::HostedConfigurationVersion`."
+        },
+        "locationInModule": {
+          "filename": "lib/appconfig.generated.ts",
+          "line": 2067
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-appconfig.CfnHostedConfigurationVersionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 1993
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 2088
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 2104
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnHostedConfigurationVersion",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1997
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 2093
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-applicationid"
+            },
+            "stability": "external",
+            "summary": "The application ID."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 2023
+          },
+          "name": "applicationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-configurationprofileid"
+            },
+            "stability": "external",
+            "summary": "The configuration profile ID."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 2030
+          },
+          "name": "configurationProfileId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-content"
+            },
+            "stability": "external",
+            "summary": "The content of the configuration or the configuration data."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 2037
+          },
+          "name": "content",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-contenttype"
+            },
+            "remarks": "For more information, see [Content-Type](https://docs.aws.amazon.com/https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17) .",
+            "stability": "external",
+            "summary": "A standard MIME type describing the format of the configuration content."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 2044
+          },
+          "name": "contentType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-description"
+            },
+            "stability": "external",
+            "summary": "A description of the configuration."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 2051
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-latestversionnumber"
+            },
+            "remarks": "To ensure your data is not overwritten when creating multiple hosted configuration versions in rapid succession, specify the version number of the latest hosted configuration version.",
+            "stability": "external",
+            "summary": "An optional locking token used to prevent race conditions from overwriting configuration updates when creating a new version."
+          },
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 2058
+          },
+          "name": "latestVersionNumber",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnHostedConfigurationVersion"
+    },
+    "@aws-cdk/aws-appconfig.CfnHostedConfigurationVersionProps": {
+      "assembly": "@aws-cdk/aws-appconfig",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnHostedConfigurationVersion`."
+      },
+      "fqn": "@aws-cdk/aws-appconfig.CfnHostedConfigurationVersionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/appconfig.generated.ts",
+        "line": 1868
+      },
+      "name": "CfnHostedConfigurationVersionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-applicationid"
+            },
+            "stability": "external",
+            "summary": "The application ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1875
+          },
+          "name": "applicationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-configurationprofileid"
+            },
+            "stability": "external",
+            "summary": "The configuration profile ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1882
+          },
+          "name": "configurationProfileId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-content"
+            },
+            "stability": "external",
+            "summary": "The content of the configuration or the configuration data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1889
+          },
+          "name": "content",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-contenttype"
+            },
+            "remarks": "For more information, see [Content-Type](https://docs.aws.amazon.com/https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17) .",
+            "stability": "external",
+            "summary": "A standard MIME type describing the format of the configuration content."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1896
+          },
+          "name": "contentType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-description"
+            },
+            "stability": "external",
+            "summary": "A description of the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1903
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-latestversionnumber"
+            },
+            "remarks": "To ensure your data is not overwritten when creating multiple hosted configuration versions in rapid succession, specify the version number of the latest hosted configuration version.",
+            "stability": "external",
+            "summary": "An optional locking token used to prevent race conditions from overwriting configuration updates when creating a new version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/appconfig.generated.ts",
+            "line": 1910
+          },
+          "name": "latestVersionNumber",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/appconfig.generated:CfnHostedConfigurationVersionProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "yKHl4ZFWtS56c/tVA0GDLOGiqORVXYqReePVkADisYs="
+}

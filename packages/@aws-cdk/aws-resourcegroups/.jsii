@@ -1,0 +1,1144 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::ResourceGroups",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::ResourceGroups",
+    "aws-resourcegroups"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-resourcegroups",
+  "readme": {
+    "markdown": "# AWS::ResourceGroups Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as resourcegroups from '@aws-cdk/aws-resourcegroups';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for ResourceGroups construct libraries](https://constructs.dev/search?q=resourcegroups)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::ResourceGroups resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ResourceGroups.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::ResourceGroups](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ResourceGroups.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-resourcegroups",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.ResourceGroups",
+      "packageId": "Amazon.CDK.AWS.ResourceGroups"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "resourcegroups",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.resourcegroups"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-resourcegroups"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-resourcegroups",
+      "module": "aws_cdk.aws_resourcegroups"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-resourcegroups.CfnGroup": {
+      "assembly": "@aws-cdk/aws-resourcegroups",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ResourceGroups::Group",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html"
+        },
+        "remarks": "Creates a resource group with the specified name and description. You can optionally include either a resource query or a service configuration. For more information about constructing a resource query, see [Build queries and groups in AWS Resource Groups](https://docs.aws.amazon.com//ARG/latest/userguide/getting_started-query.html) in the *AWS Resource Groups User Guide* . For more information about service-linked groups and service configurations, see [Service configurations for Resource Groups](https://docs.aws.amazon.com//ARG/latest/APIReference/about-slg.html) .\n\n*Minimum permissions*\n\nTo run this command, you must have the following permissions:\n\n- `resource-groups:CreateGroup`",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ResourceGroups::Group`."
+      },
+      "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ResourceGroups::Group`."
+        },
+        "locationInModule": {
+          "filename": "lib/resourcegroups.generated.ts",
+          "line": 238
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-resourcegroups.CfnGroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/resourcegroups.generated.ts",
+        "line": 150
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 257
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 273
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 154
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the new resource group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 179
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 262
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html#cfn-resourcegroups-group-tags"
+            },
+            "stability": "external",
+            "summary": "The tag key and value pairs that are attached to the resource group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 229
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html#cfn-resourcegroups-group-name"
+            },
+            "remarks": "The name must be unique within the AWS Region in which you create the resource. To create multiple resource groups based on the same CloudFormation stack, you must generate unique names for each.",
+            "stability": "external",
+            "summary": "The name of a resource group."
+          },
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 186
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html#cfn-resourcegroups-group-configuration"
+            },
+            "remarks": "A `Configuration` consists of one or more `ConfigurationItem` entries. For information about service configurations for resource groups and how to construct them, see [Service configurations for resource groups](https://docs.aws.amazon.com//ARG/latest/APIReference/about-slg.html) in the *AWS Resource Groups User Guide* .\n\n> You can include either a `Configuration` or a `ResourceQuery` , but not both.",
+            "stability": "external",
+            "summary": "The service configuration currently associated with the resource group and in effect for the members of the resource group."
+          },
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 195
+          },
+          "name": "configuration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup.ConfigurationItemProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html#cfn-resourcegroups-group-description"
+            },
+            "stability": "external",
+            "summary": "The description of the resource group."
+          },
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 202
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html#cfn-resourcegroups-group-resourcequery"
+            },
+            "remarks": "For more information about queries and how to construct them, see [Build queries and groups in AWS Resource Groups](https://docs.aws.amazon.com//ARG/latest/userguide/gettingstarted-query.html) in the *AWS Resource Groups User Guide*\n\n> - You can include either a `ResourceQuery` or a `Configuration` , but not both.\n> - You can specify the group's membership either by using a `ResourceQuery` or by using a list of `Resources` , but not both.",
+            "stability": "external",
+            "summary": "The resource query structure that is used to dynamically determine which AWS resources are members of the associated resource group."
+          },
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 212
+          },
+          "name": "resourceQuery",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup.ResourceQueryProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html#cfn-resourcegroups-group-resources"
+            },
+            "remarks": "> - You can specify the group membership either by using a list of `Resources` or by using a `ResourceQuery` , but not both.\n> - You can include a `Resources` property only if you also specify a `Configuration` property.",
+            "stability": "external",
+            "summary": "A list of the Amazon Resource Names (ARNs) of AWS resources that you want to add to the specified group."
+          },
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 222
+          },
+          "name": "resources",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/resourcegroups.generated:CfnGroup"
+    },
+    "@aws-cdk/aws-resourcegroups.CfnGroup.ConfigurationItemProperty": {
+      "assembly": "@aws-cdk/aws-resourcegroups",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-configurationitem.html"
+        },
+        "remarks": "A service configuration can consist of one or more items. For details service configurations and how to construct them, see [Service configurations for resource groups](https://docs.aws.amazon.com//ARG/latest/APIReference/about-slg.html) in the *AWS Resource Groups User Guide* .",
+        "stability": "external",
+        "summary": "One of the items in the service configuration assigned to a resource group."
+      },
+      "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup.ConfigurationItemProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resourcegroups.generated.ts",
+        "line": 287
+      },
+      "name": "ConfigurationItemProperty",
+      "namespace": "CfnGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-configurationitem.html#cfn-resourcegroups-group-configurationitem-parameters"
+            },
+            "remarks": "For the list of parameters that you can use with each configuration item `Type` , see [Supported resource types and parameters](https://docs.aws.amazon.com/ARG/latest/APIReference/about-slg.html#about-slg-types) in the *AWS Resource Groups User Guide* .",
+            "stability": "external",
+            "summary": "A collection of parameters for this configuration item."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 293
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup.ConfigurationParameterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-configurationitem.html#cfn-resourcegroups-group-configurationitem-type"
+            },
+            "remarks": "Each item must have a unique value for type. For the list of the types that you can specify for a configuration item, see [Supported resource types and parameters](https://docs.aws.amazon.com/ARG/latest/APIReference/about-slg.html#about-slg-types) in the *AWS Resource Groups User Guide* .",
+            "stability": "external",
+            "summary": "Specifies the type of configuration item."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 299
+          },
+          "name": "type",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/resourcegroups.generated:CfnGroup.ConfigurationItemProperty"
+    },
+    "@aws-cdk/aws-resourcegroups.CfnGroup.ConfigurationParameterProperty": {
+      "assembly": "@aws-cdk/aws-resourcegroups",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-configurationparameter.html"
+        },
+        "remarks": "For details about service configurations and how to construct them, see [Service configurations for resource groups](https://docs.aws.amazon.com//ARG/latest/APIReference/about-slg.html) in the *AWS Resource Groups User Guide* .",
+        "stability": "external",
+        "summary": "One parameter for a group configuration item."
+      },
+      "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup.ConfigurationParameterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resourcegroups.generated.ts",
+        "line": 363
+      },
+      "name": "ConfigurationParameterProperty",
+      "namespace": "CfnGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-configurationparameter.html#cfn-resourcegroups-group-configurationparameter-name"
+            },
+            "remarks": "For the list of parameters that you can use with each configuration item type, see [Supported resource types and parameters](https://docs.aws.amazon.com//ARG/latest/APIReference/about-slg.html#about-slg-types) in the *AWS Resource Groups User Guide* .",
+            "stability": "external",
+            "summary": "The name of the group configuration parameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 369
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-configurationparameter.html#cfn-resourcegroups-group-configurationparameter-values"
+            },
+            "remarks": "For the list of values you can use with each parameter, see [Supported resource types and parameters](https://docs.aws.amazon.com//ARG/latest/APIReference/about-slg.html#about-slg-types) .",
+            "stability": "external",
+            "summary": "The value or values to be used for the specified parameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 375
+          },
+          "name": "values",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/resourcegroups.generated:CfnGroup.ConfigurationParameterProperty"
+    },
+    "@aws-cdk/aws-resourcegroups.CfnGroup.QueryProperty": {
+      "assembly": "@aws-cdk/aws-resourcegroups",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-query.html"
+        },
+        "remarks": "The contents required in the `Query` structure are determined by the `Type` property of the containing `ResourceQuery` structure.",
+        "stability": "external",
+        "summary": "Specifies details within a `ResourceQuery` structure that determines the membership of the resource group."
+      },
+      "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup.QueryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resourcegroups.generated.ts",
+        "line": 439
+      },
+      "name": "QueryProperty",
+      "namespace": "CfnGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-query.html#cfn-resourcegroups-group-query-resourcetypefilters"
+            },
+            "remarks": "For example, if `ResourceTypeFilters` is `[\"AWS::EC2::Instance\", \"AWS::DynamoDB::Table\"]` , only EC2 instances or DynamoDB tables can be members of this resource group. The default value is `[\"AWS::AllSupported\"]` .",
+            "stability": "external",
+            "summary": "Specifies limits to the types of resources that can be included in the resource group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 445
+          },
+          "name": "resourceTypeFilters",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-query.html#cfn-resourcegroups-group-query-stackidentifier"
+            },
+            "remarks": "All supported resources of the CloudFormation stack are members of the resource group. If you don't specify an ARN, this parameter defaults to the current stack that you are defining, which means that all the resources of the current stack are grouped.\n\nYou can specify a value for `StackIdentifier` only when the `ResourceQuery.Type` property is `CLOUDFORMATION_STACK_1_0.`",
+            "stability": "external",
+            "summary": "Specifies the ARN of a CloudFormation stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 453
+          },
+          "name": "stackIdentifier",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-query.html#cfn-resourcegroups-group-query-tagfilters"
+            },
+            "remarks": "This property is required when the `ResourceQuery.Type` property is `TAG_FILTERS_1_0` .\n\nA resource must have a tag that matches every filter that is provided in the `TagFilters` list.",
+            "stability": "external",
+            "summary": "A list of key-value pair objects that limit which resources can be members of the resource group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 461
+          },
+          "name": "tagFilters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup.TagFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/resourcegroups.generated:CfnGroup.QueryProperty"
+    },
+    "@aws-cdk/aws-resourcegroups.CfnGroup.ResourceQueryProperty": {
+      "assembly": "@aws-cdk/aws-resourcegroups",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-resourcequery.html"
+        },
+        "remarks": "For more information about how to construct a query, see [Build queries and groups in AWS Resource Groups](https://docs.aws.amazon.com//ARG/latest/userguide/gettingstarted-query.html) .",
+        "stability": "external",
+        "summary": "The query used to dynamically define the members of a group."
+      },
+      "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup.ResourceQueryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resourcegroups.generated.ts",
+        "line": 528
+      },
+      "name": "ResourceQueryProperty",
+      "namespace": "CfnGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-resourcequery.html#cfn-resourcegroups-group-resourcequery-query"
+            },
+            "remarks": "This is a structure with properties that depend on the `Type` .\n\nThe `Query` structure must be included in the following scenarios:\n\n- When the `Type` is `TAG_FILTERS_1_0` , you must specify a `Query` structure that contains a `TagFilters` list of tags. Resources with tags that match those in the `TagFilter` list become members of the resource group.\n- When the `Type` is `CLOUDFORMATION_STACK_1_0` then this field is required only when you must specify a CloudFormation stack other than the one you are defining. To do this, the `Query` structure must contain the `StackIdentifier` property. If you don't specify either a `Query` structure or a `StackIdentifier` within that `Query` , then it defaults to the CloudFormation stack that you're currently constructing.",
+            "stability": "external",
+            "summary": "The query that defines the membership of the group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 539
+          },
+          "name": "query",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup.QueryProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-resourcequery.html#cfn-resourcegroups-group-resourcequery-type"
+            },
+            "remarks": "- `TAG_FILTERS_1_0` indicates that the group is a tag-based group. To complete the group membership, you must include the `TagFilters` property to specify the tag filters to use in the query.\n- `CLOUDFORMATION_STACK_1_0` , the default, indicates that the group is a CloudFormation stack-based group. Group membership is based on the CloudFormation stack. You must specify the `StackIdentifier` property in the query to define which stack to associate the group with, or leave it empty to default to the stack where the group is defined.",
+            "stability": "external",
+            "summary": "Specifies the type of resource query that determines this group's membership. There are two valid query types:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 548
+          },
+          "name": "type",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/resourcegroups.generated:CfnGroup.ResourceQueryProperty"
+    },
+    "@aws-cdk/aws-resourcegroups.CfnGroup.TagFilterProperty": {
+      "assembly": "@aws-cdk/aws-resourcegroups",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-tagfilter.html"
+        },
+        "remarks": "An AWS resource that doesn't have a matching tag key and value is rejected as a member of the group.\n\nA `TagFilter` object includes two properties: `Key` (a string) and `Values` (a list of strings). Only resources in the account that are tagged with a matching key-value pair are members of the group. The `Values` property of `TagFilter` is optional, but specifying it narrows the query results.\n\nAs an example, suppose the `TagFilters` string is `[{\"Key\": \"Stage\", \"Values\": [\"Test\", \"Beta\"]}, {\"Key\": \"Storage\"}]` . In this case, only resources with all of the following tags are members of the group:\n\n- `Stage` tag key with a value of either `Test` or `Beta`\n- `Storage` tag key with any value",
+        "stability": "external",
+        "summary": "Specifies a single tag key and optional values that you can use to specify membership in a tag-based group."
+      },
+      "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup.TagFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resourcegroups.generated.ts",
+        "line": 619
+      },
+      "name": "TagFilterProperty",
+      "namespace": "CfnGroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-tagfilter.html#cfn-resourcegroups-group-tagfilter-key"
+            },
+            "remarks": "Only resources in the account that are tagged with a specified tag key are members of the tag-based resource group.\n\nThis field is required when the `ResourceQuery` structure's `Type` property is `TAG_FILTERS_1_0` . You must specify at least one tag key.",
+            "stability": "external",
+            "summary": "A string that defines a tag key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 627
+          },
+          "name": "key",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourcegroups-group-tagfilter.html#cfn-resourcegroups-group-tagfilter-values"
+            },
+            "remarks": "This is optional. If you don't specify a value or values for a key, then an AWS resource with any value for that key is a member.",
+            "stability": "external",
+            "summary": "A list of tag values that can be included in the tag-based resource group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 633
+          },
+          "name": "values",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/resourcegroups.generated:CfnGroup.TagFilterProperty"
+    },
+    "@aws-cdk/aws-resourcegroups.CfnGroupProps": {
+      "assembly": "@aws-cdk/aws-resourcegroups",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnGroup`."
+      },
+      "fqn": "@aws-cdk/aws-resourcegroups.CfnGroupProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resourcegroups.generated.ts",
+        "line": 20
+      },
+      "name": "CfnGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html#cfn-resourcegroups-group-name"
+            },
+            "remarks": "The name must be unique within the AWS Region in which you create the resource. To create multiple resource groups based on the same CloudFormation stack, you must generate unique names for each.",
+            "stability": "external",
+            "summary": "The name of a resource group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 27
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html#cfn-resourcegroups-group-configuration"
+            },
+            "remarks": "A `Configuration` consists of one or more `ConfigurationItem` entries. For information about service configurations for resource groups and how to construct them, see [Service configurations for resource groups](https://docs.aws.amazon.com//ARG/latest/APIReference/about-slg.html) in the *AWS Resource Groups User Guide* .\n\n> You can include either a `Configuration` or a `ResourceQuery` , but not both.",
+            "stability": "external",
+            "summary": "The service configuration currently associated with the resource group and in effect for the members of the resource group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 36
+          },
+          "name": "configuration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup.ConfigurationItemProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html#cfn-resourcegroups-group-description"
+            },
+            "stability": "external",
+            "summary": "The description of the resource group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 43
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html#cfn-resourcegroups-group-resourcequery"
+            },
+            "remarks": "For more information about queries and how to construct them, see [Build queries and groups in AWS Resource Groups](https://docs.aws.amazon.com//ARG/latest/userguide/gettingstarted-query.html) in the *AWS Resource Groups User Guide*\n\n> - You can include either a `ResourceQuery` or a `Configuration` , but not both.\n> - You can specify the group's membership either by using a `ResourceQuery` or by using a list of `Resources` , but not both.",
+            "stability": "external",
+            "summary": "The resource query structure that is used to dynamically determine which AWS resources are members of the associated resource group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 53
+          },
+          "name": "resourceQuery",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-resourcegroups.CfnGroup.ResourceQueryProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html#cfn-resourcegroups-group-resources"
+            },
+            "remarks": "> - You can specify the group membership either by using a list of `Resources` or by using a `ResourceQuery` , but not both.\n> - You can include a `Resources` property only if you also specify a `Configuration` property.",
+            "stability": "external",
+            "summary": "A list of the Amazon Resource Names (ARNs) of AWS resources that you want to add to the specified group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 63
+          },
+          "name": "resources",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourcegroups-group.html#cfn-resourcegroups-group-tags"
+            },
+            "stability": "external",
+            "summary": "The tag key and value pairs that are attached to the resource group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourcegroups.generated.ts",
+            "line": 70
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/resourcegroups.generated:CfnGroupProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "adQBvdBoeEEQFW6ant9BqVAfmJA9CIwTbWwoxyuzseY="
+}

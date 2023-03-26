@@ -1,0 +1,4631 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::Evidently Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::Evidently",
+    "aws-evidently"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-evidently",
+  "readme": {
+    "markdown": "# AWS::Evidently Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as evidently from '@aws-cdk/aws-evidently';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for Evidently construct libraries](https://constructs.dev/search?q=evidently)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Evidently resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Evidently.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Evidently](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Evidently.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-evidently",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Evidently",
+      "packageId": "Amazon.CDK.AWS.Evidently",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "evidently",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.evidently"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-evidently"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-evidently",
+      "module": "aws_cdk.aws_evidently"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-evidently.CfnExperiment": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Evidently::Experiment",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html"
+        },
+        "remarks": "Creates or updates an Evidently *experiment* . Before you create an experiment, you must create the feature to use for the experiment.\n\nAn experiment helps you make feature design decisions based on evidence and data. An experiment can test as many as five variations at once. Evidently collects experiment data and analyzes it by statistical methods, and provides clear recommendations about which variations perform better.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Evidently::Experiment`."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnExperiment",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Evidently::Experiment`."
+        },
+        "locationInModule": {
+          "filename": "lib/evidently.generated.ts",
+          "line": 348
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-evidently.CfnExperimentProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 214
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 377
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 399
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnExperiment",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 218
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For example, `arn:aws:evidently:us-west-2:0123455678912:project/myProject/experiment/myExperiment`",
+            "stability": "external",
+            "summary": "The ARN of the experiment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 243
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 382
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-tags"
+            },
+            "remarks": "Tags can help you organize and categorize your resources. You can also use them to scope user permissions by granting a user permission to access or change only resources with certain tag values.\n\nTags don't have any semantic meaning to AWS and are interpreted strictly as strings of characters.\n\nYou can associate as many as 50 tags with an experiment.\n\nFor more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags (key-value pairs) to the experiment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 339
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-metricgoals"
+            },
+            "remarks": "You can use up to three metrics in an experiment.",
+            "stability": "external",
+            "summary": "An array of structures that defines the metrics used for the experiment, and whether a higher or lower value for each metric is the goal."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 250
+          },
+          "name": "metricGoals",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnExperiment.MetricGoalObjectProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-name"
+            },
+            "stability": "external",
+            "summary": "A name for the new experiment."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 257
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-onlineabconfig"
+            },
+            "remarks": "The \"control\" version is used for comparison with other variations. This structure also specifies how much experiment traffic is allocated to each variation.",
+            "stability": "external",
+            "summary": "A structure that contains the configuration of which variation to use as the \"control\" version."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 264
+          },
+          "name": "onlineAbConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-evidently.CfnExperiment.OnlineAbConfigObjectProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-project"
+            },
+            "stability": "external",
+            "summary": "The name or the ARN of the project where this experiment is to be created."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 271
+          },
+          "name": "project",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-treatments"
+            },
+            "stability": "external",
+            "summary": "An array of structures that describe the configuration of each feature variation used in the experiment."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 278
+          },
+          "name": "treatments",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnExperiment.TreatmentObjectProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-description"
+            },
+            "stability": "external",
+            "summary": "An optional description of the experiment."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 285
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-randomizationsalt"
+            },
+            "remarks": "This randomization ID is a combination of the entity ID and `randomizationSalt` . If you omit `randomizationSalt` , Evidently uses the experiment name as the `randomizationSalt` .",
+            "stability": "external",
+            "summary": "When Evidently assigns a particular user session to an experiment, it must use a randomization ID to determine which variation the user session is served."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 292
+          },
+          "name": "randomizationSalt",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-removesegment"
+            },
+            "remarks": "You can't use this parameter if the experiment is currently running.",
+            "stability": "external",
+            "summary": "Set this to `true` to remove the segment that is associated with this experiment."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 299
+          },
+          "name": "removeSegment",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-runningstatus"
+            },
+            "stability": "external",
+            "summary": "A structure that you can use to start and stop the experiment."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 306
+          },
+          "name": "runningStatus",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-evidently.CfnExperiment.RunningStatusObjectProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-samplingrate"
+            },
+            "remarks": "The available audience is the total audience minus the audience that you have allocated to overrides or current launches of this feature.\n\nThis is represented in thousandths of a percent. For example, specify 10,000 to allocate 10% of the available audience.",
+            "stability": "external",
+            "summary": "The portion of the available audience that you want to allocate to this experiment, in thousandths of a percent."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 315
+          },
+          "name": "samplingRate",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-segment"
+            },
+            "remarks": "When a segment is used in an experiment, only user sessions that match the segment pattern are used in the experiment.\n\nFor more information, see [Segment rule pattern syntax](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Evidently-segments-syntax.html) .",
+            "stability": "external",
+            "summary": "Specifies an audience *segment* to use in the experiment."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 324
+          },
+          "name": "segment",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnExperiment"
+    },
+    "@aws-cdk/aws-evidently.CfnExperiment.MetricGoalObjectProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-metricgoalobject.html"
+        },
+        "stability": "external",
+        "summary": "Use this structure to tell Evidently whether higher or lower values are desired for a metric that is used in an experiment."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnExperiment.MetricGoalObjectProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 413
+      },
+      "name": "MetricGoalObjectProperty",
+      "namespace": "CfnExperiment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-metricgoalobject.html#cfn-evidently-experiment-metricgoalobject-desiredchange"
+            },
+            "remarks": "`DECREASE` means that a variation with a lower number for this metric is performing better.",
+            "stability": "external",
+            "summary": "`INCREASE` means that a variation with a higher number for this metric is performing better."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 421
+          },
+          "name": "desiredChange",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-metricgoalobject.html#cfn-evidently-experiment-metricgoalobject-entityidkey"
+            },
+            "remarks": "An example is `userDetails.userID` .",
+            "stability": "external",
+            "summary": "The entity, such as a user or session, that does an action that causes a metric value to be recorded."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 427
+          },
+          "name": "entityIdKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-metricgoalobject.html#cfn-evidently-experiment-metricgoalobject-metricname"
+            },
+            "remarks": "It can include up to 255 characters.",
+            "stability": "external",
+            "summary": "A name for the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 441
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-metricgoalobject.html#cfn-evidently-experiment-metricgoalobject-valuekey"
+            },
+            "stability": "external",
+            "summary": "The JSON path to reference the numerical metric value in the event."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 453
+          },
+          "name": "valueKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-metricgoalobject.html#cfn-evidently-experiment-metricgoalobject-eventpattern"
+            },
+            "remarks": "For more information about EventBridge event patterns, see [Amazon EventBridge event patterns](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html) .",
+            "stability": "external",
+            "summary": "The EventBridge event pattern that defines how the metric is recorded."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 435
+          },
+          "name": "eventPattern",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-metricgoalobject.html#cfn-evidently-experiment-metricgoalobject-unitlabel"
+            },
+            "stability": "external",
+            "summary": "A label for the units that the metric is measuring."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 447
+          },
+          "name": "unitLabel",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnExperiment.MetricGoalObjectProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnExperiment.OnlineAbConfigObjectProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-onlineabconfigobject.html"
+        },
+        "remarks": "The \"control\" version is used for comparison with other variations. This structure also specifies how much experiment traffic is allocated to each variation.",
+        "stability": "external",
+        "summary": "A structure that contains the configuration of which variation to use as the \"control\" version."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnExperiment.OnlineAbConfigObjectProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 533
+      },
+      "name": "OnlineAbConfigObjectProperty",
+      "namespace": "CfnExperiment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-onlineabconfigobject.html#cfn-evidently-experiment-onlineabconfigobject-controltreatmentname"
+            },
+            "stability": "external",
+            "summary": "The name of the variation that is to be the default variation that the other variations are compared to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 539
+          },
+          "name": "controlTreatmentName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-onlineabconfigobject.html#cfn-evidently-experiment-onlineabconfigobject-treatmentweights"
+            },
+            "remarks": "The keys are treatment names, and the values are the portion of experiment traffic to be assigned to that treatment. Specify the traffic portion in thousandths of a percent, so 20,000 for a variation would allocate 20% of the experiment traffic to that variation.",
+            "stability": "external",
+            "summary": "A set of key-value pairs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 545
+          },
+          "name": "treatmentWeights",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnExperiment.TreatmentToWeightProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnExperiment.OnlineAbConfigObjectProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnExperiment.RunningStatusObjectProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-runningstatusobject.html"
+        },
+        "stability": "external",
+        "summary": "Use this structure to start and stop the experiment."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnExperiment.RunningStatusObjectProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 609
+      },
+      "name": "RunningStatusObjectProperty",
+      "namespace": "CfnExperiment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-runningstatusobject.html#cfn-evidently-experiment-runningstatusobject-status"
+            },
+            "remarks": "If this experiment is currently running and you want to stop it now, specify `STOP` .",
+            "stability": "external",
+            "summary": "To start the experiment now, specify `START` for this parameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 633
+          },
+          "name": "status",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-runningstatusobject.html#cfn-evidently-experiment-runningstatusobject-analysiscompletetime"
+            },
+            "remarks": "The format is as a UNIX timestamp. For more information about this format, see [The Current Epoch Unix Timestamp](https://docs.aws.amazon.com/https://www.unixtimestamp.com/index.php) .",
+            "stability": "external",
+            "summary": "If you are using AWS CloudFormation to start the experiment, use this field to specify when the experiment is to end."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 615
+          },
+          "name": "analysisCompleteTime",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-runningstatusobject.html#cfn-evidently-experiment-runningstatusobject-desiredstate"
+            },
+            "stability": "external",
+            "summary": "If you are using AWS CloudFormation to stop this experiment, specify either `COMPLETED` or `CANCELLED` here to indicate how to classify this experiment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 621
+          },
+          "name": "desiredState",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-runningstatusobject.html#cfn-evidently-experiment-runningstatusobject-reason"
+            },
+            "stability": "external",
+            "summary": "If you are using AWS CloudFormation to stop this experiment, this is an optional field that you can use to record why the experiment is being stopped or cancelled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 627
+          },
+          "name": "reason",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnExperiment.RunningStatusObjectProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnExperiment.TreatmentObjectProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-treatmentobject.html"
+        },
+        "remarks": "A treatment is a variation of the feature that you are including in the experiment.",
+        "stability": "external",
+        "summary": "A structure that defines one treatment in an experiment."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnExperiment.TreatmentObjectProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 704
+      },
+      "name": "TreatmentObjectProperty",
+      "namespace": "CfnExperiment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-treatmentobject.html#cfn-evidently-experiment-treatmentobject-feature"
+            },
+            "stability": "external",
+            "summary": "The name of the feature for this experiment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 716
+          },
+          "name": "feature",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-treatmentobject.html#cfn-evidently-experiment-treatmentobject-treatmentname"
+            },
+            "remarks": "It can include up to 127 characters.",
+            "stability": "external",
+            "summary": "A name for this treatment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 722
+          },
+          "name": "treatmentName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-treatmentobject.html#cfn-evidently-experiment-treatmentobject-variation"
+            },
+            "stability": "external",
+            "summary": "The name of the variation to use for this treatment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 728
+          },
+          "name": "variation",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-treatmentobject.html#cfn-evidently-experiment-treatmentobject-description"
+            },
+            "stability": "external",
+            "summary": "The description of the treatment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 710
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnExperiment.TreatmentObjectProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnExperiment.TreatmentToWeightProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-treatmenttoweight.html"
+        },
+        "stability": "external",
+        "summary": "This structure defines how much experiment traffic to allocate to one treatment used in the experiment."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnExperiment.TreatmentToWeightProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 801
+      },
+      "name": "TreatmentToWeightProperty",
+      "namespace": "CfnExperiment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-treatmenttoweight.html#cfn-evidently-experiment-treatmenttoweight-splitweight"
+            },
+            "remarks": "Specify the traffic portion in thousandths of a percent, so 20,000 allocated to a treatment would allocate 20% of the experiment traffic to that treatment.",
+            "stability": "external",
+            "summary": "The portion of experiment traffic to allocate to this treatment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 807
+          },
+          "name": "splitWeight",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-experiment-treatmenttoweight.html#cfn-evidently-experiment-treatmenttoweight-treatment"
+            },
+            "stability": "external",
+            "summary": "The name of the treatment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 813
+          },
+          "name": "treatment",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnExperiment.TreatmentToWeightProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnExperimentProps": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnExperiment`."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnExperimentProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 20
+      },
+      "name": "CfnExperimentProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-metricgoals"
+            },
+            "remarks": "You can use up to three metrics in an experiment.",
+            "stability": "external",
+            "summary": "An array of structures that defines the metrics used for the experiment, and whether a higher or lower value for each metric is the goal."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 27
+          },
+          "name": "metricGoals",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnExperiment.MetricGoalObjectProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-name"
+            },
+            "stability": "external",
+            "summary": "A name for the new experiment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 34
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-onlineabconfig"
+            },
+            "remarks": "The \"control\" version is used for comparison with other variations. This structure also specifies how much experiment traffic is allocated to each variation.",
+            "stability": "external",
+            "summary": "A structure that contains the configuration of which variation to use as the \"control\" version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 41
+          },
+          "name": "onlineAbConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-evidently.CfnExperiment.OnlineAbConfigObjectProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-project"
+            },
+            "stability": "external",
+            "summary": "The name or the ARN of the project where this experiment is to be created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 48
+          },
+          "name": "project",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-treatments"
+            },
+            "stability": "external",
+            "summary": "An array of structures that describe the configuration of each feature variation used in the experiment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 55
+          },
+          "name": "treatments",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnExperiment.TreatmentObjectProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-description"
+            },
+            "stability": "external",
+            "summary": "An optional description of the experiment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 62
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-randomizationsalt"
+            },
+            "remarks": "This randomization ID is a combination of the entity ID and `randomizationSalt` . If you omit `randomizationSalt` , Evidently uses the experiment name as the `randomizationSalt` .",
+            "stability": "external",
+            "summary": "When Evidently assigns a particular user session to an experiment, it must use a randomization ID to determine which variation the user session is served."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 69
+          },
+          "name": "randomizationSalt",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-removesegment"
+            },
+            "remarks": "You can't use this parameter if the experiment is currently running.",
+            "stability": "external",
+            "summary": "Set this to `true` to remove the segment that is associated with this experiment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 76
+          },
+          "name": "removeSegment",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-runningstatus"
+            },
+            "stability": "external",
+            "summary": "A structure that you can use to start and stop the experiment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 83
+          },
+          "name": "runningStatus",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-evidently.CfnExperiment.RunningStatusObjectProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-samplingrate"
+            },
+            "remarks": "The available audience is the total audience minus the audience that you have allocated to overrides or current launches of this feature.\n\nThis is represented in thousandths of a percent. For example, specify 10,000 to allocate 10% of the available audience.",
+            "stability": "external",
+            "summary": "The portion of the available audience that you want to allocate to this experiment, in thousandths of a percent."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 92
+          },
+          "name": "samplingRate",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-segment"
+            },
+            "remarks": "When a segment is used in an experiment, only user sessions that match the segment pattern are used in the experiment.\n\nFor more information, see [Segment rule pattern syntax](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Evidently-segments-syntax.html) .",
+            "stability": "external",
+            "summary": "Specifies an audience *segment* to use in the experiment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 101
+          },
+          "name": "segment",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-experiment.html#cfn-evidently-experiment-tags"
+            },
+            "remarks": "Tags can help you organize and categorize your resources. You can also use them to scope user permissions by granting a user permission to access or change only resources with certain tag values.\n\nTags don't have any semantic meaning to AWS and are interpreted strictly as strings of characters.\n\nYou can associate as many as 50 tags with an experiment.\n\nFor more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags (key-value pairs) to the experiment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 116
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnExperimentProps"
+    },
+    "@aws-cdk/aws-evidently.CfnFeature": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Evidently::Feature",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html"
+        },
+        "remarks": "Creates or updates an Evidently *feature* that you want to launch or test. You can define up to five variations of a feature, and use these variations in your launches and experiments. A feature must be created in a project. For information about creating a project, see [CreateProject](https://docs.aws.amazon.com/cloudwatchevidently/latest/APIReference/API_CreateProject.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Evidently::Feature`."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnFeature",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Evidently::Feature`."
+        },
+        "locationInModule": {
+          "filename": "lib/evidently.generated.ts",
+          "line": 1138
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-evidently.CfnFeatureProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 1030
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1161
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1179
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnFeature",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1034
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For example, `arn:aws:evidently:us-west-2:0123455678912:project/myProject/feature/myFeature` .",
+            "stability": "external",
+            "summary": "The ARN of the feature."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1059
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1166
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-tags"
+            },
+            "remarks": "Tags can help you organize and categorize your resources. You can also use them to scope user permissions by granting a user permission to access or change only resources with certain tag values.\n\nTags don't have any semantic meaning to AWS and are interpreted strictly as strings of characters.\n\nYou can associate as many as 50 tags with a feature.\n\nFor more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags (key-value pairs) to the feature."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1129
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-name"
+            },
+            "remarks": "It can include up to 127 characters.",
+            "stability": "external",
+            "summary": "The name for the feature."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1066
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-project"
+            },
+            "stability": "external",
+            "summary": "The name or ARN of the project that is to contain the new feature."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1073
+          },
+          "name": "project",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-variations"
+            },
+            "remarks": "Each `VariationObject` in the `Variations` array for a feature must have the same type of value ( `BooleanValue` , `DoubleValue` , `LongValue` or `StringValue` ).",
+            "stability": "external",
+            "summary": "An array of structures that contain the configuration of the feature's different variations."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1082
+          },
+          "name": "variations",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnFeature.VariationObjectProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-defaultvariation"
+            },
+            "remarks": "The default variation is served to users who are not allocated to any ongoing launches or experiments of this feature.\n\nThis variation must also be listed in the `Variations` structure.\n\nIf you omit `DefaultVariation` , the first variation listed in the `Variations` structure is used as the default variation.",
+            "stability": "external",
+            "summary": "The name of the variation to use as the default variation."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1093
+          },
+          "name": "defaultVariation",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-description"
+            },
+            "stability": "external",
+            "summary": "An optional description of the feature."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1100
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-entityoverrides"
+            },
+            "remarks": "Each user is specified by a key-value pair . For each key, specify a user by entering their user ID, account ID, or some other identifier. For the value, specify the name of the variation that they are to be served.",
+            "stability": "external",
+            "summary": "Specify users that should always be served a specific variation of a feature."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1107
+          },
+          "name": "entityOverrides",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnFeature.EntityOverrideProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-evaluationstrategy"
+            },
+            "remarks": "Specify `DEFAULT_VARIATION` to serve the default variation to all users instead.",
+            "stability": "external",
+            "summary": "Specify `ALL_RULES` to activate the traffic allocation specified by any ongoing launches or experiments."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1114
+          },
+          "name": "evaluationStrategy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnFeature"
+    },
+    "@aws-cdk/aws-evidently.CfnFeature.EntityOverrideProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-feature-entityoverride.html"
+        },
+        "remarks": "Each key specifies a user using their user ID, account ID, or some other identifier. The value specifies the name of the variation that the user is to be served.",
+        "stability": "external",
+        "summary": "A set of key-value pairs that specify users who should always be served a specific variation of a feature."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnFeature.EntityOverrideProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 1193
+      },
+      "name": "EntityOverrideProperty",
+      "namespace": "CfnFeature",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-feature-entityoverride.html#cfn-evidently-feature-entityoverride-entityid"
+            },
+            "stability": "external",
+            "summary": "The entity ID to be served the variation specified in `Variation` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1199
+          },
+          "name": "entityId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-feature-entityoverride.html#cfn-evidently-feature-entityoverride-variation"
+            },
+            "stability": "external",
+            "summary": "The name of the variation to serve to the user session that matches the `EntityId` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1205
+          },
+          "name": "variation",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnFeature.EntityOverrideProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnFeature.VariationObjectProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-feature-variationobject.html"
+        },
+        "remarks": "It can contain only one of the following parameters: `BooleanValue` , `DoubleValue` , `LongValue` or `StringValue` .",
+        "stability": "external",
+        "summary": "This structure contains the name and variation value of one variation of a feature."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnFeature.VariationObjectProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 1269
+      },
+      "name": "VariationObjectProperty",
+      "namespace": "CfnFeature",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-feature-variationobject.html#cfn-evidently-feature-variationobject-variationname"
+            },
+            "remarks": "It can include up to 127 characters.",
+            "stability": "external",
+            "summary": "A name for the variation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1299
+          },
+          "name": "variationName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-feature-variationobject.html#cfn-evidently-feature-variationobject-booleanvalue"
+            },
+            "stability": "external",
+            "summary": "The value assigned to this variation, if the variation type is boolean."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1275
+          },
+          "name": "booleanValue",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-feature-variationobject.html#cfn-evidently-feature-variationobject-doublevalue"
+            },
+            "stability": "external",
+            "summary": "The value assigned to this variation, if the variation type is a double."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1281
+          },
+          "name": "doubleValue",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-feature-variationobject.html#cfn-evidently-feature-variationobject-longvalue"
+            },
+            "stability": "external",
+            "summary": "The value assigned to this variation, if the variation type is a long."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1287
+          },
+          "name": "longValue",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-feature-variationobject.html#cfn-evidently-feature-variationobject-stringvalue"
+            },
+            "stability": "external",
+            "summary": "The value assigned to this variation, if the variation type is a string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1293
+          },
+          "name": "stringValue",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnFeature.VariationObjectProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnFeatureProps": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnFeature`."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnFeatureProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 878
+      },
+      "name": "CfnFeatureProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-name"
+            },
+            "remarks": "It can include up to 127 characters.",
+            "stability": "external",
+            "summary": "The name for the feature."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 885
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-project"
+            },
+            "stability": "external",
+            "summary": "The name or ARN of the project that is to contain the new feature."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 892
+          },
+          "name": "project",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-variations"
+            },
+            "remarks": "Each `VariationObject` in the `Variations` array for a feature must have the same type of value ( `BooleanValue` , `DoubleValue` , `LongValue` or `StringValue` ).",
+            "stability": "external",
+            "summary": "An array of structures that contain the configuration of the feature's different variations."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 901
+          },
+          "name": "variations",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnFeature.VariationObjectProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-defaultvariation"
+            },
+            "remarks": "The default variation is served to users who are not allocated to any ongoing launches or experiments of this feature.\n\nThis variation must also be listed in the `Variations` structure.\n\nIf you omit `DefaultVariation` , the first variation listed in the `Variations` structure is used as the default variation.",
+            "stability": "external",
+            "summary": "The name of the variation to use as the default variation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 912
+          },
+          "name": "defaultVariation",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-description"
+            },
+            "stability": "external",
+            "summary": "An optional description of the feature."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 919
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-entityoverrides"
+            },
+            "remarks": "Each user is specified by a key-value pair . For each key, specify a user by entering their user ID, account ID, or some other identifier. For the value, specify the name of the variation that they are to be served.",
+            "stability": "external",
+            "summary": "Specify users that should always be served a specific variation of a feature."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 926
+          },
+          "name": "entityOverrides",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnFeature.EntityOverrideProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-evaluationstrategy"
+            },
+            "remarks": "Specify `DEFAULT_VARIATION` to serve the default variation to all users instead.",
+            "stability": "external",
+            "summary": "Specify `ALL_RULES` to activate the traffic allocation specified by any ongoing launches or experiments."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 933
+          },
+          "name": "evaluationStrategy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-feature.html#cfn-evidently-feature-tags"
+            },
+            "remarks": "Tags can help you organize and categorize your resources. You can also use them to scope user permissions by granting a user permission to access or change only resources with certain tag values.\n\nTags don't have any semantic meaning to AWS and are interpreted strictly as strings of characters.\n\nYou can associate as many as 50 tags with a feature.\n\nFor more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags (key-value pairs) to the feature."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 948
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnFeatureProps"
+    },
+    "@aws-cdk/aws-evidently.CfnLaunch": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Evidently::Launch",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html"
+        },
+        "remarks": "Creates or updates a *launch* of a given feature. Before you create a launch, you must create the feature to use for the launch.\n\nYou can use a launch to safely validate new features by serving them to a specified percentage of your users while you roll out the feature. You can monitor the performance of the new feature to help you decide when to ramp up traffic to more users. This helps you reduce risk and identify unintended consequences before you fully launch the feature.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Evidently::Launch`."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnLaunch",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Evidently::Launch`."
+        },
+        "locationInModule": {
+          "filename": "lib/evidently.generated.ts",
+          "line": 1640
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-evidently.CfnLaunchProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 1531
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1665
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1684
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnLaunch",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1535
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For example, `arn:aws:evidently:us-west-2:0123455678912:project/myProject/launch/myLaunch`",
+            "stability": "external",
+            "summary": "The ARN of the launch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1560
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1670
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-tags"
+            },
+            "remarks": "Tags can help you organize and categorize your resources. You can also use them to scope user permissions by granting a user permission to access or change only resources with certain tag values.\n\nTags don't have any semantic meaning to AWS and are interpreted strictly as strings of characters.\n\nYou can associate as many as 50 tags with a launch.\n\nFor more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags (key-value pairs) to the launch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1631
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-groups"
+            },
+            "remarks": "You can up to five launch groups in a launch.",
+            "stability": "external",
+            "summary": "An array of structures that contains the feature and variations that are to be used for the launch."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1567
+          },
+          "name": "groups",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnLaunch.LaunchGroupObjectProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-name"
+            },
+            "remarks": "It can include up to 127 characters.",
+            "stability": "external",
+            "summary": "The name for the launch."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1574
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-project"
+            },
+            "stability": "external",
+            "summary": "The name or ARN of the project that you want to create the launch in."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1581
+          },
+          "name": "project",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-scheduledsplitsconfig"
+            },
+            "stability": "external",
+            "summary": "An array of structures that define the traffic allocation percentages among the feature variations during each step of the launch."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1588
+          },
+          "name": "scheduledSplitsConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnLaunch.StepConfigProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-description"
+            },
+            "stability": "external",
+            "summary": "An optional description for the launch."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1595
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-executionstatus"
+            },
+            "stability": "external",
+            "summary": "A structure that you can use to start and stop the launch."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1602
+          },
+          "name": "executionStatus",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-evidently.CfnLaunch.ExecutionStatusObjectProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-metricmonitors"
+            },
+            "remarks": "You can have up to three metric monitors in the array.",
+            "stability": "external",
+            "summary": "An array of structures that define the metrics that will be used to monitor the launch performance."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1609
+          },
+          "name": "metricMonitors",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnLaunch.MetricDefinitionObjectProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-randomizationsalt"
+            },
+            "remarks": "This randomization ID is a combination of the entity ID and `randomizationSalt` . If you omit `randomizationSalt` , Evidently uses the launch name as the `randomizationsSalt` .",
+            "stability": "external",
+            "summary": "When Evidently assigns a particular user session to a launch, it must use a randomization ID to determine which variation the user session is served."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1616
+          },
+          "name": "randomizationSalt",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnLaunch"
+    },
+    "@aws-cdk/aws-evidently.CfnLaunch.ExecutionStatusObjectProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-executionstatusobject.html"
+        },
+        "stability": "external",
+        "summary": "Use this structure to start and stop the launch."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnLaunch.ExecutionStatusObjectProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 1698
+      },
+      "name": "ExecutionStatusObjectProperty",
+      "namespace": "CfnLaunch",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-executionstatusobject.html#cfn-evidently-launch-executionstatusobject-status"
+            },
+            "remarks": "If this launch is currently running and you want to stop it now, specify `STOP` .",
+            "stability": "external",
+            "summary": "To start the launch now, specify `START` for this parameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1716
+          },
+          "name": "status",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-executionstatusobject.html#cfn-evidently-launch-executionstatusobject-desiredstate"
+            },
+            "remarks": "If you omit this parameter, the default of `COMPLETED` is used.",
+            "stability": "external",
+            "summary": "If you are using AWS CloudFormation to stop this launch, specify either `COMPLETED` or `CANCELLED` here to indicate how to classify this experiment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1704
+          },
+          "name": "desiredState",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-executionstatusobject.html#cfn-evidently-launch-executionstatusobject-reason"
+            },
+            "stability": "external",
+            "summary": "If you are using AWS CloudFormation to stop this launch, this is an optional field that you can use to record why the launch is being stopped or cancelled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1710
+          },
+          "name": "reason",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnLaunch.ExecutionStatusObjectProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnLaunch.GroupToWeightProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-grouptoweight.html"
+        },
+        "stability": "external",
+        "summary": "A structure containing the percentage of launch traffic to allocate to one launch group."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnLaunch.GroupToWeightProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 1784
+      },
+      "name": "GroupToWeightProperty",
+      "namespace": "CfnLaunch",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-grouptoweight.html#cfn-evidently-launch-grouptoweight-groupname"
+            },
+            "remarks": "It can include up to 127 characters.",
+            "stability": "external",
+            "summary": "The name of the launch group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1790
+          },
+          "name": "groupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-grouptoweight.html#cfn-evidently-launch-grouptoweight-splitweight"
+            },
+            "remarks": "This is represented in thousandths of a percent. For example, specify 20,000 to allocate 20% of the launch audience to this launch group.",
+            "stability": "external",
+            "summary": "The portion of launch traffic to allocate to this launch group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1798
+          },
+          "name": "splitWeight",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnLaunch.GroupToWeightProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnLaunch.LaunchGroupObjectProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-launchgroupobject.html"
+        },
+        "remarks": "A launch group is a variation of the feature that you are including in the launch.",
+        "stability": "external",
+        "summary": "A structure that defines one launch group in a launch."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnLaunch.LaunchGroupObjectProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 1864
+      },
+      "name": "LaunchGroupObjectProperty",
+      "namespace": "CfnLaunch",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-launchgroupobject.html#cfn-evidently-launch-launchgroupobject-feature"
+            },
+            "stability": "external",
+            "summary": "The feature that this launch is using."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1876
+          },
+          "name": "feature",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-launchgroupobject.html#cfn-evidently-launch-launchgroupobject-groupname"
+            },
+            "remarks": "It can include up to 127 characters.",
+            "stability": "external",
+            "summary": "A name for this launch group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1882
+          },
+          "name": "groupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-launchgroupobject.html#cfn-evidently-launch-launchgroupobject-variation"
+            },
+            "stability": "external",
+            "summary": "The feature variation to use for this launch group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1888
+          },
+          "name": "variation",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-launchgroupobject.html#cfn-evidently-launch-launchgroupobject-description"
+            },
+            "stability": "external",
+            "summary": "A description of the launch group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1870
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnLaunch.LaunchGroupObjectProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnLaunch.MetricDefinitionObjectProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-metricdefinitionobject.html"
+        },
+        "stability": "external",
+        "summary": "This structure defines a metric that you want to use to evaluate the variations during a launch or experiment."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnLaunch.MetricDefinitionObjectProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 1961
+      },
+      "name": "MetricDefinitionObjectProperty",
+      "namespace": "CfnLaunch",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-metricdefinitionobject.html#cfn-evidently-launch-metricdefinitionobject-entityidkey"
+            },
+            "remarks": "An example is `userDetails.userID` .",
+            "stability": "external",
+            "summary": "The entity, such as a user or session, that does an action that causes a metric value to be recorded."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1967
+          },
+          "name": "entityIdKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-metricdefinitionobject.html#cfn-evidently-launch-metricdefinitionobject-metricname"
+            },
+            "remarks": "It can include up to 255 characters.",
+            "stability": "external",
+            "summary": "A name for the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1981
+          },
+          "name": "metricName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-metricdefinitionobject.html#cfn-evidently-launch-metricdefinitionobject-valuekey"
+            },
+            "stability": "external",
+            "summary": "The value that is tracked to produce the metric."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1993
+          },
+          "name": "valueKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-metricdefinitionobject.html#cfn-evidently-launch-metricdefinitionobject-eventpattern"
+            },
+            "remarks": "For more information about EventBridge event patterns, see [Amazon EventBridge event patterns](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html) .",
+            "stability": "external",
+            "summary": "The EventBridge event pattern that defines how the metric is recorded."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1975
+          },
+          "name": "eventPattern",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-metricdefinitionobject.html#cfn-evidently-launch-metricdefinitionobject-unitlabel"
+            },
+            "stability": "external",
+            "summary": "A label for the units that the metric is measuring."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1987
+          },
+          "name": "unitLabel",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnLaunch.MetricDefinitionObjectProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnLaunch.SegmentOverrideProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-segmentoverride.html"
+        },
+        "remarks": "A segment is a portion of your audience that share one or more characteristics. Examples could be Chrome browser users, users in Europe, or Firefox browser users in Europe who also fit other criteria that your application collects, such as age.\n\nFor more information, see [Use segments to focus your audience](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Evidently-segments.html) .\n\nThis sructure is an array of up to six segment override objects. Each of these objects specifies a segment that you have already created, and defines the traffic split for that segment.",
+        "stability": "external",
+        "summary": "Use this structure to specify different traffic splits for one or more audience *segments* ."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnLaunch.SegmentOverrideProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 2073
+      },
+      "name": "SegmentOverrideProperty",
+      "namespace": "CfnLaunch",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-segmentoverride.html#cfn-evidently-launch-segmentoverride-evaluationorder"
+            },
+            "remarks": "Segment overrides with lower numbers are evaluated first.",
+            "stability": "external",
+            "summary": "A number indicating the order to use to evaluate segment overrides, if there are more than one."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2079
+          },
+          "name": "evaluationOrder",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-segmentoverride.html#cfn-evidently-launch-segmentoverride-segment"
+            },
+            "stability": "external",
+            "summary": "The ARN of the segment to use for this override."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2085
+          },
+          "name": "segment",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-segmentoverride.html#cfn-evidently-launch-segmentoverride-weights"
+            },
+            "remarks": "This is a set of key-value pairs. The keys are variation names. The values represent the amount of traffic to allocate to that variation for this segment. This is expressed in thousandths of a percent, so a weight of 50000 represents 50% of traffic.",
+            "stability": "external",
+            "summary": "The traffic allocation percentages among the feature variations to assign to this segment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2091
+          },
+          "name": "weights",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnLaunch.GroupToWeightProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnLaunch.SegmentOverrideProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnLaunch.StepConfigProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-stepconfig.html"
+        },
+        "stability": "external",
+        "summary": "A structure that defines when each step of the launch is to start, and how much launch traffic is to be allocated to each variation during each step."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnLaunch.StepConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 2161
+      },
+      "name": "StepConfigProperty",
+      "namespace": "CfnLaunch",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-stepconfig.html#cfn-evidently-launch-stepconfig-groupweights"
+            },
+            "stability": "external",
+            "summary": "An array of structures that define how much launch traffic to allocate to each launch group during this step of the launch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2167
+          },
+          "name": "groupWeights",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnLaunch.GroupToWeightProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-stepconfig.html#cfn-evidently-launch-stepconfig-starttime"
+            },
+            "remarks": "Use UTC format, `yyyy-MM-ddTHH:mm:ssZ` . For example, `2025-11-25T23:59:59Z`",
+            "stability": "external",
+            "summary": "The date and time to start this step of the launch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2181
+          },
+          "name": "startTime",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-launch-stepconfig.html#cfn-evidently-launch-stepconfig-segmentoverrides"
+            },
+            "remarks": "A segment is a portion of your audience that share one or more characteristics. Examples could be Chrome browser users, users in Europe, or Firefox browser users in Europe who also fit other criteria that your application collects, such as age.\n\nFor more information, see [Use segments to focus your audience](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Evidently-segments.html) .",
+            "stability": "external",
+            "summary": "An array of structures that you can use to specify different traffic splits for one or more audience *segments* ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2175
+          },
+          "name": "segmentOverrides",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnLaunch.SegmentOverrideProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnLaunch.StepConfigProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnLaunchProps": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnLaunch`."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnLaunchProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 1372
+      },
+      "name": "CfnLaunchProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-groups"
+            },
+            "remarks": "You can up to five launch groups in a launch.",
+            "stability": "external",
+            "summary": "An array of structures that contains the feature and variations that are to be used for the launch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1379
+          },
+          "name": "groups",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnLaunch.LaunchGroupObjectProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-name"
+            },
+            "remarks": "It can include up to 127 characters.",
+            "stability": "external",
+            "summary": "The name for the launch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1386
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-project"
+            },
+            "stability": "external",
+            "summary": "The name or ARN of the project that you want to create the launch in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1393
+          },
+          "name": "project",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-scheduledsplitsconfig"
+            },
+            "stability": "external",
+            "summary": "An array of structures that define the traffic allocation percentages among the feature variations during each step of the launch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1400
+          },
+          "name": "scheduledSplitsConfig",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnLaunch.StepConfigProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-description"
+            },
+            "stability": "external",
+            "summary": "An optional description for the launch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1407
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-executionstatus"
+            },
+            "stability": "external",
+            "summary": "A structure that you can use to start and stop the launch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1414
+          },
+          "name": "executionStatus",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-evidently.CfnLaunch.ExecutionStatusObjectProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-metricmonitors"
+            },
+            "remarks": "You can have up to three metric monitors in the array.",
+            "stability": "external",
+            "summary": "An array of structures that define the metrics that will be used to monitor the launch performance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1421
+          },
+          "name": "metricMonitors",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-evidently.CfnLaunch.MetricDefinitionObjectProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-randomizationsalt"
+            },
+            "remarks": "This randomization ID is a combination of the entity ID and `randomizationSalt` . If you omit `randomizationSalt` , Evidently uses the launch name as the `randomizationsSalt` .",
+            "stability": "external",
+            "summary": "When Evidently assigns a particular user session to a launch, it must use a randomization ID to determine which variation the user session is served."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1428
+          },
+          "name": "randomizationSalt",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-launch.html#cfn-evidently-launch-tags"
+            },
+            "remarks": "Tags can help you organize and categorize your resources. You can also use them to scope user permissions by granting a user permission to access or change only resources with certain tag values.\n\nTags don't have any semantic meaning to AWS and are interpreted strictly as strings of characters.\n\nYou can associate as many as 50 tags with a launch.\n\nFor more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags (key-value pairs) to the launch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 1443
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnLaunchProps"
+    },
+    "@aws-cdk/aws-evidently.CfnProject": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Evidently::Project",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-project.html"
+        },
+        "remarks": "Creates a project, which is the logical object in Evidently that can contain features, launches, and experiments. Use projects to group similar features together.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Evidently::Project`."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnProject",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Evidently::Project`."
+        },
+        "locationInModule": {
+          "filename": "lib/evidently.generated.ts",
+          "line": 2456
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-evidently.CfnProjectProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 2369
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2474
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2489
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnProject",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2373
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For example, `arn:aws:evidently:us-west-2:0123455678912:project/myProject`",
+            "stability": "external",
+            "summary": "The ARN of the project."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2398
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2479
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-project.html#cfn-evidently-project-tags"
+            },
+            "remarks": "Tags can help you organize and categorize your resources. You can also use them to scope user permissions by granting a user permission to access or change only resources with certain tag values.\n\nTags don't have any semantic meaning to AWS and are interpreted strictly as strings of characters.\n\nYou can associate as many as 50 tags with a project.\n\nFor more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags (key-value pairs) to the project."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2447
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-project.html#cfn-evidently-project-name"
+            },
+            "remarks": "It can include up to 127 characters.",
+            "stability": "external",
+            "summary": "The name for the project."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2405
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-project.html#cfn-evidently-project-appconfigresource"
+            },
+            "remarks": "Client-side evaluation allows your application to assign variations to user sessions locally instead of by calling the [EvaluateFeature](https://docs.aws.amazon.com/cloudwatchevidently/latest/APIReference/API_EvaluateFeature.html) operation. This mitigates the latency and availability risks that come with an API call. For more information, see [Use client-side evaluation - powered by AWS AppConfig .](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Evidently-client-side-evaluation.html)\n\nThis parameter is a structure that contains information about the AWS AppConfig application that will be used as for client-side evaluation.\n\nTo create a project that uses client-side evaluation, you must have the `evidently:ExportProjectAsConfiguration` permission.",
+            "stability": "external",
+            "summary": "Use this parameter if the project will use *client-side evaluation powered by AWS AppConfig* ."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2416
+          },
+          "name": "appConfigResource",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-evidently.CfnProject.AppConfigResourceObjectProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-project.html#cfn-evidently-project-datadelivery"
+            },
+            "remarks": "If you choose not to store these events, Evidently deletes them after using them to produce metrics and other experiment results that you can view.\n\nYou can't specify both `CloudWatchLogs` and `S3Destination` in the same operation.",
+            "stability": "external",
+            "summary": "A structure that contains information about where Evidently is to store evaluation events for longer term storage, if you choose to do so."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2425
+          },
+          "name": "dataDelivery",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-evidently.CfnProject.DataDeliveryObjectProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-project.html#cfn-evidently-project-description"
+            },
+            "stability": "external",
+            "summary": "An optional description of the project."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2432
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnProject"
+    },
+    "@aws-cdk/aws-evidently.CfnProject.AppConfigResourceObjectProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-project-appconfigresourceobject.html"
+        },
+        "stability": "external",
+        "summary": "This is a structure that defines the configuration of how your application integrates with AWS AppConfig to run client-side evaluation."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnProject.AppConfigResourceObjectProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 2503
+      },
+      "name": "AppConfigResourceObjectProperty",
+      "namespace": "CfnProject",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-project-appconfigresourceobject.html#cfn-evidently-project-appconfigresourceobject-applicationid"
+            },
+            "stability": "external",
+            "summary": "The ID of the AWS AppConfig application to use for client-side evaluation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2509
+          },
+          "name": "applicationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-project-appconfigresourceobject.html#cfn-evidently-project-appconfigresourceobject-environmentid"
+            },
+            "stability": "external",
+            "summary": "The ID of the AWS AppConfig environment to use for client-side evaluation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2515
+          },
+          "name": "environmentId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnProject.AppConfigResourceObjectProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnProject.DataDeliveryObjectProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-project-datadeliveryobject.html"
+        },
+        "stability": "external",
+        "summary": "A structure that contains information about where Evidently is to store evaluation events for longer term storage."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnProject.DataDeliveryObjectProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 2581
+      },
+      "name": "DataDeliveryObjectProperty",
+      "namespace": "CfnProject",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-project-datadeliveryobject.html#cfn-evidently-project-datadeliveryobject-loggroup"
+            },
+            "stability": "external",
+            "summary": "If the project stores evaluation events in CloudWatch Logs , this structure stores the log group name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2587
+          },
+          "name": "logGroup",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-project-datadeliveryobject.html#cfn-evidently-project-datadeliveryobject-s3"
+            },
+            "stability": "external",
+            "summary": "If the project stores evaluation events in an Amazon S3 bucket, this structure stores the bucket name and bucket prefix."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2593
+          },
+          "name": "s3",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-evidently.CfnProject.S3DestinationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnProject.DataDeliveryObjectProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnProject.S3DestinationProperty": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-project-s3destination.html"
+        },
+        "stability": "external",
+        "summary": "If the project stores evaluation events in an Amazon S3 bucket, this structure stores the bucket name and bucket prefix."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnProject.S3DestinationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 2657
+      },
+      "name": "S3DestinationProperty",
+      "namespace": "CfnProject",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-project-s3destination.html#cfn-evidently-project-s3destination-bucketname"
+            },
+            "stability": "external",
+            "summary": "The name of the bucket in which Evidently stores evaluation events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2663
+          },
+          "name": "bucketName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-evidently-project-s3destination.html#cfn-evidently-project-s3destination-prefix"
+            },
+            "stability": "external",
+            "summary": "The bucket prefix in which Evidently stores evaluation events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2669
+          },
+          "name": "prefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnProject.S3DestinationProperty"
+    },
+    "@aws-cdk/aws-evidently.CfnProjectProps": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-project.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnProject`."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnProjectProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 2249
+      },
+      "name": "CfnProjectProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-project.html#cfn-evidently-project-name"
+            },
+            "remarks": "It can include up to 127 characters.",
+            "stability": "external",
+            "summary": "The name for the project."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2256
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-project.html#cfn-evidently-project-appconfigresource"
+            },
+            "remarks": "Client-side evaluation allows your application to assign variations to user sessions locally instead of by calling the [EvaluateFeature](https://docs.aws.amazon.com/cloudwatchevidently/latest/APIReference/API_EvaluateFeature.html) operation. This mitigates the latency and availability risks that come with an API call. For more information, see [Use client-side evaluation - powered by AWS AppConfig .](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Evidently-client-side-evaluation.html)\n\nThis parameter is a structure that contains information about the AWS AppConfig application that will be used as for client-side evaluation.\n\nTo create a project that uses client-side evaluation, you must have the `evidently:ExportProjectAsConfiguration` permission.",
+            "stability": "external",
+            "summary": "Use this parameter if the project will use *client-side evaluation powered by AWS AppConfig* ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2267
+          },
+          "name": "appConfigResource",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-evidently.CfnProject.AppConfigResourceObjectProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-project.html#cfn-evidently-project-datadelivery"
+            },
+            "remarks": "If you choose not to store these events, Evidently deletes them after using them to produce metrics and other experiment results that you can view.\n\nYou can't specify both `CloudWatchLogs` and `S3Destination` in the same operation.",
+            "stability": "external",
+            "summary": "A structure that contains information about where Evidently is to store evaluation events for longer term storage, if you choose to do so."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2276
+          },
+          "name": "dataDelivery",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-evidently.CfnProject.DataDeliveryObjectProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-project.html#cfn-evidently-project-description"
+            },
+            "stability": "external",
+            "summary": "An optional description of the project."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2283
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-project.html#cfn-evidently-project-tags"
+            },
+            "remarks": "Tags can help you organize and categorize your resources. You can also use them to scope user permissions by granting a user permission to access or change only resources with certain tag values.\n\nTags don't have any semantic meaning to AWS and are interpreted strictly as strings of characters.\n\nYou can associate as many as 50 tags with a project.\n\nFor more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags (key-value pairs) to the project."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2298
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnProjectProps"
+    },
+    "@aws-cdk/aws-evidently.CfnSegment": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Evidently::Segment",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-segment.html"
+        },
+        "remarks": "Creates or updates a *segment* of your audience. A segment is a portion of your audience that share one or more characteristics. Examples could be Chrome browser users, users in Europe, or Firefox browser users in Europe who also fit other criteria that your application collects, such as age.\n\nUsing a segment in an experiment limits that experiment to evaluate only the users who match the segment criteria. Using one or more segments in a launch allow you to define different traffic splits for the different audience segments.\n\nFor more information about segment pattern syntax, see [Segment rule pattern syntax](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Evidently-segments-syntax.html) .\n\nThe pattern that you define for a segment is matched against the value of `evaluationContext` , which is passed into Evidently in the [EvaluateFeature](https://docs.aws.amazon.com/cloudwatchevidently/latest/APIReference/API_EvaluateFeature.html) operation, when Evidently assigns a feature variation to a user.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Evidently::Segment`."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnSegment",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Evidently::Segment`."
+        },
+        "locationInModule": {
+          "filename": "lib/evidently.generated.ts",
+          "line": 2917
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-evidently.CfnSegmentProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 2843
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2934
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2948
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSegment",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2847
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For example, `arn:aws:evidently:us-west-2:123456789012:segment/australiaSegment`",
+            "stability": "external",
+            "summary": "The ARN of the segment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2872
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2939
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-segment.html#cfn-evidently-segment-tags"
+            },
+            "remarks": "Tags can help you organize and categorize your resources. You can also use them to scope user permissions by granting a user permission to access or change only resources with certain tag values.\n\nTags don't have any semantic meaning to AWS and are interpreted strictly as strings of characters.\n\nYou can associate as many as 50 tags with a feature.\n\nFor more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags (key-value pairs) to the feature."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2908
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-segment.html#cfn-evidently-segment-name"
+            },
+            "stability": "external",
+            "summary": "A name for the segment."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2879
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-segment.html#cfn-evidently-segment-description"
+            },
+            "stability": "external",
+            "summary": "An optional description for this segment."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2886
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-segment.html#cfn-evidently-segment-pattern"
+            },
+            "remarks": "For more information about pattern syntax, see [Segment rule pattern syntax](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Evidently-segments-syntax.html) .",
+            "stability": "external",
+            "summary": "The pattern to use for the segment."
+          },
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2893
+          },
+          "name": "pattern",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnSegment"
+    },
+    "@aws-cdk/aws-evidently.CfnSegmentProps": {
+      "assembly": "@aws-cdk/aws-evidently",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-segment.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSegment`."
+      },
+      "fqn": "@aws-cdk/aws-evidently.CfnSegmentProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/evidently.generated.ts",
+        "line": 2733
+      },
+      "name": "CfnSegmentProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-segment.html#cfn-evidently-segment-name"
+            },
+            "stability": "external",
+            "summary": "A name for the segment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2740
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-segment.html#cfn-evidently-segment-description"
+            },
+            "stability": "external",
+            "summary": "An optional description for this segment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2747
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-segment.html#cfn-evidently-segment-pattern"
+            },
+            "remarks": "For more information about pattern syntax, see [Segment rule pattern syntax](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Evidently-segments-syntax.html) .",
+            "stability": "external",
+            "summary": "The pattern to use for the segment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2754
+          },
+          "name": "pattern",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-evidently-segment.html#cfn-evidently-segment-tags"
+            },
+            "remarks": "Tags can help you organize and categorize your resources. You can also use them to scope user permissions by granting a user permission to access or change only resources with certain tag values.\n\nTags don't have any semantic meaning to AWS and are interpreted strictly as strings of characters.\n\nYou can associate as many as 50 tags with a feature.\n\nFor more information, see [Tagging AWS resources](https://docs.aws.amazon.com/general/latest/gr/aws_tagging.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags (key-value pairs) to the feature."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/evidently.generated.ts",
+            "line": 2769
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/evidently.generated:CfnSegmentProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "P/3BOR2wWo5I2ExVP7fJby2MgNaaLU6PCj9KP6EJn2I="
+}

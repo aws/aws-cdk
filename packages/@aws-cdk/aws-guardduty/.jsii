@@ -1,0 +1,3358 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::GuardDuty",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "guardduty"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-guardduty",
+  "readme": {
+    "markdown": "# Amazon GuardDuty Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as guardduty from '@aws-cdk/aws-guardduty';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for GuardDuty construct libraries](https://constructs.dev/search?q=guardduty)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::GuardDuty resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_GuardDuty.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::GuardDuty](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_GuardDuty.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-guardduty",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.GuardDuty",
+      "packageId": "Amazon.CDK.AWS.GuardDuty"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "guardduty",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.guardduty"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-guardduty"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-guardduty",
+      "module": "aws_cdk.aws_guardduty"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-guardduty.CfnDetector": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::GuardDuty::Detector",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-detector.html"
+        },
+        "remarks": "The `AWS::GuardDuty::Detector` resource specifies a new  detector. A detector is an object that represents the  service. A detector is required for  to become operational.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::GuardDuty::Detector`."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnDetector",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::GuardDuty::Detector`."
+        },
+        "locationInModule": {
+          "filename": "lib/guardduty.generated.ts",
+          "line": 180
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-guardduty.CfnDetectorProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 118
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 196
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 210
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDetector",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 122
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 201
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-detector.html#cfn-guardduty-detector-tags"
+            },
+            "remarks": "Each tag consists of a key and an optional value, both of which you define.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "The tags to be added to a new detector resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 171
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-detector.html#cfn-guardduty-detector-enable"
+            },
+            "stability": "external",
+            "summary": "Specifies whether the detector is to be enabled on creation."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 148
+          },
+          "name": "enable",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-detector.html#cfn-guardduty-detector-datasources"
+            },
+            "stability": "external",
+            "summary": "Describes which data sources will be enabled for the detector."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 155
+          },
+          "name": "dataSources",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNDataSourceConfigurationsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-detector.html#cfn-guardduty-detector-findingpublishingfrequency"
+            },
+            "stability": "external",
+            "summary": "Specifies how frequently updated findings are exported."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 162
+          },
+          "name": "findingPublishingFrequency",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnDetector"
+    },
+    "@aws-cdk/aws-guardduty.CfnDetector.CFNDataSourceConfigurationsProperty": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfndatasourceconfigurations.html"
+        },
+        "stability": "external",
+        "summary": "Describes whether S3 data event logs, Kubernetes audit logs, or Malware Protection will be enabled as a data source when the detector is created."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNDataSourceConfigurationsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 224
+      },
+      "name": "CFNDataSourceConfigurationsProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfndatasourceconfigurations.html#cfn-guardduty-detector-cfndatasourceconfigurations-kubernetes"
+            },
+            "stability": "external",
+            "summary": "Describes which Kuberentes data sources are enabled for a detector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 230
+          },
+          "name": "kubernetes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNKubernetesConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfndatasourceconfigurations.html#cfn-guardduty-detector-cfndatasourceconfigurations-malwareprotection"
+            },
+            "stability": "external",
+            "summary": "Describes whether Malware Protection will be enabled as a data source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 236
+          },
+          "name": "malwareProtection",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNMalwareProtectionConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfndatasourceconfigurations.html#cfn-guardduty-detector-cfndatasourceconfigurations-s3logs"
+            },
+            "stability": "external",
+            "summary": "Describes whether S3 data event logs are enabled as a data source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 242
+          },
+          "name": "s3Logs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNS3LogsConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnDetector.CFNDataSourceConfigurationsProperty"
+    },
+    "@aws-cdk/aws-guardduty.CfnDetector.CFNKubernetesAuditLogsConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfnkubernetesauditlogsconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Describes which optional data sources are enabled for a detector."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNKubernetesAuditLogsConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 309
+      },
+      "name": "CFNKubernetesAuditLogsConfigurationProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfnkubernetesauditlogsconfiguration.html#cfn-guardduty-detector-cfnkubernetesauditlogsconfiguration-enable"
+            },
+            "stability": "external",
+            "summary": "Describes whether Kubernetes audit logs are enabled as a data source for the detector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 315
+          },
+          "name": "enable",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnDetector.CFNKubernetesAuditLogsConfigurationProperty"
+    },
+    "@aws-cdk/aws-guardduty.CfnDetector.CFNKubernetesConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfnkubernetesconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Describes which Kubernetes protection data sources are enabled for the detector."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNKubernetesConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 376
+      },
+      "name": "CFNKubernetesConfigurationProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfnkubernetesconfiguration.html#cfn-guardduty-detector-cfnkubernetesconfiguration-auditlogs"
+            },
+            "stability": "external",
+            "summary": "Describes whether Kubernetes audit logs are enabled as a data source for the detector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 382
+          },
+          "name": "auditLogs",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNKubernetesAuditLogsConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnDetector.CFNKubernetesConfigurationProperty"
+    },
+    "@aws-cdk/aws-guardduty.CfnDetector.CFNMalwareProtectionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfnmalwareprotectionconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Describes whether Malware Protection will be enabled as a data source."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNMalwareProtectionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 443
+      },
+      "name": "CFNMalwareProtectionConfigurationProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfnmalwareprotectionconfiguration.html#cfn-guardduty-detector-cfnmalwareprotectionconfiguration-scanec2instancewithfindings"
+            },
+            "stability": "external",
+            "summary": "Describes the configuration of Malware Protection for EC2 instances with findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 449
+          },
+          "name": "scanEc2InstanceWithFindings",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNScanEc2InstanceWithFindingsConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnDetector.CFNMalwareProtectionConfigurationProperty"
+    },
+    "@aws-cdk/aws-guardduty.CfnDetector.CFNS3LogsConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfns3logsconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Describes whether S3 data event logs will be enabled as a data source when the detector is created."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNS3LogsConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 510
+      },
+      "name": "CFNS3LogsConfigurationProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfns3logsconfiguration.html#cfn-guardduty-detector-cfns3logsconfiguration-enable"
+            },
+            "stability": "external",
+            "summary": "The status of S3 data event logs as a data source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 516
+          },
+          "name": "enable",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnDetector.CFNS3LogsConfigurationProperty"
+    },
+    "@aws-cdk/aws-guardduty.CfnDetector.CFNScanEc2InstanceWithFindingsConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfnscanec2instancewithfindingsconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Describes whether Malware Protection for EC2 instances with findings will be enabled as a data source."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNScanEc2InstanceWithFindingsConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 577
+      },
+      "name": "CFNScanEc2InstanceWithFindingsConfigurationProperty",
+      "namespace": "CfnDetector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-detector-cfnscanec2instancewithfindingsconfiguration.html#cfn-guardduty-detector-cfnscanec2instancewithfindingsconfiguration-ebsvolumes"
+            },
+            "stability": "external",
+            "summary": "Describes the configuration for scanning EBS volumes as data source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 583
+          },
+          "name": "ebsVolumes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnDetector.CFNScanEc2InstanceWithFindingsConfigurationProperty"
+    },
+    "@aws-cdk/aws-guardduty.CfnDetectorProps": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-detector.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDetector`."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnDetectorProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 20
+      },
+      "name": "CfnDetectorProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-detector.html#cfn-guardduty-detector-enable"
+            },
+            "stability": "external",
+            "summary": "Specifies whether the detector is to be enabled on creation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 27
+          },
+          "name": "enable",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-detector.html#cfn-guardduty-detector-datasources"
+            },
+            "stability": "external",
+            "summary": "Describes which data sources will be enabled for the detector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 34
+          },
+          "name": "dataSources",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-guardduty.CfnDetector.CFNDataSourceConfigurationsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-detector.html#cfn-guardduty-detector-findingpublishingfrequency"
+            },
+            "stability": "external",
+            "summary": "Specifies how frequently updated findings are exported."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 41
+          },
+          "name": "findingPublishingFrequency",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-detector.html#cfn-guardduty-detector-tags"
+            },
+            "remarks": "Each tag consists of a key and an optional value, both of which you define.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "The tags to be added to a new detector resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 50
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnDetectorProps"
+    },
+    "@aws-cdk/aws-guardduty.CfnFilter": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::GuardDuty::Filter",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html"
+        },
+        "remarks": "The `AWS::GuardDuty::Filter` resource specifies a new filter defined by the provided `findingCriteria` .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::GuardDuty::Filter`."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnFilter",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::GuardDuty::Filter`."
+        },
+        "locationInModule": {
+          "filename": "lib/guardduty.generated.ts",
+          "line": 863
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-guardduty.CfnFilterProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 778
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 887
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 904
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnFilter",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 782
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 892
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-tags"
+            },
+            "remarks": "Each tag consists of a key and an optional value, both of which you define.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "The tags to be added to a new filter resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 854
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-action"
+            },
+            "stability": "external",
+            "summary": "Specifies the action that is to be applied to the findings that match the filter."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 808
+          },
+          "name": "action",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-description"
+            },
+            "remarks": "Valid special characters include period (.), underscore (_), dash (-), and whitespace. The new line character is considered to be an invalid input for description.",
+            "stability": "external",
+            "summary": "The description of the filter."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 815
+          },
+          "name": "description",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-detectorid"
+            },
+            "stability": "external",
+            "summary": "The ID of the detector belonging to the GuardDuty account that you want to create a filter for."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 822
+          },
+          "name": "detectorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-findingcriteria"
+            },
+            "stability": "external",
+            "summary": "Represents the criteria to be used in the filter for querying findings."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 829
+          },
+          "name": "findingCriteria",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-guardduty.CfnFilter.FindingCriteriaProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-name"
+            },
+            "remarks": "Valid characters include period (.), underscore (_), dash (-), and alphanumeric characters. A whitespace is considered to be an invalid character.",
+            "stability": "external",
+            "summary": "The name of the filter."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 836
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-rank"
+            },
+            "remarks": "Also specifies the order in which this filter is applied to the findings. The minimum value for this property is 1 and the maximum is 100.\n\nBy default, filters may not be created in the same order as they are ranked. To ensure that the filters are created in the expected order, you can use an optional attribute, [DependsOn](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) , with the following syntax: `\"DependsOn\":[ \"ObjectName\" ]` .",
+            "stability": "external",
+            "summary": "Specifies the position of the filter in the list of current filters."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 845
+          },
+          "name": "rank",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnFilter"
+    },
+    "@aws-cdk/aws-guardduty.CfnFilter.ConditionProperty": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html"
+        },
+        "stability": "external",
+        "summary": "Specifies the condition to apply to a single field when filtering through  findings."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnFilter.ConditionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 918
+      },
+      "name": "ConditionProperty",
+      "namespace": "CfnFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html#cfn-guardduty-filter-condition-eq"
+            },
+            "stability": "external",
+            "summary": "Represents the equal condition to apply to a single field when querying for findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 924
+          },
+          "name": "eq",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html#cfn-guardduty-filter-condition-equals"
+            },
+            "stability": "external",
+            "summary": "Represents an *equal* ** condition to be applied to a single field when querying for findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 930
+          },
+          "name": "equalTo",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html#cfn-guardduty-filter-condition-greaterthan"
+            },
+            "stability": "external",
+            "summary": "Represents a *greater than* condition to be applied to a single field when querying for findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 936
+          },
+          "name": "greaterThan",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html#cfn-guardduty-filter-condition-greaterthanorequal"
+            },
+            "stability": "external",
+            "summary": "Represents a *greater than or equal* condition to be applied to a single field when querying for findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 942
+          },
+          "name": "greaterThanOrEqual",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html#cfn-guardduty-filter-condition-gt"
+            },
+            "stability": "external",
+            "summary": "Represents a *greater than* condition to be applied to a single field when querying for findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 948
+          },
+          "name": "gt",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html#cfn-guardduty-filter-condition-gte"
+            },
+            "stability": "external",
+            "summary": "Represents the greater than or equal condition to apply to a single field when querying for findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 954
+          },
+          "name": "gte",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html#cfn-guardduty-filter-condition-lessthan"
+            },
+            "stability": "external",
+            "summary": "Represents a *less than* condition to be applied to a single field when querying for findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 960
+          },
+          "name": "lessThan",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html#cfn-guardduty-filter-condition-lessthanorequal"
+            },
+            "stability": "external",
+            "summary": "Represents a *less than or equal* condition to be applied to a single field when querying for findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 966
+          },
+          "name": "lessThanOrEqual",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html#cfn-guardduty-filter-condition-lt"
+            },
+            "stability": "external",
+            "summary": "Represents the less than condition to apply to a single field when querying for findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 972
+          },
+          "name": "lt",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html#cfn-guardduty-filter-condition-lte"
+            },
+            "stability": "external",
+            "summary": "Represents the less than or equal condition to apply to a single field when querying for findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 978
+          },
+          "name": "lte",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html#cfn-guardduty-filter-condition-neq"
+            },
+            "stability": "external",
+            "summary": "Represents the not equal condition to apply to a single field when querying for findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 984
+          },
+          "name": "neq",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-condition.html#cfn-guardduty-filter-condition-notequals"
+            },
+            "stability": "external",
+            "summary": "Represents a *not equal* ** condition to be applied to a single field when querying for findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 990
+          },
+          "name": "notEquals",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnFilter.ConditionProperty"
+    },
+    "@aws-cdk/aws-guardduty.CfnFilter.FindingCriteriaProperty": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-findingcriteria.html"
+        },
+        "stability": "external",
+        "summary": "Represents a map of finding properties that match specified conditions and values when querying findings."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnFilter.FindingCriteriaProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 1084
+      },
+      "name": "FindingCriteriaProperty",
+      "namespace": "CfnFilter",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-findingcriteria.html#cfn-guardduty-filter-findingcriteria-criterion"
+            },
+            "remarks": "For a mapping of JSON criterion to their console equivalent see [Finding criteria](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_filter-findings.html#filter_criteria) . The following are the available criterion:\n\n- accountId\n- region\n- confidence\n- id\n- resource.accessKeyDetails.accessKeyId\n- resource.accessKeyDetails.principalId\n- resource.accessKeyDetails.userName\n- resource.accessKeyDetails.userType\n- resource.instanceDetails.iamInstanceProfile.id\n- resource.instanceDetails.imageId\n- resource.instanceDetails.instanceId\n- resource.instanceDetails.outpostArn\n- resource.instanceDetails.networkInterfaces.ipv6Addresses\n- resource.instanceDetails.networkInterfaces.privateIpAddresses.privateIpAddress\n- resource.instanceDetails.networkInterfaces.publicDnsName\n- resource.instanceDetails.networkInterfaces.publicIp\n- resource.instanceDetails.networkInterfaces.securityGroups.groupId\n- resource.instanceDetails.networkInterfaces.securityGroups.groupName\n- resource.instanceDetails.networkInterfaces.subnetId\n- resource.instanceDetails.networkInterfaces.vpcId\n- resource.instanceDetails.tags.key\n- resource.instanceDetails.tags.value\n- resource.resourceType\n- service.action.actionType\n- service.action.awsApiCallAction.api\n- service.action.awsApiCallAction.callerType\n- service.action.awsApiCallAction.errorCode\n- service.action.awsApiCallAction.remoteIpDetails.city.cityName\n- service.action.awsApiCallAction.remoteIpDetails.country.countryName\n- service.action.awsApiCallAction.remoteIpDetails.ipAddressV4\n- service.action.awsApiCallAction.remoteIpDetails.organization.asn\n- service.action.awsApiCallAction.remoteIpDetails.organization.asnOrg\n- service.action.awsApiCallAction.serviceName\n- service.action.dnsRequestAction.domain\n- service.action.networkConnectionAction.blocked\n- service.action.networkConnectionAction.connectionDirection\n- service.action.networkConnectionAction.localPortDetails.port\n- service.action.networkConnectionAction.protocol\n- service.action.networkConnectionAction.localIpDetails.ipAddressV4\n- service.action.networkConnectionAction.remoteIpDetails.city.cityName\n- service.action.networkConnectionAction.remoteIpDetails.country.countryName\n- service.action.networkConnectionAction.remoteIpDetails.ipAddressV4\n- service.action.networkConnectionAction.remoteIpDetails.organization.asn\n- service.action.networkConnectionAction.remoteIpDetails.organization.asnOrg\n- service.action.networkConnectionAction.remotePortDetails.port\n- service.additionalInfo.threatListName\n- service.archived\n\nWhen this attribute is set to TRUE, only archived findings are listed. When it's set to FALSE, only unarchived findings are listed. When this attribute is not set, all existing findings are listed.\n- service.resourceRole\n- severity\n- type\n- updatedAt\n\nType: ISO 8601 string format: YYYY-MM-DDTHH:MM:SS.SSSZ or YYYY-MM-DDTHH:MM:SSZ depending on whether the value contains milliseconds.",
+            "stability": "external",
+            "summary": "Represents a map of finding properties that match specified conditions and values when querying findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1148
+          },
+          "name": "criterion",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-guardduty-filter-findingcriteria.html#cfn-guardduty-filter-findingcriteria-itemtype"
+            },
+            "stability": "external",
+            "summary": "Specifies the condition to be applied to a single field when filtering through findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1154
+          },
+          "name": "itemType",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-guardduty.CfnFilter.ConditionProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnFilter.FindingCriteriaProperty"
+    },
+    "@aws-cdk/aws-guardduty.CfnFilterProps": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnFilter`."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnFilterProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 643
+      },
+      "name": "CfnFilterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-action"
+            },
+            "stability": "external",
+            "summary": "Specifies the action that is to be applied to the findings that match the filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 650
+          },
+          "name": "action",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-description"
+            },
+            "remarks": "Valid special characters include period (.), underscore (_), dash (-), and whitespace. The new line character is considered to be an invalid input for description.",
+            "stability": "external",
+            "summary": "The description of the filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 657
+          },
+          "name": "description",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-detectorid"
+            },
+            "stability": "external",
+            "summary": "The ID of the detector belonging to the GuardDuty account that you want to create a filter for."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 664
+          },
+          "name": "detectorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-findingcriteria"
+            },
+            "stability": "external",
+            "summary": "Represents the criteria to be used in the filter for querying findings."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 671
+          },
+          "name": "findingCriteria",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-guardduty.CfnFilter.FindingCriteriaProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-name"
+            },
+            "remarks": "Valid characters include period (.), underscore (_), dash (-), and alphanumeric characters. A whitespace is considered to be an invalid character.",
+            "stability": "external",
+            "summary": "The name of the filter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 678
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-rank"
+            },
+            "remarks": "Also specifies the order in which this filter is applied to the findings. The minimum value for this property is 1 and the maximum is 100.\n\nBy default, filters may not be created in the same order as they are ranked. To ensure that the filters are created in the expected order, you can use an optional attribute, [DependsOn](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-dependson.html) , with the following syntax: `\"DependsOn\":[ \"ObjectName\" ]` .",
+            "stability": "external",
+            "summary": "Specifies the position of the filter in the list of current filters."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 687
+          },
+          "name": "rank",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-filter.html#cfn-guardduty-filter-tags"
+            },
+            "remarks": "Each tag consists of a key and an optional value, both of which you define.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "The tags to be added to a new filter resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 696
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnFilterProps"
+    },
+    "@aws-cdk/aws-guardduty.CfnIPSet": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::GuardDuty::IPSet",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html"
+        },
+        "remarks": "The `AWS::GuardDuty::IPSet` resource specifies a new `IPSet` . An `IPSet` is a list of trusted IP addresses from which secure communication is allowed with AWS infrastructure and applications.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::GuardDuty::IPSet`."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnIPSet",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::GuardDuty::IPSet`."
+        },
+        "locationInModule": {
+          "filename": "lib/guardduty.generated.ts",
+          "line": 1418
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-guardduty.CfnIPSetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 1340
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1439
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1455
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnIPSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1344
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1444
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html#cfn-guardduty-ipset-tags"
+            },
+            "remarks": "Each tag consists of a key and an optional value, both of which you define.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "The tags to be added to a new IP set resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1409
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html#cfn-guardduty-ipset-activate"
+            },
+            "stability": "external",
+            "summary": "Indicates whether or not  uses the `IPSet` ."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1370
+          },
+          "name": "activate",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html#cfn-guardduty-ipset-detectorid"
+            },
+            "stability": "external",
+            "summary": "The unique ID of the detector of the GuardDuty account that you want to create an IPSet for."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1377
+          },
+          "name": "detectorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html#cfn-guardduty-ipset-format"
+            },
+            "stability": "external",
+            "summary": "The format of the file that contains the IPSet."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1384
+          },
+          "name": "format",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html#cfn-guardduty-ipset-location"
+            },
+            "stability": "external",
+            "summary": "The URI of the file that contains the IPSet."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1391
+          },
+          "name": "location",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html#cfn-guardduty-ipset-name"
+            },
+            "remarks": "Allowed characters are alphanumerics, spaces, hyphens (-), and underscores (_).",
+            "stability": "external",
+            "summary": "The user-friendly name to identify the IPSet."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1400
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnIPSet"
+    },
+    "@aws-cdk/aws-guardduty.CfnIPSetProps": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnIPSet`."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnIPSetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 1217
+      },
+      "name": "CfnIPSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html#cfn-guardduty-ipset-activate"
+            },
+            "stability": "external",
+            "summary": "Indicates whether or not  uses the `IPSet` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1224
+          },
+          "name": "activate",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html#cfn-guardduty-ipset-detectorid"
+            },
+            "stability": "external",
+            "summary": "The unique ID of the detector of the GuardDuty account that you want to create an IPSet for."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1231
+          },
+          "name": "detectorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html#cfn-guardduty-ipset-format"
+            },
+            "stability": "external",
+            "summary": "The format of the file that contains the IPSet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1238
+          },
+          "name": "format",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html#cfn-guardduty-ipset-location"
+            },
+            "stability": "external",
+            "summary": "The URI of the file that contains the IPSet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1245
+          },
+          "name": "location",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html#cfn-guardduty-ipset-name"
+            },
+            "remarks": "Allowed characters are alphanumerics, spaces, hyphens (-), and underscores (_).",
+            "stability": "external",
+            "summary": "The user-friendly name to identify the IPSet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1254
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-ipset.html#cfn-guardduty-ipset-tags"
+            },
+            "remarks": "Each tag consists of a key and an optional value, both of which you define.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "The tags to be added to a new IP set resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1263
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnIPSetProps"
+    },
+    "@aws-cdk/aws-guardduty.CfnMaster": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::GuardDuty::Master",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-master.html"
+        },
+        "remarks": "You can use the `AWS::GuardDuty::Master` resource in a  member account to accept an invitation from a  administrator account. The invitation to the member account must be sent prior to using the `AWS::GuardDuty::Master` resource to accept the administrator account's invitation. You can invite a member account by using the `InviteMembers` operation of the  API, or by creating an `AWS::GuardDuty::Member` resource.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::GuardDuty::Master`."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnMaster",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::GuardDuty::Master`."
+        },
+        "locationInModule": {
+          "filename": "lib/guardduty.generated.ts",
+          "line": 1608
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-guardduty.CfnMasterProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 1555
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1624
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1637
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnMaster",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1559
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1629
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-master.html#cfn-guardduty-master-detectorid"
+            },
+            "stability": "external",
+            "summary": "The unique ID of the detector of the GuardDuty member account."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1585
+          },
+          "name": "detectorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-master.html#cfn-guardduty-master-masterid"
+            },
+            "stability": "external",
+            "summary": "The AWS account ID of the account designated as the  administrator account."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1592
+          },
+          "name": "masterId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-master.html#cfn-guardduty-master-invitationid"
+            },
+            "remarks": "You can find the invitation ID by using the ListInvitation action of the  API.",
+            "stability": "external",
+            "summary": "The ID of the invitation that is sent to the account designated as a member account."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1599
+          },
+          "name": "invitationId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnMaster"
+    },
+    "@aws-cdk/aws-guardduty.CfnMasterProps": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-master.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnMaster`."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnMasterProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 1468
+      },
+      "name": "CfnMasterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-master.html#cfn-guardduty-master-detectorid"
+            },
+            "stability": "external",
+            "summary": "The unique ID of the detector of the GuardDuty member account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1475
+          },
+          "name": "detectorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-master.html#cfn-guardduty-master-masterid"
+            },
+            "stability": "external",
+            "summary": "The AWS account ID of the account designated as the  administrator account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1482
+          },
+          "name": "masterId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-master.html#cfn-guardduty-master-invitationid"
+            },
+            "remarks": "You can find the invitation ID by using the ListInvitation action of the  API.",
+            "stability": "external",
+            "summary": "The ID of the invitation that is sent to the account designated as a member account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1489
+          },
+          "name": "invitationId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnMasterProps"
+    },
+    "@aws-cdk/aws-guardduty.CfnMember": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::GuardDuty::Member",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html"
+        },
+        "remarks": "You can use the `AWS::GuardDuty::Member` resource to add an AWS account as a  member account to the current  administrator account. If the value of the `Status` property is not provided or is set to `Created` , a member account is created but not invited. If the value of the `Status` property is set to `Invited` , a member account is created and invited. An `AWS::GuardDuty::Member` resource must be created with the `Status` property set to `Invited` before the `AWS::GuardDuty::Master` resource can be created in a  member account.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::GuardDuty::Member`."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnMember",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::GuardDuty::Member`."
+        },
+        "locationInModule": {
+          "filename": "lib/guardduty.generated.ts",
+          "line": 1842
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-guardduty.CfnMemberProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 1768
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1862
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1878
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnMember",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1772
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1867
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html#cfn-guardduty-member-detectorid"
+            },
+            "stability": "external",
+            "summary": "The ID of the detector associated with the  service to add the member to."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1798
+          },
+          "name": "detectorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html#cfn-guardduty-member-email"
+            },
+            "stability": "external",
+            "summary": "The email address associated with the member account."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1805
+          },
+          "name": "email",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html#cfn-guardduty-member-memberid"
+            },
+            "stability": "external",
+            "summary": "The AWS account ID of the account to designate as a member."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1812
+          },
+          "name": "memberId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html#cfn-guardduty-member-disableemailnotification"
+            },
+            "stability": "external",
+            "summary": "Specifies whether or not to disable email notification for the member account that you invite."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1819
+          },
+          "name": "disableEmailNotification",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html#cfn-guardduty-member-message"
+            },
+            "stability": "external",
+            "summary": "The invitation message that you want to send to the accounts that you're inviting to GuardDuty as members."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1826
+          },
+          "name": "message",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html#cfn-guardduty-member-status"
+            },
+            "remarks": "Valid values are `Created` and `Invited` when using an `AWS::GuardDuty::Member` resource. If the value for this property is not provided or set to `Created` , a member account is created but not invited. If the value of this property is set to `Invited` , a member account is created and invited.",
+            "stability": "external",
+            "summary": "You can use the `Status` property to update the status of the relationship between the member account and its administrator account."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1833
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnMember"
+    },
+    "@aws-cdk/aws-guardduty.CfnMemberProps": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnMember`."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnMemberProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 1650
+      },
+      "name": "CfnMemberProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html#cfn-guardduty-member-detectorid"
+            },
+            "stability": "external",
+            "summary": "The ID of the detector associated with the  service to add the member to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1657
+          },
+          "name": "detectorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html#cfn-guardduty-member-email"
+            },
+            "stability": "external",
+            "summary": "The email address associated with the member account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1664
+          },
+          "name": "email",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html#cfn-guardduty-member-memberid"
+            },
+            "stability": "external",
+            "summary": "The AWS account ID of the account to designate as a member."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1671
+          },
+          "name": "memberId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html#cfn-guardduty-member-disableemailnotification"
+            },
+            "stability": "external",
+            "summary": "Specifies whether or not to disable email notification for the member account that you invite."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1678
+          },
+          "name": "disableEmailNotification",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html#cfn-guardduty-member-message"
+            },
+            "stability": "external",
+            "summary": "The invitation message that you want to send to the accounts that you're inviting to GuardDuty as members."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1685
+          },
+          "name": "message",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-member.html#cfn-guardduty-member-status"
+            },
+            "remarks": "Valid values are `Created` and `Invited` when using an `AWS::GuardDuty::Member` resource. If the value for this property is not provided or set to `Created` , a member account is created but not invited. If the value of this property is set to `Invited` , a member account is created and invited.",
+            "stability": "external",
+            "summary": "You can use the `Status` property to update the status of the relationship between the member account and its administrator account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1692
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnMemberProps"
+    },
+    "@aws-cdk/aws-guardduty.CfnThreatIntelSet": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::GuardDuty::ThreatIntelSet",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html"
+        },
+        "remarks": "The `AWS::GuardDuty::ThreatIntelSet` resource specifies a new `ThreatIntelSet` . A `ThreatIntelSet` consists of known malicious IP addresses.  generates findings based on the `ThreatIntelSet` when it is activated.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::GuardDuty::ThreatIntelSet`."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnThreatIntelSet",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::GuardDuty::ThreatIntelSet`."
+        },
+        "locationInModule": {
+          "filename": "lib/guardduty.generated.ts",
+          "line": 2088
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-guardduty.CfnThreatIntelSetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 2012
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 2109
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 2125
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnThreatIntelSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 2016
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 2114
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html#cfn-guardduty-threatintelset-tags"
+            },
+            "remarks": "Each tag consists of a key and an optional value, both of which you define.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "The tags to be added to a new threat list resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 2079
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html#cfn-guardduty-threatintelset-activate"
+            },
+            "stability": "external",
+            "summary": "A Boolean value that indicates whether GuardDuty is to start using the uploaded ThreatIntelSet."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 2042
+          },
+          "name": "activate",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html#cfn-guardduty-threatintelset-detectorid"
+            },
+            "stability": "external",
+            "summary": "The unique ID of the detector of the GuardDuty account that you want to create a threatIntelSet for."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 2049
+          },
+          "name": "detectorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html#cfn-guardduty-threatintelset-format"
+            },
+            "stability": "external",
+            "summary": "The format of the file that contains the ThreatIntelSet."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 2056
+          },
+          "name": "format",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html#cfn-guardduty-threatintelset-location"
+            },
+            "stability": "external",
+            "summary": "The URI of the file that contains the ThreatIntelSet."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 2063
+          },
+          "name": "location",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html#cfn-guardduty-threatintelset-name"
+            },
+            "stability": "external",
+            "summary": "A user-friendly ThreatIntelSet name displayed in all findings that are generated by activity that involves IP addresses included in this ThreatIntelSet."
+          },
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 2070
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnThreatIntelSet"
+    },
+    "@aws-cdk/aws-guardduty.CfnThreatIntelSetProps": {
+      "assembly": "@aws-cdk/aws-guardduty",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnThreatIntelSet`."
+      },
+      "fqn": "@aws-cdk/aws-guardduty.CfnThreatIntelSetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/guardduty.generated.ts",
+        "line": 1891
+      },
+      "name": "CfnThreatIntelSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html#cfn-guardduty-threatintelset-activate"
+            },
+            "stability": "external",
+            "summary": "A Boolean value that indicates whether GuardDuty is to start using the uploaded ThreatIntelSet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1898
+          },
+          "name": "activate",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html#cfn-guardduty-threatintelset-detectorid"
+            },
+            "stability": "external",
+            "summary": "The unique ID of the detector of the GuardDuty account that you want to create a threatIntelSet for."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1905
+          },
+          "name": "detectorId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html#cfn-guardduty-threatintelset-format"
+            },
+            "stability": "external",
+            "summary": "The format of the file that contains the ThreatIntelSet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1912
+          },
+          "name": "format",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html#cfn-guardduty-threatintelset-location"
+            },
+            "stability": "external",
+            "summary": "The URI of the file that contains the ThreatIntelSet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1919
+          },
+          "name": "location",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html#cfn-guardduty-threatintelset-name"
+            },
+            "stability": "external",
+            "summary": "A user-friendly ThreatIntelSet name displayed in all findings that are generated by activity that involves IP addresses included in this ThreatIntelSet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1926
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-guardduty-threatintelset.html#cfn-guardduty-threatintelset-tags"
+            },
+            "remarks": "Each tag consists of a key and an optional value, both of which you define.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "The tags to be added to a new threat list resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/guardduty.generated.ts",
+            "line": 1935
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/guardduty.generated:CfnThreatIntelSetProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "XQtb/on9Jw/67OIW7F/XgAeSCaCyqqrhoEsvzdK6u1M="
+}

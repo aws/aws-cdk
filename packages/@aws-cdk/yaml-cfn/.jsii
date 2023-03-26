@@ -1,0 +1,77 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "bundled": {
+    "yaml": "1.10.2"
+  },
+  "description": "Utilities for handling CloudFormation-flavored YAML",
+  "docs": {
+    "deprecated": "This module is no longer supported and will be removed in a future release.",
+    "stability": "deprecated"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "cfn",
+    "cloudformation",
+    "yaml"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/yaml-cfn",
+  "readme": {
+    "markdown": "# CloudFormation YAML utilities\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)\n\n> This API may emit warnings. Backward compatibility is not guaranteed.\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module contains utilities for parsing and emitting\nYAML that is used by [AWS CloudFormation](https://aws.amazon.com/cloudformation).\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/yaml-cfn",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.Yaml.Cfn",
+      "packageId": "Amazon.CDK.Yaml.Cfn"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cdk-yaml-cfn",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.yaml.cfn"
+    },
+    "js": {
+      "npm": "@aws-cdk/yaml-cfn"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.yaml-cfn",
+      "module": "aws_cdk.yaml_cfn"
+    }
+  },
+  "types": {},
+  "version": "0.0.0",
+  "fingerprint": "xx22+IEIPTqD7FkbCrcaxYIdra3BXplw3oQZDpPaoHs="
+}

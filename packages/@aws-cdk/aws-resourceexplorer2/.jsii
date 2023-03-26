@@ -1,0 +1,1267 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::ResourceExplorer2 Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::ResourceExplorer2",
+    "aws-resourceexplorer2"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-resourceexplorer2",
+  "readme": {
+    "markdown": "# AWS::ResourceExplorer2 Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as resourceexplorer2 from '@aws-cdk/aws-resourceexplorer2';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for ResourceExplorer2 construct libraries](https://constructs.dev/search?q=resourceexplorer2)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::ResourceExplorer2 resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ResourceExplorer2.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::ResourceExplorer2](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ResourceExplorer2.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-resourceexplorer2",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.ResourceExplorer2",
+      "packageId": "Amazon.CDK.AWS.ResourceExplorer2",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "resourceexplorer2",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.resourceexplorer2"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-resourceexplorer2"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-resourceexplorer2",
+      "module": "aws_cdk.aws_resourceexplorer2"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-resourceexplorer2.CfnDefaultViewAssociation": {
+      "assembly": "@aws-cdk/aws-resourceexplorer2",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ResourceExplorer2::DefaultViewAssociation",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-defaultviewassociation.html"
+        },
+        "remarks": "Sets the specified view as the default for the AWS Region in which you call this operation. If a user makes a search query that doesn't explicitly specify the view to use, Resource Explorer chooses this default view automatically for searches performed in this AWS Region .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ResourceExplorer2::DefaultViewAssociation`."
+      },
+      "fqn": "@aws-cdk/aws-resourceexplorer2.CfnDefaultViewAssociation",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ResourceExplorer2::DefaultViewAssociation`."
+        },
+        "locationInModule": {
+          "filename": "lib/resourceexplorer2.generated.ts",
+          "line": 133
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-resourceexplorer2.CfnDefaultViewAssociationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/resourceexplorer2.generated.ts",
+        "line": 86
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 147
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 158
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDefaultViewAssociation",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 90
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AssociatedAwsPrincipal"
+            },
+            "remarks": "For example:\n\n`123456789012`",
+            "stability": "external",
+            "summary": "The unique identifier of the principal for which the specified view was made the default for the AWS Region that contains the view."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 117
+          },
+          "name": "attrAssociatedAwsPrincipal",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 152
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-defaultviewassociation.html#cfn-resourceexplorer2-defaultviewassociation-viewarn"
+            },
+            "remarks": "The specified view must already exist in the specified Region.",
+            "stability": "external",
+            "summary": "The ARN of the view to set as the default for the AWS Region and AWS account in which you call this operation."
+          },
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 124
+          },
+          "name": "viewArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/resourceexplorer2.generated:CfnDefaultViewAssociation"
+    },
+    "@aws-cdk/aws-resourceexplorer2.CfnDefaultViewAssociationProps": {
+      "assembly": "@aws-cdk/aws-resourceexplorer2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-defaultviewassociation.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDefaultViewAssociation`."
+      },
+      "fqn": "@aws-cdk/aws-resourceexplorer2.CfnDefaultViewAssociationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resourceexplorer2.generated.ts",
+        "line": 20
+      },
+      "name": "CfnDefaultViewAssociationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-defaultviewassociation.html#cfn-resourceexplorer2-defaultviewassociation-viewarn"
+            },
+            "remarks": "The specified view must already exist in the specified Region.",
+            "stability": "external",
+            "summary": "The ARN of the view to set as the default for the AWS Region and AWS account in which you call this operation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 27
+          },
+          "name": "viewArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/resourceexplorer2.generated:CfnDefaultViewAssociationProps"
+    },
+    "@aws-cdk/aws-resourceexplorer2.CfnIndex": {
+      "assembly": "@aws-cdk/aws-resourceexplorer2",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ResourceExplorer2::Index",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-index.html"
+        },
+        "remarks": "Turns on Resource Explorer in the AWS Region in which you called this operation by creating an index. Resource Explorer begins discovering the resources in this Region and stores the details about the resources in the index so that they can be queried by using the [Search](https://docs.aws.amazon.com/resource-explorer/latest/APIReference/API_Search.html) operation.\n\nYou can create either a local index that returns search results from only the AWS Region in which the index exists, or you can create an aggregator index that returns search results from all AWS Regions in the AWS account .\n\nFor more details about what happens when you turn on Resource Explorer in an AWS Region , see [Turning on Resource Explorer to index your resources in an AWS Region](https://docs.aws.amazon.com/resource-explorer/latest/userguide/manage-service-activate.html) in the *AWS Resource Explorer User Guide.*\n\nIf this is the first AWS Region in which you've created an index for Resource Explorer, this operation also creates a service-linked role in your AWS account that allows Resource Explorer to search for your resources and populate the index.\n\n> To successfully create an index, you must have `resource-explorer-2:TagResource` permission, even if you don't specify tags to be added to the index.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ResourceExplorer2::Index`."
+      },
+      "fqn": "@aws-cdk/aws-resourceexplorer2.CfnIndex",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ResourceExplorer2::Index`."
+        },
+        "locationInModule": {
+          "filename": "lib/resourceexplorer2.generated.ts",
+          "line": 317
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-resourceexplorer2.CfnIndexProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/resourceexplorer2.generated.ts",
+        "line": 255
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 333
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 345
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnIndex",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 259
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "`arn:aws:resource-explorer-2:us-east-1:123456789012:index/EXAMPLE8-90ab-cdef-fedc-EXAMPLE22222`",
+            "stability": "external",
+            "summary": "The ARN of the new index for the AWS Region . For example:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 286
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "IndexState"
+            },
+            "remarks": "`CREATING`",
+            "stability": "external",
+            "summary": "Indicates the current state of the index. For example:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 294
+          },
+          "name": "attrIndexState",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 338
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-index.html#cfn-resourceexplorer2-index-tags"
+            },
+            "remarks": "The tags don't attach to any of the resources listed in the index.",
+            "stability": "external",
+            "summary": "The specified tags are attached to only the index created in this AWS Region ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 308
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-index.html#cfn-resourceexplorer2-index-type"
+            },
+            "remarks": "For information about the aggregator index and how it differs from a local index, see [Turning on cross-Region search by creating an aggregator index](https://docs.aws.amazon.com/resource-explorer/latest/userguide/manage-aggregator-region.html) in the *AWS Resource Explorer User Guide.* .",
+            "stability": "external",
+            "summary": "Specifies the type of the index in this Region."
+          },
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 301
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/resourceexplorer2.generated:CfnIndex"
+    },
+    "@aws-cdk/aws-resourceexplorer2.CfnIndexProps": {
+      "assembly": "@aws-cdk/aws-resourceexplorer2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-index.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnIndex`."
+      },
+      "fqn": "@aws-cdk/aws-resourceexplorer2.CfnIndexProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resourceexplorer2.generated.ts",
+        "line": 171
+      },
+      "name": "CfnIndexProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-index.html#cfn-resourceexplorer2-index-type"
+            },
+            "remarks": "For information about the aggregator index and how it differs from a local index, see [Turning on cross-Region search by creating an aggregator index](https://docs.aws.amazon.com/resource-explorer/latest/userguide/manage-aggregator-region.html) in the *AWS Resource Explorer User Guide.* .",
+            "stability": "external",
+            "summary": "Specifies the type of the index in this Region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 178
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-index.html#cfn-resourceexplorer2-index-tags"
+            },
+            "remarks": "The tags don't attach to any of the resources listed in the index.",
+            "stability": "external",
+            "summary": "The specified tags are attached to only the index created in this AWS Region ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 185
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/resourceexplorer2.generated:CfnIndexProps"
+    },
+    "@aws-cdk/aws-resourceexplorer2.CfnView": {
+      "assembly": "@aws-cdk/aws-resourceexplorer2",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ResourceExplorer2::View",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-view.html"
+        },
+        "remarks": "Creates a view that users can query by using the [Search](https://docs.aws.amazon.com/resource-explorer/latest/APIReference/API_Search.html) operation. Results from queries that you make using this view include only resources that match the view's `Filters` .\n\n> To successfully create a view, you must have `resource-explorer-2:TagResource` permission, even if you don't specify tags to be added to the view.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ResourceExplorer2::View`."
+      },
+      "fqn": "@aws-cdk/aws-resourceexplorer2.CfnView",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ResourceExplorer2::View`."
+        },
+        "locationInModule": {
+          "filename": "lib/resourceexplorer2.generated.ts",
+          "line": 532
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-resourceexplorer2.CfnViewProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/resourceexplorer2.generated.ts",
+        "line": 460
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 549
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 563
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnView",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 464
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ViewArn"
+            },
+            "remarks": "`arn:aws:resource-explorer-2:us-east-1:123456789012:view/MyView/EXAMPLE8-90ab-cdef-fedc-EXAMPLE22222`",
+            "stability": "external",
+            "summary": "The ARN of the new view. For example:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 491
+          },
+          "name": "attrViewArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 554
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-view.html#cfn-resourceexplorer2-view-tags"
+            },
+            "stability": "external",
+            "summary": "Tag key and value pairs that are attached to the view."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 523
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-view.html#cfn-resourceexplorer2-view-viewname"
+            },
+            "stability": "external",
+            "summary": "The name of the new view."
+          },
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 498
+          },
+          "name": "viewName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-view.html#cfn-resourceexplorer2-view-filters"
+            },
+            "remarks": "When you use this view in a [Search](https://docs.aws.amazon.com/resource-explorer/latest/APIReference/API_Search.html) operation, the filter string is combined with the search's `QueryString` parameter using a logical `AND` operator.\n\nFor information about the supported syntax, see [Search query reference for Resource Explorer](https://docs.aws.amazon.com/resource-explorer/latest/userguide/using-search-query-syntax.html) in the *AWS Resource Explorer User Guide* .\n\n> This query string in the context of this operation supports only [filter prefixes](https://docs.aws.amazon.com/resource-explorer/latest/userguide/using-search-query-syntax.html#query-syntax-filters) with optional [operators](https://docs.aws.amazon.com/resource-explorer/latest/userguide/using-search-query-syntax.html#query-syntax-operators) . It doesn't support free-form text. For example, the string `region:us* service:ec2 -tag:stage=prod` includes all Amazon EC2 resources in any AWS Region that begin with the letters `us` and are *not* tagged with a key `Stage` that has the value `prod` .",
+            "stability": "external",
+            "summary": "An array of strings that include search keywords, prefixes, and operators that filter the results that are returned for queries made using this view."
+          },
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 509
+          },
+          "name": "filters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-resourceexplorer2.CfnView.FiltersProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-view.html#cfn-resourceexplorer2-view-includedproperties"
+            },
+            "stability": "external",
+            "summary": "A list of fields that provide additional information about the view."
+          },
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 516
+          },
+          "name": "includedProperties",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-resourceexplorer2.CfnView.IncludedPropertyProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/resourceexplorer2.generated:CfnView"
+    },
+    "@aws-cdk/aws-resourceexplorer2.CfnView.FiltersProperty": {
+      "assembly": "@aws-cdk/aws-resourceexplorer2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourceexplorer2-view-filters.html"
+        },
+        "stability": "external",
+        "summary": "An object with a `FilterString` that specifies which resources to include in the results of queries made using this view."
+      },
+      "fqn": "@aws-cdk/aws-resourceexplorer2.CfnView.FiltersProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resourceexplorer2.generated.ts",
+        "line": 577
+      },
+      "name": "FiltersProperty",
+      "namespace": "CfnView",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourceexplorer2-view-filters.html#cfn-resourceexplorer2-view-filters-filterstring"
+            },
+            "stability": "external",
+            "summary": "`CfnView.FiltersProperty.FilterString`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 583
+          },
+          "name": "filterString",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/resourceexplorer2.generated:CfnView.FiltersProperty"
+    },
+    "@aws-cdk/aws-resourceexplorer2.CfnView.IncludedPropertyProperty": {
+      "assembly": "@aws-cdk/aws-resourceexplorer2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourceexplorer2-view-includedproperty.html"
+        },
+        "stability": "external",
+        "summary": "Information about an additional property that describes a resource, that you can optionally include in a view."
+      },
+      "fqn": "@aws-cdk/aws-resourceexplorer2.CfnView.IncludedPropertyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resourceexplorer2.generated.ts",
+        "line": 645
+      },
+      "name": "IncludedPropertyProperty",
+      "namespace": "CfnView",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resourceexplorer2-view-includedproperty.html#cfn-resourceexplorer2-view-includedproperty-name"
+            },
+            "stability": "external",
+            "summary": "The name of the property that is included in this view."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 651
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/resourceexplorer2.generated:CfnView.IncludedPropertyProperty"
+    },
+    "@aws-cdk/aws-resourceexplorer2.CfnViewProps": {
+      "assembly": "@aws-cdk/aws-resourceexplorer2",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-view.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnView`."
+      },
+      "fqn": "@aws-cdk/aws-resourceexplorer2.CfnViewProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/resourceexplorer2.generated.ts",
+        "line": 358
+      },
+      "name": "CfnViewProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-view.html#cfn-resourceexplorer2-view-viewname"
+            },
+            "stability": "external",
+            "summary": "The name of the new view."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 365
+          },
+          "name": "viewName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-view.html#cfn-resourceexplorer2-view-filters"
+            },
+            "remarks": "When you use this view in a [Search](https://docs.aws.amazon.com/resource-explorer/latest/APIReference/API_Search.html) operation, the filter string is combined with the search's `QueryString` parameter using a logical `AND` operator.\n\nFor information about the supported syntax, see [Search query reference for Resource Explorer](https://docs.aws.amazon.com/resource-explorer/latest/userguide/using-search-query-syntax.html) in the *AWS Resource Explorer User Guide* .\n\n> This query string in the context of this operation supports only [filter prefixes](https://docs.aws.amazon.com/resource-explorer/latest/userguide/using-search-query-syntax.html#query-syntax-filters) with optional [operators](https://docs.aws.amazon.com/resource-explorer/latest/userguide/using-search-query-syntax.html#query-syntax-operators) . It doesn't support free-form text. For example, the string `region:us* service:ec2 -tag:stage=prod` includes all Amazon EC2 resources in any AWS Region that begin with the letters `us` and are *not* tagged with a key `Stage` that has the value `prod` .",
+            "stability": "external",
+            "summary": "An array of strings that include search keywords, prefixes, and operators that filter the results that are returned for queries made using this view."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 376
+          },
+          "name": "filters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-resourceexplorer2.CfnView.FiltersProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-view.html#cfn-resourceexplorer2-view-includedproperties"
+            },
+            "stability": "external",
+            "summary": "A list of fields that provide additional information about the view."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 383
+          },
+          "name": "includedProperties",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-resourceexplorer2.CfnView.IncludedPropertyProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-resourceexplorer2-view.html#cfn-resourceexplorer2-view-tags"
+            },
+            "stability": "external",
+            "summary": "Tag key and value pairs that are attached to the view."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/resourceexplorer2.generated.ts",
+            "line": 390
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/resourceexplorer2.generated:CfnViewProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "0VH2gnnrEWaHyukDzcUCbWsrrtan40O6TgmnukHJijA="
+}

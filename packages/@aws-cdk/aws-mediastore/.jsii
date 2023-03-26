@@ -1,0 +1,1073 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::MediaStore",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::MediaStore",
+    "aws-mediastore"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-mediastore",
+  "readme": {
+    "markdown": "# AWS Elemental MediaStore Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as mediastore from '@aws-cdk/aws-mediastore';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for MediaStore construct libraries](https://constructs.dev/search?q=mediastore)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::MediaStore resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_MediaStore.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::MediaStore](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_MediaStore.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-mediastore",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.MediaStore",
+      "packageId": "Amazon.CDK.AWS.MediaStore"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "mediastore",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.mediastore"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-mediastore"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-mediastore",
+      "module": "aws_cdk.aws_mediastore"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-mediastore.CfnContainer": {
+      "assembly": "@aws-cdk/aws-mediastore",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::MediaStore::Container",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html"
+        },
+        "remarks": "The AWS::MediaStore::Container resource specifies a storage container to hold objects. A container is similar to a bucket in Amazon S3.\n\nWhen you create a container using AWS CloudFormation , the template manages data for five API actions: creating a container, setting access logging, updating the default container policy, adding a cross-origin resource sharing (CORS) policy, and adding an object lifecycle policy.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::MediaStore::Container`."
+      },
+      "fqn": "@aws-cdk/aws-mediastore.CfnContainer",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::MediaStore::Container`."
+        },
+        "locationInModule": {
+          "filename": "lib/mediastore.generated.ts",
+          "line": 251
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-mediastore.CfnContainerProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/mediastore.generated.ts",
+        "line": 156
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 271
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 288
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnContainer",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 160
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Endpoint"
+            },
+            "remarks": "Use the endpoint to identify the specific container when sending requests to the data plane. The service assigns this value when the container is created. Once the value has been assigned, it does not change.",
+            "stability": "external",
+            "summary": "The DNS endpoint of the container."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 185
+          },
+          "name": "attrEndpoint",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 276
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-tags"
+            },
+            "stability": "external",
+            "summary": "`AWS::MediaStore::Container.Tags`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 242
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-containername"
+            },
+            "remarks": "The name must be from 1 to 255 characters. Container names must be unique to your AWS account within a specific region. As an example, you could create a container named `movies` in every region, as long as you don’t have an existing container with that name.",
+            "stability": "external",
+            "summary": "The name for the container."
+          },
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 192
+          },
+          "name": "containerName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-accessloggingenabled"
+            },
+            "remarks": "This value is `false` by default, indicating that AWS Elemental MediaStore does not send access logs to Amazon CloudWatch Logs. When you enable access logging on the container, MediaStore changes this value to `true` , indicating that the service delivers access logs for objects stored in that container to CloudWatch Logs.",
+            "stability": "external",
+            "summary": "The state of access logging on the container."
+          },
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 199
+          },
+          "name": "accessLoggingEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-corspolicy"
+            },
+            "remarks": "For example, you might want to enable a request whose origin is http://www.example.com to access your AWS Elemental MediaStore container at my.example.container.com by using the browser's XMLHttpRequest capability.\n\nTo enable CORS on a container, you attach a CORS policy to the container. In the CORS policy, you configure rules that identify origins and the HTTP methods that can be executed on your container. The policy can contain up to 398,000 characters. You can add up to 100 rules to a CORS policy. If more than one rule applies, the service uses the first applicable rule listed.\n\nTo learn more about CORS, see [Cross-Origin Resource Sharing (CORS) in AWS Elemental MediaStore](https://docs.aws.amazon.com/mediastore/latest/ug/cors-policy.html) .",
+            "stability": "external",
+            "summary": "Sets the cross-origin resource sharing (CORS) configuration on a container so that the container can service cross-origin requests."
+          },
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 210
+          },
+          "name": "corsPolicy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-mediastore.CfnContainer.CorsRuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-lifecyclepolicy"
+            },
+            "remarks": "If the container already has an object lifecycle policy, the service replaces the existing policy with the new policy. It takes up to 20 minutes for the change to take effect.\n\nFor information about how to construct an object lifecycle policy, see [Components of an Object Lifecycle Policy](https://docs.aws.amazon.com/mediastore/latest/ug/policies-object-lifecycle-components.html) .",
+            "stability": "external",
+            "summary": "Writes an object lifecycle policy to a container."
+          },
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 219
+          },
+          "name": "lifecyclePolicy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-metricpolicy"
+            },
+            "stability": "external",
+            "summary": "`AWS::MediaStore::Container.MetricPolicy`."
+          },
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 226
+          },
+          "name": "metricPolicy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediastore.CfnContainer.MetricPolicyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-policy"
+            },
+            "remarks": "For information about the data that is included in an access policy, see the [AWS Identity and Access Management User Guide](https://docs.aws.amazon.com/iam/) .\n\nFor this release of the REST API, you can create only one policy for a container. If you enter `PutContainerPolicy` twice, the second command modifies the existing policy.",
+            "stability": "external",
+            "summary": "Creates an access policy for the specified container to restrict the users and clients that can access it."
+          },
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 235
+          },
+          "name": "policy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediastore.generated:CfnContainer"
+    },
+    "@aws-cdk/aws-mediastore.CfnContainer.CorsRuleProperty": {
+      "assembly": "@aws-cdk/aws-mediastore",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-corsrule.html"
+        },
+        "remarks": "You can add up to 100 rules to a CORS policy. If more than one rule applies, the service uses the first applicable rule listed.",
+        "stability": "external",
+        "summary": "A rule for a CORS policy."
+      },
+      "fqn": "@aws-cdk/aws-mediastore.CfnContainer.CorsRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediastore.generated.ts",
+        "line": 302
+      },
+      "name": "CorsRuleProperty",
+      "namespace": "CfnContainer",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-corsrule.html#cfn-mediastore-container-corsrule-allowedheaders"
+            },
+            "remarks": "Each header name that is specified in `Access-Control-Request-Headers` must have a corresponding entry in the rule. Only the headers that were requested are sent back.\n\nThis element can contain only one wildcard character (*).",
+            "stability": "external",
+            "summary": "Specifies which headers are allowed in a preflight `OPTIONS` request through the `Access-Control-Request-Headers` header."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 310
+          },
+          "name": "allowedHeaders",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-corsrule.html#cfn-mediastore-container-corsrule-allowedmethods"
+            },
+            "remarks": "Each CORS rule must contain at least one `AllowedMethods` and one `AllowedOrigins` element.",
+            "stability": "external",
+            "summary": "Identifies an HTTP method that the origin that is specified in the rule is allowed to execute."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 318
+          },
+          "name": "allowedMethods",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-corsrule.html#cfn-mediastore-container-corsrule-allowedorigins"
+            },
+            "remarks": "Each CORS rule must have at least one `AllowedOrigins` element. The string value can include only one wildcard character (*), for example, http://*.example.com. Additionally, you can specify only one wildcard character to allow cross-origin access for all origins.",
+            "stability": "external",
+            "summary": "One or more response headers that you want users to be able to access from their applications (for example, from a JavaScript `XMLHttpRequest` object)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 326
+          },
+          "name": "allowedOrigins",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-corsrule.html#cfn-mediastore-container-corsrule-exposeheaders"
+            },
+            "remarks": "This element is optional for each rule.",
+            "stability": "external",
+            "summary": "One or more headers in the response that you want users to be able to access from their applications (for example, from a JavaScript `XMLHttpRequest` object)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 334
+          },
+          "name": "exposeHeaders",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-corsrule.html#cfn-mediastore-container-corsrule-maxageseconds"
+            },
+            "remarks": "A CORS rule can have only one `MaxAgeSeconds` element.",
+            "stability": "external",
+            "summary": "The time in seconds that your browser caches the preflight response for the specified resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 342
+          },
+          "name": "maxAgeSeconds",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/mediastore.generated:CfnContainer.CorsRuleProperty"
+    },
+    "@aws-cdk/aws-mediastore.CfnContainer.MetricPolicyProperty": {
+      "assembly": "@aws-cdk/aws-mediastore",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-metricpolicy.html"
+        },
+        "remarks": "A metric policy allows AWS Elemental MediaStore to send metrics to Amazon CloudWatch. In the policy, you must indicate whether you want MediaStore to send container-level metrics. You can also include rules to define groups of objects that you want MediaStore to send object-level metrics for.\n\nTo view examples of how to construct a metric policy for your use case, see [Example Metric Policies](https://docs.aws.amazon.com/mediastore/latest/ug/policies-metric-examples.html) .",
+        "stability": "external",
+        "summary": "The metric policy that is associated with the container."
+      },
+      "fqn": "@aws-cdk/aws-mediastore.CfnContainer.MetricPolicyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediastore.generated.ts",
+        "line": 417
+      },
+      "name": "MetricPolicyProperty",
+      "namespace": "CfnContainer",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-metricpolicy.html#cfn-mediastore-container-metricpolicy-containerlevelmetrics"
+            },
+            "stability": "external",
+            "summary": "A setting to enable or disable metrics at the container level."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 423
+          },
+          "name": "containerLevelMetrics",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-metricpolicy.html#cfn-mediastore-container-metricpolicy-metricpolicyrules"
+            },
+            "remarks": "This parameter is optional, but if you choose to include it, you must also include at least one rule. By default, you can include up to five rules. You can also [request a quota increase](https://docs.aws.amazon.com/servicequotas/home?region=us-east-1#!/services/mediastore/quotas) to allow up to 300 rules per policy.",
+            "stability": "external",
+            "summary": "A parameter that holds an array of rules that enable metrics at the object level."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 429
+          },
+          "name": "metricPolicyRules",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-mediastore.CfnContainer.MetricPolicyRuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/mediastore.generated:CfnContainer.MetricPolicyProperty"
+    },
+    "@aws-cdk/aws-mediastore.CfnContainer.MetricPolicyRuleProperty": {
+      "assembly": "@aws-cdk/aws-mediastore",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-metricpolicyrule.html"
+        },
+        "remarks": "Each rule contains an object group and an object group name. If the policy includes the MetricPolicyRules parameter, you must include at least one rule. Each metric policy can include up to five rules by default. You can also [request a quota increase](https://docs.aws.amazon.com/servicequotas/home?region=us-east-1#!/services/mediastore/quotas) to allow up to 300 rules per policy.",
+        "stability": "external",
+        "summary": "A setting that enables metrics at the object level."
+      },
+      "fqn": "@aws-cdk/aws-mediastore.CfnContainer.MetricPolicyRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediastore.generated.ts",
+        "line": 494
+      },
+      "name": "MetricPolicyRuleProperty",
+      "namespace": "CfnContainer",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-metricpolicyrule.html#cfn-mediastore-container-metricpolicyrule-objectgroup"
+            },
+            "remarks": "Wildcards (*) are acceptable.",
+            "stability": "external",
+            "summary": "A path or file name that defines which objects to include in the group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 500
+          },
+          "name": "objectGroup",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-metricpolicyrule.html#cfn-mediastore-container-metricpolicyrule-objectgroupname"
+            },
+            "stability": "external",
+            "summary": "A name that allows you to refer to the object group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 506
+          },
+          "name": "objectGroupName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/mediastore.generated:CfnContainer.MetricPolicyRuleProperty"
+    },
+    "@aws-cdk/aws-mediastore.CfnContainerProps": {
+      "assembly": "@aws-cdk/aws-mediastore",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnContainer`."
+      },
+      "fqn": "@aws-cdk/aws-mediastore.CfnContainerProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/mediastore.generated.ts",
+        "line": 20
+      },
+      "name": "CfnContainerProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-containername"
+            },
+            "remarks": "The name must be from 1 to 255 characters. Container names must be unique to your AWS account within a specific region. As an example, you could create a container named `movies` in every region, as long as you don’t have an existing container with that name.",
+            "stability": "external",
+            "summary": "The name for the container."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 27
+          },
+          "name": "containerName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-accessloggingenabled"
+            },
+            "remarks": "This value is `false` by default, indicating that AWS Elemental MediaStore does not send access logs to Amazon CloudWatch Logs. When you enable access logging on the container, MediaStore changes this value to `true` , indicating that the service delivers access logs for objects stored in that container to CloudWatch Logs.",
+            "stability": "external",
+            "summary": "The state of access logging on the container."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 34
+          },
+          "name": "accessLoggingEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-corspolicy"
+            },
+            "remarks": "For example, you might want to enable a request whose origin is http://www.example.com to access your AWS Elemental MediaStore container at my.example.container.com by using the browser's XMLHttpRequest capability.\n\nTo enable CORS on a container, you attach a CORS policy to the container. In the CORS policy, you configure rules that identify origins and the HTTP methods that can be executed on your container. The policy can contain up to 398,000 characters. You can add up to 100 rules to a CORS policy. If more than one rule applies, the service uses the first applicable rule listed.\n\nTo learn more about CORS, see [Cross-Origin Resource Sharing (CORS) in AWS Elemental MediaStore](https://docs.aws.amazon.com/mediastore/latest/ug/cors-policy.html) .",
+            "stability": "external",
+            "summary": "Sets the cross-origin resource sharing (CORS) configuration on a container so that the container can service cross-origin requests."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 45
+          },
+          "name": "corsPolicy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-mediastore.CfnContainer.CorsRuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-lifecyclepolicy"
+            },
+            "remarks": "If the container already has an object lifecycle policy, the service replaces the existing policy with the new policy. It takes up to 20 minutes for the change to take effect.\n\nFor information about how to construct an object lifecycle policy, see [Components of an Object Lifecycle Policy](https://docs.aws.amazon.com/mediastore/latest/ug/policies-object-lifecycle-components.html) .",
+            "stability": "external",
+            "summary": "Writes an object lifecycle policy to a container."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 54
+          },
+          "name": "lifecyclePolicy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-metricpolicy"
+            },
+            "stability": "external",
+            "summary": "`AWS::MediaStore::Container.MetricPolicy`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 61
+          },
+          "name": "metricPolicy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-mediastore.CfnContainer.MetricPolicyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-policy"
+            },
+            "remarks": "For information about the data that is included in an access policy, see the [AWS Identity and Access Management User Guide](https://docs.aws.amazon.com/iam/) .\n\nFor this release of the REST API, you can create only one policy for a container. If you enter `PutContainerPolicy` twice, the second command modifies the existing policy.",
+            "stability": "external",
+            "summary": "Creates an access policy for the specified container to restrict the users and clients that can access it."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 70
+          },
+          "name": "policy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-mediastore-container.html#cfn-mediastore-container-tags"
+            },
+            "stability": "external",
+            "summary": "`AWS::MediaStore::Container.Tags`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/mediastore.generated.ts",
+            "line": 77
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/mediastore.generated:CfnContainerProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "qv10DX66LlswzonKlYNMSD3p3JXjsMwrAI0qD9iop3Y="
+}

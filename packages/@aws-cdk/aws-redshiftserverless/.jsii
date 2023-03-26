@@ -1,0 +1,2988 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::RedshiftServerless Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::RedshiftServerless",
+    "aws-redshiftserverless"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-redshiftserverless",
+  "readme": {
+    "markdown": "# AWS::RedshiftServerless Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as redshiftserverless from '@aws-cdk/aws-redshiftserverless';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for RedshiftServerless construct libraries](https://constructs.dev/search?q=redshiftserverless)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::RedshiftServerless resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_RedshiftServerless.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::RedshiftServerless](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_RedshiftServerless.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-redshiftserverless",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.RedshiftServerless",
+      "packageId": "Amazon.CDK.AWS.RedshiftServerless",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "redshiftserverless",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.redshiftserverless"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-redshiftserverless"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-redshiftserverless",
+      "module": "aws_cdk.aws_redshiftserverless"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-redshiftserverless.CfnNamespace": {
+      "assembly": "@aws-cdk/aws-redshiftserverless",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RedshiftServerless::Namespace",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html"
+        },
+        "remarks": "A collection of database objects and users.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RedshiftServerless::Namespace`."
+      },
+      "fqn": "@aws-cdk/aws-redshiftserverless.CfnNamespace",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RedshiftServerless::Namespace`."
+        },
+        "locationInModule": {
+          "filename": "lib/redshiftserverless.generated.ts",
+          "line": 378
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-redshiftserverless.CfnNamespaceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/redshiftserverless.generated.ts",
+        "line": 196
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 413
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 435
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnNamespace",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 200
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Namespace.AdminUsername"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 225
+          },
+          "name": "attrNamespaceAdminUsername",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Namespace.CreationDate"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 231
+          },
+          "name": "attrNamespaceCreationDate",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Namespace.DbName"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 237
+          },
+          "name": "attrNamespaceDbName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Namespace.DefaultIamRoleArn"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 243
+          },
+          "name": "attrNamespaceDefaultIamRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Namespace.IamRoles"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 249
+          },
+          "name": "attrNamespaceIamRoles",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Namespace.KmsKeyId"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 255
+          },
+          "name": "attrNamespaceKmsKeyId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Namespace.LogExports"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 261
+          },
+          "name": "attrNamespaceLogExports",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Namespace.NamespaceArn"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 267
+          },
+          "name": "attrNamespaceNamespaceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Namespace.NamespaceId"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 273
+          },
+          "name": "attrNamespaceNamespaceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Namespace.NamespaceName"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 279
+          },
+          "name": "attrNamespaceNamespaceName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Namespace.Status"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 285
+          },
+          "name": "attrNamespaceStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 418
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-tags"
+            },
+            "stability": "external",
+            "summary": "The map of the key-value pairs used to tag the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 369
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-namespacename"
+            },
+            "stability": "external",
+            "summary": "The name of the namespace."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 292
+          },
+          "name": "namespaceName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-adminusername"
+            },
+            "stability": "external",
+            "summary": "The username of the administrator for the primary database created in the namespace."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 299
+          },
+          "name": "adminUsername",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-adminuserpassword"
+            },
+            "stability": "external",
+            "summary": "The password of the administrator for the primary database created in the namespace."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 306
+          },
+          "name": "adminUserPassword",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-dbname"
+            },
+            "stability": "external",
+            "summary": "The name of the primary database created in the namespace."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 313
+          },
+          "name": "dbName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-defaultiamrolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role to set as a default in the namespace."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 320
+          },
+          "name": "defaultIamRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-finalsnapshotname"
+            },
+            "stability": "external",
+            "summary": "The name of the snapshot to be created before the namespace is deleted."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 327
+          },
+          "name": "finalSnapshotName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-finalsnapshotretentionperiod"
+            },
+            "stability": "external",
+            "summary": "How long to retain the final snapshot."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 334
+          },
+          "name": "finalSnapshotRetentionPeriod",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-iamroles"
+            },
+            "stability": "external",
+            "summary": "A list of IAM roles to associate with the namespace."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 341
+          },
+          "name": "iamRoles",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The ID of the AWS Key Management Service key used to encrypt your data."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 348
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-logexports"
+            },
+            "remarks": "Available export types are `userlog` , `connectionlog` , and `useractivitylog` .",
+            "stability": "external",
+            "summary": "The types of logs the namespace can export."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 355
+          },
+          "name": "logExports",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-namespace"
+            },
+            "stability": "external",
+            "summary": "`AWS::RedshiftServerless::Namespace.Namespace`."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 362
+          },
+          "name": "namespace",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-redshiftserverless.CfnNamespace.NamespaceProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/redshiftserverless.generated:CfnNamespace"
+    },
+    "@aws-cdk/aws-redshiftserverless.CfnNamespace.NamespaceProperty": {
+      "assembly": "@aws-cdk/aws-redshiftserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html"
+        },
+        "stability": "external",
+        "summary": "A collection of database objects and users."
+      },
+      "fqn": "@aws-cdk/aws-redshiftserverless.CfnNamespace.NamespaceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/redshiftserverless.generated.ts",
+        "line": 449
+      },
+      "name": "NamespaceProperty",
+      "namespace": "CfnNamespace",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html#cfn-redshiftserverless-namespace-namespace-adminusername"
+            },
+            "stability": "external",
+            "summary": "The username of the administrator for the first database created in the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 455
+          },
+          "name": "adminUsername",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html#cfn-redshiftserverless-namespace-namespace-creationdate"
+            },
+            "stability": "external",
+            "summary": "The date of when the namespace was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 461
+          },
+          "name": "creationDate",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html#cfn-redshiftserverless-namespace-namespace-dbname"
+            },
+            "stability": "external",
+            "summary": "The name of the first database created in the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 467
+          },
+          "name": "dbName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html#cfn-redshiftserverless-namespace-namespace-defaultiamrolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role to set as a default in the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 473
+          },
+          "name": "defaultIamRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html#cfn-redshiftserverless-namespace-namespace-iamroles"
+            },
+            "stability": "external",
+            "summary": "A list of IAM roles to associate with the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 479
+          },
+          "name": "iamRoles",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html#cfn-redshiftserverless-namespace-namespace-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The ID of the AWS Key Management Service key used to encrypt your data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 485
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html#cfn-redshiftserverless-namespace-namespace-logexports"
+            },
+            "remarks": "Available export types are User log, Connection log, and User activity log.",
+            "stability": "external",
+            "summary": "The types of logs the namespace can export."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 491
+          },
+          "name": "logExports",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html#cfn-redshiftserverless-namespace-namespace-namespacearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) associated with a namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 497
+          },
+          "name": "namespaceArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html#cfn-redshiftserverless-namespace-namespace-namespaceid"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of a namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 503
+          },
+          "name": "namespaceId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html#cfn-redshiftserverless-namespace-namespace-namespacename"
+            },
+            "remarks": "Must be between 3-64 alphanumeric characters in lowercase, and it cannot be a reserved word. A list of reserved words can be found in [Reserved Words](https://docs.aws.amazon.com//redshift/latest/dg/r_pg_keywords.html) in the Amazon Redshift Database Developer Guide.",
+            "stability": "external",
+            "summary": "The name of the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 509
+          },
+          "name": "namespaceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-namespace-namespace.html#cfn-redshiftserverless-namespace-namespace-status"
+            },
+            "stability": "external",
+            "summary": "The status of the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 515
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/redshiftserverless.generated:CfnNamespace.NamespaceProperty"
+    },
+    "@aws-cdk/aws-redshiftserverless.CfnNamespaceProps": {
+      "assembly": "@aws-cdk/aws-redshiftserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnNamespace`."
+      },
+      "fqn": "@aws-cdk/aws-redshiftserverless.CfnNamespaceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/redshiftserverless.generated.ts",
+        "line": 20
+      },
+      "name": "CfnNamespaceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-namespacename"
+            },
+            "stability": "external",
+            "summary": "The name of the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 27
+          },
+          "name": "namespaceName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-adminusername"
+            },
+            "stability": "external",
+            "summary": "The username of the administrator for the primary database created in the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 34
+          },
+          "name": "adminUsername",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-adminuserpassword"
+            },
+            "stability": "external",
+            "summary": "The password of the administrator for the primary database created in the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 41
+          },
+          "name": "adminUserPassword",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-dbname"
+            },
+            "stability": "external",
+            "summary": "The name of the primary database created in the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 48
+          },
+          "name": "dbName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-defaultiamrolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role to set as a default in the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 55
+          },
+          "name": "defaultIamRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-finalsnapshotname"
+            },
+            "stability": "external",
+            "summary": "The name of the snapshot to be created before the namespace is deleted."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 62
+          },
+          "name": "finalSnapshotName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-finalsnapshotretentionperiod"
+            },
+            "stability": "external",
+            "summary": "How long to retain the final snapshot."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 69
+          },
+          "name": "finalSnapshotRetentionPeriod",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-iamroles"
+            },
+            "stability": "external",
+            "summary": "A list of IAM roles to associate with the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 76
+          },
+          "name": "iamRoles",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-kmskeyid"
+            },
+            "stability": "external",
+            "summary": "The ID of the AWS Key Management Service key used to encrypt your data."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 83
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-logexports"
+            },
+            "remarks": "Available export types are `userlog` , `connectionlog` , and `useractivitylog` .",
+            "stability": "external",
+            "summary": "The types of logs the namespace can export."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 90
+          },
+          "name": "logExports",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-namespace"
+            },
+            "stability": "external",
+            "summary": "`AWS::RedshiftServerless::Namespace.Namespace`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 97
+          },
+          "name": "namespace",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-redshiftserverless.CfnNamespace.NamespaceProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-namespace.html#cfn-redshiftserverless-namespace-tags"
+            },
+            "stability": "external",
+            "summary": "The map of the key-value pairs used to tag the namespace."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 104
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/redshiftserverless.generated:CfnNamespaceProps"
+    },
+    "@aws-cdk/aws-redshiftserverless.CfnWorkgroup": {
+      "assembly": "@aws-cdk/aws-redshiftserverless",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RedshiftServerless::Workgroup",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html"
+        },
+        "remarks": "The collection of compute resources in Amazon Redshift Serverless.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RedshiftServerless::Workgroup`."
+      },
+      "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RedshiftServerless::Workgroup`."
+        },
+        "locationInModule": {
+          "filename": "lib/redshiftserverless.generated.ts",
+          "line": 941
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/redshiftserverless.generated.ts",
+        "line": 761
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 976
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 996
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnWorkgroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 765
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.BaseCapacity"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 790
+          },
+          "name": "attrWorkgroupBaseCapacity",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.CreationDate"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 796
+          },
+          "name": "attrWorkgroupCreationDate",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.Endpoint.Address"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 802
+          },
+          "name": "attrWorkgroupEndpointAddress",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.Endpoint.Port"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 808
+          },
+          "name": "attrWorkgroupEndpointPort",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.EnhancedVpcRouting"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 814
+          },
+          "name": "attrWorkgroupEnhancedVpcRouting",
+          "type": {
+            "fqn": "@aws-cdk/core.IResolvable"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.NamespaceName"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 820
+          },
+          "name": "attrWorkgroupNamespaceName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.PubliclyAccessible"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 826
+          },
+          "name": "attrWorkgroupPubliclyAccessible",
+          "type": {
+            "fqn": "@aws-cdk/core.IResolvable"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.SecurityGroupIds"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 832
+          },
+          "name": "attrWorkgroupSecurityGroupIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.Status"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 838
+          },
+          "name": "attrWorkgroupStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.SubnetIds"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 844
+          },
+          "name": "attrWorkgroupSubnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.WorkgroupArn"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 850
+          },
+          "name": "attrWorkgroupWorkgroupArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.WorkgroupId"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 856
+          },
+          "name": "attrWorkgroupWorkgroupId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Workgroup.WorkgroupName"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 862
+          },
+          "name": "attrWorkgroupWorkgroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 981
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-tags"
+            },
+            "stability": "external",
+            "summary": "The map of the key-value pairs used to tag the workgroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 925
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-workgroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the workgroup."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 869
+          },
+          "name": "workgroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-basecapacity"
+            },
+            "stability": "external",
+            "summary": "The base compute capacity of the workgroup in Redshift Processing Units (RPUs)."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 876
+          },
+          "name": "baseCapacity",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-configparameters"
+            },
+            "remarks": "Available options are `datestyle` , `enable_user_activity_logging` , `query_group` , `search_path` , and `max_query_execution_time` .",
+            "stability": "external",
+            "summary": "A list of parameters to set for finer control over a database."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 883
+          },
+          "name": "configParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.ConfigParameterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-enhancedvpcrouting"
+            },
+            "stability": "external",
+            "summary": "The value that specifies whether to enable enhanced virtual private cloud (VPC) routing, which forces Amazon Redshift Serverless to route traffic through your VPC."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 890
+          },
+          "name": "enhancedVpcRouting",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-namespacename"
+            },
+            "stability": "external",
+            "summary": "The namespace the workgroup is associated with."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 897
+          },
+          "name": "namespaceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-publiclyaccessible"
+            },
+            "stability": "external",
+            "summary": "A value that specifies whether the workgroup can be accessible from a public network."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 904
+          },
+          "name": "publiclyAccessible",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-securitygroupids"
+            },
+            "stability": "external",
+            "summary": "A list of security group IDs to associate with the workgroup."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 911
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-subnetids"
+            },
+            "stability": "external",
+            "summary": "A list of subnet IDs the workgroup is associated with."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 918
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-workgroup"
+            },
+            "stability": "external",
+            "summary": "`AWS::RedshiftServerless::Workgroup.Workgroup`."
+          },
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 932
+          },
+          "name": "workgroup",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.WorkgroupProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/redshiftserverless.generated:CfnWorkgroup"
+    },
+    "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.ConfigParameterProperty": {
+      "assembly": "@aws-cdk/aws-redshiftserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-configparameter.html"
+        },
+        "stability": "external",
+        "summary": "A array of parameters to set for more control over a serverless database."
+      },
+      "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.ConfigParameterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/redshiftserverless.generated.ts",
+        "line": 1010
+      },
+      "name": "ConfigParameterProperty",
+      "namespace": "CfnWorkgroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-configparameter.html#cfn-redshiftserverless-workgroup-configparameter-parameterkey"
+            },
+            "remarks": "The options are `datestyle` , `enable_user_activity_logging` , `query_group` , `search_path` , and `max_query_execution_time` .",
+            "stability": "external",
+            "summary": "The key of the parameter."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1016
+          },
+          "name": "parameterKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-configparameter.html#cfn-redshiftserverless-workgroup-configparameter-parametervalue"
+            },
+            "stability": "external",
+            "summary": "The value of the parameter to set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1022
+          },
+          "name": "parameterValue",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/redshiftserverless.generated:CfnWorkgroup.ConfigParameterProperty"
+    },
+    "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.EndpointProperty": {
+      "assembly": "@aws-cdk/aws-redshiftserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-endpoint.html"
+        },
+        "stability": "external",
+        "summary": "The VPC endpoint object."
+      },
+      "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.EndpointProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/redshiftserverless.generated.ts",
+        "line": 1086
+      },
+      "name": "EndpointProperty",
+      "namespace": "CfnWorkgroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-endpoint.html#cfn-redshiftserverless-workgroup-endpoint-address"
+            },
+            "stability": "external",
+            "summary": "The DNS address of the VPC endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1092
+          },
+          "name": "address",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-endpoint.html#cfn-redshiftserverless-workgroup-endpoint-port"
+            },
+            "stability": "external",
+            "summary": "The port that Amazon Redshift Serverless listens on."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1098
+          },
+          "name": "port",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-endpoint.html#cfn-redshiftserverless-workgroup-endpoint-vpcendpoints"
+            },
+            "stability": "external",
+            "summary": "An array of `VpcEndpoint` objects."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1104
+          },
+          "name": "vpcEndpoints",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.VpcEndpointProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/redshiftserverless.generated:CfnWorkgroup.EndpointProperty"
+    },
+    "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.NetworkInterfaceProperty": {
+      "assembly": "@aws-cdk/aws-redshiftserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-networkinterface.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about a network interface in an Amazon Redshift Serverless managed VPC endpoint."
+      },
+      "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.NetworkInterfaceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/redshiftserverless.generated.ts",
+        "line": 1171
+      },
+      "name": "NetworkInterfaceProperty",
+      "namespace": "CfnWorkgroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-networkinterface.html#cfn-redshiftserverless-workgroup-networkinterface-availabilityzone"
+            },
+            "stability": "external",
+            "summary": "The availability Zone."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1177
+          },
+          "name": "availabilityZone",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-networkinterface.html#cfn-redshiftserverless-workgroup-networkinterface-networkinterfaceid"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the network interface."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1183
+          },
+          "name": "networkInterfaceId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-networkinterface.html#cfn-redshiftserverless-workgroup-networkinterface-privateipaddress"
+            },
+            "stability": "external",
+            "summary": "The IPv4 address of the network interface within the subnet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1189
+          },
+          "name": "privateIpAddress",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-networkinterface.html#cfn-redshiftserverless-workgroup-networkinterface-subnetid"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the subnet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1195
+          },
+          "name": "subnetId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/redshiftserverless.generated:CfnWorkgroup.NetworkInterfaceProperty"
+    },
+    "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.VpcEndpointProperty": {
+      "assembly": "@aws-cdk/aws-redshiftserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-vpcendpoint.html"
+        },
+        "stability": "external",
+        "summary": "The connection endpoint for connecting to Amazon Redshift Serverless through the proxy."
+      },
+      "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.VpcEndpointProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/redshiftserverless.generated.ts",
+        "line": 1265
+      },
+      "name": "VpcEndpointProperty",
+      "namespace": "CfnWorkgroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-vpcendpoint.html#cfn-redshiftserverless-workgroup-vpcendpoint-networkinterfaces"
+            },
+            "remarks": "Also known as an interface endpoint.",
+            "stability": "external",
+            "summary": "One or more network interfaces of the endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1271
+          },
+          "name": "networkInterfaces",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.NetworkInterfaceProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-vpcendpoint.html#cfn-redshiftserverless-workgroup-vpcendpoint-vpcendpointid"
+            },
+            "stability": "external",
+            "summary": "The connection endpoint ID for connecting to Amazon Redshift Serverless."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1277
+          },
+          "name": "vpcEndpointId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-vpcendpoint.html#cfn-redshiftserverless-workgroup-vpcendpoint-vpcid"
+            },
+            "stability": "external",
+            "summary": "The VPC identifier that the endpoint is associated with."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1283
+          },
+          "name": "vpcId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/redshiftserverless.generated:CfnWorkgroup.VpcEndpointProperty"
+    },
+    "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.WorkgroupProperty": {
+      "assembly": "@aws-cdk/aws-redshiftserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html"
+        },
+        "stability": "external",
+        "summary": "The collection of computing resources from which an endpoint is created."
+      },
+      "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.WorkgroupProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/redshiftserverless.generated.ts",
+        "line": 1350
+      },
+      "name": "WorkgroupProperty",
+      "namespace": "CfnWorkgroup",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-basecapacity"
+            },
+            "stability": "external",
+            "summary": "The base data warehouse capacity of the workgroup in Redshift Processing Units (RPUs)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1356
+          },
+          "name": "baseCapacity",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-configparameters"
+            },
+            "remarks": "The options are `datestyle` , `enable_user_activity_logging` , `query_group` , `search_path` , and `max_query_execution_time` .",
+            "stability": "external",
+            "summary": "An array of parameters to set for finer control over a database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1362
+          },
+          "name": "configParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.ConfigParameterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-creationdate"
+            },
+            "stability": "external",
+            "summary": "The creation date of the workgroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1368
+          },
+          "name": "creationDate",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-endpoint"
+            },
+            "stability": "external",
+            "summary": "The endpoint that is created from the workgroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1374
+          },
+          "name": "endpoint",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.EndpointProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-enhancedvpcrouting"
+            },
+            "stability": "external",
+            "summary": "The value that specifies whether to enable enhanced virtual private cloud (VPC) routing, which forces Amazon Redshift Serverless to route traffic through your VPC."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1380
+          },
+          "name": "enhancedVpcRouting",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-namespacename"
+            },
+            "stability": "external",
+            "summary": "The namespace the workgroup is associated with."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1386
+          },
+          "name": "namespaceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-publiclyaccessible"
+            },
+            "stability": "external",
+            "summary": "A value that specifies whether the workgroup can be accessible from a public network."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1392
+          },
+          "name": "publiclyAccessible",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-securitygroupids"
+            },
+            "stability": "external",
+            "summary": "An array of security group IDs to associate with the workgroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1398
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-status"
+            },
+            "stability": "external",
+            "summary": "The status of the workgroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1404
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-subnetids"
+            },
+            "stability": "external",
+            "summary": "An array of subnet IDs the workgroup is associated with."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1410
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-workgrouparn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) that links to the workgroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1416
+          },
+          "name": "workgroupArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-workgroupid"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the workgroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1422
+          },
+          "name": "workgroupId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-redshiftserverless-workgroup-workgroup.html#cfn-redshiftserverless-workgroup-workgroup-workgroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the workgroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 1428
+          },
+          "name": "workgroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/redshiftserverless.generated:CfnWorkgroup.WorkgroupProperty"
+    },
+    "@aws-cdk/aws-redshiftserverless.CfnWorkgroupProps": {
+      "assembly": "@aws-cdk/aws-redshiftserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnWorkgroup`."
+      },
+      "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroupProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/redshiftserverless.generated.ts",
+        "line": 605
+      },
+      "name": "CfnWorkgroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-workgroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the workgroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 612
+          },
+          "name": "workgroupName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-basecapacity"
+            },
+            "stability": "external",
+            "summary": "The base compute capacity of the workgroup in Redshift Processing Units (RPUs)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 619
+          },
+          "name": "baseCapacity",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-configparameters"
+            },
+            "remarks": "Available options are `datestyle` , `enable_user_activity_logging` , `query_group` , `search_path` , and `max_query_execution_time` .",
+            "stability": "external",
+            "summary": "A list of parameters to set for finer control over a database."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 626
+          },
+          "name": "configParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.ConfigParameterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-enhancedvpcrouting"
+            },
+            "stability": "external",
+            "summary": "The value that specifies whether to enable enhanced virtual private cloud (VPC) routing, which forces Amazon Redshift Serverless to route traffic through your VPC."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 633
+          },
+          "name": "enhancedVpcRouting",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-namespacename"
+            },
+            "stability": "external",
+            "summary": "The namespace the workgroup is associated with."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 640
+          },
+          "name": "namespaceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-publiclyaccessible"
+            },
+            "stability": "external",
+            "summary": "A value that specifies whether the workgroup can be accessible from a public network."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 647
+          },
+          "name": "publiclyAccessible",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-securitygroupids"
+            },
+            "stability": "external",
+            "summary": "A list of security group IDs to associate with the workgroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 654
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-subnetids"
+            },
+            "stability": "external",
+            "summary": "A list of subnet IDs the workgroup is associated with."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 661
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-tags"
+            },
+            "stability": "external",
+            "summary": "The map of the key-value pairs used to tag the workgroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 668
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-redshiftserverless-workgroup.html#cfn-redshiftserverless-workgroup-workgroup"
+            },
+            "stability": "external",
+            "summary": "`AWS::RedshiftServerless::Workgroup.Workgroup`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/redshiftserverless.generated.ts",
+            "line": 675
+          },
+          "name": "workgroup",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-redshiftserverless.CfnWorkgroup.WorkgroupProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/redshiftserverless.generated:CfnWorkgroupProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "f+POcDu+G2HmdTrniHwIK9WtEDDjI0mfdPVmlGgomyg="
+}

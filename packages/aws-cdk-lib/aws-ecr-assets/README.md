@@ -1,5 +1,13 @@
 # AWS CDK Docker Image Assets
+<!--BEGIN STABILITY BANNER-->
 
+---
+
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
+
+---
+
+<!--END STABILITY BANNER-->
 
 This module allows bundling Docker images as assets.
 
@@ -10,7 +18,7 @@ uploaded to Amazon Elastic Container Registry (ECR) by the CDK toolkit
 and/or your app's CI/CD pipeline, and can be naturally referenced in your CDK app.
 
 ```ts
-import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
@@ -52,12 +60,16 @@ Additionally, you can supply `buildSecrets`. Your system must have Buildkit
 enabled, see https://docs.docker.com/build/buildkit/.
 
 ```ts
-import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
   buildArgs: {
     HTTP_PROXY: 'http://10.20.30.2:1234',
+  },
+  buildSecrets: {
+    SECRET_FROM_ENV: DockerBuildSecret.fromEnvironment('PIP_INDEX_URL'),
+    SECRET_FROM_SRC: DockerBuildSecret.fromSrc('./secret.txt'),
   },
   invalidation: {
     buildArgs: false,
@@ -69,7 +81,7 @@ You can optionally pass a target to the `docker build` command by specifying
 the `target` property:
 
 ```ts
-import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
@@ -81,7 +93,7 @@ You can optionally pass networking mode to the `docker build` command by specify
 the `networkMode` property:
 
 ```ts
-import { DockerImageAsset, NetworkMode } from 'aws-cdk-lib/aws-ecr-assets';
+import { DockerImageAsset, NetworkMode } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
@@ -93,7 +105,7 @@ You can optionally pass an alternate platform to the `docker build` command by s
 the `platform` property:
 
 ```ts
-import { DockerImageAsset, Platform } from 'aws-cdk-lib/aws-ecr-assets';
+import { DockerImageAsset, Platform } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
@@ -105,7 +117,7 @@ You can optionally pass an array of outputs to the `docker build` command by spe
 the `outputs` property:
 
 ```ts
-import { DockerImageAsset, Platform } from 'aws-cdk-lib/aws-ecr-assets';
+import { DockerImageAsset, Platform } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
@@ -116,7 +128,7 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
 You can optionally pass cache from and cache to options to cache images:
 
 ```ts
-import { DockerImageAsset, Platform } from 'aws-cdk-lib/aws-ecr-assets';
+import { DockerImageAsset, Platform } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new DockerImageAsset(this, 'MyBuildImage', {
   directory: path.join(__dirname, 'my-image'),
@@ -131,7 +143,7 @@ Images are loaded from a local tarball, uploaded to ECR by the CDK toolkit and/o
 naturally referenced in your CDK app.
 
 ```ts
-import { TarballImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+import { TarballImageAsset } from '@aws-cdk/aws-ecr-assets';
 
 const asset = new TarballImageAsset(this, 'MyBuildImage', {
   tarballFile: 'local-image.tar',
@@ -158,7 +170,7 @@ Here an example from the [cdklabs/cdk-ecr-deployment] project:
 ```text
 // This example available in TypeScript only
 
-import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+import { DockerImageAsset } from '@aws-cdk/aws-ecr-assets';
 import * as ecrdeploy from 'cdk-ecr-deployment';
 
 const image = new DockerImageAsset(this, 'CDKDockerImage', {

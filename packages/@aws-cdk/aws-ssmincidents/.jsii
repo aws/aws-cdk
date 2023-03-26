@@ -1,0 +1,2230 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::SSMIncidents",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::SSMIncidents",
+    "aws-ssmincidents"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-ssmincidents",
+  "readme": {
+    "markdown": "# AWS::SSMIncidents Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as ssmincidents from '@aws-cdk/aws-ssmincidents';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for SSMIncidents construct libraries](https://constructs.dev/search?q=ssmincidents)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::SSMIncidents resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_SSMIncidents.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::SSMIncidents](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_SSMIncidents.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-ssmincidents",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.SSMIncidents",
+      "packageId": "Amazon.CDK.AWS.SSMIncidents",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "ssmincidents",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.ssmincidents"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-ssmincidents"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-ssmincidents",
+      "module": "aws_cdk.aws_ssmincidents"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-ssmincidents.CfnReplicationSet": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SSMIncidents::ReplicationSet",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-replicationset.html"
+        },
+        "remarks": "The `AWS::SSMIncidents::ReplicationSet` resource specifies a set of Regions that Incident Manager data is replicated to and the KMS key used to encrypt the data.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SSMIncidents::ReplicationSet`."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnReplicationSet",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SSMIncidents::ReplicationSet`."
+        },
+        "locationInModule": {
+          "filename": "lib/ssmincidents.generated.ts",
+          "line": 165
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-ssmincidents.CfnReplicationSetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 106
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 181
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 194
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnReplicationSet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 110
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 135
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 186
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-replicationset.html#cfn-ssmincidents-replicationset-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tags to add to the replication set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 156
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-replicationset.html#cfn-ssmincidents-replicationset-regions"
+            },
+            "stability": "external",
+            "summary": "Specifies the Regions of the replication set."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 142
+          },
+          "name": "regions",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-ssmincidents.CfnReplicationSet.ReplicationRegionProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-replicationset.html#cfn-ssmincidents-replicationset-deletionprotected"
+            },
+            "remarks": "If deletion protection is enabled, you can't delete the last Region in the replication set.",
+            "stability": "external",
+            "summary": "Determines if the replication set deletion protection is enabled or not."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 149
+          },
+          "name": "deletionProtected",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnReplicationSet"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnReplicationSet.RegionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-replicationset-regionconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The `RegionConfiguration` property specifies the Region and KMS key to add to the replication set."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnReplicationSet.RegionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 208
+      },
+      "name": "RegionConfigurationProperty",
+      "namespace": "CfnReplicationSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-replicationset-regionconfiguration.html#cfn-ssmincidents-replicationset-regionconfiguration-ssekmskeyid"
+            },
+            "stability": "external",
+            "summary": "The KMS key ID to use to encrypt your replication set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 214
+          },
+          "name": "sseKmsKeyId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnReplicationSet.RegionConfigurationProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnReplicationSet.ReplicationRegionProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-replicationset-replicationregion.html"
+        },
+        "stability": "external",
+        "summary": "The `ReplicationRegion` property type specifies the Region and KMS key to add to the replication set."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnReplicationSet.ReplicationRegionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 276
+      },
+      "name": "ReplicationRegionProperty",
+      "namespace": "CfnReplicationSet",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-replicationset-replicationregion.html#cfn-ssmincidents-replicationset-replicationregion-regionconfiguration"
+            },
+            "stability": "external",
+            "summary": "Specifies the Region configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 282
+          },
+          "name": "regionConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ssmincidents.CfnReplicationSet.RegionConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-replicationset-replicationregion.html#cfn-ssmincidents-replicationset-replicationregion-regionname"
+            },
+            "stability": "external",
+            "summary": "Specifies the region name to add to the replication set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 288
+          },
+          "name": "regionName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnReplicationSet.ReplicationRegionProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnReplicationSetProps": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-replicationset.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnReplicationSet`."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnReplicationSetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 20
+      },
+      "name": "CfnReplicationSetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-replicationset.html#cfn-ssmincidents-replicationset-regions"
+            },
+            "stability": "external",
+            "summary": "Specifies the Regions of the replication set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 27
+          },
+          "name": "regions",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-ssmincidents.CfnReplicationSet.ReplicationRegionProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-replicationset.html#cfn-ssmincidents-replicationset-deletionprotected"
+            },
+            "remarks": "If deletion protection is enabled, you can't delete the last Region in the replication set.",
+            "stability": "external",
+            "summary": "Determines if the replication set deletion protection is enabled or not."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 34
+          },
+          "name": "deletionProtected",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-replicationset.html#cfn-ssmincidents-replicationset-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tags to add to the replication set."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 41
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnReplicationSetProps"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlan": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SSMIncidents::ResponsePlan",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html"
+        },
+        "remarks": "The `AWS::SSMIncidents::ResponsePlan` resource specifies the details of the response plan that are used when creating an incident.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SSMIncidents::ResponsePlan`."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SSMIncidents::ResponsePlan`."
+        },
+        "locationInModule": {
+          "filename": "lib/ssmincidents.generated.ts",
+          "line": 586
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlanProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 490
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 608
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 626
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnResponsePlan",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 494
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 519
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 613
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 577
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-incidenttemplate"
+            },
+            "stability": "external",
+            "summary": "Details used to create an incident when using this response plan."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 526
+          },
+          "name": "incidentTemplate",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.IncidentTemplateProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-name"
+            },
+            "stability": "external",
+            "summary": "The name of the response plan."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 533
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-actions"
+            },
+            "stability": "external",
+            "summary": "The actions that the response plan starts at the beginning of an incident."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 540
+          },
+          "name": "actions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.ActionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-chatchannel"
+            },
+            "stability": "external",
+            "summary": "The AWS Chatbot chat channel used for collaboration during an incident."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 547
+          },
+          "name": "chatChannel",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.ChatChannelProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-displayname"
+            },
+            "stability": "external",
+            "summary": "The human readable name of the response plan."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 554
+          },
+          "name": "displayName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-engagements"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) for the contacts and escalation plans that the response plan engages during an incident."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 561
+          },
+          "name": "engagements",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-integrations"
+            },
+            "stability": "external",
+            "summary": "Information about third-party services integrated into the response plan."
+          },
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 568
+          },
+          "name": "integrations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.IntegrationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlan"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlan.ActionProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-action.html"
+        },
+        "stability": "external",
+        "summary": "The `Action` property type specifies the configuration to launch."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.ActionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 640
+      },
+      "name": "ActionProperty",
+      "namespace": "CfnResponsePlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-action.html#cfn-ssmincidents-responseplan-action-ssmautomation"
+            },
+            "stability": "external",
+            "summary": "Details about the Systems Manager automation document that will be used as a runbook during an incident."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 646
+          },
+          "name": "ssmAutomation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.SsmAutomationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlan.ActionProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlan.ChatChannelProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-chatchannel.html"
+        },
+        "stability": "external",
+        "summary": "The AWS Chatbot chat channel used for collaboration during an incident."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.ChatChannelProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 707
+      },
+      "name": "ChatChannelProperty",
+      "namespace": "CfnResponsePlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-chatchannel.html#cfn-ssmincidents-responseplan-chatchannel-chatbotsns"
+            },
+            "remarks": "You can also make updates to the incident through the chat channel by using the SNS topics",
+            "stability": "external",
+            "summary": "The SNS targets that AWS Chatbot uses to notify the chat channel of updates to an incident."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 713
+          },
+          "name": "chatbotSns",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlan.ChatChannelProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlan.DynamicSsmParameterProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-dynamicssmparameter.html"
+        },
+        "remarks": "Response plans support parameters with both static and dynamic values. For static values, you enter the value when you define the parameter in the response plan. For dynamic values, the system determines the correct parameter value by collecting information from the incident. Incident Manager supports the following dynamic parameters:\n\n*Incident ARN*\n\nWhen Incident Manager creates an incident, the system captures the Amazon Resource Name (ARN) of the corresponding incident record and enters it for this parameter in the runbook.\n\n> This value can only be assigned to parameters of type `String` . If assigned to a parameter of any other type, the runbook fails to run.\n\n*Involved resources*\n\nWhen Incident Manager creates an incident, the system captures the ARNs of the resources involved in the incident. These resource ARNs are then assigned to this parameter in the runbook.\n\n> This value can only be assigned to parameters of type `StringList` . If assigned to a parameter of any other type, the runbook fails to run.",
+        "stability": "external",
+        "summary": "When you add a runbook to a response plan, you can specify the parameters the runbook should use at runtime."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.DynamicSsmParameterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 786
+      },
+      "name": "DynamicSsmParameterProperty",
+      "namespace": "CfnResponsePlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-dynamicssmparameter.html#cfn-ssmincidents-responseplan-dynamicssmparameter-key"
+            },
+            "stability": "external",
+            "summary": "The key parameter to use when running the Systems Manager Automation runbook."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 792
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-dynamicssmparameter.html#cfn-ssmincidents-responseplan-dynamicssmparameter-value"
+            },
+            "stability": "external",
+            "summary": "The dynamic parameter value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 798
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.DynamicSsmParameterValueProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlan.DynamicSsmParameterProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlan.DynamicSsmParameterValueProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-dynamicssmparametervalue.html"
+        },
+        "stability": "external",
+        "summary": "The dynamic parameter value."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.DynamicSsmParameterValueProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 864
+      },
+      "name": "DynamicSsmParameterValueProperty",
+      "namespace": "CfnResponsePlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-dynamicssmparametervalue.html#cfn-ssmincidents-responseplan-dynamicssmparametervalue-variable"
+            },
+            "remarks": "A parameter value is determined when an incident is created.",
+            "stability": "external",
+            "summary": "Variable dynamic parameters."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 870
+          },
+          "name": "variable",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlan.DynamicSsmParameterValueProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlan.IncidentTemplateProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-incidenttemplate.html"
+        },
+        "stability": "external",
+        "summary": "The `IncidentTemplate` property type specifies details used to create an incident when using this response plan."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.IncidentTemplateProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 931
+      },
+      "name": "IncidentTemplateProperty",
+      "namespace": "CfnResponsePlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-incidenttemplate.html#cfn-ssmincidents-responseplan-incidenttemplate-impact"
+            },
+            "remarks": "**Possible impacts:** - `1` - Critical impact, this typically relates to full application failure that impacts many to all customers.\n- `2` - High impact, partial application failure with impact to many customers.\n- `3` - Medium impact, the application is providing reduced service to customers.\n- `4` - Low impact, customer might aren't impacted by the problem yet.\n- `5` - No impact, customers aren't currently impacted but urgent action is needed to avoid impact.",
+            "stability": "external",
+            "summary": "Defines the impact to the customers. Providing an impact overwrites the impact provided by a response plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 949
+          },
+          "name": "impact",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-incidenttemplate.html#cfn-ssmincidents-responseplan-incidenttemplate-title"
+            },
+            "stability": "external",
+            "summary": "The title of the incident is a brief and easily recognizable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 973
+          },
+          "name": "title",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-incidenttemplate.html#cfn-ssmincidents-responseplan-incidenttemplate-dedupestring"
+            },
+            "stability": "external",
+            "summary": "Used to create only one incident record for an incident."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 937
+          },
+          "name": "dedupeString",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-incidenttemplate.html#cfn-ssmincidents-responseplan-incidenttemplate-incidenttags"
+            },
+            "remarks": "When the `StartIncident` API action is called, Incident Manager assigns the tags specified in the template to the incident.",
+            "stability": "external",
+            "summary": "Tags to assign to the template."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 955
+          },
+          "name": "incidentTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.CfnTag"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-incidenttemplate.html#cfn-ssmincidents-responseplan-incidenttemplate-notificationtargets"
+            },
+            "remarks": "You can also make updates to the incident through the chat channel using the SNS topics.",
+            "stability": "external",
+            "summary": "The SNS targets that AWS Chatbot uses to notify the chat channel of updates to an incident."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 961
+          },
+          "name": "notificationTargets",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.NotificationTargetItemProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-incidenttemplate.html#cfn-ssmincidents-responseplan-incidenttemplate-summary"
+            },
+            "stability": "external",
+            "summary": "The summary describes what has happened during the incident."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 967
+          },
+          "name": "summary",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlan.IncidentTemplateProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlan.IntegrationProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-integration.html"
+        },
+        "stability": "external",
+        "summary": "Information about third-party services integrated into a response plan."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.IntegrationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 1051
+      },
+      "name": "IntegrationProperty",
+      "namespace": "CfnResponsePlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-integration.html#cfn-ssmincidents-responseplan-integration-pagerdutyconfiguration"
+            },
+            "stability": "external",
+            "summary": "Information about the PagerDuty service where the response plan creates an incident."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1057
+          },
+          "name": "pagerDutyConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.PagerDutyConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlan.IntegrationProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlan.NotificationTargetItemProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-notificationtargetitem.html"
+        },
+        "stability": "external",
+        "summary": "The SNS topic that's used by AWS Chatbot to notify the incidents chat channel."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.NotificationTargetItemProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 1119
+      },
+      "name": "NotificationTargetItemProperty",
+      "namespace": "CfnResponsePlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-notificationtargetitem.html#cfn-ssmincidents-responseplan-notificationtargetitem-snstopicarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the SNS topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1125
+          },
+          "name": "snsTopicArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlan.NotificationTargetItemProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlan.PagerDutyConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-pagerdutyconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Details about the PagerDuty configuration for a response plan."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.PagerDutyConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 1186
+      },
+      "name": "PagerDutyConfigurationProperty",
+      "namespace": "CfnResponsePlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-pagerdutyconfiguration.html#cfn-ssmincidents-responseplan-pagerdutyconfiguration-name"
+            },
+            "stability": "external",
+            "summary": "The name of the PagerDuty configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1192
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-pagerdutyconfiguration.html#cfn-ssmincidents-responseplan-pagerdutyconfiguration-pagerdutyincidentconfiguration"
+            },
+            "stability": "external",
+            "summary": "Details about the PagerDuty service associated with the configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1198
+          },
+          "name": "pagerDutyIncidentConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.PagerDutyIncidentConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-pagerdutyconfiguration.html#cfn-ssmincidents-responseplan-pagerdutyconfiguration-secretid"
+            },
+            "stability": "external",
+            "summary": "The ID of the AWS Secrets Manager secret that stores your PagerDuty key, either a General Access REST API Key or User Token REST API Key, and other user credentials."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1204
+          },
+          "name": "secretId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlan.PagerDutyConfigurationProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlan.PagerDutyIncidentConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-pagerdutyincidentconfiguration.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.PagerDutyIncidentConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 1274
+      },
+      "name": "PagerDutyIncidentConfigurationProperty",
+      "namespace": "CfnResponsePlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-pagerdutyincidentconfiguration.html#cfn-ssmincidents-responseplan-pagerdutyincidentconfiguration-serviceid"
+            },
+            "stability": "external",
+            "summary": "The ID of the PagerDuty service that the response plan associates with an incident when it launches."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1280
+          },
+          "name": "serviceId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlan.PagerDutyIncidentConfigurationProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlan.SsmAutomationProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-ssmautomation.html"
+        },
+        "stability": "external",
+        "summary": "The `SsmAutomation` property type specifies details about the Systems Manager automation document that will be used as a runbook during an incident."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.SsmAutomationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 1342
+      },
+      "name": "SsmAutomationProperty",
+      "namespace": "CfnResponsePlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-ssmautomation.html#cfn-ssmincidents-responseplan-ssmautomation-documentname"
+            },
+            "stability": "external",
+            "summary": "The automation document's name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1348
+          },
+          "name": "documentName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-ssmautomation.html#cfn-ssmincidents-responseplan-ssmautomation-rolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the role that the automation document will assume when running commands."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1372
+          },
+          "name": "roleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-ssmautomation.html#cfn-ssmincidents-responseplan-ssmautomation-documentversion"
+            },
+            "stability": "external",
+            "summary": "The automation document's version to use when running."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1354
+          },
+          "name": "documentVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-ssmautomation.html#cfn-ssmincidents-responseplan-ssmautomation-dynamicparameters"
+            },
+            "stability": "external",
+            "summary": "The key-value pairs to resolve dynamic parameter values when processing a Systems Manager Automation runbook."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1360
+          },
+          "name": "dynamicParameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.DynamicSsmParameterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-ssmautomation.html#cfn-ssmincidents-responseplan-ssmautomation-parameters"
+            },
+            "stability": "external",
+            "summary": "The key-value pair parameters to use when running the automation document."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1366
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.SsmParameterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-ssmautomation.html#cfn-ssmincidents-responseplan-ssmautomation-targetaccount"
+            },
+            "remarks": "This can be in either the management account or an application account.",
+            "stability": "external",
+            "summary": "The account that the automation document will be run in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1378
+          },
+          "name": "targetAccount",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlan.SsmAutomationProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlan.SsmParameterProperty": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-ssmparameter.html"
+        },
+        "stability": "external",
+        "summary": "The key-value pair parameters to use when running the automation document."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.SsmParameterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 1456
+      },
+      "name": "SsmParameterProperty",
+      "namespace": "CfnResponsePlan",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-ssmparameter.html#cfn-ssmincidents-responseplan-ssmparameter-key"
+            },
+            "stability": "external",
+            "summary": "The key parameter to use when running the automation document."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1462
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmincidents-responseplan-ssmparameter.html#cfn-ssmincidents-responseplan-ssmparameter-values"
+            },
+            "stability": "external",
+            "summary": "The value parameter to use when running the automation document."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 1468
+          },
+          "name": "values",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlan.SsmParameterProperty"
+    },
+    "@aws-cdk/aws-ssmincidents.CfnResponsePlanProps": {
+      "assembly": "@aws-cdk/aws-ssmincidents",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnResponsePlan`."
+      },
+      "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlanProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ssmincidents.generated.ts",
+        "line": 351
+      },
+      "name": "CfnResponsePlanProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-incidenttemplate"
+            },
+            "stability": "external",
+            "summary": "Details used to create an incident when using this response plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 358
+          },
+          "name": "incidentTemplate",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.IncidentTemplateProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-name"
+            },
+            "stability": "external",
+            "summary": "The name of the response plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 365
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-actions"
+            },
+            "stability": "external",
+            "summary": "The actions that the response plan starts at the beginning of an incident."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 372
+          },
+          "name": "actions",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.ActionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-chatchannel"
+            },
+            "stability": "external",
+            "summary": "The AWS Chatbot chat channel used for collaboration during an incident."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 379
+          },
+          "name": "chatChannel",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.ChatChannelProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-displayname"
+            },
+            "stability": "external",
+            "summary": "The human readable name of the response plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 386
+          },
+          "name": "displayName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-engagements"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) for the contacts and escalation plans that the response plan engages during an incident."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 393
+          },
+          "name": "engagements",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-integrations"
+            },
+            "stability": "external",
+            "summary": "Information about third-party services integrated into the response plan."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 400
+          },
+          "name": "integrations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ssmincidents.CfnResponsePlan.IntegrationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmincidents-responseplan.html#cfn-ssmincidents-responseplan-tags"
+            },
+            "remarks": "For more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ssmincidents.generated.ts",
+            "line": 409
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ssmincidents.generated:CfnResponsePlanProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "fPdmDREHlAjsVB0VK/KNFsYioj0zJEC7przthWsOq8U="
+}

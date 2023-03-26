@@ -1,0 +1,865 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::DocDBElastic Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::DocDBElastic",
+    "aws-docdbelastic"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-docdbelastic",
+  "readme": {
+    "markdown": "# AWS::DocDBElastic Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as docdbelastic from '@aws-cdk/aws-docdbelastic';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for DocDBElastic construct libraries](https://constructs.dev/search?q=docdbelastic)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::DocDBElastic resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DocDBElastic.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::DocDBElastic](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DocDBElastic.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-docdbelastic",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.DocDBElastic",
+      "packageId": "Amazon.CDK.AWS.DocDBElastic",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "docdbelastic",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.docdbelastic"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-docdbelastic"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-docdbelastic",
+      "module": "aws_cdk.aws_docdbelastic"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-docdbelastic.CfnCluster": {
+      "assembly": "@aws-cdk/aws-docdbelastic",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::DocDBElastic::Cluster",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html"
+        },
+        "remarks": "Creates a new Amazon DocumentDB elastic cluster and returns its cluster structure.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::DocDBElastic::Cluster`."
+      },
+      "fqn": "@aws-cdk/aws-docdbelastic.CfnCluster",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::DocDBElastic::Cluster`."
+        },
+        "locationInModule": {
+          "filename": "lib/docdbelastic.generated.ts",
+          "line": 369
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-docdbelastic.CfnClusterProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/docdbelastic.generated.ts",
+        "line": 222
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 397
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 418
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnCluster",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 226
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ClusterArn"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 251
+          },
+          "name": "attrClusterArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 402
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-tags"
+            },
+            "stability": "external",
+            "summary": "The tags to be assigned to the new elastic cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 353
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-adminusername"
+            },
+            "remarks": "*Constraints* :\n\n- Must be from 1 to 63 letters or numbers.\n- The first character must be a letter.\n- Cannot be a reserved word.",
+            "stability": "external",
+            "summary": "The name of the Amazon DocumentDB elastic clusters administrator."
+          },
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 264
+          },
+          "name": "adminUserName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-authtype"
+            },
+            "remarks": "Valid types are `PLAIN_TEXT` or `SECRET_ARN` .",
+            "stability": "external",
+            "summary": "The authentication type used to determine where to fetch the password used for accessing the elastic cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 271
+          },
+          "name": "authType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-clustername"
+            },
+            "remarks": "*Constraints* :\n\n- Must contain from 1 to 63 letters, numbers, or hyphens.\n- The first character must be a letter.\n- Cannot end with a hyphen or contain two consecutive hyphens.\n\n*Example* : `my-cluster`",
+            "stability": "external",
+            "summary": "The name of the new elastic cluster. This parameter is stored as a lowercase string."
+          },
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 286
+          },
+          "name": "clusterName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-shardcapacity"
+            },
+            "remarks": "Maximum is 64. Allowed values are 2, 4, 8, 16, 32, 64.",
+            "stability": "external",
+            "summary": "The number of vCPUs assigned to each elastic cluster shard."
+          },
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 293
+          },
+          "name": "shardCapacity",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-shardcount"
+            },
+            "remarks": "Maximum is 32.",
+            "stability": "external",
+            "summary": "The number of shards assigned to the elastic cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 300
+          },
+          "name": "shardCount",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-adminuserpassword"
+            },
+            "remarks": "*Constraints* :\n\n- Must contain from 8 to 100 characters.\n- Cannot contain a forward slash (/), double quote (\"), or the \"at\" symbol (@).\n- A valid `AdminUserName` entry is also required.",
+            "stability": "external",
+            "summary": "The password for the Elastic DocumentDB cluster administrator and can contain any printable ASCII characters."
+          },
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 313
+          },
+          "name": "adminUserPassword",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-kmskeyid"
+            },
+            "remarks": "The KMS key identifier is the Amazon Resource Name (ARN) for the KMS encryption key. If you are creating a cluster using the same Amazon account that owns this KMS encryption key, you can use the KMS key alias instead of the ARN as the KMS encryption key.\n\nIf an encryption key is not specified, Amazon DocumentDB uses the default encryption key that KMS creates for your account. Your account has a different default encryption key for each Amazon Region.",
+            "stability": "external",
+            "summary": "The KMS key identifier to use to encrypt the new elastic cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 324
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-preferredmaintenancewindow"
+            },
+            "remarks": "*Format* : `ddd:hh24:mi-ddd:hh24:mi`\n\n*Default* : a 30-minute window selected at random from an 8-hour block of time for each AWS Region , occurring on a random day of the week.\n\n*Valid days* : Mon, Tue, Wed, Thu, Fri, Sat, Sun\n\n*Constraints* : Minimum 30-minute window.",
+            "stability": "external",
+            "summary": "The weekly time range during which system maintenance can occur, in Universal Coordinated Time (UTC)."
+          },
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 339
+          },
+          "name": "preferredMaintenanceWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-subnetids"
+            },
+            "stability": "external",
+            "summary": "The Amazon EC2 subnet IDs for the new elastic cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 346
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-vpcsecuritygroupids"
+            },
+            "stability": "external",
+            "summary": "A list of EC2 VPC security groups to associate with the new elastic cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 360
+          },
+          "name": "vpcSecurityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/docdbelastic.generated:CfnCluster"
+    },
+    "@aws-cdk/aws-docdbelastic.CfnClusterProps": {
+      "assembly": "@aws-cdk/aws-docdbelastic",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnCluster`."
+      },
+      "fqn": "@aws-cdk/aws-docdbelastic.CfnClusterProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/docdbelastic.generated.ts",
+        "line": 20
+      },
+      "name": "CfnClusterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-adminusername"
+            },
+            "remarks": "*Constraints* :\n\n- Must be from 1 to 63 letters or numbers.\n- The first character must be a letter.\n- Cannot be a reserved word.",
+            "stability": "external",
+            "summary": "The name of the Amazon DocumentDB elastic clusters administrator."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 33
+          },
+          "name": "adminUserName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-authtype"
+            },
+            "remarks": "Valid types are `PLAIN_TEXT` or `SECRET_ARN` .",
+            "stability": "external",
+            "summary": "The authentication type used to determine where to fetch the password used for accessing the elastic cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 40
+          },
+          "name": "authType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-clustername"
+            },
+            "remarks": "*Constraints* :\n\n- Must contain from 1 to 63 letters, numbers, or hyphens.\n- The first character must be a letter.\n- Cannot end with a hyphen or contain two consecutive hyphens.\n\n*Example* : `my-cluster`",
+            "stability": "external",
+            "summary": "The name of the new elastic cluster. This parameter is stored as a lowercase string."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 55
+          },
+          "name": "clusterName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-shardcapacity"
+            },
+            "remarks": "Maximum is 64. Allowed values are 2, 4, 8, 16, 32, 64.",
+            "stability": "external",
+            "summary": "The number of vCPUs assigned to each elastic cluster shard."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 62
+          },
+          "name": "shardCapacity",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-shardcount"
+            },
+            "remarks": "Maximum is 32.",
+            "stability": "external",
+            "summary": "The number of shards assigned to the elastic cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 69
+          },
+          "name": "shardCount",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-adminuserpassword"
+            },
+            "remarks": "*Constraints* :\n\n- Must contain from 8 to 100 characters.\n- Cannot contain a forward slash (/), double quote (\"), or the \"at\" symbol (@).\n- A valid `AdminUserName` entry is also required.",
+            "stability": "external",
+            "summary": "The password for the Elastic DocumentDB cluster administrator and can contain any printable ASCII characters."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 82
+          },
+          "name": "adminUserPassword",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-kmskeyid"
+            },
+            "remarks": "The KMS key identifier is the Amazon Resource Name (ARN) for the KMS encryption key. If you are creating a cluster using the same Amazon account that owns this KMS encryption key, you can use the KMS key alias instead of the ARN as the KMS encryption key.\n\nIf an encryption key is not specified, Amazon DocumentDB uses the default encryption key that KMS creates for your account. Your account has a different default encryption key for each Amazon Region.",
+            "stability": "external",
+            "summary": "The KMS key identifier to use to encrypt the new elastic cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 93
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-preferredmaintenancewindow"
+            },
+            "remarks": "*Format* : `ddd:hh24:mi-ddd:hh24:mi`\n\n*Default* : a 30-minute window selected at random from an 8-hour block of time for each AWS Region , occurring on a random day of the week.\n\n*Valid days* : Mon, Tue, Wed, Thu, Fri, Sat, Sun\n\n*Constraints* : Minimum 30-minute window.",
+            "stability": "external",
+            "summary": "The weekly time range during which system maintenance can occur, in Universal Coordinated Time (UTC)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 108
+          },
+          "name": "preferredMaintenanceWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-subnetids"
+            },
+            "stability": "external",
+            "summary": "The Amazon EC2 subnet IDs for the new elastic cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 115
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-tags"
+            },
+            "stability": "external",
+            "summary": "The tags to be assigned to the new elastic cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 122
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-docdbelastic-cluster.html#cfn-docdbelastic-cluster-vpcsecuritygroupids"
+            },
+            "stability": "external",
+            "summary": "A list of EC2 VPC security groups to associate with the new elastic cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/docdbelastic.generated.ts",
+            "line": 129
+          },
+          "name": "vpcSecurityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/docdbelastic.generated:CfnClusterProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "BpGVoC0oudyfZqPHO637+ytvn7CcVD7ap269iykm1bQ="
+}

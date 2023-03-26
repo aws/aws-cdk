@@ -1,0 +1,1583 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::Cassandra",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::Cassandra",
+    "aws-cassandra"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-cassandra",
+  "readme": {
+    "markdown": "# AWS::Cassandra Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as cassandra from '@aws-cdk/aws-cassandra';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for Cassandra construct libraries](https://constructs.dev/search?q=cassandra)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Cassandra resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Cassandra.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Cassandra](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Cassandra.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-cassandra",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Cassandra",
+      "packageId": "Amazon.CDK.AWS.Cassandra"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cassandra",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.cassandra"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-cassandra"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-cassandra",
+      "module": "aws_cdk.aws_cassandra"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-cassandra.CfnKeyspace": {
+      "assembly": "@aws-cdk/aws-cassandra",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Cassandra::Keyspace",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-keyspace.html"
+        },
+        "remarks": "The `AWS::Cassandra::Keyspace` resource allows you to create a new keyspace in Amazon Keyspaces (for Apache Cassandra). For more information, see [Create a keyspace and a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/getting-started.ddl.html) in the *Amazon Keyspaces Developer Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Cassandra::Keyspace`."
+      },
+      "fqn": "@aws-cdk/aws-cassandra.CfnKeyspace",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Cassandra::Keyspace`."
+        },
+        "locationInModule": {
+          "filename": "lib/cassandra.generated.ts",
+          "line": 149
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-cassandra.CfnKeyspaceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cassandra.generated.ts",
+        "line": 99
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 162
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 174
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnKeyspace",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 103
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 167
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-keyspace.html#cfn-cassandra-keyspace-tags"
+            },
+            "stability": "external",
+            "summary": "A list of key-value pair tags to be attached to the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 140
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-keyspace.html#cfn-cassandra-keyspace-keyspacename"
+            },
+            "remarks": "The keyspace name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the keyspace name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
+            "stability": "external",
+            "summary": "The name of the keyspace to be created."
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 133
+          },
+          "name": "keyspaceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cassandra.generated:CfnKeyspace"
+    },
+    "@aws-cdk/aws-cassandra.CfnKeyspaceProps": {
+      "assembly": "@aws-cdk/aws-cassandra",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-keyspace.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnKeyspace`."
+      },
+      "fqn": "@aws-cdk/aws-cassandra.CfnKeyspaceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cassandra.generated.ts",
+        "line": 20
+      },
+      "name": "CfnKeyspaceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-keyspace.html#cfn-cassandra-keyspace-keyspacename"
+            },
+            "remarks": "The keyspace name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the keyspace name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
+            "stability": "external",
+            "summary": "The name of the keyspace to be created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 31
+          },
+          "name": "keyspaceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-keyspace.html#cfn-cassandra-keyspace-tags"
+            },
+            "stability": "external",
+            "summary": "A list of key-value pair tags to be attached to the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 38
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cassandra.generated:CfnKeyspaceProps"
+    },
+    "@aws-cdk/aws-cassandra.CfnTable": {
+      "assembly": "@aws-cdk/aws-cassandra",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Cassandra::Table",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html"
+        },
+        "remarks": "The `AWS::Cassandra::Table` resource allows you to create a new table in Amazon Keyspaces (for Apache Cassandra). For more information, see [Create a keyspace and a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/getting-started.ddl.html) in the *Amazon Keyspaces Developer Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Cassandra::Table`."
+      },
+      "fqn": "@aws-cdk/aws-cassandra.CfnTable",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Cassandra::Table`."
+        },
+        "locationInModule": {
+          "filename": "lib/cassandra.generated.ts",
+          "line": 490
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cassandra.CfnTableProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cassandra.generated.ts",
+        "line": 366
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 513
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 533
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnTable",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 370
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 518
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-tags"
+            },
+            "stability": "external",
+            "summary": "A list of key-value pair tags to be attached to the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 481
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-keyspacename"
+            },
+            "remarks": "The keyspace must already exist.",
+            "stability": "external",
+            "summary": "The name of the keyspace in which to create the table."
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 396
+          },
+          "name": "keyspaceName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-partitionkeycolumns"
+            },
+            "remarks": "Every table must have a partition key.",
+            "stability": "external",
+            "summary": "One or more columns that uniquely identify every row in the table."
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 403
+          },
+          "name": "partitionKeyColumns",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-cassandra.CfnTable.ColumnProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-billingmode"
+            },
+            "remarks": "- *On-demand mode* (default) - You pay based on the actual reads and writes your application performs.\n- *Provisioned mode* - Lets you specify the number of reads and writes per second that you need for your application.\n\nIf you don't specify a value for this property, then the table will use on-demand mode.",
+            "stability": "external",
+            "summary": "The billing mode for the table, which determines how you'll be charged for reads and writes:."
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 415
+          },
+          "name": "billingMode",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-cassandra.CfnTable.BillingModeProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-clusteringkeycolumns"
+            },
+            "stability": "external",
+            "summary": "One or more columns that determine how the table data is sorted."
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 422
+          },
+          "name": "clusteringKeyColumns",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cassandra.CfnTable.ClusteringKeyColumnProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-defaulttimetolive"
+            },
+            "remarks": "The maximum configurable value is 630,720,000 seconds, which is the equivalent of 20 years. By default, the TTL value for a table is 0, which means data does not expire.\n\nFor more information, see [Setting the default TTL value for a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/TTL-how-it-works.html#ttl-howitworks_default_ttl) in the *Amazon Keyspaces Developer Guide* .",
+            "stability": "external",
+            "summary": "The default Time To Live (TTL) value for all rows in a table in seconds."
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 431
+          },
+          "name": "defaultTimeToLive",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-encryptionspecification"
+            },
+            "remarks": "- *AWS owned key* (default) - The key is owned by Amazon Keyspaces.\n- *Customer managed key* - The key is stored in your account and is created, owned, and managed by you.\n\n> If you choose encryption with a customer managed key, you must specify a valid customer managed KMS key with permissions granted to Amazon Keyspaces.\n\nFor more information, see [Encryption at rest in Amazon Keyspaces](https://docs.aws.amazon.com/keyspaces/latest/devguide/EncryptionAtRest.html) in the *Amazon Keyspaces Developer Guide* .",
+            "stability": "external",
+            "summary": "The encryption at rest options for the table."
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 445
+          },
+          "name": "encryptionSpecification",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-cassandra.CfnTable.EncryptionSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-pointintimerecoveryenabled"
+            },
+            "remarks": "The options are `PointInTimeRecoveryEnabled=true` and `PointInTimeRecoveryEnabled=false` . If not specified, the default is `PointInTimeRecoveryEnabled=false` .",
+            "stability": "external",
+            "summary": "Specifies if point-in-time recovery is enabled or disabled for the table."
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 452
+          },
+          "name": "pointInTimeRecoveryEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-regularcolumns"
+            },
+            "remarks": "You can add regular columns to existing tables by adding them to the template.",
+            "stability": "external",
+            "summary": "One or more columns that are not part of the primary key - that is, columns that are *not* defined as partition key columns or clustering key columns."
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 461
+          },
+          "name": "regularColumns",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-cassandra.CfnTable.ColumnProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-tablename"
+            },
+            "remarks": "The table name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the table name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.\n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
+            "stability": "external",
+            "summary": "The name of the table to be created."
+          },
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 474
+          },
+          "name": "tableName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cassandra.generated:CfnTable"
+    },
+    "@aws-cdk/aws-cassandra.CfnTable.BillingModeProperty": {
+      "assembly": "@aws-cdk/aws-cassandra",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-billingmode.html"
+        },
+        "stability": "external",
+        "summary": "Determines the billing mode for the table - On-demand or provisioned."
+      },
+      "fqn": "@aws-cdk/aws-cassandra.CfnTable.BillingModeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cassandra.generated.ts",
+        "line": 547
+      },
+      "name": "BillingModeProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-billingmode.html#cfn-cassandra-table-billingmode-mode"
+            },
+            "remarks": "- On-demand mode - `ON_DEMAND`\n- Provisioned mode - `PROVISIONED`\n\n> If you choose `PROVISIONED` mode, then you also need to specify provisioned throughput (read and write capacity) for the table.\n\nValid values: `ON_DEMAND` | `PROVISIONED`",
+            "stability": "external",
+            "summary": "The billing mode for the table:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 560
+          },
+          "name": "mode",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-billingmode.html#cfn-cassandra-table-billingmode-provisionedthroughput"
+            },
+            "remarks": "For more information, see [Provisioned throughput capacity mode](https://docs.aws.amazon.com/keyspaces/latest/devguide/ReadWriteCapacityMode.html#ReadWriteCapacityMode.Provisioned) in the *Amazon Keyspaces Developer Guide* .",
+            "stability": "external",
+            "summary": "The provisioned read capacity and write capacity for the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 566
+          },
+          "name": "provisionedThroughput",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-cassandra.CfnTable.ProvisionedThroughputProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cassandra.generated:CfnTable.BillingModeProperty"
+    },
+    "@aws-cdk/aws-cassandra.CfnTable.ClusteringKeyColumnProperty": {
+      "assembly": "@aws-cdk/aws-cassandra",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-clusteringkeycolumn.html"
+        },
+        "stability": "external",
+        "summary": "Defines an individual column within the clustering key."
+      },
+      "fqn": "@aws-cdk/aws-cassandra.CfnTable.ClusteringKeyColumnProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cassandra.generated.ts",
+        "line": 631
+      },
+      "name": "ClusteringKeyColumnProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-clusteringkeycolumn.html#cfn-cassandra-table-clusteringkeycolumn-column"
+            },
+            "stability": "external",
+            "summary": "The name and data type of this clustering key column."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 637
+          },
+          "name": "column",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-cassandra.CfnTable.ColumnProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-clusteringkeycolumn.html#cfn-cassandra-table-clusteringkeycolumn-orderby"
+            },
+            "remarks": "- `ASC` (default) - The column's data is stored in ascending order.\n- `DESC` - The column's data is stored in descending order.",
+            "stability": "external",
+            "summary": "The order in which this column's data is stored:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 646
+          },
+          "name": "orderBy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cassandra.generated:CfnTable.ClusteringKeyColumnProperty"
+    },
+    "@aws-cdk/aws-cassandra.CfnTable.ColumnProperty": {
+      "assembly": "@aws-cdk/aws-cassandra",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-column.html"
+        },
+        "stability": "external",
+        "summary": "The name and data type of an individual column in a table."
+      },
+      "fqn": "@aws-cdk/aws-cassandra.CfnTable.ColumnProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cassandra.generated.ts",
+        "line": 711
+      },
+      "name": "ColumnProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-column.html#cfn-cassandra-table-column-columnname"
+            },
+            "remarks": "For more information, see [Identifiers](https://docs.aws.amazon.com/keyspaces/latest/devguide/cql.elements.html#cql.elements.identifier) in the *Amazon Keyspaces Developer Guide* .",
+            "stability": "external",
+            "summary": "The name of the column."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 717
+          },
+          "name": "columnName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-column.html#cfn-cassandra-table-column-columntype"
+            },
+            "remarks": "For more information, see [Data types](https://docs.aws.amazon.com/keyspaces/latest/devguide/cql.elements.html#cql.data-types) in the *Amazon Keyspaces Developer Guide* .",
+            "stability": "external",
+            "summary": "The data type of the column."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 723
+          },
+          "name": "columnType",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cassandra.generated:CfnTable.ColumnProperty"
+    },
+    "@aws-cdk/aws-cassandra.CfnTable.EncryptionSpecificationProperty": {
+      "assembly": "@aws-cdk/aws-cassandra",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-encryptionspecification.html"
+        },
+        "stability": "external",
+        "summary": "Specifies the encryption at rest option selected for the table."
+      },
+      "fqn": "@aws-cdk/aws-cassandra.CfnTable.EncryptionSpecificationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cassandra.generated.ts",
+        "line": 789
+      },
+      "name": "EncryptionSpecificationProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-encryptionspecification.html#cfn-cassandra-table-encryptionspecification-encryptiontype"
+            },
+            "remarks": "- *AWS owned key* (default) - `AWS_OWNED_KMS_KEY`\n- *Customer managed key* - `CUSTOMER_MANAGED_KMS_KEY`\n\n> If you choose `CUSTOMER_MANAGED_KMS_KEY` , a `kms_key_identifier` in the format of a key ARN is required.\n\nValid values: `CUSTOMER_MANAGED_KMS_KEY` | `AWS_OWNED_KMS_KEY` .",
+            "stability": "external",
+            "summary": "The encryption at rest options for the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 802
+          },
+          "name": "encryptionType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-encryptionspecification.html#cfn-cassandra-table-encryptionspecification-kmskeyidentifier"
+            },
+            "stability": "external",
+            "summary": "Requires a `kms_key_identifier` in the format of a key ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 808
+          },
+          "name": "kmsKeyIdentifier",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cassandra.generated:CfnTable.EncryptionSpecificationProperty"
+    },
+    "@aws-cdk/aws-cassandra.CfnTable.ProvisionedThroughputProperty": {
+      "assembly": "@aws-cdk/aws-cassandra",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-provisionedthroughput.html"
+        },
+        "stability": "external",
+        "summary": "The provisioned throughput for the table, which consists of `ReadCapacityUnits` and `WriteCapacityUnits` ."
+      },
+      "fqn": "@aws-cdk/aws-cassandra.CfnTable.ProvisionedThroughputProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cassandra.generated.ts",
+        "line": 873
+      },
+      "name": "ProvisionedThroughputProperty",
+      "namespace": "CfnTable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-provisionedthroughput.html#cfn-cassandra-table-provisionedthroughput-readcapacityunits"
+            },
+            "remarks": "For more information, see [Read/write capacity mode](https://docs.aws.amazon.com/keyspaces/latest/devguide/ReadWriteCapacityMode.html) in the *Amazon Keyspaces Developer Guide* .",
+            "stability": "external",
+            "summary": "The amount of read capacity that's provisioned for the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 879
+          },
+          "name": "readCapacityUnits",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-provisionedthroughput.html#cfn-cassandra-table-provisionedthroughput-writecapacityunits"
+            },
+            "remarks": "For more information, see [Read/write capacity mode](https://docs.aws.amazon.com/keyspaces/latest/devguide/ReadWriteCapacityMode.html) in the *Amazon Keyspaces Developer Guide* .",
+            "stability": "external",
+            "summary": "The amount of write capacity that's provisioned for the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 885
+          },
+          "name": "writeCapacityUnits",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/cassandra.generated:CfnTable.ProvisionedThroughputProperty"
+    },
+    "@aws-cdk/aws-cassandra.CfnTableProps": {
+      "assembly": "@aws-cdk/aws-cassandra",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnTable`."
+      },
+      "fqn": "@aws-cdk/aws-cassandra.CfnTableProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cassandra.generated.ts",
+        "line": 187
+      },
+      "name": "CfnTableProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-keyspacename"
+            },
+            "remarks": "The keyspace must already exist.",
+            "stability": "external",
+            "summary": "The name of the keyspace in which to create the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 194
+          },
+          "name": "keyspaceName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-partitionkeycolumns"
+            },
+            "remarks": "Every table must have a partition key.",
+            "stability": "external",
+            "summary": "One or more columns that uniquely identify every row in the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 201
+          },
+          "name": "partitionKeyColumns",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-cassandra.CfnTable.ColumnProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-billingmode"
+            },
+            "remarks": "- *On-demand mode* (default) - You pay based on the actual reads and writes your application performs.\n- *Provisioned mode* - Lets you specify the number of reads and writes per second that you need for your application.\n\nIf you don't specify a value for this property, then the table will use on-demand mode.",
+            "stability": "external",
+            "summary": "The billing mode for the table, which determines how you'll be charged for reads and writes:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 213
+          },
+          "name": "billingMode",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-cassandra.CfnTable.BillingModeProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-clusteringkeycolumns"
+            },
+            "stability": "external",
+            "summary": "One or more columns that determine how the table data is sorted."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 220
+          },
+          "name": "clusteringKeyColumns",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cassandra.CfnTable.ClusteringKeyColumnProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-defaulttimetolive"
+            },
+            "remarks": "The maximum configurable value is 630,720,000 seconds, which is the equivalent of 20 years. By default, the TTL value for a table is 0, which means data does not expire.\n\nFor more information, see [Setting the default TTL value for a table](https://docs.aws.amazon.com/keyspaces/latest/devguide/TTL-how-it-works.html#ttl-howitworks_default_ttl) in the *Amazon Keyspaces Developer Guide* .",
+            "stability": "external",
+            "summary": "The default Time To Live (TTL) value for all rows in a table in seconds."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 229
+          },
+          "name": "defaultTimeToLive",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-encryptionspecification"
+            },
+            "remarks": "- *AWS owned key* (default) - The key is owned by Amazon Keyspaces.\n- *Customer managed key* - The key is stored in your account and is created, owned, and managed by you.\n\n> If you choose encryption with a customer managed key, you must specify a valid customer managed KMS key with permissions granted to Amazon Keyspaces.\n\nFor more information, see [Encryption at rest in Amazon Keyspaces](https://docs.aws.amazon.com/keyspaces/latest/devguide/EncryptionAtRest.html) in the *Amazon Keyspaces Developer Guide* .",
+            "stability": "external",
+            "summary": "The encryption at rest options for the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 243
+          },
+          "name": "encryptionSpecification",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-cassandra.CfnTable.EncryptionSpecificationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-pointintimerecoveryenabled"
+            },
+            "remarks": "The options are `PointInTimeRecoveryEnabled=true` and `PointInTimeRecoveryEnabled=false` . If not specified, the default is `PointInTimeRecoveryEnabled=false` .",
+            "stability": "external",
+            "summary": "Specifies if point-in-time recovery is enabled or disabled for the table."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 250
+          },
+          "name": "pointInTimeRecoveryEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-regularcolumns"
+            },
+            "remarks": "You can add regular columns to existing tables by adding them to the template.",
+            "stability": "external",
+            "summary": "One or more columns that are not part of the primary key - that is, columns that are *not* defined as partition key columns or clustering key columns."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 259
+          },
+          "name": "regularColumns",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-cassandra.CfnTable.ColumnProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-tablename"
+            },
+            "remarks": "The table name is case sensitive. If you don't specify a name, AWS CloudFormation generates a unique ID and uses that ID for the table name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.\n\n*Length constraints:* Minimum length of 3. Maximum length of 255.\n\n*Pattern:* `^[a-zA-Z0-9][a-zA-Z0-9_]{1,47}$`",
+            "stability": "external",
+            "summary": "The name of the table to be created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 272
+          },
+          "name": "tableName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cassandra-table.html#cfn-cassandra-table-tags"
+            },
+            "stability": "external",
+            "summary": "A list of key-value pair tags to be attached to the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cassandra.generated.ts",
+            "line": 279
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cassandra.generated:CfnTableProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "Xod78gyQNKsG0A99KP5fghGkrThs5Sz83B0fh32C5FE="
+}

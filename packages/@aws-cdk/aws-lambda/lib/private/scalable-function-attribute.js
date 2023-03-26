@@ -1,0 +1,36 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ScalableFunctionAttribute = void 0;
+const appscaling = require("@aws-cdk/aws-applicationautoscaling");
+const core_1 = require("@aws-cdk/core");
+/**
+ * A scalable lambda alias attribute
+ */
+class ScalableFunctionAttribute extends appscaling.BaseScalableAttribute {
+    constructor(scope, id, props) {
+        super(scope, id, props);
+    }
+    /**
+     * Scale out or in to keep utilization at a given level. The utilization is tracked by the
+     * LambdaProvisionedConcurrencyUtilization metric, emitted by lambda. See:
+     * https://docs.aws.amazon.com/lambda/latest/dg/monitoring-metrics.html#monitoring-metrics-concurrency
+     */
+    scaleOnUtilization(options) {
+        if (!core_1.Token.isUnresolved(options.utilizationTarget) && (options.utilizationTarget < 0.1 || options.utilizationTarget > 0.9)) {
+            throw new Error(`Utilization Target should be between 0.1 and 0.9. Found ${options.utilizationTarget}.`);
+        }
+        super.doScaleToTrackMetric('Tracking', {
+            targetValue: options.utilizationTarget,
+            predefinedMetric: appscaling.PredefinedMetric.LAMBDA_PROVISIONED_CONCURRENCY_UTILIZATION,
+            ...options,
+        });
+    }
+    /**
+     * Scale out or in based on schedule.
+     */
+    scaleOnSchedule(id, action) {
+        super.doScaleOnSchedule(id, action);
+    }
+}
+exports.ScalableFunctionAttribute = ScalableFunctionAttribute;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2NhbGFibGUtZnVuY3Rpb24tYXR0cmlidXRlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsic2NhbGFibGUtZnVuY3Rpb24tYXR0cmlidXRlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUFBLGtFQUFrRTtBQUNsRSx3Q0FBc0M7QUFJdEM7O0dBRUc7QUFDSCxNQUFhLHlCQUEwQixTQUFRLFVBQVUsQ0FBQyxxQkFBcUI7SUFDN0UsWUFBWSxLQUFnQixFQUFFLEVBQVUsRUFBRSxLQUFxQztRQUM3RSxLQUFLLENBQUMsS0FBSyxFQUFFLEVBQUUsRUFBRSxLQUFLLENBQUMsQ0FBQztLQUN6QjtJQUVEOzs7O09BSUc7SUFDSSxrQkFBa0IsQ0FBQyxPQUFrQztRQUMxRCxJQUFLLENBQUMsWUFBSyxDQUFDLFlBQVksQ0FBQyxPQUFPLENBQUMsaUJBQWlCLENBQUMsSUFBSSxDQUFDLE9BQU8sQ0FBQyxpQkFBaUIsR0FBRyxHQUFHLElBQUksT0FBTyxDQUFDLGlCQUFpQixHQUFHLEdBQUcsQ0FBQyxFQUFFO1lBQzNILE1BQU0sSUFBSSxLQUFLLENBQUMsMkRBQTJELE9BQU8sQ0FBQyxpQkFBaUIsR0FBRyxDQUFDLENBQUM7U0FDMUc7UUFDRCxLQUFLLENBQUMsb0JBQW9CLENBQUMsVUFBVSxFQUFFO1lBQ3JDLFdBQVcsRUFBRSxPQUFPLENBQUMsaUJBQWlCO1lBQ3RDLGdCQUFnQixFQUFFLFVBQVUsQ0FBQyxnQkFBZ0IsQ0FBQywwQ0FBMEM7WUFDeEYsR0FBRyxPQUFPO1NBQ1gsQ0FBQyxDQUFDO0tBQ0o7SUFFRDs7T0FFRztJQUNJLGVBQWUsQ0FBQyxFQUFVLEVBQUUsTUFBa0M7UUFDbkUsS0FBSyxDQUFDLGlCQUFpQixDQUFDLEVBQUUsRUFBRSxNQUFNLENBQUMsQ0FBQztLQUNyQztDQUNGO0FBM0JELDhEQTJCQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCAqIGFzIGFwcHNjYWxpbmcgZnJvbSAnQGF3cy1jZGsvYXdzLWFwcGxpY2F0aW9uYXV0b3NjYWxpbmcnO1xuaW1wb3J0IHsgVG9rZW4gfSBmcm9tICdAYXdzLWNkay9jb3JlJztcbmltcG9ydCB7IENvbnN0cnVjdCB9IGZyb20gJ2NvbnN0cnVjdHMnO1xuaW1wb3J0IHsgSVNjYWxhYmxlRnVuY3Rpb25BdHRyaWJ1dGUsIFV0aWxpemF0aW9uU2NhbGluZ09wdGlvbnMgfSBmcm9tICcuLi9zY2FsYWJsZS1hdHRyaWJ1dGUtYXBpJztcblxuLyoqXG4gKiBBIHNjYWxhYmxlIGxhbWJkYSBhbGlhcyBhdHRyaWJ1dGVcbiAqL1xuZXhwb3J0IGNsYXNzIFNjYWxhYmxlRnVuY3Rpb25BdHRyaWJ1dGUgZXh0ZW5kcyBhcHBzY2FsaW5nLkJhc2VTY2FsYWJsZUF0dHJpYnV0ZSBpbXBsZW1lbnRzIElTY2FsYWJsZUZ1bmN0aW9uQXR0cmlidXRlIHtcbiAgY29uc3RydWN0b3Ioc2NvcGU6IENvbnN0cnVjdCwgaWQ6IHN0cmluZywgcHJvcHM6IFNjYWxhYmxlRnVuY3Rpb25BdHRyaWJ1dGVQcm9wcykge1xuICAgIHN1cGVyKHNjb3BlLCBpZCwgcHJvcHMpO1xuICB9XG5cbiAgLyoqXG4gICAqIFNjYWxlIG91dCBvciBpbiB0byBrZWVwIHV0aWxpemF0aW9uIGF0IGEgZ2l2ZW4gbGV2ZWwuIFRoZSB1dGlsaXphdGlvbiBpcyB0cmFja2VkIGJ5IHRoZVxuICAgKiBMYW1iZGFQcm92aXNpb25lZENvbmN1cnJlbmN5VXRpbGl6YXRpb24gbWV0cmljLCBlbWl0dGVkIGJ5IGxhbWJkYS4gU2VlOlxuICAgKiBodHRwczovL2RvY3MuYXdzLmFtYXpvbi5jb20vbGFtYmRhL2xhdGVzdC9kZy9tb25pdG9yaW5nLW1ldHJpY3MuaHRtbCNtb25pdG9yaW5nLW1ldHJpY3MtY29uY3VycmVuY3lcbiAgICovXG4gIHB1YmxpYyBzY2FsZU9uVXRpbGl6YXRpb24ob3B0aW9uczogVXRpbGl6YXRpb25TY2FsaW5nT3B0aW9ucykge1xuICAgIGlmICggIVRva2VuLmlzVW5yZXNvbHZlZChvcHRpb25zLnV0aWxpemF0aW9uVGFyZ2V0KSAmJiAob3B0aW9ucy51dGlsaXphdGlvblRhcmdldCA8IDAuMSB8fCBvcHRpb25zLnV0aWxpemF0aW9uVGFyZ2V0ID4gMC45KSkge1xuICAgICAgdGhyb3cgbmV3IEVycm9yKGBVdGlsaXphdGlvbiBUYXJnZXQgc2hvdWxkIGJlIGJldHdlZW4gMC4xIGFuZCAwLjkuIEZvdW5kICR7b3B0aW9ucy51dGlsaXphdGlvblRhcmdldH0uYCk7XG4gICAgfVxuICAgIHN1cGVyLmRvU2NhbGVUb1RyYWNrTWV0cmljKCdUcmFja2luZycsIHtcbiAgICAgIHRhcmdldFZhbHVlOiBvcHRpb25zLnV0aWxpemF0aW9uVGFyZ2V0LFxuICAgICAgcHJlZGVmaW5lZE1ldHJpYzogYXBwc2NhbGluZy5QcmVkZWZpbmVkTWV0cmljLkxBTUJEQV9QUk9WSVNJT05FRF9DT05DVVJSRU5DWV9VVElMSVpBVElPTixcbiAgICAgIC4uLm9wdGlvbnMsXG4gICAgfSk7XG4gIH1cblxuICAvKipcbiAgICogU2NhbGUgb3V0IG9yIGluIGJhc2VkIG9uIHNjaGVkdWxlLlxuICAgKi9cbiAgcHVibGljIHNjYWxlT25TY2hlZHVsZShpZDogc3RyaW5nLCBhY3Rpb246IGFwcHNjYWxpbmcuU2NhbGluZ1NjaGVkdWxlKSB7XG4gICAgc3VwZXIuZG9TY2FsZU9uU2NoZWR1bGUoaWQsIGFjdGlvbik7XG4gIH1cbn1cblxuLyoqXG4gKiBQcm9wZXJ0aWVzIG9mIGEgc2NhbGFibGUgZnVuY3Rpb24gYXR0cmlidXRlXG4gKi9cbmV4cG9ydCBpbnRlcmZhY2UgU2NhbGFibGVGdW5jdGlvbkF0dHJpYnV0ZVByb3BzIGV4dGVuZHMgYXBwc2NhbGluZy5CYXNlU2NhbGFibGVBdHRyaWJ1dGVQcm9wcyB7XG59XG4iXX0=

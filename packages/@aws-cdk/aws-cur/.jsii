@@ -1,0 +1,883 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::CUR",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::CUR",
+    "aws-cur"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-cur",
+  "readme": {
+    "markdown": "# AWS::CUR Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as cur from '@aws-cdk/aws-cur';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for CUR construct libraries](https://constructs.dev/search?q=cur)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::CUR resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_CUR.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::CUR](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_CUR.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-cur",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.CUR",
+      "packageId": "Amazon.CDK.AWS.CUR",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cur",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.cur"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-cur"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-cur",
+      "module": "aws_cdk.aws_cur"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-cur.CfnReportDefinition": {
+      "assembly": "@aws-cdk/aws-cur",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::CUR::ReportDefinition",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html"
+        },
+        "remarks": "The definition of AWS Cost and Usage Report. You can specify the report name, time unit, report format, compression format, S3 bucket, additional artifacts, and schema elements in the definition.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::CUR::ReportDefinition`."
+      },
+      "fqn": "@aws-cdk/aws-cur.CfnReportDefinition",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::CUR::ReportDefinition`."
+        },
+        "locationInModule": {
+          "filename": "lib/cur.generated.ts",
+          "line": 320
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cur.CfnReportDefinitionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cur.generated.ts",
+        "line": 204
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 352
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 374
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnReportDefinition",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 208
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 357
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-compression"
+            },
+            "stability": "external",
+            "summary": "The compression format that Amazon Web Services uses for the report."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 234
+          },
+          "name": "compression",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-format"
+            },
+            "stability": "external",
+            "summary": "The format that Amazon Web Services saves the report in."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 241
+          },
+          "name": "format",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-refreshclosedreports"
+            },
+            "remarks": "These charges can include refunds, credits, or support fees.",
+            "stability": "external",
+            "summary": "Whether you want AWS to update your reports after they have been finalized if AWS detects charges related to previous months."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 248
+          },
+          "name": "refreshClosedReports",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-reportname"
+            },
+            "remarks": "The name must be unique, is case sensitive, and can't include spaces.",
+            "stability": "external",
+            "summary": "The name of the report that you want to create."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 255
+          },
+          "name": "reportName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-reportversioning"
+            },
+            "stability": "external",
+            "summary": "Whether you want AWS to overwrite the previous version of each report or to deliver the report in addition to the previous versions."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 262
+          },
+          "name": "reportVersioning",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-s3bucket"
+            },
+            "stability": "external",
+            "summary": "The S3 bucket where Amazon Web Services delivers the report."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 269
+          },
+          "name": "s3Bucket",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-s3prefix"
+            },
+            "remarks": "Your prefix can't include spaces.",
+            "stability": "external",
+            "summary": "The prefix that Amazon Web Services adds to the report name when Amazon Web Services delivers the report."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 276
+          },
+          "name": "s3Prefix",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-s3region"
+            },
+            "stability": "external",
+            "summary": "The Region of the S3 bucket that Amazon Web Services delivers the report into."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 283
+          },
+          "name": "s3Region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-timeunit"
+            },
+            "stability": "external",
+            "summary": "The granularity of the line items in the report."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 290
+          },
+          "name": "timeUnit",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-additionalartifacts"
+            },
+            "stability": "external",
+            "summary": "A list of manifests that you want AWS to create for this report."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 297
+          },
+          "name": "additionalArtifacts",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-additionalschemaelements"
+            },
+            "stability": "external",
+            "summary": "A list of strings that indicate additional content that AWS includes in the report, such as individual resource IDs."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 304
+          },
+          "name": "additionalSchemaElements",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-billingviewarn"
+            },
+            "remarks": "You can get this value by using the billing view service public APIs.",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the billing view."
+          },
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 311
+          },
+          "name": "billingViewArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cur.generated:CfnReportDefinition"
+    },
+    "@aws-cdk/aws-cur.CfnReportDefinitionProps": {
+      "assembly": "@aws-cdk/aws-cur",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnReportDefinition`."
+      },
+      "fqn": "@aws-cdk/aws-cur.CfnReportDefinitionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cur.generated.ts",
+        "line": 20
+      },
+      "name": "CfnReportDefinitionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-compression"
+            },
+            "stability": "external",
+            "summary": "The compression format that Amazon Web Services uses for the report."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 27
+          },
+          "name": "compression",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-format"
+            },
+            "stability": "external",
+            "summary": "The format that Amazon Web Services saves the report in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 34
+          },
+          "name": "format",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-refreshclosedreports"
+            },
+            "remarks": "These charges can include refunds, credits, or support fees.",
+            "stability": "external",
+            "summary": "Whether you want AWS to update your reports after they have been finalized if AWS detects charges related to previous months."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 41
+          },
+          "name": "refreshClosedReports",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-reportname"
+            },
+            "remarks": "The name must be unique, is case sensitive, and can't include spaces.",
+            "stability": "external",
+            "summary": "The name of the report that you want to create."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 48
+          },
+          "name": "reportName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-reportversioning"
+            },
+            "stability": "external",
+            "summary": "Whether you want AWS to overwrite the previous version of each report or to deliver the report in addition to the previous versions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 55
+          },
+          "name": "reportVersioning",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-s3bucket"
+            },
+            "stability": "external",
+            "summary": "The S3 bucket where Amazon Web Services delivers the report."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 62
+          },
+          "name": "s3Bucket",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-s3prefix"
+            },
+            "remarks": "Your prefix can't include spaces.",
+            "stability": "external",
+            "summary": "The prefix that Amazon Web Services adds to the report name when Amazon Web Services delivers the report."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 69
+          },
+          "name": "s3Prefix",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-s3region"
+            },
+            "stability": "external",
+            "summary": "The Region of the S3 bucket that Amazon Web Services delivers the report into."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 76
+          },
+          "name": "s3Region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-timeunit"
+            },
+            "stability": "external",
+            "summary": "The granularity of the line items in the report."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 83
+          },
+          "name": "timeUnit",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-additionalartifacts"
+            },
+            "stability": "external",
+            "summary": "A list of manifests that you want AWS to create for this report."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 90
+          },
+          "name": "additionalArtifacts",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-additionalschemaelements"
+            },
+            "stability": "external",
+            "summary": "A list of strings that indicate additional content that AWS includes in the report, such as individual resource IDs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 97
+          },
+          "name": "additionalSchemaElements",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cur-reportdefinition.html#cfn-cur-reportdefinition-billingviewarn"
+            },
+            "remarks": "You can get this value by using the billing view service public APIs.",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the billing view."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cur.generated.ts",
+            "line": 104
+          },
+          "name": "billingViewArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cur.generated:CfnReportDefinitionProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "NlBhXYaJqtYWoqr7GIle27TFzoLgI7TJH13aFhWdaM8="
+}

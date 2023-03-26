@@ -1,0 +1,1448 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::EMRServerless Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::EMRServerless",
+    "aws-emrserverless"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-emrserverless",
+  "readme": {
+    "markdown": "# AWS::EMRServerless Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as emrserverless from '@aws-cdk/aws-emrserverless';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for EMRServerless construct libraries](https://constructs.dev/search?q=emrserverless)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::EMRServerless resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_EMRServerless.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::EMRServerless](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_EMRServerless.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-emrserverless",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.EMRServerless",
+      "packageId": "Amazon.CDK.AWS.EMRServerless",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "emrserverless",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.emrserverless"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-emrserverless"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-emrserverless",
+      "module": "aws_cdk.aws_emrserverless"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-emrserverless.CfnApplication": {
+      "assembly": "@aws-cdk/aws-emrserverless",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::EMRServerless::Application",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html"
+        },
+        "remarks": "The `AWS::EMRServerless::Application` resource specifies an EMR Serverless application. An application uses open source analytics frameworks to run jobs that process data. To create an application, you must specify the release version for the open source framework version you want to use and the type of application you want, such as Apache Spark or Apache Hive. After you create an application, you can submit data processing jobs or interactive requests to it.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::EMRServerless::Application`."
+      },
+      "fqn": "@aws-cdk/aws-emrserverless.CfnApplication",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::EMRServerless::Application`."
+        },
+        "locationInModule": {
+          "filename": "lib/emrserverless.generated.ts",
+          "line": 315
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-emrserverless.CfnApplicationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/emrserverless.generated.ts",
+        "line": 189
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 340
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 360
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnApplication",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 193
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationId"
+            },
+            "stability": "external",
+            "summary": "The ID of the application, such as `ab4rp1abcs8xz47n3x0example` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 218
+          },
+          "name": "attrApplicationId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the project."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 224
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 345
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-tags"
+            },
+            "stability": "external",
+            "summary": "The tags assigned to the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 306
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-releaselabel"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 64\n\n*Pattern* : `^[A-Za-z0-9._/-]+$`",
+            "stability": "external",
+            "summary": "The EMR release version associated with the application."
+          },
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 237
+          },
+          "name": "releaseLabel",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-type"
+            },
+            "stability": "external",
+            "summary": "The type of application, such as Spark or Hive."
+          },
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 244
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-architecture"
+            },
+            "remarks": "Allowed values: `X86_64` or `ARM64`",
+            "stability": "external",
+            "summary": "The CPU architecture type of the application."
+          },
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 251
+          },
+          "name": "architecture",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-autostartconfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration for an application to automatically start on job submission."
+          },
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 258
+          },
+          "name": "autoStartConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.AutoStartConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-autostopconfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration for an application to automatically stop after a certain amount of time being idle."
+          },
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 265
+          },
+          "name": "autoStopConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.AutoStopConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-initialcapacity"
+            },
+            "stability": "external",
+            "summary": "The initial capacity of the application."
+          },
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 272
+          },
+          "name": "initialCapacity",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.InitialCapacityConfigKeyValuePairProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-maximumcapacity"
+            },
+            "remarks": "This is cumulative across all workers at any given point in time during the lifespan of the application is created. No new resources will be created once any one of the defined limits is hit.",
+            "stability": "external",
+            "summary": "The maximum capacity of the application."
+          },
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 279
+          },
+          "name": "maximumCapacity",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.MaximumAllowedResourcesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-name"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 64\n\n*Pattern* : `^[A-Za-z0-9._\\\\/#-]+$`",
+            "stability": "external",
+            "summary": "The name of the application."
+          },
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 292
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-networkconfiguration"
+            },
+            "stability": "external",
+            "summary": "The network configuration for customer VPC connectivity for the application."
+          },
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 299
+          },
+          "name": "networkConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.NetworkConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/emrserverless.generated:CfnApplication"
+    },
+    "@aws-cdk/aws-emrserverless.CfnApplication.AutoStartConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-emrserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-autostartconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The conﬁguration for an application to automatically start on job submission."
+      },
+      "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.AutoStartConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/emrserverless.generated.ts",
+        "line": 374
+      },
+      "name": "AutoStartConfigurationProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-autostartconfiguration.html#cfn-emrserverless-application-autostartconfiguration-enabled"
+            },
+            "remarks": "Defaults to true.",
+            "stability": "external",
+            "summary": "Enables the application to automatically start on job submission."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 380
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/emrserverless.generated:CfnApplication.AutoStartConfigurationProperty"
+    },
+    "@aws-cdk/aws-emrserverless.CfnApplication.AutoStopConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-emrserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-autostopconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The conﬁguration for an application to automatically stop after a certain amount of time being idle."
+      },
+      "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.AutoStopConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/emrserverless.generated.ts",
+        "line": 441
+      },
+      "name": "AutoStopConfigurationProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-autostopconfiguration.html#cfn-emrserverless-application-autostopconfiguration-enabled"
+            },
+            "remarks": "Defaults to true.",
+            "stability": "external",
+            "summary": "Enables the application to automatically stop after a certain amount of time being idle."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 447
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-autostopconfiguration.html#cfn-emrserverless-application-autostopconfiguration-idletimeoutminutes"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 10080",
+            "stability": "external",
+            "summary": "The amount of idle time in minutes after which your application will automatically stop. Defaults to 15 minutes."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 457
+          },
+          "name": "idleTimeoutMinutes",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/emrserverless.generated:CfnApplication.AutoStopConfigurationProperty"
+    },
+    "@aws-cdk/aws-emrserverless.CfnApplication.InitialCapacityConfigKeyValuePairProperty": {
+      "assembly": "@aws-cdk/aws-emrserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-initialcapacityconfigkeyvaluepair.html"
+        },
+        "stability": "external",
+        "summary": "The initial capacity configuration per worker."
+      },
+      "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.InitialCapacityConfigKeyValuePairProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/emrserverless.generated.ts",
+        "line": 603
+      },
+      "name": "InitialCapacityConfigKeyValuePairProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-initialcapacityconfigkeyvaluepair.html#cfn-emrserverless-application-initialcapacityconfigkeyvaluepair-key"
+            },
+            "remarks": "For Spark applications, the key can either be set to `Driver` or `Executor` . For Hive applications, it can be set to `HiveDriver` or `TezTask` .\n\n*Minimum* : 1\n\n*Maximum* : 50\n\n*Pattern* : `^[a-zA-Z]+[-_]*[a-zA-Z]+$`",
+            "stability": "external",
+            "summary": "The worker type for an analytics framework."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 615
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-initialcapacityconfigkeyvaluepair.html#cfn-emrserverless-application-initialcapacityconfigkeyvaluepair-value"
+            },
+            "stability": "external",
+            "summary": "The value for the initial capacity configuration per worker."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 621
+          },
+          "name": "value",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.InitialCapacityConfigProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/emrserverless.generated:CfnApplication.InitialCapacityConfigKeyValuePairProperty"
+    },
+    "@aws-cdk/aws-emrserverless.CfnApplication.InitialCapacityConfigProperty": {
+      "assembly": "@aws-cdk/aws-emrserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-initialcapacityconfig.html"
+        },
+        "stability": "external",
+        "summary": "The initial capacity configuration per worker."
+      },
+      "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.InitialCapacityConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/emrserverless.generated.ts",
+        "line": 521
+      },
+      "name": "InitialCapacityConfigProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-initialcapacityconfig.html#cfn-emrserverless-application-initialcapacityconfig-workerconfiguration"
+            },
+            "stability": "external",
+            "summary": "The resource configuration of the initial capacity configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 527
+          },
+          "name": "workerConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.WorkerConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-initialcapacityconfig.html#cfn-emrserverless-application-initialcapacityconfig-workercount"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 1000000",
+            "stability": "external",
+            "summary": "The number of workers in the initial capacity configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 537
+          },
+          "name": "workerCount",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/emrserverless.generated:CfnApplication.InitialCapacityConfigProperty"
+    },
+    "@aws-cdk/aws-emrserverless.CfnApplication.MaximumAllowedResourcesProperty": {
+      "assembly": "@aws-cdk/aws-emrserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-maximumallowedresources.html"
+        },
+        "remarks": "No new resources will be created once the limit is hit.",
+        "stability": "external",
+        "summary": "The maximum allowed cumulative resources for an application."
+      },
+      "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.MaximumAllowedResourcesProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/emrserverless.generated.ts",
+        "line": 687
+      },
+      "name": "MaximumAllowedResourcesProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-maximumallowedresources.html#cfn-emrserverless-application-maximumallowedresources-cpu"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(vCPU|vcpu|VCPU)?$`",
+            "stability": "external",
+            "summary": "The maximum allowed CPU for an application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 699
+          },
+          "name": "cpu",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-maximumallowedresources.html#cfn-emrserverless-application-maximumallowedresources-memory"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)?$`",
+            "stability": "external",
+            "summary": "The maximum allowed resources for an application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 723
+          },
+          "name": "memory",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-maximumallowedresources.html#cfn-emrserverless-application-maximumallowedresources-disk"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)$\"`",
+            "stability": "external",
+            "summary": "The maximum allowed disk for an application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 711
+          },
+          "name": "disk",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/emrserverless.generated:CfnApplication.MaximumAllowedResourcesProperty"
+    },
+    "@aws-cdk/aws-emrserverless.CfnApplication.NetworkConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-emrserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-networkconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The network configuration for customer VPC connectivity."
+      },
+      "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.NetworkConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/emrserverless.generated.ts",
+        "line": 792
+      },
+      "name": "NetworkConfigurationProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-networkconfiguration.html#cfn-emrserverless-application-networkconfiguration-securitygroupids"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 32\n\n*Pattern* : `^[-0-9a-zA-Z]+`",
+            "stability": "external",
+            "summary": "The array of security group Ids for customer VPC connectivity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 804
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-networkconfiguration.html#cfn-emrserverless-application-networkconfiguration-subnetids"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 32\n\n*Pattern* : `^[-0-9a-zA-Z]+`",
+            "stability": "external",
+            "summary": "The array of subnet Ids for customer VPC connectivity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 816
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/emrserverless.generated:CfnApplication.NetworkConfigurationProperty"
+    },
+    "@aws-cdk/aws-emrserverless.CfnApplication.WorkerConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-emrserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-workerconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The resource configuration of the initial capacity configuration."
+      },
+      "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.WorkerConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/emrserverless.generated.ts",
+        "line": 880
+      },
+      "name": "WorkerConfigurationProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-workerconfiguration.html#cfn-emrserverless-application-workerconfiguration-cpu"
+            },
+            "remarks": "*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(vCPU|vcpu|VCPU)?$`",
+            "stability": "external",
+            "summary": "*Minimum* : 1."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 890
+          },
+          "name": "cpu",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-workerconfiguration.html#cfn-emrserverless-application-workerconfiguration-memory"
+            },
+            "remarks": "*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)?$`",
+            "stability": "external",
+            "summary": "*Minimum* : 1."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 910
+          },
+          "name": "memory",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emrserverless-application-workerconfiguration.html#cfn-emrserverless-application-workerconfiguration-disk"
+            },
+            "remarks": "*Maximum* : 15\n\n*Pattern* : `^[1-9][0-9]*(\\\\s)?(GB|gb|gB|Gb)$\"`",
+            "stability": "external",
+            "summary": "*Minimum* : 1."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 900
+          },
+          "name": "disk",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/emrserverless.generated:CfnApplication.WorkerConfigurationProperty"
+    },
+    "@aws-cdk/aws-emrserverless.CfnApplicationProps": {
+      "assembly": "@aws-cdk/aws-emrserverless",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnApplication`."
+      },
+      "fqn": "@aws-cdk/aws-emrserverless.CfnApplicationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/emrserverless.generated.ts",
+        "line": 20
+      },
+      "name": "CfnApplicationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-releaselabel"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 64\n\n*Pattern* : `^[A-Za-z0-9._/-]+$`",
+            "stability": "external",
+            "summary": "The EMR release version associated with the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 33
+          },
+          "name": "releaseLabel",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-type"
+            },
+            "stability": "external",
+            "summary": "The type of application, such as Spark or Hive."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 40
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-architecture"
+            },
+            "remarks": "Allowed values: `X86_64` or `ARM64`",
+            "stability": "external",
+            "summary": "The CPU architecture type of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 47
+          },
+          "name": "architecture",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-autostartconfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration for an application to automatically start on job submission."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 54
+          },
+          "name": "autoStartConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.AutoStartConfigurationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-autostopconfiguration"
+            },
+            "stability": "external",
+            "summary": "The configuration for an application to automatically stop after a certain amount of time being idle."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 61
+          },
+          "name": "autoStopConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.AutoStopConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-initialcapacity"
+            },
+            "stability": "external",
+            "summary": "The initial capacity of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 68
+          },
+          "name": "initialCapacity",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.InitialCapacityConfigKeyValuePairProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-maximumcapacity"
+            },
+            "remarks": "This is cumulative across all workers at any given point in time during the lifespan of the application is created. No new resources will be created once any one of the defined limits is hit.",
+            "stability": "external",
+            "summary": "The maximum capacity of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 75
+          },
+          "name": "maximumCapacity",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.MaximumAllowedResourcesProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-name"
+            },
+            "remarks": "*Minimum* : 1\n\n*Maximum* : 64\n\n*Pattern* : `^[A-Za-z0-9._\\\\/#-]+$`",
+            "stability": "external",
+            "summary": "The name of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 88
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-networkconfiguration"
+            },
+            "stability": "external",
+            "summary": "The network configuration for customer VPC connectivity for the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 95
+          },
+          "name": "networkConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-emrserverless.CfnApplication.NetworkConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-emrserverless-application.html#cfn-emrserverless-application-tags"
+            },
+            "stability": "external",
+            "summary": "The tags assigned to the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/emrserverless.generated.ts",
+            "line": 102
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/emrserverless.generated:CfnApplicationProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "rZRwzdMCbnbOzEN7jR007MB6qSuffEg9/S9EA760aHA="
+}

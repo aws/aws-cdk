@@ -1,0 +1,2657 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "AWS::RefactorSpaces Construct Library",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::RefactorSpaces",
+    "aws-refactorspaces"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-refactorspaces",
+  "readme": {
+    "markdown": "# AWS::RefactorSpaces Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as refactorspaces from '@aws-cdk/aws-refactorspaces';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for RefactorSpaces construct libraries](https://constructs.dev/search?q=refactorspaces)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::RefactorSpaces resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_RefactorSpaces.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::RefactorSpaces](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_RefactorSpaces.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-refactorspaces",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.RefactorSpaces",
+      "packageId": "Amazon.CDK.AWS.RefactorSpaces",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "refactorspaces",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.refactorspaces"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-refactorspaces"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-refactorspaces",
+      "module": "aws_cdk.aws_refactorspaces"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-refactorspaces.CfnApplication": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RefactorSpaces::Application",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html"
+        },
+        "remarks": "Creates an AWS Migration Hub Refactor Spaces application. The account that owns the environment also owns the applications created inside the environment, regardless of the account that creates the application. Refactor Spaces provisions an Amazon API Gateway , API Gateway VPC link, and Network Load Balancer for the application proxy inside your account.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RefactorSpaces::Application`."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnApplication",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RefactorSpaces::Application`."
+        },
+        "locationInModule": {
+          "filename": "lib/refactorspaces.generated.ts",
+          "line": 257
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-refactorspaces.CfnApplicationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 135
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 282
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 298
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnApplication",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 139
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApiGatewayId"
+            },
+            "stability": "external",
+            "summary": "The resource ID of the API Gateway for the proxy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 164
+          },
+          "name": "attrApiGatewayId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationIdentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 170
+          },
+          "name": "attrApplicationIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 176
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "NlbArn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the Network Load Balancer ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 182
+          },
+          "name": "attrNlbArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "NlbName"
+            },
+            "stability": "external",
+            "summary": "The name of the Network Load Balancer configured by the API Gateway proxy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 188
+          },
+          "name": "attrNlbName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ProxyUrl"
+            },
+            "stability": "external",
+            "summary": "The endpoint URL of the Amazon API Gateway proxy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 194
+          },
+          "name": "attrProxyUrl",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StageName"
+            },
+            "remarks": "The name defaults to `prod` .",
+            "stability": "external",
+            "summary": "The name of the API Gateway stage."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 200
+          },
+          "name": "attrStageName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "VpcLinkId"
+            },
+            "stability": "external",
+            "summary": "The `VpcLink` ID of the API Gateway proxy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 206
+          },
+          "name": "attrVpcLinkId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 287
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html#cfn-refactorspaces-application-tags"
+            },
+            "stability": "external",
+            "summary": "The tags assigned to the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 241
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html#cfn-refactorspaces-application-apigatewayproxy"
+            },
+            "stability": "external",
+            "summary": "The endpoint URL of the Amazon API Gateway proxy."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 213
+          },
+          "name": "apiGatewayProxy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-refactorspaces.CfnApplication.ApiGatewayProxyInputProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html#cfn-refactorspaces-application-environmentidentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the environment."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 220
+          },
+          "name": "environmentIdentifier",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html#cfn-refactorspaces-application-name"
+            },
+            "stability": "external",
+            "summary": "The name of the application."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 227
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html#cfn-refactorspaces-application-proxytype"
+            },
+            "stability": "external",
+            "summary": "The proxy type of the proxy created within the application."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 234
+          },
+          "name": "proxyType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html#cfn-refactorspaces-application-vpcid"
+            },
+            "stability": "external",
+            "summary": "The ID of the virtual private cloud (VPC)."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 248
+          },
+          "name": "vpcId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnApplication"
+    },
+    "@aws-cdk/aws-refactorspaces.CfnApplication.ApiGatewayProxyInputProperty": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-application-apigatewayproxyinput.html"
+        },
+        "stability": "external",
+        "summary": "A wrapper object holding the Amazon API Gateway endpoint input."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnApplication.ApiGatewayProxyInputProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 312
+      },
+      "name": "ApiGatewayProxyInputProperty",
+      "namespace": "CfnApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-application-apigatewayproxyinput.html#cfn-refactorspaces-application-apigatewayproxyinput-endpointtype"
+            },
+            "remarks": "If no value is specified in the request, the value is set to `REGIONAL` by default.\n\nIf the value is set to `PRIVATE` in the request, this creates a private API endpoint that is isolated from the public internet. The private endpoint can only be accessed by using Amazon Virtual Private Cloud ( Amazon VPC ) endpoints for Amazon API Gateway that have been granted access.",
+            "stability": "external",
+            "summary": "The type of endpoint to use for the API Gateway proxy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 320
+          },
+          "name": "endpointType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-application-apigatewayproxyinput.html#cfn-refactorspaces-application-apigatewayproxyinput-stagename"
+            },
+            "remarks": "The name defaults to `prod` .",
+            "stability": "external",
+            "summary": "The name of the API Gateway stage."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 326
+          },
+          "name": "stageName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnApplication.ApiGatewayProxyInputProperty"
+    },
+    "@aws-cdk/aws-refactorspaces.CfnApplicationProps": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnApplication`."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnApplicationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 20
+      },
+      "name": "CfnApplicationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html#cfn-refactorspaces-application-apigatewayproxy"
+            },
+            "stability": "external",
+            "summary": "The endpoint URL of the Amazon API Gateway proxy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 27
+          },
+          "name": "apiGatewayProxy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-refactorspaces.CfnApplication.ApiGatewayProxyInputProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html#cfn-refactorspaces-application-environmentidentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 34
+          },
+          "name": "environmentIdentifier",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html#cfn-refactorspaces-application-name"
+            },
+            "stability": "external",
+            "summary": "The name of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 41
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html#cfn-refactorspaces-application-proxytype"
+            },
+            "stability": "external",
+            "summary": "The proxy type of the proxy created within the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 48
+          },
+          "name": "proxyType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html#cfn-refactorspaces-application-tags"
+            },
+            "stability": "external",
+            "summary": "The tags assigned to the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 55
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-application.html#cfn-refactorspaces-application-vpcid"
+            },
+            "stability": "external",
+            "summary": "The ID of the virtual private cloud (VPC)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 62
+          },
+          "name": "vpcId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnApplicationProps"
+    },
+    "@aws-cdk/aws-refactorspaces.CfnEnvironment": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RefactorSpaces::Environment",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-environment.html"
+        },
+        "remarks": "Creates an AWS Migration Hub Refactor Spaces environment. The caller owns the environment resource, and all Refactor Spaces applications, services, and routes created within the environment. They are referred to as the *environment owner* . The environment owner has cross-account visibility and control of Refactor Spaces resources that are added to the environment by other accounts that the environment is shared with. When creating an environment, Refactor Spaces provisions a transit gateway in your account.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RefactorSpaces::Environment`."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnEnvironment",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RefactorSpaces::Environment`."
+        },
+        "locationInModule": {
+          "filename": "lib/refactorspaces.generated.ts",
+          "line": 562
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-refactorspaces.CfnEnvironmentProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 484
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 580
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 594
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnEnvironment",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 488
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 513
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EnvironmentIdentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 519
+          },
+          "name": "attrEnvironmentIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "TransitGatewayId"
+            },
+            "stability": "external",
+            "summary": "The ID of the AWS Transit Gateway set up by the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 525
+          },
+          "name": "attrTransitGatewayId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 585
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-environment.html#cfn-refactorspaces-environment-tags"
+            },
+            "stability": "external",
+            "summary": "The tags assigned to the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 553
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-environment.html#cfn-refactorspaces-environment-description"
+            },
+            "stability": "external",
+            "summary": "A description of the environment."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 532
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-environment.html#cfn-refactorspaces-environment-name"
+            },
+            "stability": "external",
+            "summary": "The name of the environment."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 539
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-environment.html#cfn-refactorspaces-environment-networkfabrictype"
+            },
+            "stability": "external",
+            "summary": "The network fabric type of the environment."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 546
+          },
+          "name": "networkFabricType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnEnvironment"
+    },
+    "@aws-cdk/aws-refactorspaces.CfnEnvironmentProps": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-environment.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnEnvironment`."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnEnvironmentProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 389
+      },
+      "name": "CfnEnvironmentProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-environment.html#cfn-refactorspaces-environment-description"
+            },
+            "stability": "external",
+            "summary": "A description of the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 396
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-environment.html#cfn-refactorspaces-environment-name"
+            },
+            "stability": "external",
+            "summary": "The name of the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 403
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-environment.html#cfn-refactorspaces-environment-networkfabrictype"
+            },
+            "stability": "external",
+            "summary": "The network fabric type of the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 410
+          },
+          "name": "networkFabricType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-environment.html#cfn-refactorspaces-environment-tags"
+            },
+            "stability": "external",
+            "summary": "The tags assigned to the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 417
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnEnvironmentProps"
+    },
+    "@aws-cdk/aws-refactorspaces.CfnRoute": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RefactorSpaces::Route",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html"
+        },
+        "remarks": "Creates an AWS Migration Hub Refactor Spaces route. The account owner of the service resource is always the environment owner, regardless of which account creates the route. Routes target a service in the application. If an application does not have any routes, then the first route must be created as a `DEFAULT` `RouteType` .\n\nWhen created, the default route defaults to an active state so state is not a required input. However, like all other state values the state of the default route can be updated after creation, but only when all other routes are also inactive. Conversely, no route can be active without the default route also being active.\n\n> In the `AWS::RefactorSpaces::Route` resource, you can only update the `ActivationState` property, which resides under the `UriPathRoute` and `DefaultRoute` properties. All other properties associated with the `AWS::RefactorSpaces::Route` cannot be updated, even though the property description might indicate otherwise. Updating all other properties will result in the replacement of Route.\n\nWhen you create a route, Refactor Spaces configures the Amazon API Gateway to send traffic to the target service as follows:\n\n- If the service has a URL endpoint, and the endpoint resolves to a private IP address, Refactor Spaces routes traffic using the API Gateway VPC link.\n- If the service has a URL endpoint, and the endpoint resolves to a public IP address, Refactor Spaces routes traffic over the public internet.\n- If the service has an AWS Lambda function endpoint, then Refactor Spaces configures the Lambda function's resource policy to allow the application's API Gateway to invoke the function.\n\nA one-time health check is performed on the service when either the route is updated from inactive to active, or when it is created with an active state. If the health check fails, the route transitions the route state to `FAILED` , an error code of `SERVICE_ENDPOINT_HEALTH_CHECK_FAILURE` is provided, and no traffic is sent to the service.\n\nFor Lambda functions, the Lambda function state is checked. If the function is not active, the function configuration is updated so that Lambda resources are provisioned. If the Lambda state is `Failed` , then the route creation fails. For more information, see the [GetFunctionConfiguration's State response parameter](https://docs.aws.amazon.com/lambda/latest/dg/API_GetFunctionConfiguration.html#SSS-GetFunctionConfiguration-response-State) in the *AWS Lambda Developer Guide* .\n\nFor Lambda endpoints, a check is performed to determine that a Lambda function with the specified ARN exists. If it does not exist, the health check fails. For public URLs, a connection is opened to the public endpoint. If the URL is not reachable, the health check fails.\n\nFor private URLS, a target group is created on the Elastic Load Balancing and the target group health check is run. The `HealthCheckProtocol` , `HealthCheckPort` , and `HealthCheckPath` are the same protocol, port, and path specified in the URL or health URL, if used. All other settings use the default values, as described in [Health checks for your target groups](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html) . The health check is considered successful if at least one target within the target group transitions to a healthy state.\n\nServices can have HTTP or HTTPS URL endpoints. For HTTPS URLs, publicly-signed certificates are supported. Private Certificate Authorities (CAs) are permitted only if the CA's domain is also publicly resolvable.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RefactorSpaces::Route`."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnRoute",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RefactorSpaces::Route`."
+        },
+        "locationInModule": {
+          "filename": "lib/refactorspaces.generated.ts",
+          "line": 854
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-refactorspaces.CfnRouteProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 755
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 878
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 895
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRoute",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 759
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the route."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 784
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "PathResourceToId"
+            },
+            "stability": "external",
+            "summary": "A mapping of Amazon API Gateway path resources to resource IDs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 790
+          },
+          "name": "attrPathResourceToId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "RouteIdentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the route."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 796
+          },
+          "name": "attrRouteIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 883
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-tags"
+            },
+            "stability": "external",
+            "summary": "The tags assigned to the route."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 838
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-applicationidentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the application."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 803
+          },
+          "name": "applicationIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-environmentidentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the environment."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 810
+          },
+          "name": "environmentIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-serviceidentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the service."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 817
+          },
+          "name": "serviceIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-defaultroute"
+            },
+            "stability": "external",
+            "summary": "Configuration for the default route type."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 824
+          },
+          "name": "defaultRoute",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-refactorspaces.CfnRoute.DefaultRouteInputProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-routetype"
+            },
+            "stability": "external",
+            "summary": "The route type of the route."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 831
+          },
+          "name": "routeType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-uripathroute"
+            },
+            "stability": "external",
+            "summary": "The configuration for the URI path route type."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 845
+          },
+          "name": "uriPathRoute",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-refactorspaces.CfnRoute.UriPathRouteInputProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnRoute"
+    },
+    "@aws-cdk/aws-refactorspaces.CfnRoute.DefaultRouteInputProperty": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-route-defaultrouteinput.html"
+        },
+        "stability": "external",
+        "summary": "The configuration for the default route type."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnRoute.DefaultRouteInputProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 909
+      },
+      "name": "DefaultRouteInputProperty",
+      "namespace": "CfnRoute",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-route-defaultrouteinput.html#cfn-refactorspaces-route-defaultrouteinput-activationstate"
+            },
+            "stability": "external",
+            "summary": "If set to `ACTIVE` , traffic is forwarded to this route’s service after the route is created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 915
+          },
+          "name": "activationState",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnRoute.DefaultRouteInputProperty"
+    },
+    "@aws-cdk/aws-refactorspaces.CfnRoute.UriPathRouteInputProperty": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-route-uripathrouteinput.html"
+        },
+        "stability": "external",
+        "summary": "The configuration for the URI path route type."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnRoute.UriPathRouteInputProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 977
+      },
+      "name": "UriPathRouteInputProperty",
+      "namespace": "CfnRoute",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-route-uripathrouteinput.html#cfn-refactorspaces-route-uripathrouteinput-activationstate"
+            },
+            "stability": "external",
+            "summary": "If set to `ACTIVE` , traffic is forwarded to this route’s service after the route is created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 983
+          },
+          "name": "activationState",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-route-uripathrouteinput.html#cfn-refactorspaces-route-uripathrouteinput-includechildpaths"
+            },
+            "remarks": "If this value is `false` , requests must match the source path exactly before they are forwarded to this route's service.",
+            "stability": "external",
+            "summary": "Indicates whether to match all subpaths of the given source path."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 989
+          },
+          "name": "includeChildPaths",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-route-uripathrouteinput.html#cfn-refactorspaces-route-uripathrouteinput-methods"
+            },
+            "remarks": "An empty list matches all values. If a method is present, only HTTP requests using that method are forwarded to this route’s service.",
+            "stability": "external",
+            "summary": "A list of HTTP methods to match."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 995
+          },
+          "name": "methods",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-route-uripathrouteinput.html#cfn-refactorspaces-route-uripathrouteinput-sourcepath"
+            },
+            "remarks": "Paths must start with `/` and are relative to the base of the application.",
+            "stability": "external",
+            "summary": "The path to use to match traffic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1001
+          },
+          "name": "sourcePath",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnRoute.UriPathRouteInputProperty"
+    },
+    "@aws-cdk/aws-refactorspaces.CfnRouteProps": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRoute`."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnRouteProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 607
+      },
+      "name": "CfnRouteProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-applicationidentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 614
+          },
+          "name": "applicationIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-environmentidentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 621
+          },
+          "name": "environmentIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-serviceidentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 628
+          },
+          "name": "serviceIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-defaultroute"
+            },
+            "stability": "external",
+            "summary": "Configuration for the default route type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 635
+          },
+          "name": "defaultRoute",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-refactorspaces.CfnRoute.DefaultRouteInputProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-routetype"
+            },
+            "stability": "external",
+            "summary": "The route type of the route."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 642
+          },
+          "name": "routeType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-tags"
+            },
+            "stability": "external",
+            "summary": "The tags assigned to the route."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 649
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-route.html#cfn-refactorspaces-route-uripathroute"
+            },
+            "stability": "external",
+            "summary": "The configuration for the URI path route type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 656
+          },
+          "name": "uriPathRoute",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-refactorspaces.CfnRoute.UriPathRouteInputProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnRouteProps"
+    },
+    "@aws-cdk/aws-refactorspaces.CfnService": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RefactorSpaces::Service",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html"
+        },
+        "remarks": "Creates an AWS Migration Hub Refactor Spaces service. The account owner of the service is always the environment owner, regardless of which account in the environment creates the service. Services have either a URL endpoint in a virtual private cloud (VPC), or a Lambda function endpoint.\n\n> If an AWS resource is launched in a service VPC, and you want it to be accessible to all of an environment’s services with VPCs and routes, apply the `RefactorSpacesSecurityGroup` to the resource. Alternatively, to add more cross-account constraints, apply your own security group.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RefactorSpaces::Service`."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnService",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RefactorSpaces::Service`."
+        },
+        "locationInModule": {
+          "filename": "lib/refactorspaces.generated.ts",
+          "line": 1327
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-refactorspaces.CfnServiceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 1220
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1351
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1370
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnService",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1224
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1249
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ServiceIdentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1255
+          },
+          "name": "attrServiceIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1356
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-tags"
+            },
+            "stability": "external",
+            "summary": "The tags assigned to the service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1304
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-applicationidentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the application."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1262
+          },
+          "name": "applicationIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-environmentidentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the environment."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1269
+          },
+          "name": "environmentIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-description"
+            },
+            "stability": "external",
+            "summary": "A description of the service."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1276
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-endpointtype"
+            },
+            "stability": "external",
+            "summary": "The endpoint type of the service."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1283
+          },
+          "name": "endpointType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-lambdaendpoint"
+            },
+            "stability": "external",
+            "summary": "A summary of the configuration for the AWS Lambda endpoint type."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1290
+          },
+          "name": "lambdaEndpoint",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-refactorspaces.CfnService.LambdaEndpointInputProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-name"
+            },
+            "stability": "external",
+            "summary": "The name of the service."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1297
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-urlendpoint"
+            },
+            "stability": "external",
+            "summary": "The summary of the configuration for the URL endpoint type."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1311
+          },
+          "name": "urlEndpoint",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-refactorspaces.CfnService.UrlEndpointInputProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-vpcid"
+            },
+            "stability": "external",
+            "summary": "The ID of the virtual private cloud (VPC)."
+          },
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1318
+          },
+          "name": "vpcId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnService"
+    },
+    "@aws-cdk/aws-refactorspaces.CfnService.LambdaEndpointInputProperty": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-service-lambdaendpointinput.html"
+        },
+        "stability": "external",
+        "summary": "The input for the AWS Lambda endpoint type."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnService.LambdaEndpointInputProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 1384
+      },
+      "name": "LambdaEndpointInputProperty",
+      "namespace": "CfnService",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-service-lambdaendpointinput.html#cfn-refactorspaces-service-lambdaendpointinput-arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the Lambda function or alias."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1390
+          },
+          "name": "arn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnService.LambdaEndpointInputProperty"
+    },
+    "@aws-cdk/aws-refactorspaces.CfnService.UrlEndpointInputProperty": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-service-urlendpointinput.html"
+        },
+        "stability": "external",
+        "summary": "The configuration for the URL endpoint type."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnService.UrlEndpointInputProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 1452
+      },
+      "name": "UrlEndpointInputProperty",
+      "namespace": "CfnService",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-service-urlendpointinput.html#cfn-refactorspaces-service-urlendpointinput-url"
+            },
+            "remarks": "The URL must be an [rfc3986-formatted URL](https://docs.aws.amazon.com/https://datatracker.ietf.org/doc/html/rfc3986) . If the host is a domain name, the name must be resolvable over the public internet. If the scheme is `https` , the top level domain of the host must be listed in the [IANA root zone database](https://docs.aws.amazon.com/https://www.iana.org/domains/root/db) .",
+            "stability": "external",
+            "summary": "The URL to route traffic to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1464
+          },
+          "name": "url",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-refactorspaces-service-urlendpointinput.html#cfn-refactorspaces-service-urlendpointinput-healthurl"
+            },
+            "remarks": "If the URL is a public endpoint, the `HealthUrl` must also be a public endpoint. If the URL is a private endpoint inside a virtual private cloud (VPC), the health URL must also be a private endpoint, and the host must be the same as the URL.",
+            "stability": "external",
+            "summary": "The health check URL of the URL endpoint type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1458
+          },
+          "name": "healthUrl",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnService.UrlEndpointInputProperty"
+    },
+    "@aws-cdk/aws-refactorspaces.CfnServiceProps": {
+      "assembly": "@aws-cdk/aws-refactorspaces",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnService`."
+      },
+      "fqn": "@aws-cdk/aws-refactorspaces.CfnServiceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/refactorspaces.generated.ts",
+        "line": 1071
+      },
+      "name": "CfnServiceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-applicationidentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1078
+          },
+          "name": "applicationIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-environmentidentifier"
+            },
+            "stability": "external",
+            "summary": "The unique identifier of the environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1085
+          },
+          "name": "environmentIdentifier",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-description"
+            },
+            "stability": "external",
+            "summary": "A description of the service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1092
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-endpointtype"
+            },
+            "stability": "external",
+            "summary": "The endpoint type of the service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1099
+          },
+          "name": "endpointType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-lambdaendpoint"
+            },
+            "stability": "external",
+            "summary": "A summary of the configuration for the AWS Lambda endpoint type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1106
+          },
+          "name": "lambdaEndpoint",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-refactorspaces.CfnService.LambdaEndpointInputProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-name"
+            },
+            "stability": "external",
+            "summary": "The name of the service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1113
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-tags"
+            },
+            "stability": "external",
+            "summary": "The tags assigned to the service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1120
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-urlendpoint"
+            },
+            "stability": "external",
+            "summary": "The summary of the configuration for the URL endpoint type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1127
+          },
+          "name": "urlEndpoint",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-refactorspaces.CfnService.UrlEndpointInputProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-refactorspaces-service.html#cfn-refactorspaces-service-vpcid"
+            },
+            "stability": "external",
+            "summary": "The ID of the virtual private cloud (VPC)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/refactorspaces.generated.ts",
+            "line": 1134
+          },
+          "name": "vpcId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/refactorspaces.generated:CfnServiceProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "cRG2PmBsBxrcipYz4Ugt/HdDyI6z8GE0kpoedZRKPBQ="
+}

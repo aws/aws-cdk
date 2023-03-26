@@ -1,0 +1,2158 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::Panorama",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::Panorama",
+    "aws-panorama"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-panorama",
+  "readme": {
+    "markdown": "# AWS::Panorama Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as panorama from '@aws-cdk/aws-panorama';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for Panorama construct libraries](https://constructs.dev/search?q=panorama)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::Panorama resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Panorama.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::Panorama](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_Panorama.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-panorama",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Panorama",
+      "packageId": "Amazon.CDK.AWS.Panorama",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "panorama",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.panorama"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-panorama"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-panorama",
+      "module": "aws_cdk.aws_panorama"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-panorama.CfnApplicationInstance": {
+      "assembly": "@aws-cdk/aws-panorama",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Panorama::ApplicationInstance",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html"
+        },
+        "remarks": "Creates an application instance and deploys it to a device.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Panorama::ApplicationInstance`."
+      },
+      "fqn": "@aws-cdk/aws-panorama.CfnApplicationInstance",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Panorama::ApplicationInstance`."
+        },
+        "locationInModule": {
+          "filename": "lib/panorama.generated.ts",
+          "line": 327
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-panorama.CfnApplicationInstanceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/panorama.generated.ts",
+        "line": 177
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 358
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 378
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnApplicationInstance",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 181
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationInstanceId"
+            },
+            "stability": "external",
+            "summary": "The application instance's ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 206
+          },
+          "name": "attrApplicationInstanceId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The application instance's ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 212
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedTime"
+            },
+            "stability": "external",
+            "summary": "The application instance's created time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 218
+          },
+          "name": "attrCreatedTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DefaultRuntimeContextDeviceName"
+            },
+            "stability": "external",
+            "summary": "The application instance's default runtime context device name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 224
+          },
+          "name": "attrDefaultRuntimeContextDeviceName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "HealthStatus"
+            },
+            "stability": "external",
+            "summary": "The application instance's health status."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 230
+          },
+          "name": "attrHealthStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "LastUpdatedTime"
+            },
+            "stability": "external",
+            "summary": "The application instance's last updated time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 236
+          },
+          "name": "attrLastUpdatedTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "stability": "external",
+            "summary": "The application instance's status."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 242
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StatusDescription"
+            },
+            "stability": "external",
+            "summary": "The application instance's status description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 248
+          },
+          "name": "attrStatusDescription",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 363
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-tags"
+            },
+            "stability": "external",
+            "summary": "Tags for the application instance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 318
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-defaultruntimecontextdevice"
+            },
+            "stability": "external",
+            "summary": "The device's ID."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 255
+          },
+          "name": "defaultRuntimeContextDevice",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-manifestpayload"
+            },
+            "stability": "external",
+            "summary": "The application's manifest document."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 262
+          },
+          "name": "manifestPayload",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-panorama.CfnApplicationInstance.ManifestPayloadProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-applicationinstanceidtoreplace"
+            },
+            "stability": "external",
+            "summary": "The ID of an application instance to replace with the new instance."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 269
+          },
+          "name": "applicationInstanceIdToReplace",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-description"
+            },
+            "stability": "external",
+            "summary": "A description for the application instance."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 276
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-deviceid"
+            },
+            "stability": "external",
+            "summary": "A device's ID."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 283
+          },
+          "name": "deviceId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-manifestoverridespayload"
+            },
+            "stability": "external",
+            "summary": "Setting overrides for the application manifest."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 290
+          },
+          "name": "manifestOverridesPayload",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-panorama.CfnApplicationInstance.ManifestOverridesPayloadProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-name"
+            },
+            "stability": "external",
+            "summary": "A name for the application instance."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 297
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-runtimerolearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of a runtime role for the application instance."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 304
+          },
+          "name": "runtimeRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-statusfilter"
+            },
+            "stability": "external",
+            "summary": "Only include instances with a specific status."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 311
+          },
+          "name": "statusFilter",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/panorama.generated:CfnApplicationInstance"
+    },
+    "@aws-cdk/aws-panorama.CfnApplicationInstance.ManifestOverridesPayloadProperty": {
+      "assembly": "@aws-cdk/aws-panorama",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-applicationinstance-manifestoverridespayload.html"
+        },
+        "remarks": "This is a JSON document that has a single key ( `PayloadData` ) where the value is an escaped string representation of the overrides document.",
+        "stability": "external",
+        "summary": "Parameter overrides for an application instance."
+      },
+      "fqn": "@aws-cdk/aws-panorama.CfnApplicationInstance.ManifestOverridesPayloadProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/panorama.generated.ts",
+        "line": 392
+      },
+      "name": "ManifestOverridesPayloadProperty",
+      "namespace": "CfnApplicationInstance",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-applicationinstance-manifestoverridespayload.html#cfn-panorama-applicationinstance-manifestoverridespayload-payloaddata"
+            },
+            "stability": "external",
+            "summary": "The overrides document."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 398
+          },
+          "name": "payloadData",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/panorama.generated:CfnApplicationInstance.ManifestOverridesPayloadProperty"
+    },
+    "@aws-cdk/aws-panorama.CfnApplicationInstance.ManifestPayloadProperty": {
+      "assembly": "@aws-cdk/aws-panorama",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-applicationinstance-manifestpayload.html"
+        },
+        "remarks": "This is a JSON document that has a single key ( `PayloadData` ) where the value is an escaped string representation of the application manifest ( `graph.json` ). This file is located in the `graphs` folder in your application source.",
+        "stability": "external",
+        "summary": "A application verion's manifest file."
+      },
+      "fqn": "@aws-cdk/aws-panorama.CfnApplicationInstance.ManifestPayloadProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/panorama.generated.ts",
+        "line": 459
+      },
+      "name": "ManifestPayloadProperty",
+      "namespace": "CfnApplicationInstance",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-applicationinstance-manifestpayload.html#cfn-panorama-applicationinstance-manifestpayload-payloaddata"
+            },
+            "stability": "external",
+            "summary": "The application manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 465
+          },
+          "name": "payloadData",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/panorama.generated:CfnApplicationInstance.ManifestPayloadProperty"
+    },
+    "@aws-cdk/aws-panorama.CfnApplicationInstanceProps": {
+      "assembly": "@aws-cdk/aws-panorama",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnApplicationInstance`."
+      },
+      "fqn": "@aws-cdk/aws-panorama.CfnApplicationInstanceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/panorama.generated.ts",
+        "line": 20
+      },
+      "name": "CfnApplicationInstanceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-defaultruntimecontextdevice"
+            },
+            "stability": "external",
+            "summary": "The device's ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 27
+          },
+          "name": "defaultRuntimeContextDevice",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-manifestpayload"
+            },
+            "stability": "external",
+            "summary": "The application's manifest document."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 34
+          },
+          "name": "manifestPayload",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-panorama.CfnApplicationInstance.ManifestPayloadProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-applicationinstanceidtoreplace"
+            },
+            "stability": "external",
+            "summary": "The ID of an application instance to replace with the new instance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 41
+          },
+          "name": "applicationInstanceIdToReplace",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-description"
+            },
+            "stability": "external",
+            "summary": "A description for the application instance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 48
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-deviceid"
+            },
+            "stability": "external",
+            "summary": "A device's ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 55
+          },
+          "name": "deviceId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-manifestoverridespayload"
+            },
+            "stability": "external",
+            "summary": "Setting overrides for the application manifest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 62
+          },
+          "name": "manifestOverridesPayload",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-panorama.CfnApplicationInstance.ManifestOverridesPayloadProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-name"
+            },
+            "stability": "external",
+            "summary": "A name for the application instance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 69
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-runtimerolearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of a runtime role for the application instance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 76
+          },
+          "name": "runtimeRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-statusfilter"
+            },
+            "stability": "external",
+            "summary": "Only include instances with a specific status."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 83
+          },
+          "name": "statusFilter",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-applicationinstance.html#cfn-panorama-applicationinstance-tags"
+            },
+            "stability": "external",
+            "summary": "Tags for the application instance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 90
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/panorama.generated:CfnApplicationInstanceProps"
+    },
+    "@aws-cdk/aws-panorama.CfnPackage": {
+      "assembly": "@aws-cdk/aws-panorama",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Panorama::Package",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-package.html"
+        },
+        "remarks": "Creates a package and storage location in an Amazon S3 access point.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Panorama::Package`."
+      },
+      "fqn": "@aws-cdk/aws-panorama.CfnPackage",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Panorama::Package`."
+        },
+        "locationInModule": {
+          "filename": "lib/panorama.generated.ts",
+          "line": 712
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-panorama.CfnPackageProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/panorama.generated.ts",
+        "line": 611
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 735
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 748
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPackage",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 615
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The package's ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 640
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedTime"
+            },
+            "stability": "external",
+            "summary": "The item's created time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 646
+          },
+          "name": "attrCreatedTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "PackageId"
+            },
+            "stability": "external",
+            "summary": "The package's ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 652
+          },
+          "name": "attrPackageId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StorageLocation.BinaryPrefixLocation"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 658
+          },
+          "name": "attrStorageLocationBinaryPrefixLocation",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StorageLocation.Bucket"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 664
+          },
+          "name": "attrStorageLocationBucket",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StorageLocation.GeneratedPrefixLocation"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 670
+          },
+          "name": "attrStorageLocationGeneratedPrefixLocation",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StorageLocation.ManifestPrefixLocation"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 676
+          },
+          "name": "attrStorageLocationManifestPrefixLocation",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StorageLocation.RepoPrefixLocation"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 682
+          },
+          "name": "attrStorageLocationRepoPrefixLocation",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 740
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-package.html#cfn-panorama-package-tags"
+            },
+            "stability": "external",
+            "summary": "Tags for the package."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 703
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-package.html#cfn-panorama-package-packagename"
+            },
+            "stability": "external",
+            "summary": "A name for the package."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 689
+          },
+          "name": "packageName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-package.html#cfn-panorama-package-storagelocation"
+            },
+            "stability": "external",
+            "summary": "`AWS::Panorama::Package.StorageLocation`."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 696
+          },
+          "name": "storageLocation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-panorama.CfnPackage.StorageLocationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/panorama.generated:CfnPackage"
+    },
+    "@aws-cdk/aws-panorama.CfnPackage.StorageLocationProperty": {
+      "assembly": "@aws-cdk/aws-panorama",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-package-storagelocation.html"
+        },
+        "stability": "external",
+        "summary": "A storage location."
+      },
+      "fqn": "@aws-cdk/aws-panorama.CfnPackage.StorageLocationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/panorama.generated.ts",
+        "line": 762
+      },
+      "name": "StorageLocationProperty",
+      "namespace": "CfnPackage",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-package-storagelocation.html#cfn-panorama-package-storagelocation-binaryprefixlocation"
+            },
+            "stability": "external",
+            "summary": "The location's binary prefix."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 768
+          },
+          "name": "binaryPrefixLocation",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-package-storagelocation.html#cfn-panorama-package-storagelocation-bucket"
+            },
+            "stability": "external",
+            "summary": "The location's bucket."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 774
+          },
+          "name": "bucket",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-package-storagelocation.html#cfn-panorama-package-storagelocation-generatedprefixlocation"
+            },
+            "stability": "external",
+            "summary": "The location's generated prefix."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 780
+          },
+          "name": "generatedPrefixLocation",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-package-storagelocation.html#cfn-panorama-package-storagelocation-manifestprefixlocation"
+            },
+            "stability": "external",
+            "summary": "The location's manifest prefix."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 786
+          },
+          "name": "manifestPrefixLocation",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-panorama-package-storagelocation.html#cfn-panorama-package-storagelocation-repoprefixlocation"
+            },
+            "stability": "external",
+            "summary": "The location's repo prefix."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 792
+          },
+          "name": "repoPrefixLocation",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/panorama.generated:CfnPackage.StorageLocationProperty"
+    },
+    "@aws-cdk/aws-panorama.CfnPackageProps": {
+      "assembly": "@aws-cdk/aws-panorama",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-package.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPackage`."
+      },
+      "fqn": "@aws-cdk/aws-panorama.CfnPackageProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/panorama.generated.ts",
+        "line": 525
+      },
+      "name": "CfnPackageProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-package.html#cfn-panorama-package-packagename"
+            },
+            "stability": "external",
+            "summary": "A name for the package."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 532
+          },
+          "name": "packageName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-package.html#cfn-panorama-package-storagelocation"
+            },
+            "stability": "external",
+            "summary": "`AWS::Panorama::Package.StorageLocation`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 539
+          },
+          "name": "storageLocation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-panorama.CfnPackage.StorageLocationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-package.html#cfn-panorama-package-tags"
+            },
+            "stability": "external",
+            "summary": "Tags for the package."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 546
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/panorama.generated:CfnPackageProps"
+    },
+    "@aws-cdk/aws-panorama.CfnPackageVersion": {
+      "assembly": "@aws-cdk/aws-panorama",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Panorama::PackageVersion",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html"
+        },
+        "remarks": "Registers a package version.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Panorama::PackageVersion`."
+      },
+      "fqn": "@aws-cdk/aws-panorama.CfnPackageVersion",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Panorama::PackageVersion`."
+        },
+        "locationInModule": {
+          "filename": "lib/panorama.generated.ts",
+          "line": 1092
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-panorama.CfnPackageVersionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/panorama.generated.ts",
+        "line": 982
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1118
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1134
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPackageVersion",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 986
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "IsLatestPatch"
+            },
+            "stability": "external",
+            "summary": "Whether the package version is the latest version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1011
+          },
+          "name": "attrIsLatestPatch",
+          "type": {
+            "fqn": "@aws-cdk/core.IResolvable"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "PackageArn"
+            },
+            "stability": "external",
+            "summary": "The package version's ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1017
+          },
+          "name": "attrPackageArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "PackageName"
+            },
+            "stability": "external",
+            "summary": "The package version's name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1023
+          },
+          "name": "attrPackageName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "RegisteredTime"
+            },
+            "stability": "external",
+            "summary": "The package version's registered time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1029
+          },
+          "name": "attrRegisteredTime",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "stability": "external",
+            "summary": "The package version's status."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1035
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StatusDescription"
+            },
+            "stability": "external",
+            "summary": "The package version's status description."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1041
+          },
+          "name": "attrStatusDescription",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1123
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html#cfn-panorama-packageversion-packageid"
+            },
+            "stability": "external",
+            "summary": "A package ID."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1048
+          },
+          "name": "packageId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html#cfn-panorama-packageversion-packageversion"
+            },
+            "stability": "external",
+            "summary": "A package version."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1055
+          },
+          "name": "packageVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html#cfn-panorama-packageversion-patchversion"
+            },
+            "stability": "external",
+            "summary": "A patch version."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1062
+          },
+          "name": "patchVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html#cfn-panorama-packageversion-marklatest"
+            },
+            "stability": "external",
+            "summary": "Whether to mark the new version as the latest version."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1069
+          },
+          "name": "markLatest",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html#cfn-panorama-packageversion-owneraccount"
+            },
+            "stability": "external",
+            "summary": "An owner account."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1076
+          },
+          "name": "ownerAccount",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html#cfn-panorama-packageversion-updatedlatestpatchversion"
+            },
+            "stability": "external",
+            "summary": "If the version was marked latest, the new version to maker as latest."
+          },
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 1083
+          },
+          "name": "updatedLatestPatchVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/panorama.generated:CfnPackageVersion"
+    },
+    "@aws-cdk/aws-panorama.CfnPackageVersionProps": {
+      "assembly": "@aws-cdk/aws-panorama",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPackageVersion`."
+      },
+      "fqn": "@aws-cdk/aws-panorama.CfnPackageVersionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/panorama.generated.ts",
+        "line": 864
+      },
+      "name": "CfnPackageVersionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html#cfn-panorama-packageversion-packageid"
+            },
+            "stability": "external",
+            "summary": "A package ID."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 871
+          },
+          "name": "packageId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html#cfn-panorama-packageversion-packageversion"
+            },
+            "stability": "external",
+            "summary": "A package version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 878
+          },
+          "name": "packageVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html#cfn-panorama-packageversion-patchversion"
+            },
+            "stability": "external",
+            "summary": "A patch version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 885
+          },
+          "name": "patchVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html#cfn-panorama-packageversion-marklatest"
+            },
+            "stability": "external",
+            "summary": "Whether to mark the new version as the latest version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 892
+          },
+          "name": "markLatest",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html#cfn-panorama-packageversion-owneraccount"
+            },
+            "stability": "external",
+            "summary": "An owner account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 899
+          },
+          "name": "ownerAccount",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-panorama-packageversion.html#cfn-panorama-packageversion-updatedlatestpatchversion"
+            },
+            "stability": "external",
+            "summary": "If the version was marked latest, the new version to maker as latest."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/panorama.generated.ts",
+            "line": 906
+          },
+          "name": "updatedLatestPatchVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/panorama.generated:CfnPackageVersionProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "hU1xED7c7ohXcTqoPhX+BUB1ITVaxRSfsqtUAlP1HZM="
+}

@@ -1,0 +1,8 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const yaml_cfn = require("../lib");
+test('An object with a single string value is serialized as a simple string', () => {
+    const value = yaml_cfn.serialize({ key: 'some string' });
+    expect(value).toEqual('key: some string\n');
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2VyaWFsaXphdGlvbi50ZXN0LmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsic2VyaWFsaXphdGlvbi50ZXN0LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsbUNBQW1DO0FBRW5DLElBQUksQ0FBQyx1RUFBdUUsRUFBRSxHQUFHLEVBQUU7SUFDakYsTUFBTSxLQUFLLEdBQUcsUUFBUSxDQUFDLFNBQVMsQ0FBQyxFQUFFLEdBQUcsRUFBRSxhQUFhLEVBQUUsQ0FBQyxDQUFDO0lBRXpELE1BQU0sQ0FBQyxLQUFLLENBQUMsQ0FBQyxPQUFPLENBQUMsb0JBQW9CLENBQUMsQ0FBQztBQUM5QyxDQUFDLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCAqIGFzIHlhbWxfY2ZuIGZyb20gJy4uL2xpYic7XG5cbnRlc3QoJ0FuIG9iamVjdCB3aXRoIGEgc2luZ2xlIHN0cmluZyB2YWx1ZSBpcyBzZXJpYWxpemVkIGFzIGEgc2ltcGxlIHN0cmluZycsICgpID0+IHtcbiAgY29uc3QgdmFsdWUgPSB5YW1sX2Nmbi5zZXJpYWxpemUoeyBrZXk6ICdzb21lIHN0cmluZycgfSk7XG5cbiAgZXhwZWN0KHZhbHVlKS50b0VxdWFsKCdrZXk6IHNvbWUgc3RyaW5nXFxuJyk7XG59KTtcbiJdfQ==

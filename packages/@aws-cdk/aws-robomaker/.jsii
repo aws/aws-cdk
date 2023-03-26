@@ -1,0 +1,3029 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::RoboMaker",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::RoboMaker",
+    "aws-robomaker"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-robomaker",
+  "readme": {
+    "markdown": "# AWS RoboMaker Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as robomaker from '@aws-cdk/aws-robomaker';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for RoboMaker construct libraries](https://constructs.dev/search?q=robomaker)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::RoboMaker resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_RoboMaker.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::RoboMaker](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_RoboMaker.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-robomaker",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.RoboMaker",
+      "packageId": "Amazon.CDK.AWS.RoboMaker"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "robomaker",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.robomaker"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-robomaker"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-robomaker",
+      "module": "aws_cdk.aws_robomaker"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-robomaker.CfnFleet": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RoboMaker::Fleet",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-fleet.html"
+        },
+        "remarks": "> The following resource is now deprecated. This resource can no longer be provisioned via stack create or update operations, and should not be included in your stack templates.\n>\n> We recommend migrating to AWS IoT Greengrass Version 2. For more information, see [Support Changes: May 2, 2022](https://docs.aws.amazon.com/robomaker/latest/dg/chapter-support-policy.html#software-support-policy-may2022) in the *AWS RoboMaker Developer Guide* .\n\nThe `AWS::RoboMaker::Fleet` resource creates an AWS RoboMaker fleet. Fleets contain robots and can receive deployments.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RoboMaker::Fleet`."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnFleet",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RoboMaker::Fleet`."
+        },
+        "locationInModule": {
+          "filename": "lib/robomaker.generated.ts",
+          "line": 151
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-robomaker.CfnFleetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 99
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 165
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 177
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnFleet",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 103
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the fleet, such as `arn:aws:robomaker:us-west-2:123456789012:deployment-fleet/MyFleet/1539894765711` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 128
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 170
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-fleet.html#cfn-robomaker-fleet-tags"
+            },
+            "stability": "external",
+            "summary": "The list of all tags added to the fleet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 142
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-fleet.html#cfn-robomaker-fleet-name"
+            },
+            "stability": "external",
+            "summary": "The name of the fleet."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 135
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnFleet"
+    },
+    "@aws-cdk/aws-robomaker.CfnFleetProps": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-fleet.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnFleet`."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnFleetProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 20
+      },
+      "name": "CfnFleetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-fleet.html#cfn-robomaker-fleet-name"
+            },
+            "stability": "external",
+            "summary": "The name of the fleet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 27
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-fleet.html#cfn-robomaker-fleet-tags"
+            },
+            "stability": "external",
+            "summary": "The list of all tags added to the fleet."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 34
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnFleetProps"
+    },
+    "@aws-cdk/aws-robomaker.CfnRobot": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RoboMaker::Robot",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robot.html"
+        },
+        "remarks": "> The following resource is now deprecated. This resource can no longer be provisioned via stack create or update operations, and should not be included in your stack templates.\n>\n> We recommend migrating to AWS IoT Greengrass Version 2. For more information, see [Support Changes: May 2, 2022](https://docs.aws.amazon.com/robomaker/latest/dg/chapter-support-policy.html#software-support-policy-may2022) in the *AWS RoboMaker Developer Guide* .\n\nThe `AWS::RoboMaker::RobotApplication` resource creates an AWS RoboMaker robot.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RoboMaker::Robot`."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnRobot",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RoboMaker::Robot`."
+        },
+        "locationInModule": {
+          "filename": "lib/robomaker.generated.ts",
+          "line": 374
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-robomaker.CfnRobotProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 301
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 393
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 408
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRobot",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 305
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the robot."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 330
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 398
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robot.html#cfn-robomaker-robot-tags"
+            },
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values that are attached to the robot."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 365
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robot.html#cfn-robomaker-robot-architecture"
+            },
+            "stability": "external",
+            "summary": "The architecture of the robot."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 337
+          },
+          "name": "architecture",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robot.html#cfn-robomaker-robot-greengrassgroupid"
+            },
+            "stability": "external",
+            "summary": "The Greengrass group associated with the robot."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 344
+          },
+          "name": "greengrassGroupId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robot.html#cfn-robomaker-robot-fleet"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the fleet to which the robot will be registered."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 351
+          },
+          "name": "fleet",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robot.html#cfn-robomaker-robot-name"
+            },
+            "stability": "external",
+            "summary": "The name of the robot."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 358
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnRobot"
+    },
+    "@aws-cdk/aws-robomaker.CfnRobotApplication": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RoboMaker::RobotApplication",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html"
+        },
+        "remarks": "The `AWS::RoboMaker::RobotApplication` resource creates an AWS RoboMaker robot application.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RoboMaker::RobotApplication`."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnRobotApplication",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RoboMaker::RobotApplication`."
+        },
+        "locationInModule": {
+          "filename": "lib/robomaker.generated.ts",
+          "line": 623
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-robomaker.CfnRobotApplicationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 537
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 643
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 659
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRobotApplication",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 541
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the robot application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 566
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CurrentRevisionId"
+            },
+            "stability": "external",
+            "summary": "The current revision id."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 572
+          },
+          "name": "attrCurrentRevisionId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 648
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-tags"
+            },
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values that are attached to the robot application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 614
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-robotsoftwaresuite"
+            },
+            "stability": "external",
+            "summary": "The robot software suite used by the robot application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 579
+          },
+          "name": "robotSoftwareSuite",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-robomaker.CfnRobotApplication.RobotSoftwareSuiteProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-currentrevisionid"
+            },
+            "stability": "external",
+            "summary": "The current revision id."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 586
+          },
+          "name": "currentRevisionId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-environment"
+            },
+            "stability": "external",
+            "summary": "The environment of the robot application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 593
+          },
+          "name": "environment",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-name"
+            },
+            "stability": "external",
+            "summary": "The name of the robot application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 600
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-sources"
+            },
+            "stability": "external",
+            "summary": "The sources of the robot application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 607
+          },
+          "name": "sources",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-robomaker.CfnRobotApplication.SourceConfigProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnRobotApplication"
+    },
+    "@aws-cdk/aws-robomaker.CfnRobotApplication.RobotSoftwareSuiteProperty": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-robotapplication-robotsoftwaresuite.html"
+        },
+        "stability": "external",
+        "summary": "Information about a robot software suite."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnRobotApplication.RobotSoftwareSuiteProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 673
+      },
+      "name": "RobotSoftwareSuiteProperty",
+      "namespace": "CfnRobotApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-robotapplication-robotsoftwaresuite.html#cfn-robomaker-robotapplication-robotsoftwaresuite-name"
+            },
+            "remarks": "`General` is the only supported value.",
+            "stability": "external",
+            "summary": "The name of the robot software suite."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 679
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-robotapplication-robotsoftwaresuite.html#cfn-robomaker-robotapplication-robotsoftwaresuite-version"
+            },
+            "remarks": "Not applicable for General software suite.",
+            "stability": "external",
+            "summary": "The version of the robot software suite."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 685
+          },
+          "name": "version",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnRobotApplication.RobotSoftwareSuiteProperty"
+    },
+    "@aws-cdk/aws-robomaker.CfnRobotApplication.SourceConfigProperty": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-robotapplication-sourceconfig.html"
+        },
+        "stability": "external",
+        "summary": "Information about a source configuration."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnRobotApplication.SourceConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 750
+      },
+      "name": "SourceConfigProperty",
+      "namespace": "CfnRobotApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-robotapplication-sourceconfig.html#cfn-robomaker-robotapplication-sourceconfig-architecture"
+            },
+            "stability": "external",
+            "summary": "The target processor architecture for the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 756
+          },
+          "name": "architecture",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-robotapplication-sourceconfig.html#cfn-robomaker-robotapplication-sourceconfig-s3bucket"
+            },
+            "stability": "external",
+            "summary": "The Amazon S3 bucket name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 762
+          },
+          "name": "s3Bucket",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-robotapplication-sourceconfig.html#cfn-robomaker-robotapplication-sourceconfig-s3key"
+            },
+            "stability": "external",
+            "summary": "The s3 object key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 768
+          },
+          "name": "s3Key",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnRobotApplication.SourceConfigProperty"
+    },
+    "@aws-cdk/aws-robomaker.CfnRobotApplicationProps": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRobotApplication`."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnRobotApplicationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 421
+      },
+      "name": "CfnRobotApplicationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-robotsoftwaresuite"
+            },
+            "stability": "external",
+            "summary": "The robot software suite used by the robot application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 428
+          },
+          "name": "robotSoftwareSuite",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-robomaker.CfnRobotApplication.RobotSoftwareSuiteProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-currentrevisionid"
+            },
+            "stability": "external",
+            "summary": "The current revision id."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 435
+          },
+          "name": "currentRevisionId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-environment"
+            },
+            "stability": "external",
+            "summary": "The environment of the robot application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 442
+          },
+          "name": "environment",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-name"
+            },
+            "stability": "external",
+            "summary": "The name of the robot application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 449
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-sources"
+            },
+            "stability": "external",
+            "summary": "The sources of the robot application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 456
+          },
+          "name": "sources",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-robomaker.CfnRobotApplication.SourceConfigProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplication.html#cfn-robomaker-robotapplication-tags"
+            },
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values that are attached to the robot application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 463
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnRobotApplicationProps"
+    },
+    "@aws-cdk/aws-robomaker.CfnRobotApplicationVersion": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RoboMaker::RobotApplicationVersion",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplicationversion.html"
+        },
+        "remarks": "The `AWS::RoboMaker::RobotApplicationVersion` resource creates an AWS RoboMaker robot version.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RoboMaker::RobotApplicationVersion`."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnRobotApplicationVersion",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RoboMaker::RobotApplicationVersion`."
+        },
+        "locationInModule": {
+          "filename": "lib/robomaker.generated.ts",
+          "line": 971
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-robomaker.CfnRobotApplicationVersionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 913
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 987
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 999
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRobotApplicationVersion",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 917
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationVersion"
+            },
+            "stability": "external",
+            "summary": "The robot application version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 942
+          },
+          "name": "attrApplicationVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the robot application version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 948
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 992
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplicationversion.html#cfn-robomaker-robotapplicationversion-application"
+            },
+            "stability": "external",
+            "summary": "The application information for the robot application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 955
+          },
+          "name": "application",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplicationversion.html#cfn-robomaker-robotapplicationversion-currentrevisionid"
+            },
+            "remarks": "If you provide a value and it matches the latest revision ID, a new version will be created.",
+            "stability": "external",
+            "summary": "The current revision id for the robot application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 962
+          },
+          "name": "currentRevisionId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnRobotApplicationVersion"
+    },
+    "@aws-cdk/aws-robomaker.CfnRobotApplicationVersionProps": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplicationversion.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRobotApplicationVersion`."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnRobotApplicationVersionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 837
+      },
+      "name": "CfnRobotApplicationVersionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplicationversion.html#cfn-robomaker-robotapplicationversion-application"
+            },
+            "stability": "external",
+            "summary": "The application information for the robot application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 844
+          },
+          "name": "application",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robotapplicationversion.html#cfn-robomaker-robotapplicationversion-currentrevisionid"
+            },
+            "remarks": "If you provide a value and it matches the latest revision ID, a new version will be created.",
+            "stability": "external",
+            "summary": "The current revision id for the robot application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 851
+          },
+          "name": "currentRevisionId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnRobotApplicationVersionProps"
+    },
+    "@aws-cdk/aws-robomaker.CfnRobotProps": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robot.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRobot`."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnRobotProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 190
+      },
+      "name": "CfnRobotProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robot.html#cfn-robomaker-robot-architecture"
+            },
+            "stability": "external",
+            "summary": "The architecture of the robot."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 197
+          },
+          "name": "architecture",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robot.html#cfn-robomaker-robot-greengrassgroupid"
+            },
+            "stability": "external",
+            "summary": "The Greengrass group associated with the robot."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 204
+          },
+          "name": "greengrassGroupId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robot.html#cfn-robomaker-robot-fleet"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the fleet to which the robot will be registered."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 211
+          },
+          "name": "fleet",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robot.html#cfn-robomaker-robot-name"
+            },
+            "stability": "external",
+            "summary": "The name of the robot."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 218
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-robot.html#cfn-robomaker-robot-tags"
+            },
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values that are attached to the robot."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 225
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnRobotProps"
+    },
+    "@aws-cdk/aws-robomaker.CfnSimulationApplication": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RoboMaker::SimulationApplication",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html"
+        },
+        "remarks": "The `AWS::RoboMaker::SimulationApplication` resource creates an AWS RoboMaker simulation application.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RoboMaker::SimulationApplication`."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RoboMaker::SimulationApplication`."
+        },
+        "locationInModule": {
+          "filename": "lib/robomaker.generated.ts",
+          "line": 1249
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplicationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 1149
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1272
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1290
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSimulationApplication",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1153
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the simulation application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1178
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CurrentRevisionId"
+            },
+            "stability": "external",
+            "summary": "The current revision id."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1184
+          },
+          "name": "attrCurrentRevisionId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1277
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-tags"
+            },
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values that are attached to the simulation application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1240
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-robotsoftwaresuite"
+            },
+            "stability": "external",
+            "summary": "The robot software suite used by the simulation application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1191
+          },
+          "name": "robotSoftwareSuite",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication.RobotSoftwareSuiteProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-simulationsoftwaresuite"
+            },
+            "stability": "external",
+            "summary": "The simulation software suite used by the simulation application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1198
+          },
+          "name": "simulationSoftwareSuite",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication.SimulationSoftwareSuiteProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-currentrevisionid"
+            },
+            "stability": "external",
+            "summary": "The current revision id."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1205
+          },
+          "name": "currentRevisionId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-environment"
+            },
+            "stability": "external",
+            "summary": "The environment of the simulation application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1212
+          },
+          "name": "environment",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-name"
+            },
+            "stability": "external",
+            "summary": "The name of the simulation application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1219
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-renderingengine"
+            },
+            "stability": "external",
+            "summary": "The rendering engine for the simulation application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1226
+          },
+          "name": "renderingEngine",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication.RenderingEngineProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-sources"
+            },
+            "stability": "external",
+            "summary": "The sources of the simulation application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1233
+          },
+          "name": "sources",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication.SourceConfigProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnSimulationApplication"
+    },
+    "@aws-cdk/aws-robomaker.CfnSimulationApplication.RenderingEngineProperty": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-renderingengine.html"
+        },
+        "stability": "external",
+        "summary": "Information about a rendering engine."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication.RenderingEngineProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 1304
+      },
+      "name": "RenderingEngineProperty",
+      "namespace": "CfnSimulationApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-renderingengine.html#cfn-robomaker-simulationapplication-renderingengine-name"
+            },
+            "stability": "external",
+            "summary": "The name of the rendering engine."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1310
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-renderingengine.html#cfn-robomaker-simulationapplication-renderingengine-version"
+            },
+            "stability": "external",
+            "summary": "The version of the rendering engine."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1316
+          },
+          "name": "version",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnSimulationApplication.RenderingEngineProperty"
+    },
+    "@aws-cdk/aws-robomaker.CfnSimulationApplication.RobotSoftwareSuiteProperty": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-robotsoftwaresuite.html"
+        },
+        "stability": "external",
+        "summary": "Information about a robot software suite."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication.RobotSoftwareSuiteProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 1382
+      },
+      "name": "RobotSoftwareSuiteProperty",
+      "namespace": "CfnSimulationApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-robotsoftwaresuite.html#cfn-robomaker-simulationapplication-robotsoftwaresuite-name"
+            },
+            "remarks": "`General` is the only supported value.",
+            "stability": "external",
+            "summary": "The name of the robot software suite."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1388
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-robotsoftwaresuite.html#cfn-robomaker-simulationapplication-robotsoftwaresuite-version"
+            },
+            "remarks": "Not applicable for General software suite.",
+            "stability": "external",
+            "summary": "The version of the robot software suite."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1394
+          },
+          "name": "version",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnSimulationApplication.RobotSoftwareSuiteProperty"
+    },
+    "@aws-cdk/aws-robomaker.CfnSimulationApplication.SimulationSoftwareSuiteProperty": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-simulationsoftwaresuite.html"
+        },
+        "stability": "external",
+        "summary": "Information about a simulation software suite."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication.SimulationSoftwareSuiteProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 1459
+      },
+      "name": "SimulationSoftwareSuiteProperty",
+      "namespace": "CfnSimulationApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-simulationsoftwaresuite.html#cfn-robomaker-simulationapplication-simulationsoftwaresuite-name"
+            },
+            "remarks": "`SimulationRuntime` is the only supported value.",
+            "stability": "external",
+            "summary": "The name of the simulation software suite."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1465
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-simulationsoftwaresuite.html#cfn-robomaker-simulationapplication-simulationsoftwaresuite-version"
+            },
+            "remarks": "Not applicable for `SimulationRuntime` .",
+            "stability": "external",
+            "summary": "The version of the simulation software suite."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1471
+          },
+          "name": "version",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnSimulationApplication.SimulationSoftwareSuiteProperty"
+    },
+    "@aws-cdk/aws-robomaker.CfnSimulationApplication.SourceConfigProperty": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-sourceconfig.html"
+        },
+        "stability": "external",
+        "summary": "Information about a source configuration."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication.SourceConfigProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 1536
+      },
+      "name": "SourceConfigProperty",
+      "namespace": "CfnSimulationApplication",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-sourceconfig.html#cfn-robomaker-simulationapplication-sourceconfig-architecture"
+            },
+            "stability": "external",
+            "summary": "The target processor architecture for the application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1542
+          },
+          "name": "architecture",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-sourceconfig.html#cfn-robomaker-simulationapplication-sourceconfig-s3bucket"
+            },
+            "stability": "external",
+            "summary": "The Amazon S3 bucket name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1548
+          },
+          "name": "s3Bucket",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-robomaker-simulationapplication-sourceconfig.html#cfn-robomaker-simulationapplication-sourceconfig-s3key"
+            },
+            "stability": "external",
+            "summary": "The s3 object key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1554
+          },
+          "name": "s3Key",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnSimulationApplication.SourceConfigProperty"
+    },
+    "@aws-cdk/aws-robomaker.CfnSimulationApplicationProps": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSimulationApplication`."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplicationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 1012
+      },
+      "name": "CfnSimulationApplicationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-robotsoftwaresuite"
+            },
+            "stability": "external",
+            "summary": "The robot software suite used by the simulation application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1019
+          },
+          "name": "robotSoftwareSuite",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication.RobotSoftwareSuiteProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-simulationsoftwaresuite"
+            },
+            "stability": "external",
+            "summary": "The simulation software suite used by the simulation application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1026
+          },
+          "name": "simulationSoftwareSuite",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication.SimulationSoftwareSuiteProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-currentrevisionid"
+            },
+            "stability": "external",
+            "summary": "The current revision id."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1033
+          },
+          "name": "currentRevisionId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-environment"
+            },
+            "stability": "external",
+            "summary": "The environment of the simulation application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1040
+          },
+          "name": "environment",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-name"
+            },
+            "stability": "external",
+            "summary": "The name of the simulation application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1047
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-renderingengine"
+            },
+            "stability": "external",
+            "summary": "The rendering engine for the simulation application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1054
+          },
+          "name": "renderingEngine",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication.RenderingEngineProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-sources"
+            },
+            "stability": "external",
+            "summary": "The sources of the simulation application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1061
+          },
+          "name": "sources",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplication.SourceConfigProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplication.html#cfn-robomaker-simulationapplication-tags"
+            },
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values that are attached to the simulation application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1068
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnSimulationApplicationProps"
+    },
+    "@aws-cdk/aws-robomaker.CfnSimulationApplicationVersion": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::RoboMaker::SimulationApplicationVersion",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplicationversion.html"
+        },
+        "remarks": "The `AWS::RoboMaker::SimulationApplicationVersion` resource creates a version of an AWS RoboMaker simulation application.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::RoboMaker::SimulationApplicationVersion`."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplicationVersion",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::RoboMaker::SimulationApplicationVersion`."
+        },
+        "locationInModule": {
+          "filename": "lib/robomaker.generated.ts",
+          "line": 1757
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplicationVersionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 1699
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1773
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1785
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSimulationApplicationVersion",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1703
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ApplicationVersion"
+            },
+            "stability": "external",
+            "summary": "The simulation application version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1728
+          },
+          "name": "attrApplicationVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the simulation application version."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1734
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1778
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplicationversion.html#cfn-robomaker-simulationapplicationversion-application"
+            },
+            "stability": "external",
+            "summary": "The application information for the simulation application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1741
+          },
+          "name": "application",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplicationversion.html#cfn-robomaker-simulationapplicationversion-currentrevisionid"
+            },
+            "remarks": "If you provide a value and it matches the latest revision ID, a new version will be created.",
+            "stability": "external",
+            "summary": "The current revision id for the simulation application."
+          },
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1748
+          },
+          "name": "currentRevisionId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnSimulationApplicationVersion"
+    },
+    "@aws-cdk/aws-robomaker.CfnSimulationApplicationVersionProps": {
+      "assembly": "@aws-cdk/aws-robomaker",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplicationversion.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSimulationApplicationVersion`."
+      },
+      "fqn": "@aws-cdk/aws-robomaker.CfnSimulationApplicationVersionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/robomaker.generated.ts",
+        "line": 1623
+      },
+      "name": "CfnSimulationApplicationVersionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplicationversion.html#cfn-robomaker-simulationapplicationversion-application"
+            },
+            "stability": "external",
+            "summary": "The application information for the simulation application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1630
+          },
+          "name": "application",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-robomaker-simulationapplicationversion.html#cfn-robomaker-simulationapplicationversion-currentrevisionid"
+            },
+            "remarks": "If you provide a value and it matches the latest revision ID, a new version will be created.",
+            "stability": "external",
+            "summary": "The current revision id for the simulation application."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/robomaker.generated.ts",
+            "line": 1637
+          },
+          "name": "currentRevisionId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/robomaker.generated:CfnSimulationApplicationVersionProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "yuEj7mKPGCil5beghIC0H83vaE8fI31Hp7g7FkQ3GUg="
+}

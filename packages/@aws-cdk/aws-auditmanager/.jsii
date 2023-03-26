@@ -1,0 +1,1589 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::AuditManager",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::AuditManager",
+    "aws-auditmanager"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-auditmanager",
+  "readme": {
+    "markdown": "# AWS::AuditManager Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as auditmanager from '@aws-cdk/aws-auditmanager';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for AuditManager construct libraries](https://constructs.dev/search?q=auditmanager)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::AuditManager resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_AuditManager.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::AuditManager](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_AuditManager.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-auditmanager",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.AuditManager",
+      "packageId": "Amazon.CDK.AWS.AuditManager"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "auditmanager",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.auditmanager"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-auditmanager"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-auditmanager",
+      "module": "aws_cdk.aws_auditmanager"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-auditmanager.CfnAssessment": {
+      "assembly": "@aws-cdk/aws-auditmanager",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::AuditManager::Assessment",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html"
+        },
+        "remarks": "The `AWS::AuditManager::Assessment` resource is an Audit Manager resource type that defines the scope of audit evidence collected by Audit Manager . An Audit Manager assessment is an implementation of an Audit Manager framework.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::AuditManager::Assessment`."
+      },
+      "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::AuditManager::Assessment`."
+        },
+        "locationInModule": {
+          "filename": "lib/auditmanager.generated.ts",
+          "line": 303
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-auditmanager.CfnAssessmentProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/auditmanager.generated.ts",
+        "line": 179
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 327
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 347
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnAssessment",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 183
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For example, `arn:aws:auditmanager:us-east-1:123456789012:assessment/111A1A1A-22B2-33C3-DDD4-55E5E5E555E5` .",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 208
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "AssessmentId"
+            },
+            "remarks": "For example, `111A1A1A-22B2-33C3-DDD4-55E5E5E555E5` .",
+            "stability": "external",
+            "summary": "The unique identifier for the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 214
+          },
+          "name": "attrAssessmentId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreationTime"
+            },
+            "remarks": "For example, `1607582033.373` .",
+            "stability": "external",
+            "summary": "The time when the assessment was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 220
+          },
+          "name": "attrCreationTime",
+          "type": {
+            "fqn": "@aws-cdk/core.IResolvable"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 332
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-tags"
+            },
+            "stability": "external",
+            "summary": "The tags that are associated with the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 294
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-assessmentreportsdestination"
+            },
+            "stability": "external",
+            "summary": "The destination that evidence reports are stored in for the assessment."
+          },
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 227
+          },
+          "name": "assessmentReportsDestination",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.AssessmentReportsDestinationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-awsaccount"
+            },
+            "stability": "external",
+            "summary": "The AWS account that's associated with the assessment."
+          },
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 234
+          },
+          "name": "awsAccount",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.AWSAccountProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-delegations"
+            },
+            "stability": "external",
+            "summary": "The delegations that are associated with the assessment."
+          },
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 241
+          },
+          "name": "delegations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.DelegationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-description"
+            },
+            "stability": "external",
+            "summary": "The description of the assessment."
+          },
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 248
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-frameworkid"
+            },
+            "stability": "external",
+            "summary": "The unique identifier for the framework."
+          },
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 255
+          },
+          "name": "frameworkId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-name"
+            },
+            "stability": "external",
+            "summary": "The name of the assessment."
+          },
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 262
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-roles"
+            },
+            "stability": "external",
+            "summary": "The roles that are associated with the assessment."
+          },
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 269
+          },
+          "name": "roles",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.RoleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-scope"
+            },
+            "stability": "external",
+            "summary": "The wrapper of AWS accounts and services that are in scope for the assessment."
+          },
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 276
+          },
+          "name": "scope",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.ScopeProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-status"
+            },
+            "remarks": "When you create a new assessment, the initial `Status` value is always `ACTIVE` . When you create an assessment, even if you specify the value as `INACTIVE` , the value overrides to `ACTIVE` .\n\nAfter you create an assessment, you can change the value of the `Status` property at any time. For example, when you want to stop collecting evidence for your assessment, you can change the assessment status to `INACTIVE` .",
+            "stability": "external",
+            "summary": "The overall status of the assessment."
+          },
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 287
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/auditmanager.generated:CfnAssessment"
+    },
+    "@aws-cdk/aws-auditmanager.CfnAssessment.AWSAccountProperty": {
+      "assembly": "@aws-cdk/aws-auditmanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-awsaccount.html"
+        },
+        "stability": "external",
+        "summary": "The `AWSAccount` property type specifies the wrapper of the AWS account details, such as account ID, email address, and so on."
+      },
+      "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.AWSAccountProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/auditmanager.generated.ts",
+        "line": 361
+      },
+      "name": "AWSAccountProperty",
+      "namespace": "CfnAssessment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-awsaccount.html#cfn-auditmanager-assessment-awsaccount-emailaddress"
+            },
+            "stability": "external",
+            "summary": "The email address that's associated with the AWS account ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 367
+          },
+          "name": "emailAddress",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-awsaccount.html#cfn-auditmanager-assessment-awsaccount-id"
+            },
+            "stability": "external",
+            "summary": "The identifier for the AWS account ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 373
+          },
+          "name": "id",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-awsaccount.html#cfn-auditmanager-assessment-awsaccount-name"
+            },
+            "stability": "external",
+            "summary": "The name of the AWS account ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 379
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/auditmanager.generated:CfnAssessment.AWSAccountProperty"
+    },
+    "@aws-cdk/aws-auditmanager.CfnAssessment.AWSServiceProperty": {
+      "assembly": "@aws-cdk/aws-auditmanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-awsservice.html"
+        },
+        "stability": "external",
+        "summary": "The `AWSService` property type specifies an AWS service such as Amazon S3 , AWS CloudTrail , and so on."
+      },
+      "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.AWSServiceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/auditmanager.generated.ts",
+        "line": 446
+      },
+      "name": "AWSServiceProperty",
+      "namespace": "CfnAssessment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-awsservice.html#cfn-auditmanager-assessment-awsservice-servicename"
+            },
+            "stability": "external",
+            "summary": "The name of the AWS service ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 452
+          },
+          "name": "serviceName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/auditmanager.generated:CfnAssessment.AWSServiceProperty"
+    },
+    "@aws-cdk/aws-auditmanager.CfnAssessment.AssessmentReportsDestinationProperty": {
+      "assembly": "@aws-cdk/aws-auditmanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-assessmentreportsdestination.html"
+        },
+        "stability": "external",
+        "summary": "The `AssessmentReportsDestination` property type specifies the location in which AWS Audit Manager saves assessment reports for the given assessment."
+      },
+      "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.AssessmentReportsDestinationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/auditmanager.generated.ts",
+        "line": 513
+      },
+      "name": "AssessmentReportsDestinationProperty",
+      "namespace": "CfnAssessment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-assessmentreportsdestination.html#cfn-auditmanager-assessment-assessmentreportsdestination-destination"
+            },
+            "stability": "external",
+            "summary": "The destination of the assessment report."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 519
+          },
+          "name": "destination",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-assessmentreportsdestination.html#cfn-auditmanager-assessment-assessmentreportsdestination-destinationtype"
+            },
+            "stability": "external",
+            "summary": "The destination type, such as Amazon S3."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 525
+          },
+          "name": "destinationType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/auditmanager.generated:CfnAssessment.AssessmentReportsDestinationProperty"
+    },
+    "@aws-cdk/aws-auditmanager.CfnAssessment.DelegationProperty": {
+      "assembly": "@aws-cdk/aws-auditmanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-delegation.html"
+        },
+        "stability": "external",
+        "summary": "The `Delegation` property type specifies the assignment of a control set to a delegate for review."
+      },
+      "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.DelegationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/auditmanager.generated.ts",
+        "line": 589
+      },
+      "name": "DelegationProperty",
+      "namespace": "CfnAssessment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-delegation.html#cfn-auditmanager-assessment-delegation-assessmentid"
+            },
+            "stability": "external",
+            "summary": "The identifier for the assessment that's associated with the delegation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 595
+          },
+          "name": "assessmentId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-delegation.html#cfn-auditmanager-assessment-delegation-assessmentname"
+            },
+            "stability": "external",
+            "summary": "The name of the assessment that's associated with the delegation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 601
+          },
+          "name": "assessmentName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-delegation.html#cfn-auditmanager-assessment-delegation-comment"
+            },
+            "stability": "external",
+            "summary": "The comment that's related to the delegation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 607
+          },
+          "name": "comment",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-delegation.html#cfn-auditmanager-assessment-delegation-controlsetid"
+            },
+            "stability": "external",
+            "summary": "The identifier for the control set that's associated with the delegation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 613
+          },
+          "name": "controlSetId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-delegation.html#cfn-auditmanager-assessment-delegation-createdby"
+            },
+            "remarks": "*Minimum* : `1`\n\n*Maximum* : `100`\n\n*Pattern* : `^[a-zA-Z0-9-_()\\\\[\\\\]\\\\s]+$`",
+            "stability": "external",
+            "summary": "The IAM user or role that created the delegation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 625
+          },
+          "name": "createdBy",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-delegation.html#cfn-auditmanager-assessment-delegation-creationtime"
+            },
+            "stability": "external",
+            "summary": "Specifies when the delegation was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 631
+          },
+          "name": "creationTime",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-delegation.html#cfn-auditmanager-assessment-delegation-id"
+            },
+            "stability": "external",
+            "summary": "The unique identifier for the delegation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 637
+          },
+          "name": "id",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-delegation.html#cfn-auditmanager-assessment-delegation-lastupdated"
+            },
+            "stability": "external",
+            "summary": "Specifies when the delegation was last updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 643
+          },
+          "name": "lastUpdated",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-delegation.html#cfn-auditmanager-assessment-delegation-rolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 649
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-delegation.html#cfn-auditmanager-assessment-delegation-roletype"
+            },
+            "remarks": "> In `CreateAssessment` , `roleType` can only be `PROCESS_OWNER` .\n>\n> In `UpdateSettings` , `roleType` can only be `PROCESS_OWNER` .\n>\n> In `BatchCreateDelegationByAssessment` , `roleType` can only be `RESOURCE_OWNER` .",
+            "stability": "external",
+            "summary": "The type of customer persona."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 661
+          },
+          "name": "roleType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-delegation.html#cfn-auditmanager-assessment-delegation-status"
+            },
+            "stability": "external",
+            "summary": "The status of the delegation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 667
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/auditmanager.generated:CfnAssessment.DelegationProperty"
+    },
+    "@aws-cdk/aws-auditmanager.CfnAssessment.RoleProperty": {
+      "assembly": "@aws-cdk/aws-auditmanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-role.html"
+        },
+        "stability": "external",
+        "summary": "The `Role` property type specifies the wrapper that contains AWS Audit Manager role information, such as the role type and IAM Amazon Resource Name (ARN)."
+      },
+      "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.RoleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/auditmanager.generated.ts",
+        "line": 758
+      },
+      "name": "RoleProperty",
+      "namespace": "CfnAssessment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-role.html#cfn-auditmanager-assessment-role-rolearn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 764
+          },
+          "name": "roleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-role.html#cfn-auditmanager-assessment-role-roletype"
+            },
+            "remarks": "> In `CreateAssessment` , `roleType` can only be `PROCESS_OWNER` .\n>\n> In `UpdateSettings` , `roleType` can only be `PROCESS_OWNER` .\n>\n> In `BatchCreateDelegationByAssessment` , `roleType` can only be `RESOURCE_OWNER` .",
+            "stability": "external",
+            "summary": "The type of customer persona."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 776
+          },
+          "name": "roleType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/auditmanager.generated:CfnAssessment.RoleProperty"
+    },
+    "@aws-cdk/aws-auditmanager.CfnAssessment.ScopeProperty": {
+      "assembly": "@aws-cdk/aws-auditmanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-scope.html"
+        },
+        "stability": "external",
+        "summary": "The `Scope` property type specifies the wrapper that contains the AWS accounts and services that are in scope for the assessment."
+      },
+      "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.ScopeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/auditmanager.generated.ts",
+        "line": 840
+      },
+      "name": "ScopeProperty",
+      "namespace": "CfnAssessment",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-scope.html#cfn-auditmanager-assessment-scope-awsaccounts"
+            },
+            "stability": "external",
+            "summary": "The AWS accounts that are included in the scope of the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 846
+          },
+          "name": "awsAccounts",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.AWSAccountProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-auditmanager-assessment-scope.html#cfn-auditmanager-assessment-scope-awsservices"
+            },
+            "stability": "external",
+            "summary": "The AWS services that are included in the scope of the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 852
+          },
+          "name": "awsServices",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.AWSServiceProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/auditmanager.generated:CfnAssessment.ScopeProperty"
+    },
+    "@aws-cdk/aws-auditmanager.CfnAssessmentProps": {
+      "assembly": "@aws-cdk/aws-auditmanager",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnAssessment`."
+      },
+      "fqn": "@aws-cdk/aws-auditmanager.CfnAssessmentProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/auditmanager.generated.ts",
+        "line": 20
+      },
+      "name": "CfnAssessmentProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-assessmentreportsdestination"
+            },
+            "stability": "external",
+            "summary": "The destination that evidence reports are stored in for the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 27
+          },
+          "name": "assessmentReportsDestination",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.AssessmentReportsDestinationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-awsaccount"
+            },
+            "stability": "external",
+            "summary": "The AWS account that's associated with the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 34
+          },
+          "name": "awsAccount",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.AWSAccountProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-delegations"
+            },
+            "stability": "external",
+            "summary": "The delegations that are associated with the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 41
+          },
+          "name": "delegations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.DelegationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-description"
+            },
+            "stability": "external",
+            "summary": "The description of the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 48
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-frameworkid"
+            },
+            "stability": "external",
+            "summary": "The unique identifier for the framework."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 55
+          },
+          "name": "frameworkId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-name"
+            },
+            "stability": "external",
+            "summary": "The name of the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 62
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-roles"
+            },
+            "stability": "external",
+            "summary": "The roles that are associated with the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 69
+          },
+          "name": "roles",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.RoleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-scope"
+            },
+            "stability": "external",
+            "summary": "The wrapper of AWS accounts and services that are in scope for the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 76
+          },
+          "name": "scope",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-auditmanager.CfnAssessment.ScopeProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-status"
+            },
+            "remarks": "When you create a new assessment, the initial `Status` value is always `ACTIVE` . When you create an assessment, even if you specify the value as `INACTIVE` , the value overrides to `ACTIVE` .\n\nAfter you create an assessment, you can change the value of the `Status` property at any time. For example, when you want to stop collecting evidence for your assessment, you can change the assessment status to `INACTIVE` .",
+            "stability": "external",
+            "summary": "The overall status of the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 87
+          },
+          "name": "status",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-auditmanager-assessment.html#cfn-auditmanager-assessment-tags"
+            },
+            "stability": "external",
+            "summary": "The tags that are associated with the assessment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/auditmanager.generated.ts",
+            "line": 94
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/auditmanager.generated:CfnAssessmentProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "1hNFYwt6d9x5nAGeKLyCPBLOQ2+VhJu7oGIKcQEpVtk="
+}

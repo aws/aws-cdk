@@ -1,0 +1,1889 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::FMS",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::FMS",
+    "aws-fms"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-fms",
+  "readme": {
+    "markdown": "# AWS::FMS Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as fms from '@aws-cdk/aws-fms';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for FMS construct libraries](https://constructs.dev/search?q=fms)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::FMS resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_FMS.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::FMS](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_FMS.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-fms",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.FMS",
+      "packageId": "Amazon.CDK.AWS.FMS"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "fms",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.fms"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-fms"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-fms",
+      "module": "aws_cdk.aws_fms"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-fms.CfnNotificationChannel": {
+      "assembly": "@aws-cdk/aws-fms",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::FMS::NotificationChannel",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-notificationchannel.html"
+        },
+        "remarks": "Designates the IAM role and Amazon Simple Notification Service (SNS) topic to use to record SNS logs.\n\nTo perform this action outside of the console, you must configure the SNS topic to allow the role `AWSServiceRoleForFMS` to publish SNS logs. For more information, see [Firewall Manager required permissions for API actions](https://docs.aws.amazon.com/waf/latest/developerguide/fms-api-permissions-ref.html) in the *AWS Firewall Manager Developer Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::FMS::NotificationChannel`."
+      },
+      "fqn": "@aws-cdk/aws-fms.CfnNotificationChannel",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::FMS::NotificationChannel`."
+        },
+        "locationInModule": {
+          "filename": "lib/fms.generated.ts",
+          "line": 145
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-fms.CfnNotificationChannelProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/fms.generated.ts",
+        "line": 99
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 160
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 172
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnNotificationChannel",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 103
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 165
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-notificationchannel.html#cfn-fms-notificationchannel-snsrolename"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role that allows Amazon SNS to record AWS Firewall Manager activity."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 129
+          },
+          "name": "snsRoleName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-notificationchannel.html#cfn-fms-notificationchannel-snstopicarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the SNS topic that collects notifications from AWS Firewall Manager ."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 136
+          },
+          "name": "snsTopicArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/fms.generated:CfnNotificationChannel"
+    },
+    "@aws-cdk/aws-fms.CfnNotificationChannelProps": {
+      "assembly": "@aws-cdk/aws-fms",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-notificationchannel.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnNotificationChannel`."
+      },
+      "fqn": "@aws-cdk/aws-fms.CfnNotificationChannelProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/fms.generated.ts",
+        "line": 20
+      },
+      "name": "CfnNotificationChannelProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-notificationchannel.html#cfn-fms-notificationchannel-snsrolename"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the IAM role that allows Amazon SNS to record AWS Firewall Manager activity."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 27
+          },
+          "name": "snsRoleName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-notificationchannel.html#cfn-fms-notificationchannel-snstopicarn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the SNS topic that collects notifications from AWS Firewall Manager ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 34
+          },
+          "name": "snsTopicArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/fms.generated:CfnNotificationChannelProps"
+    },
+    "@aws-cdk/aws-fms.CfnPolicy": {
+      "assembly": "@aws-cdk/aws-fms",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::FMS::Policy",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html"
+        },
+        "remarks": "An AWS Firewall Manager policy.\n\nFirewall Manager provides the following types of policies:\n\n- An AWS Shield Advanced policy, which applies Shield Advanced protection to specified accounts and resources.\n- An AWS WAF policy (type WAFV2), which defines rule groups to run first in the corresponding AWS WAF web ACL and rule groups to run last in the web ACL.\n- An AWS WAF Classic policy, which defines a rule group. AWS WAF Classic doesn't support rule groups in Amazon CloudFront , so, to create AWS WAF Classic policies through CloudFront , you first need to create your rule groups outside of CloudFront .\n- A security group policy, which manages VPC security groups across your AWS organization.\n- An AWS Network Firewall policy, which provides firewall rules to filter network traffic in specified Amazon VPCs.\n- A DNS Firewall policy, which provides Amazon Route 53 Resolver DNS Firewall rules to filter DNS queries for specified Amazon VPCs.\n\nEach policy is specific to one of the types. If you want to enforce more than one policy type across accounts, create multiple policies. You can create multiple policies for each type.\n\nThese policies require some setup to use. For more information, see the sections on prerequisites and getting started under [AWS Firewall Manager](https://docs.aws.amazon.com/waf/latest/developerguide/fms-prereq.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::FMS::Policy`."
+      },
+      "fqn": "@aws-cdk/aws-fms.CfnPolicy",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::FMS::Policy`."
+        },
+        "locationInModule": {
+          "filename": "lib/fms.generated.ts",
+          "line": 697
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-fms.CfnPolicyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/fms.generated.ts",
+        "line": 476
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 728
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 752
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPolicy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 480
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 505
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Id"
+            },
+            "stability": "external",
+            "summary": "The ID of the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 511
+          },
+          "name": "attrId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 733
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-excluderesourcetags"
+            },
+            "remarks": "If this property is `True` , resources with the specified tags are not in scope of the policy. If it's `False` , only resources with the specified tags are in scope of the policy.",
+            "stability": "external",
+            "summary": "Used only when tags are specified in the `ResourceTags` property."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 518
+          },
+          "name": "excludeResourceTags",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-policyname"
+            },
+            "stability": "external",
+            "summary": "The name of the AWS Firewall Manager policy."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 525
+          },
+          "name": "policyName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-remediationenabled"
+            },
+            "stability": "external",
+            "summary": "Indicates if the policy should be automatically applied to new resources."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 532
+          },
+          "name": "remediationEnabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-securityservicepolicydata"
+            },
+            "remarks": "This contains the following settings:\n\n- Type - Indicates the service type that the policy uses to protect the resource. For security group policies, Firewall Manager supports one security group for each common policy and for each content audit policy. This is an adjustable limit that you can increase by contacting AWS Support .\n\nValid values: `DNS_FIREWALL` | `NETWORK_FIREWALL` | `SECURITY_GROUPS_COMMON` | `SECURITY_GROUPS_CONTENT_AUDIT` | `SECURITY_GROUPS_USAGE_AUDIT` | `SHIELD_ADVANCED` | `WAFV2` | `WAF`\n- ManagedServiceData - Details about the service that are specific to the service type, in JSON format.\n\n- Example: `DNS_FIREWALL`\n\n`\"ManagedServiceData\": \"{ \\\"type\\\": \\\"DNS_FIREWALL\\\", \\\"preProcessRuleGroups\\\": [{\\\"ruleGroupId\\\": \\\"rslvr-frg-123456\\\", \\\"priority\\\": 11}], \\\"postProcessRuleGroups\\\": [{\\\"ruleGroupId\\\": \\\"rslvr-frg-123456\\\", \\\"priority\\\": 9902}]}\"`\n- Example: `NETWORK_FIREWALL`\n\n`\"ManagedServiceData\":\"{\\\"type\\\":\\\"NETWORK_FIREWALL\\\",\\\"networkFirewallStatelessRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:000000000000:stateless-rulegroup\\/example\\\",\\\"priority\\\":1}],\\\"networkFirewallStatelessDefaultActions\\\":[\\\"aws:drop\\\",\\\"example\\\"],\\\"networkFirewallStatelessFragmentDefaultActions\\\":[\\\"aws:drop\\\",\\\"example\\\"],\\\"networkFirewallStatelessCustomActions\\\":[{\\\"actionName\\\":\\\"example\\\",\\\"actionDefinition\\\":{\\\"publishMetricAction\\\":{\\\"dimensions\\\":[{\\\"value\\\":\\\"example\\\"}]}}}],\\\"networkFirewallStatefulRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:000000000000:stateful-rulegroup\\/example\\\"}],\\\"networkFirewallOrchestrationConfig\\\":{\\\"singleFirewallEndpointPerVPC\\\":false,\\\"allowedIPV4CidrList\\\":[]}}\"`\n- Example: `SECURITY_GROUPS_COMMON`\n\n`\"SecurityServicePolicyData\":{\"Type\":\"SECURITY_GROUPS_COMMON\",\"ManagedServiceData\":\"{\\\"type\\\":\\\"SECURITY_GROUPS_COMMON\\\",\\\"revertManualSecurityGroupChanges\\\":false,\\\"exclusiveResourceSecurityGroupManagement\\\":false,\\\"securityGroups\\\":[{\\\"id\\\":\\\" sg-000e55995d61a06bd\\\"}]}\"},\"RemediationEnabled\":false,\"ResourceType\":\"AWS::EC2::NetworkInterface\"}`\n- Example: `SECURITY_GROUPS_CONTENT_AUDIT`\n\n`\"SecurityServicePolicyData\":{\"Type\":\"SECURITY_GROUPS_CONTENT_AUDIT\",\"ManagedServiceData\":\"{\\\"type\\\":\\\"SECURITY_GROUPS_CONTENT_AUDIT\\\",\\\"securityGroups\\\":[{\\\"id\\\":\\\" sg-000e55995d61a06bd \\\"}],\\\"securityGroupAction\\\":{\\\"type\\\":\\\"ALLOW\\\"}}\"},\"RemediationEnabled\":false,\"ResourceType\":\"AWS::EC2::NetworkInterface\"}`\n\nThe security group action for content audit can be `ALLOW` or `DENY` . For `ALLOW` , all in-scope security group rules must be within the allowed range of the policy's security group rules. For `DENY` , all in-scope security group rules must not contain a value or a range that matches a rule value or range in the policy security group.\n- Example: `SECURITY_GROUPS_USAGE_AUDIT`\n\n`\"SecurityServicePolicyData\":{\"Type\":\"SECURITY_GROUPS_USAGE_AUDIT\",\"ManagedServiceData\":\"{\\\"type\\\":\\\"SECURITY_GROUPS_USAGE_AUDIT\\\",\\\"deleteUnusedSecurityGroups\\\":true,\\\"coalesceRedundantSecurityGroups\\\":true}\"},\"RemediationEnabled\":false,\"Resou rceType\":\"AWS::EC2::SecurityGroup\"}`\n- Specification for `SHIELD_ADVANCED` for Amazon CloudFront distributions\n\n`\"ManagedServiceData\": \"{\\\"type\\\": \\\"SHIELD_ADVANCED\\\", \\\"automaticResponseConfiguration\\\": {\\\"automaticResponseStatus\\\":\\\"ENABLED|IGNORED|DISABLED\\\", \\\"automaticResponseAction\\\":\\\"BLOCK|COUNT\\\"}, \\\"overrideCustomerWebaclClassic\\\":true|false}\"`\n\nFor example: `\"ManagedServiceData\": \"{\\\"type\\\":\\\"SHIELD_ADVANCED\\\",\\\"automaticResponseConfiguration\\\": {\\\"automaticResponseStatus\\\":\\\"ENABLED\\\", \\\"automaticResponseAction\\\":\\\"COUNT\\\"}}\"`\n\nThe default value for `automaticResponseStatus` is `IGNORED` . The value for `automaticResponseAction` is only required when `automaticResponseStatus` is set to `ENABLED` . The default value for `overrideCustomerWebaclClassic` is `false` .\n\nFor other resource types that you can protect with a Shield Advanced policy, this `ManagedServiceData` configuration is an empty string.\n- Example: `WAFV2`\n\n`\"ManagedServiceData\": \"{\\\"type\\\":\\\"WAFV2\\\",\\\"preProcessRuleGroups\\\":[{\\\"ruleGroupArn\\\":null,\\\"overrideAction\\\":{\\\"type\\\":\\\"NONE\\\"},\\\"managedRuleGroupIdentifier\\\":{\\\"version\\\":null,\\\"vendorName\\\":\\\"AWS\\\",\\\"managedRuleGroupName\\\":\\\"AWSManagedRulesAmazonIpReputationList\\\"},\\\"ruleGroupType\\\":\\\"ManagedRuleGroup\\\",\\\"excludeRules\\\":[]}],\\\"postProcessRuleGroups\\\":[],\\\"defaultAction\\\":{\\\"type\\\":\\\"ALLOW\\\"},\\\"overrideCustomerWebACLAssociation\\\":false,\\\"loggingConfiguration\\\":{\\\"logDestinationConfigs\\\":[\\\"arn:aws:firehose:us-west-2:12345678912:deliverystream/aws-waf-logs-fms-admin-destination\\\"],\\\"redactedFields\\\":[{\\\"redactedFieldType\\\":\\\"SingleHeader\\\",\\\"redactedFieldValue\\\":\\\"Cookies\\\"},{\\\"redactedFieldType\\\":\\\"Method\\\"}]}}\"`\n\nIn the `loggingConfiguration` , you can specify one `logDestinationConfigs` , you can optionally provide up to 20 `redactedFields` , and the `RedactedFieldType` must be one of `URI` , `QUERY_STRING` , `HEADER` , or `METHOD` .\n- Example: `WAF Classic`\n\n`\"ManagedServiceData\": \"{\\\"type\\\": \\\"WAF\\\", \\\"ruleGroups\\\": [{\\\"id\\\":\\\"12345678-1bcd-9012-efga-0987654321ab\\\", \\\"overrideAction\\\" : {\\\"type\\\": \\\"COUNT\\\"}}],\\\"defaultAction\\\": {\\\"type\\\": \\\"BLOCK\\\"}}`\n\nAWS WAF Classic doesn't support rule groups in CloudFront . To create a WAF Classic policy through CloudFormation, create your rule groups outside of CloudFront , then provide the rule group IDs in the WAF managed service data specification.",
+            "stability": "external",
+            "summary": "Details about the security service that is being used to protect the resources."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 583
+          },
+          "name": "securityServicePolicyData",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-fms.CfnPolicy.SecurityServicePolicyDataProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-deleteallpolicyresources"
+            },
+            "remarks": "For AWS WAF and Shield Advanced policies, Firewall Manager does the following:\n\n- Deletes rule groups created by Firewall Manager\n- Removes web ACLs from in-scope resources\n- Deletes web ACLs that contain no rules or rule groups\n\nFor security group policies, Firewall Manager does the following for each security group in the policy:\n\n- Disassociates the security group from in-scope resources\n- Deletes the security group if it was created through Firewall Manager and if it's no longer associated with any resources through another policy\n\nAfter the cleanup, in-scope resources are no longer protected by web ACLs in this policy. Protection of out-of-scope resources remains unchanged. Scope is determined by tags that you create and accounts that you associate with the policy. When creating the policy, if you specify that only resources in specific accounts or with specific tags are in scope of the policy, those accounts and resources are handled by the policy. All others are out of scope. If you don't specify tags or accounts, all resources are in scope.",
+            "stability": "external",
+            "summary": "Used when deleting a policy. If `true` , Firewall Manager performs cleanup according to the policy type."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 603
+          },
+          "name": "deleteAllPolicyResources",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-excludemap"
+            },
+            "remarks": "Specifying an OU is the equivalent of specifying all accounts in the OU and in any of its child OUs, including any child OUs and accounts that are added at a later time.\n\nYou can specify inclusions or exclusions, but not both. If you specify an `IncludeMap` , AWS Firewall Manager applies the policy to all accounts specified by the `IncludeMap` , and does not evaluate any `ExcludeMap` specifications. If you do not specify an `IncludeMap` , then Firewall Manager applies the policy to all accounts except for those specified by the `ExcludeMap` .\n\nYou can specify account IDs, OUs, or a combination:\n\n- Specify account IDs by setting the key to `ACCOUNT` . For example, the following is a valid map: `{“ACCOUNT” : [“accountID1”, “accountID2”]}` .\n- Specify OUs by setting the key to `ORGUNIT` . For example, the following is a valid map: `{“ORGUNIT” : [“ouid111”, “ouid112”]}` .\n- Specify accounts and OUs together in a single map, separated with a comma. For example, the following is a valid map: `{“ACCOUNT” : [“accountID1”, “accountID2”], “ORGUNIT” : [“ouid111”, “ouid112”]}` .",
+            "stability": "external",
+            "summary": "Specifies the AWS account IDs and AWS Organizations organizational units (OUs) to exclude from the policy."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 618
+          },
+          "name": "excludeMap",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-fms.CfnPolicy.IEMapProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-includemap"
+            },
+            "remarks": "Specifying an OU is the equivalent of specifying all accounts in the OU and in any of its child OUs, including any child OUs and accounts that are added at a later time.\n\nYou can specify inclusions or exclusions, but not both. If you specify an `IncludeMap` , AWS Firewall Manager applies the policy to all accounts specified by the `IncludeMap` , and does not evaluate any `ExcludeMap` specifications. If you do not specify an `IncludeMap` , then Firewall Manager applies the policy to all accounts except for those specified by the `ExcludeMap` .\n\nYou can specify account IDs, OUs, or a combination:\n\n- Specify account IDs by setting the key to `ACCOUNT` . For example, the following is a valid map: `{“ACCOUNT” : [“accountID1”, “accountID2”]}` .\n- Specify OUs by setting the key to `ORGUNIT` . For example, the following is a valid map: `{“ORGUNIT” : [“ouid111”, “ouid112”]}` .\n- Specify accounts and OUs together in a single map, separated with a comma. For example, the following is a valid map: `{“ACCOUNT” : [“accountID1”, “accountID2”], “ORGUNIT” : [“ouid111”, “ouid112”]}` .",
+            "stability": "external",
+            "summary": "Specifies the AWS account IDs and AWS Organizations organizational units (OUs) to include in the policy."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 633
+          },
+          "name": "includeMap",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-fms.CfnPolicy.IEMapProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-policydescription"
+            },
+            "stability": "external",
+            "summary": "`AWS::FMS::Policy.PolicyDescription`."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 640
+          },
+          "name": "policyDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-resourcescleanup"
+            },
+            "remarks": "For example, Firewall Manager will disassociate a Firewall Manager managed web ACL from a protected customer resource when the customer resource leaves policy scope.\n\nBy default, Firewall Manager doesn't remove protections or delete Firewall Manager managed resources.\n\nThis option is not available for Shield Advanced or AWS WAF Classic policies.",
+            "stability": "external",
+            "summary": "Indicates whether AWS Firewall Manager should automatically remove protections from resources that leave the policy scope and clean up resources that Firewall Manager is managing for accounts when those accounts leave policy scope."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 651
+          },
+          "name": "resourcesCleanUp",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-resourcesetids"
+            },
+            "stability": "external",
+            "summary": "`AWS::FMS::Policy.ResourceSetIds`."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 658
+          },
+          "name": "resourceSetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-resourcetags"
+            },
+            "remarks": "If this isn't set, then tags aren't used to modify policy scope. See also `ExcludeResourceTags` .",
+            "stability": "external",
+            "summary": "An array of `ResourceTag` objects, used to explicitly include resources in the policy scope or explicitly exclude them."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 665
+          },
+          "name": "resourceTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-fms.CfnPolicy.ResourceTagProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-resourcetype"
+            },
+            "remarks": "This is in the format shown in the [AWS Resource Types Reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) . To apply this policy to multiple resource types, specify a resource type of `ResourceTypeList` and then specify the resource types in a `ResourceTypeList` .\n\nFor AWS WAF and Shield Advanced, example resource types include `AWS::ElasticLoadBalancingV2::LoadBalancer` and `AWS::CloudFront::Distribution` . For a security group common policy, valid values are `AWS::EC2::NetworkInterface` and `AWS::EC2::Instance` . For a security group content audit policy, valid values are `AWS::EC2::SecurityGroup` , `AWS::EC2::NetworkInterface` , and `AWS::EC2::Instance` . For a security group usage audit policy, the value is `AWS::EC2::SecurityGroup` . For an AWS Network Firewall policy or DNS Firewall policy, the value is `AWS::EC2::VPC` .",
+            "stability": "external",
+            "summary": "The type of resource protected by or in scope of the policy."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 674
+          },
+          "name": "resourceType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-resourcetypelist"
+            },
+            "remarks": "Use this only to specify multiple resource types. To specify a single resource type, use `ResourceType` .",
+            "stability": "external",
+            "summary": "An array of `ResourceType` objects."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 681
+          },
+          "name": "resourceTypeList",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-tags"
+            },
+            "remarks": "The key:value pair can be anything you define. Typically, the tag key represents a category (such as \"environment\") and the tag value represents a specific value within that category (such as \"test,\" \"development,\" or \"production\"). You can add up to 50 tags to each AWS resource.",
+            "stability": "external",
+            "summary": "A collection of key:value pairs associated with an AWS resource."
+          },
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 688
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-fms.CfnPolicy.PolicyTagProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/fms.generated:CfnPolicy"
+    },
+    "@aws-cdk/aws-fms.CfnPolicy.IEMapProperty": {
+      "assembly": "@aws-cdk/aws-fms",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-iemap.html"
+        },
+        "remarks": "Specifying an OU is the equivalent of specifying all accounts in the OU and in any of its child OUs, including any child OUs and accounts that are added at a later time.\n\nThis is used for the policy's `IncludeMap` and `ExcludeMap` .\n\nYou can specify account IDs, OUs, or a combination:\n\n- Specify account IDs by setting the key to `ACCOUNT` . For example, the following is a valid map: `{“ACCOUNT” : [“accountID1”, “accountID2”]}` .\n- Specify OUs by setting the key to `ORGUNIT` . For example, the following is a valid map: `{“ORGUNIT” : [“ouid111”, “ouid112”]}` .\n- Specify accounts and OUs together in a single map, separated with a comma. For example, the following is a valid map: `{“ACCOUNT” : [“accountID1”, “accountID2”], “ORGUNIT” : [“ouid111”, “ouid112”]}` .",
+        "stability": "external",
+        "summary": "Specifies the AWS account IDs and AWS Organizations organizational units (OUs) to include in or exclude from the policy."
+      },
+      "fqn": "@aws-cdk/aws-fms.CfnPolicy.IEMapProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/fms.generated.ts",
+        "line": 774
+      },
+      "name": "IEMapProperty",
+      "namespace": "CfnPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-iemap.html#cfn-fms-policy-iemap-account"
+            },
+            "stability": "external",
+            "summary": "The account list for the map."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 780
+          },
+          "name": "account",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-iemap.html#cfn-fms-policy-iemap-orgunit"
+            },
+            "stability": "external",
+            "summary": "The organizational unit list for the map."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 786
+          },
+          "name": "orgunit",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/fms.generated:CfnPolicy.IEMapProperty"
+    },
+    "@aws-cdk/aws-fms.CfnPolicy.NetworkFirewallPolicyProperty": {
+      "assembly": "@aws-cdk/aws-fms",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-networkfirewallpolicy.html"
+        },
+        "remarks": "For information about Network Firewall deployment models, see [AWS Network Firewall example architectures with routing](https://docs.aws.amazon.com/network-firewall/latest/developerguide/architectures.html) in the *Network Firewall Developer Guide* .",
+        "stability": "external",
+        "summary": "Configures the firewall policy deployment model of AWS Network Firewall ."
+      },
+      "fqn": "@aws-cdk/aws-fms.CfnPolicy.NetworkFirewallPolicyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/fms.generated.ts",
+        "line": 850
+      },
+      "name": "NetworkFirewallPolicyProperty",
+      "namespace": "CfnPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-networkfirewallpolicy.html#cfn-fms-policy-networkfirewallpolicy-firewalldeploymentmodel"
+            },
+            "remarks": "To use a distributed model, set [PolicyOption](https://docs.aws.amazon.com/fms/2018-01-01/APIReference/API_PolicyOption.html) to `NULL` .",
+            "stability": "external",
+            "summary": "Defines the deployment model to use for the firewall policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 856
+          },
+          "name": "firewallDeploymentModel",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/fms.generated:CfnPolicy.NetworkFirewallPolicyProperty"
+    },
+    "@aws-cdk/aws-fms.CfnPolicy.PolicyOptionProperty": {
+      "assembly": "@aws-cdk/aws-fms",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-policyoption.html"
+        },
+        "stability": "external",
+        "summary": "Contains the AWS Network Firewall firewall policy options to configure the policy's deployment model and third-party firewall policy settings."
+      },
+      "fqn": "@aws-cdk/aws-fms.CfnPolicy.PolicyOptionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/fms.generated.ts",
+        "line": 918
+      },
+      "name": "PolicyOptionProperty",
+      "namespace": "CfnPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-policyoption.html#cfn-fms-policy-policyoption-networkfirewallpolicy"
+            },
+            "stability": "external",
+            "summary": "Defines the deployment model to use for the firewall policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 924
+          },
+          "name": "networkFirewallPolicy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-fms.CfnPolicy.NetworkFirewallPolicyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-policyoption.html#cfn-fms-policy-policyoption-thirdpartyfirewallpolicy"
+            },
+            "stability": "external",
+            "summary": "Defines the policy options for a third-party firewall policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 930
+          },
+          "name": "thirdPartyFirewallPolicy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-fms.CfnPolicy.ThirdPartyFirewallPolicyProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/fms.generated:CfnPolicy.PolicyOptionProperty"
+    },
+    "@aws-cdk/aws-fms.CfnPolicy.PolicyTagProperty": {
+      "assembly": "@aws-cdk/aws-fms",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-policytag.html"
+        },
+        "remarks": "The key:value pair can be anything you define. Typically, the tag key represents a category (such as \"environment\") and the tag value represents a specific value within that category (such as \"test,\" \"development,\" or \"production\"). You can add up to 50 tags to each AWS resource.",
+        "stability": "external",
+        "summary": "A collection of key:value pairs associated with an AWS resource."
+      },
+      "fqn": "@aws-cdk/aws-fms.CfnPolicy.PolicyTagProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/fms.generated.ts",
+        "line": 994
+      },
+      "name": "PolicyTagProperty",
+      "namespace": "CfnPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-policytag.html#cfn-fms-policy-policytag-key"
+            },
+            "remarks": "You can use a tag key to describe a category of information, such as \"customer.\" Tag keys are case-sensitive.",
+            "stability": "external",
+            "summary": "Part of the key:value pair that defines a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 1000
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-policytag.html#cfn-fms-policy-policytag-value"
+            },
+            "remarks": "You can use a tag value to describe a specific value within a category, such as \"companyA\" or \"companyB.\" Tag values are case-sensitive.",
+            "stability": "external",
+            "summary": "Part of the key:value pair that defines a tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 1006
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/fms.generated:CfnPolicy.PolicyTagProperty"
+    },
+    "@aws-cdk/aws-fms.CfnPolicy.ResourceTagProperty": {
+      "assembly": "@aws-cdk/aws-fms",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-resourcetag.html"
+        },
+        "remarks": "Tags enable you to categorize your AWS resources in different ways, for example, by purpose, owner, or environment. Each tag consists of a key and an optional value. Firewall Manager combines the tags with \"AND\" so that, if you add more than one tag to a policy scope, a resource must have all the specified tags to be included or excluded. For more information, see [Working with Tag Editor](https://docs.aws.amazon.com/awsconsolehelpdocs/latest/gsg/tag-editor.html) .",
+        "stability": "external",
+        "summary": "The resource tags that AWS Firewall Manager uses to determine if a particular resource should be included or excluded from the AWS Firewall Manager policy."
+      },
+      "fqn": "@aws-cdk/aws-fms.CfnPolicy.ResourceTagProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/fms.generated.ts",
+        "line": 1072
+      },
+      "name": "ResourceTagProperty",
+      "namespace": "CfnPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-resourcetag.html#cfn-fms-policy-resourcetag-key"
+            },
+            "stability": "external",
+            "summary": "The resource tag key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 1078
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-resourcetag.html#cfn-fms-policy-resourcetag-value"
+            },
+            "stability": "external",
+            "summary": "The resource tag value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 1084
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/fms.generated:CfnPolicy.ResourceTagProperty"
+    },
+    "@aws-cdk/aws-fms.CfnPolicy.SecurityServicePolicyDataProperty": {
+      "assembly": "@aws-cdk/aws-fms",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-securityservicepolicydata.html"
+        },
+        "stability": "external",
+        "summary": "Details about the security service that is being used to protect the resources."
+      },
+      "fqn": "@aws-cdk/aws-fms.CfnPolicy.SecurityServicePolicyDataProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/fms.generated.ts",
+        "line": 1149
+      },
+      "name": "SecurityServicePolicyDataProperty",
+      "namespace": "CfnPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-securityservicepolicydata.html#cfn-fms-policy-securityservicepolicydata-type"
+            },
+            "remarks": "This specifies the type of policy that is created, either an AWS WAF policy, a Shield Advanced policy, or a security group policy. For security group policies, Firewall Manager supports one security group for each common policy and for each content audit policy. This is an adjustable limit that you can increase by contacting AWS Support .",
+            "stability": "external",
+            "summary": "The service that the policy is using to protect the resources."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 1246
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-securityservicepolicydata.html#cfn-fms-policy-securityservicepolicydata-managedservicedata"
+            },
+            "remarks": "- Example: `DNS_FIREWALL`\n\n`\"{\\\"type\\\":\\\"DNS_FIREWALL\\\",\\\"preProcessRuleGroups\\\":[{\\\"ruleGroupId\\\":\\\"rslvr-frg-1\\\",\\\"priority\\\":10}],\\\"postProcessRuleGroups\\\":[{\\\"ruleGroupId\\\":\\\"rslvr-frg-2\\\",\\\"priority\\\":9911}]}\"`\n\n> Valid values for `preProcessRuleGroups` are between 1 and 99. Valid values for `postProcessRuleGroups` are between 9901 and 10000.\n- Example: `NETWORK_FIREWALL` - Centralized deployment model\n\n`\"{\\\"type\\\":\\\"NETWORK_FIREWALL\\\",\\\"awsNetworkFirewallConfig\\\":{\\\"networkFirewallStatelessRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:123456789011:stateless-rulegroup/test\\\",\\\"priority\\\":1}],\\\"networkFirewallStatelessDefaultActions\\\":[\\\"aws:forward_to_sfe\\\",\\\"customActionName\\\"],\\\"networkFirewallStatelessFragmentDefaultActions\\\":[\\\"aws:forward_to_sfe\\\",\\\"customActionName\\\"],\\\"networkFirewallStatelessCustomActions\\\":[{\\\"actionName\\\":\\\"customActionName\\\",\\\"actionDefinition\\\":{\\\"publishMetricAction\\\":{\\\"dimensions\\\":[{\\\"value\\\":\\\"metricdimensionvalue\\\"}]}}}],\\\"networkFirewallStatefulRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:123456789011:stateful-rulegroup/test\\\"}],\\\"networkFirewallLoggingConfiguration\\\":{\\\"logDestinationConfigs\\\":[{\\\"logDestinationType\\\":\\\"S3\\\",\\\"logType\\\":\\\"ALERT\\\",\\\"logDestination\\\":{\\\"bucketName\\\":\\\"s3-bucket-name\\\"}},{\\\"logDestinationType\\\":\\\"S3\\\",\\\"logType\\\":\\\"FLOW\\\",\\\"logDestination\\\":{\\\"bucketName\\\":\\\"s3-bucket-name\\\"}}],\\\"overrideExistingConfig\\\":true}},\\\"firewallDeploymentModel\\\":{\\\"centralizedFirewallDeploymentModel\\\":{\\\"centralizedFirewallOrchestrationConfig\\\":{\\\"inspectionVpcIds\\\":[{\\\"resourceId\\\":\\\"vpc-1234\\\",\\\"accountId\\\":\\\"123456789011\\\"}],\\\"firewallCreationConfig\\\":{\\\"endpointLocation\\\":{\\\"availabilityZoneConfigList\\\":[{\\\"availabilityZoneId\\\":null,\\\"availabilityZoneName\\\":\\\"us-east-1a\\\",\\\"allowedIPV4CidrList\\\":[\\\"10.0.0.0/28\\\"]}]}},\\\"allowedIPV4CidrList\\\":[]}}}}\"`\n\nTo use the centralized deployment model, you must set [PolicyOption](https://docs.aws.amazon.com/fms/2018-01-01/APIReference/API_PolicyOption.html) to `CENTRALIZED` .\n- Example: `NETWORK_FIREWALL` - Distributed deployment model with automatic Availability Zone configuration\n\n`\"{\\\"type\\\":\\\"NETWORK_FIREWALL\\\",\\\"networkFirewallStatelessRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:123456789011:stateless-rulegroup/test\\\",\\\"priority\\\":1}],\\\"networkFirewallStatelessDefaultActions\\\":[\\\"aws:forward_to_sfe\\\",\\\"customActionName\\\"],\\\"networkFirewallStatelessFragmentDefaultActions\\\":[\\\"aws:forward_to_sfe\\\",\\\"customActionName\\\"],\\\"networkFirewallStatelessCustomActions\\\":[{\\\"actionName\\\":\\\"customActionName\\\",\\\"actionDefinition\\\":{\\\"publishMetricAction\\\":{\\\"dimensions\\\":[{\\\"value\\\":\\\"metricdimensionvalue\\\"}]}}}],\\\"networkFirewallStatefulRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:123456789011:stateful-rulegroup/test\\\"}],\\\"networkFirewallOrchestrationConfig\\\":{\\\"singleFirewallEndpointPerVPC\\\":false,\\\"allowedIPV4CidrList\\\":[\\\"10.0.0.0/28\\\",\\\"192.168.0.0/28\\\"],\\\"routeManagementAction\\\":\\\"OFF\\\"},\\\"networkFirewallLoggingConfiguration\\\":{\\\"logDestinationConfigs\\\":[{\\\"logDestinationType\\\":\\\"S3\\\",\\\"logType\\\":\\\"ALERT\\\",\\\"logDestination\\\":{\\\"bucketName\\\":\\\"s3-bucket-name\\\"}},{\\\"logDestinationType\\\":\\\"S3\\\",\\\"logType\\\":\\\"FLOW\\\",\\\"logDestination\\\":{\\\"bucketName\\\":\\\"s3-bucket-name\\\"}}],\\\"overrideExistingConfig\\\":true}}\"`\n\nWith automatic Availbility Zone configuration, Firewall Manager chooses which Availability Zones to create the endpoints in. To use the distributed deployment model, you must set [PolicyOption](https://docs.aws.amazon.com/fms/2018-01-01/APIReference/API_PolicyOption.html) to `NULL` .\n- Example: `NETWORK_FIREWALL` - Distributed deployment model with automatic Availability Zone configuration and route management\n\n`\"{\\\"type\\\":\\\"NETWORK_FIREWALL\\\",\\\"networkFirewallStatelessRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:123456789011:stateless-rulegroup/test\\\",\\\"priority\\\":1}],\\\"networkFirewallStatelessDefaultActions\\\":[\\\"aws:forward_to_sfe\\\",\\\"customActionName\\\"],\\\"networkFirewallStatelessFragmentDefaultActions\\\":[\\\"aws:forward_to_sfe\\\",\\\"customActionName\\\"],\\\"networkFirewallStatelessCustomActions\\\":[{\\\"actionName\\\":\\\"customActionName\\\",\\\"actionDefinition\\\":{\\\"publishMetricAction\\\":{\\\"dimensions\\\":[{\\\"value\\\":\\\"metricdimensionvalue\\\"}]}}}],\\\"networkFirewallStatefulRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:123456789011:stateful-rulegroup/test\\\"}],\\\"networkFirewallOrchestrationConfig\\\":{\\\"singleFirewallEndpointPerVPC\\\":false,\\\"allowedIPV4CidrList\\\":[\\\"10.0.0.0/28\\\",\\\"192.168.0.0/28\\\"],\\\"routeManagementAction\\\":\\\"MONITOR\\\",\\\"routeManagementTargetTypes\\\":[\\\"InternetGateway\\\"]},\\\"networkFirewallLoggingConfiguration\\\":{\\\"logDestinationConfigs\\\":[{\\\"logDestinationType\\\":\\\"S3\\\",\\\"logType\\\":\\\"ALERT\\\",\\\"logDestination\\\":{\\\"bucketName\\\":\\\"s3-bucket-name\\\"}},{\\\"logDestinationType\\\":\\\"S3\\\",\\\"logType\\\": \\\"FLOW\\\",\\\"logDestination\\\":{\\\"bucketName\\\":\\\"s3-bucket-name\\\"}}],\\\"overrideExistingConfig\\\":true}}\"`\n\nTo use the distributed deployment model, you must set [PolicyOption](https://docs.aws.amazon.com/fms/2018-01-01/APIReference/API_PolicyOption.html) to `NULL` .\n- Example: `NETWORK_FIREWALL` - Distributed deployment model with custom Availability Zone configuration\n\n`\"{\\\"type\\\":\\\"NETWORK_FIREWALL\\\",\\\"networkFirewallStatelessRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:123456789011:stateless-rulegroup/test\\\",\\\"priority\\\":1}],\\\"networkFirewallStatelessDefaultActions\\\":[\\\"aws:forward_to_sfe\\\",\\\"customActionName\\\"],\\\"networkFirewallStatelessFragmentDefaultActions\\\":[\\\"aws:forward_to_sfe\\\",\\\"fragmentcustomactionname\\\"],\\\"networkFirewallStatelessCustomActions\\\":[{\\\"actionName\\\":\\\"customActionName\\\", \\\"actionDefinition\\\":{\\\"publishMetricAction\\\":{\\\"dimensions\\\":[{\\\"value\\\":\\\"metricdimensionvalue\\\"}]}}},{\\\"actionName\\\":\\\"fragmentcustomactionname\\\",\\\"actionDefinition\\\":{\\\"publishMetricAction\\\":{\\\"dimensions\\\":[{\\\"value\\\":\\\"fragmentmetricdimensionvalue\\\"}]}}}],\\\"networkFirewallStatefulRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:123456789011:stateful-rulegroup/test\\\"}],\\\"networkFirewallOrchestrationConfig\\\":{\\\"firewallCreationConfig\\\":{ \\\"endpointLocation\\\":{\\\"availabilityZoneConfigList\\\":[{\\\"availabilityZoneName\\\":\\\"us-east-1a\\\",\\\"allowedIPV4CidrList\\\":[\\\"10.0.0.0/28\\\"]},{\\\"availabilityZoneName\\\":\\\"us-east-1b\\\",\\\"allowedIPV4CidrList\\\":[ \\\"10.0.0.0/28\\\"]}]} },\\\"singleFirewallEndpointPerVPC\\\":false,\\\"allowedIPV4CidrList\\\":null,\\\"routeManagementAction\\\":\\\"OFF\\\",\\\"networkFirewallLoggingConfiguration\\\":{\\\"logDestinationConfigs\\\":[{\\\"logDestinationType\\\":\\\"S3\\\",\\\"logType\\\":\\\"ALERT\\\",\\\"logDestination\\\":{\\\"bucketName\\\":\\\"s3-bucket-name\\\"}},{\\\"logDestinationType\\\":\\\"S3\\\",\\\"logType\\\":\\\"FLOW\\\",\\\"logDestination\\\":{\\\"bucketName\\\":\\\"s3-bucket-name\\\"}}],\\\"overrideExistingConfig\\\":boolean}}\"`\n\nWith custom Availability Zone configuration, you define which specific Availability Zones to create endpoints in by configuring `firewallCreationConfig` . To configure the Availability Zones in `firewallCreationConfig` , specify either the `availabilityZoneName` or `availabilityZoneId` parameter, not both parameters.\n\nTo use the distributed deployment model, you must set [PolicyOption](https://docs.aws.amazon.com/fms/2018-01-01/APIReference/API_PolicyOption.html) to `NULL` .\n- Example: `NETWORK_FIREWALL` - Distributed deployment model with custom Availability Zone configuration and route management\n\n`\"{\\\"type\\\":\\\"NETWORK_FIREWALL\\\",\\\"networkFirewallStatelessRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:123456789011:stateless-rulegroup/test\\\",\\\"priority\\\":1}],\\\"networkFirewallStatelessDefaultActions\\\":[\\\"aws:forward_to_sfe\\\",\\\"customActionName\\\"],\\\"networkFirewallStatelessFragmentDefaultActions\\\":[\\\"aws:forward_to_sfe\\\",\\\"fragmentcustomactionname\\\"],\\\"networkFirewallStatelessCustomActions\\\":[{\\\"actionName\\\":\\\"customActionName\\\",\\\"actionDefinition\\\":{\\\"publishMetricAction\\\":{\\\"dimensions\\\":[{\\\"value\\\":\\\"metricdimensionvalue\\\"}]}}},{\\\"actionName\\\":\\\"fragmentcustomactionname\\\",\\\"actionDefinition\\\":{\\\"publishMetricAction\\\":{\\\"dimensions\\\":[{\\\"value\\\":\\\"fragmentmetricdimensionvalue\\\"}]}}}],\\\"networkFirewallStatefulRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:123456789011:stateful-rulegroup/test\\\"}],\\\"networkFirewallOrchestrationConfig\\\":{\\\"firewallCreationConfig\\\":{\\\"endpointLocation\\\":{\\\"availabilityZoneConfigList\\\":[{\\\"availabilityZoneName\\\":\\\"us-east-1a\\\",\\\"allowedIPV4CidrList\\\":[\\\"10.0.0.0/28\\\"]},{\\\"availabilityZoneName\\\":\\\"us-east-1b\\\",\\\"allowedIPV4CidrList\\\":[\\\"10.0.0.0/28\\\"]}]}},\\\"singleFirewallEndpointPerVPC\\\":false,\\\"allowedIPV4CidrList\\\":null,\\\"routeManagementAction\\\":\\\"MONITOR\\\",\\\"routeManagementTargetTypes\\\":[\\\"InternetGateway\\\"],\\\"routeManagementConfig\\\":{\\\"allowCrossAZTrafficIfNoEndpoint\\\":true}},\\\"networkFirewallLoggingConfiguration\\\":{\\\"logDestinationConfigs\\\":[{\\\"logDestinationType\\\":\\\"S3\\\",\\\"logType\\\":\\\"ALERT\\\",\\\"logDestination\\\":{\\\"bucketName\\\":\\\"s3-bucket-name\\\"}},{\\\"logDestinationType\\\":\\\"S3\\\",\\\"logType\\\":\\\"FLOW\\\",\\\"logDestination\\\":{\\\"bucketName\\\":\\\"s3-bucket-name\\\"}}],\\\"overrideExistingConfig\\\":boolean}}\"`\n\nTo use the distributed deployment model, you must set [PolicyOption](https://docs.aws.amazon.com/fms/2018-01-01/APIReference/API_PolicyOption.html) to `NULL` .\n- Example: `THIRD_PARTY_FIREWALL`\n\n`\"{ \"type\":\"THIRD_PARTY_FIREWALL\", \"thirdPartyFirewall\":\"PALO_ALTO_NETWORKS_CLOUD_NGFW\", \"thirdPartyFirewallConfig\":{ \"thirdPartyFirewallPolicyList\":[\"global-1\"] }, \"firewallDeploymentModel\":{ \"distributedFirewallDeploymentModel\":{ \"distributedFirewallOrchestrationConfig\":{ \"firewallCreationConfig\":{ \"endpointLocation\":{ \"availabilityZoneConfigList\":[ { \"availabilityZoneName\":\"${AvailabilityZone}\" } ] } }, \"allowedIPV4CidrList\":[ ] } } } }\"`\n- Example: `SECURITY_GROUPS_COMMON`\n\n`\"{\\\"type\\\":\\\"SECURITY_GROUPS_COMMON\\\",\\\"revertManualSecurityGroupChanges\\\":false,\\\"exclusiveResourceSecurityGroupManagement\\\":false, \\\"applyToAllEC2InstanceENIs\\\":false,\\\"securityGroups\\\":[{\\\"id\\\":\\\" sg-000e55995d61a06bd\\\"}]}\"`\n- Example: `SECURITY_GROUPS_COMMON` - Security group tag distribution\n\n`\"\"{\\\"type\\\":\\\"SECURITY_GROUPS_COMMON\\\",\\\"securityGroups\\\":[{\\\"id\\\":\\\"sg-000e55995d61a06bd\\\"}],\\\"revertManualSecurityGroupChanges\\\":true,\\\"exclusiveResourceSecurityGroupManagement\\\":false,\\\"applyToAllEC2InstanceENIs\\\":false,\\\"includeSharedVPC\\\":false,\\\"enableTagDistribution\\\":true}\"\"`\n\nFirewall Manager automatically distributes tags from the primary group to the security groups created by this policy. To use security group tag distribution, you must also set `revertManualSecurityGroupChanges` to `true` , otherwise Firewall Manager won't be able to create the policy. When you enable `revertManualSecurityGroupChanges` , Firewall Manager identifies and reports when the security groups created by this policy become non-compliant.\n\nFirewall Manager won't distrubute system tags added by AWS services into the replica security groups. System tags begin with the `aws:` prefix.\n- Example: Shared VPCs. Apply the preceding policy to resources in shared VPCs as well as to those in VPCs that the account owns\n\n`\"{\\\"type\\\":\\\"SECURITY_GROUPS_COMMON\\\",\\\"revertManualSecurityGroupChanges\\\":false,\\\"exclusiveResourceSecurityGroupManagement\\\":false, \\\"applyToAllEC2InstanceENIs\\\":false,\\\"includeSharedVPC\\\":true,\\\"securityGroups\\\":[{\\\"id\\\":\\\" sg-000e55995d61a06bd\\\"}]}\"`\n- Example: `SECURITY_GROUPS_CONTENT_AUDIT`\n\n`\"{\\\"type\\\":\\\"SECURITY_GROUPS_CONTENT_AUDIT\\\",\\\"securityGroups\\\":[{\\\"id\\\":\\\"sg-000e55995d61a06bd\\\"}],\\\"securityGroupAction\\\":{\\\"type\\\":\\\"ALLOW\\\"}}\"`\n\nThe security group action for content audit can be `ALLOW` or `DENY` . For `ALLOW` , all in-scope security group rules must be within the allowed range of the policy's security group rules. For `DENY` , all in-scope security group rules must not contain a value or a range that matches a rule value or range in the policy security group.\n- Example: `SECURITY_GROUPS_USAGE_AUDIT`\n\n`\"{\\\"type\\\":\\\"SECURITY_GROUPS_USAGE_AUDIT\\\",\\\"deleteUnusedSecurityGroups\\\":true,\\\"coalesceRedundantSecurityGroups\\\":true}\"`\n- Specification for `SHIELD_ADVANCED` for Amazon CloudFront distributions\n\n`\"{\\\"type\\\":\\\"SHIELD_ADVANCED\\\",\\\"automaticResponseConfiguration\\\": {\\\"automaticResponseStatus\\\":\\\"ENABLED|IGNORED|DISABLED\\\", \\\"automaticResponseAction\\\":\\\"BLOCK|COUNT\\\"}, \\\"overrideCustomerWebaclClassic\\\":true|false}\"`\n\nFor example: `\"{\\\"type\\\":\\\"SHIELD_ADVANCED\\\",\\\"automaticResponseConfiguration\\\": {\\\"automaticResponseStatus\\\":\\\"ENABLED\\\", \\\"automaticResponseAction\\\":\\\"COUNT\\\"}}\"`\n\nThe default value for `automaticResponseStatus` is `IGNORED` . The value for `automaticResponseAction` is only required when `automaticResponseStatus` is set to `ENABLED` . The default value for `overrideCustomerWebaclClassic` is `false` .\n\nFor other resource types that you can protect with a Shield Advanced policy, this `ManagedServiceData` configuration is an empty string.\n- Example: `WAFV2`\n\n`\"{\\\"type\\\":\\\"WAFV2\\\",\\\"preProcessRuleGroups\\\":[{\\\"ruleGroupArn\\\":null,\\\"overrideAction\\\":{\\\"type\\\":\\\"NONE\\\"},\\\"managedRuleGroupIdentifier\\\":{\\\"version\\\":null,\\\"vendorName\\\":\\\"AWS\\\",\\\"managedRuleGroupName\\\":\\\"AWSManagedRulesAmazonIpReputationList\\\"},\\\"ruleGroupType\\\":\\\"ManagedRuleGroup\\\",\\\"excludeRules\\\":[{\\\"name\\\":\\\"NoUserAgent_HEADER\\\"}]}],\\\"postProcessRuleGroups\\\":[],\\\"defaultAction\\\":{\\\"type\\\":\\\"ALLOW\\\"},\\\"overrideCustomerWebACLAssociation\\\":false,\\\"loggingConfiguration\\\":{\\\"logDestinationConfigs\\\":[\\\"arn:aws:firehose:us-west-2:12345678912:deliverystream/aws-waf-logs-fms-admin-destination\\\"],\\\"redactedFields\\\":[{\\\"redactedFieldType\\\":\\\"SingleHeader\\\",\\\"redactedFieldValue\\\":\\\"Cookies\\\"},{\\\"redactedFieldType\\\":\\\"Method\\\"}]}}\"`\n\nIn the `loggingConfiguration` , you can specify one `logDestinationConfigs` , you can optionally provide up to 20 `redactedFields` , and the `RedactedFieldType` must be one of `URI` , `QUERY_STRING` , `HEADER` , or `METHOD` .\n- Example: `WAFV2` - AWS Firewall Manager support for AWS WAF managed rule group versioning\n\n`\"{\\\"type\\\":\\\"WAFV2\\\",\\\"preProcessRuleGroups\\\":[{\\\"ruleGroupArn\\\":null,\\\"overrideAction\\\":{\\\"type\\\":\\\"NONE\\\"},\\\"managedRuleGroupIdentifier\\\":{\\\"versionEnabled\\\":true,\\\"version\\\":\\\"Version_2.0\\\",\\\"vendorName\\\":\\\"AWS\\\",\\\"managedRuleGroupName\\\":\\\"AWSManagedRulesCommonRuleSet\\\"},\\\"ruleGroupType\\\":\\\"ManagedRuleGroup\\\",\\\"excludeRules\\\":[{\\\"name\\\":\\\"NoUserAgent_HEADER\\\"}]}],\\\"postProcessRuleGroups\\\":[],\\\"defaultAction\\\":{\\\"type\\\":\\\"ALLOW\\\"},\\\"overrideCustomerWebACLAssociation\\\":false,\\\"loggingConfiguration\\\":{\\\"logDestinationConfigs\\\":[\\\"arn:aws:firehose:us-west-2:12345678912:deliverystream/aws-waf-logs-fms-admin-destination\\\"],\\\"redactedFields\\\":[{\\\"redactedFieldType\\\":\\\"SingleHeader\\\",\\\"redactedFieldValue\\\":\\\"Cookies\\\"},{\\\"redactedFieldType\\\":\\\"Method\\\"}]}}\"`\n\nTo use a specific version of a AWS WAF managed rule group in your Firewall Manager policy, you must set `versionEnabled` to `true` , and set `version` to the version you'd like to use. If you don't set `versionEnabled` to `true` , or if you omit `versionEnabled` , then Firewall Manager uses the default version of the AWS WAF managed rule group.\n- Example: `AWS WAF Classic`\n\n`\"{\\\"type\\\": \\\"WAF\\\", \\\"ruleGroups\\\": [{\\\"id\\\":\\\"12345678-1bcd-9012-efga-0987654321ab\\\", \\\"overrideAction\\\" : {\\\"type\\\": \\\"COUNT\\\"}}], \\\"defaultAction\\\": {\\\"type\\\": \\\"BLOCK\\\"}}\"`",
+            "stability": "external",
+            "summary": "Details about the service that are specific to the service type, in JSON format."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 1234
+          },
+          "name": "managedServiceData",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-securityservicepolicydata.html#cfn-fms-policy-securityservicepolicydata-policyoption"
+            },
+            "stability": "external",
+            "summary": "Contains the Network Firewall firewall policy options to configure a centralized deployment model."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 1240
+          },
+          "name": "policyOption",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-fms.CfnPolicy.PolicyOptionProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/fms.generated:CfnPolicy.SecurityServicePolicyDataProperty"
+    },
+    "@aws-cdk/aws-fms.CfnPolicy.ThirdPartyFirewallPolicyProperty": {
+      "assembly": "@aws-cdk/aws-fms",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-thirdpartyfirewallpolicy.html"
+        },
+        "stability": "external",
+        "summary": "Configures the deployment model for the third-party firewall."
+      },
+      "fqn": "@aws-cdk/aws-fms.CfnPolicy.ThirdPartyFirewallPolicyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/fms.generated.ts",
+        "line": 1314
+      },
+      "name": "ThirdPartyFirewallPolicyProperty",
+      "namespace": "CfnPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fms-policy-thirdpartyfirewallpolicy.html#cfn-fms-policy-thirdpartyfirewallpolicy-firewalldeploymentmodel"
+            },
+            "stability": "external",
+            "summary": "Defines the deployment model to use for the third-party firewall policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 1320
+          },
+          "name": "firewallDeploymentModel",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/fms.generated:CfnPolicy.ThirdPartyFirewallPolicyProperty"
+    },
+    "@aws-cdk/aws-fms.CfnPolicyProps": {
+      "assembly": "@aws-cdk/aws-fms",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPolicy`."
+      },
+      "fqn": "@aws-cdk/aws-fms.CfnPolicyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/fms.generated.ts",
+        "line": 185
+      },
+      "name": "CfnPolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-excluderesourcetags"
+            },
+            "remarks": "If this property is `True` , resources with the specified tags are not in scope of the policy. If it's `False` , only resources with the specified tags are in scope of the policy.",
+            "stability": "external",
+            "summary": "Used only when tags are specified in the `ResourceTags` property."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 192
+          },
+          "name": "excludeResourceTags",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-policyname"
+            },
+            "stability": "external",
+            "summary": "The name of the AWS Firewall Manager policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 199
+          },
+          "name": "policyName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-remediationenabled"
+            },
+            "stability": "external",
+            "summary": "Indicates if the policy should be automatically applied to new resources."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 206
+          },
+          "name": "remediationEnabled",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-securityservicepolicydata"
+            },
+            "remarks": "This contains the following settings:\n\n- Type - Indicates the service type that the policy uses to protect the resource. For security group policies, Firewall Manager supports one security group for each common policy and for each content audit policy. This is an adjustable limit that you can increase by contacting AWS Support .\n\nValid values: `DNS_FIREWALL` | `NETWORK_FIREWALL` | `SECURITY_GROUPS_COMMON` | `SECURITY_GROUPS_CONTENT_AUDIT` | `SECURITY_GROUPS_USAGE_AUDIT` | `SHIELD_ADVANCED` | `WAFV2` | `WAF`\n- ManagedServiceData - Details about the service that are specific to the service type, in JSON format.\n\n- Example: `DNS_FIREWALL`\n\n`\"ManagedServiceData\": \"{ \\\"type\\\": \\\"DNS_FIREWALL\\\", \\\"preProcessRuleGroups\\\": [{\\\"ruleGroupId\\\": \\\"rslvr-frg-123456\\\", \\\"priority\\\": 11}], \\\"postProcessRuleGroups\\\": [{\\\"ruleGroupId\\\": \\\"rslvr-frg-123456\\\", \\\"priority\\\": 9902}]}\"`\n- Example: `NETWORK_FIREWALL`\n\n`\"ManagedServiceData\":\"{\\\"type\\\":\\\"NETWORK_FIREWALL\\\",\\\"networkFirewallStatelessRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:000000000000:stateless-rulegroup\\/example\\\",\\\"priority\\\":1}],\\\"networkFirewallStatelessDefaultActions\\\":[\\\"aws:drop\\\",\\\"example\\\"],\\\"networkFirewallStatelessFragmentDefaultActions\\\":[\\\"aws:drop\\\",\\\"example\\\"],\\\"networkFirewallStatelessCustomActions\\\":[{\\\"actionName\\\":\\\"example\\\",\\\"actionDefinition\\\":{\\\"publishMetricAction\\\":{\\\"dimensions\\\":[{\\\"value\\\":\\\"example\\\"}]}}}],\\\"networkFirewallStatefulRuleGroupReferences\\\":[{\\\"resourceARN\\\":\\\"arn:aws:network-firewall:us-east-1:000000000000:stateful-rulegroup\\/example\\\"}],\\\"networkFirewallOrchestrationConfig\\\":{\\\"singleFirewallEndpointPerVPC\\\":false,\\\"allowedIPV4CidrList\\\":[]}}\"`\n- Example: `SECURITY_GROUPS_COMMON`\n\n`\"SecurityServicePolicyData\":{\"Type\":\"SECURITY_GROUPS_COMMON\",\"ManagedServiceData\":\"{\\\"type\\\":\\\"SECURITY_GROUPS_COMMON\\\",\\\"revertManualSecurityGroupChanges\\\":false,\\\"exclusiveResourceSecurityGroupManagement\\\":false,\\\"securityGroups\\\":[{\\\"id\\\":\\\" sg-000e55995d61a06bd\\\"}]}\"},\"RemediationEnabled\":false,\"ResourceType\":\"AWS::EC2::NetworkInterface\"}`\n- Example: `SECURITY_GROUPS_CONTENT_AUDIT`\n\n`\"SecurityServicePolicyData\":{\"Type\":\"SECURITY_GROUPS_CONTENT_AUDIT\",\"ManagedServiceData\":\"{\\\"type\\\":\\\"SECURITY_GROUPS_CONTENT_AUDIT\\\",\\\"securityGroups\\\":[{\\\"id\\\":\\\" sg-000e55995d61a06bd \\\"}],\\\"securityGroupAction\\\":{\\\"type\\\":\\\"ALLOW\\\"}}\"},\"RemediationEnabled\":false,\"ResourceType\":\"AWS::EC2::NetworkInterface\"}`\n\nThe security group action for content audit can be `ALLOW` or `DENY` . For `ALLOW` , all in-scope security group rules must be within the allowed range of the policy's security group rules. For `DENY` , all in-scope security group rules must not contain a value or a range that matches a rule value or range in the policy security group.\n- Example: `SECURITY_GROUPS_USAGE_AUDIT`\n\n`\"SecurityServicePolicyData\":{\"Type\":\"SECURITY_GROUPS_USAGE_AUDIT\",\"ManagedServiceData\":\"{\\\"type\\\":\\\"SECURITY_GROUPS_USAGE_AUDIT\\\",\\\"deleteUnusedSecurityGroups\\\":true,\\\"coalesceRedundantSecurityGroups\\\":true}\"},\"RemediationEnabled\":false,\"Resou rceType\":\"AWS::EC2::SecurityGroup\"}`\n- Specification for `SHIELD_ADVANCED` for Amazon CloudFront distributions\n\n`\"ManagedServiceData\": \"{\\\"type\\\": \\\"SHIELD_ADVANCED\\\", \\\"automaticResponseConfiguration\\\": {\\\"automaticResponseStatus\\\":\\\"ENABLED|IGNORED|DISABLED\\\", \\\"automaticResponseAction\\\":\\\"BLOCK|COUNT\\\"}, \\\"overrideCustomerWebaclClassic\\\":true|false}\"`\n\nFor example: `\"ManagedServiceData\": \"{\\\"type\\\":\\\"SHIELD_ADVANCED\\\",\\\"automaticResponseConfiguration\\\": {\\\"automaticResponseStatus\\\":\\\"ENABLED\\\", \\\"automaticResponseAction\\\":\\\"COUNT\\\"}}\"`\n\nThe default value for `automaticResponseStatus` is `IGNORED` . The value for `automaticResponseAction` is only required when `automaticResponseStatus` is set to `ENABLED` . The default value for `overrideCustomerWebaclClassic` is `false` .\n\nFor other resource types that you can protect with a Shield Advanced policy, this `ManagedServiceData` configuration is an empty string.\n- Example: `WAFV2`\n\n`\"ManagedServiceData\": \"{\\\"type\\\":\\\"WAFV2\\\",\\\"preProcessRuleGroups\\\":[{\\\"ruleGroupArn\\\":null,\\\"overrideAction\\\":{\\\"type\\\":\\\"NONE\\\"},\\\"managedRuleGroupIdentifier\\\":{\\\"version\\\":null,\\\"vendorName\\\":\\\"AWS\\\",\\\"managedRuleGroupName\\\":\\\"AWSManagedRulesAmazonIpReputationList\\\"},\\\"ruleGroupType\\\":\\\"ManagedRuleGroup\\\",\\\"excludeRules\\\":[]}],\\\"postProcessRuleGroups\\\":[],\\\"defaultAction\\\":{\\\"type\\\":\\\"ALLOW\\\"},\\\"overrideCustomerWebACLAssociation\\\":false,\\\"loggingConfiguration\\\":{\\\"logDestinationConfigs\\\":[\\\"arn:aws:firehose:us-west-2:12345678912:deliverystream/aws-waf-logs-fms-admin-destination\\\"],\\\"redactedFields\\\":[{\\\"redactedFieldType\\\":\\\"SingleHeader\\\",\\\"redactedFieldValue\\\":\\\"Cookies\\\"},{\\\"redactedFieldType\\\":\\\"Method\\\"}]}}\"`\n\nIn the `loggingConfiguration` , you can specify one `logDestinationConfigs` , you can optionally provide up to 20 `redactedFields` , and the `RedactedFieldType` must be one of `URI` , `QUERY_STRING` , `HEADER` , or `METHOD` .\n- Example: `WAF Classic`\n\n`\"ManagedServiceData\": \"{\\\"type\\\": \\\"WAF\\\", \\\"ruleGroups\\\": [{\\\"id\\\":\\\"12345678-1bcd-9012-efga-0987654321ab\\\", \\\"overrideAction\\\" : {\\\"type\\\": \\\"COUNT\\\"}}],\\\"defaultAction\\\": {\\\"type\\\": \\\"BLOCK\\\"}}`\n\nAWS WAF Classic doesn't support rule groups in CloudFront . To create a WAF Classic policy through CloudFormation, create your rule groups outside of CloudFront , then provide the rule group IDs in the WAF managed service data specification.",
+            "stability": "external",
+            "summary": "Details about the security service that is being used to protect the resources."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 257
+          },
+          "name": "securityServicePolicyData",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-fms.CfnPolicy.SecurityServicePolicyDataProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-deleteallpolicyresources"
+            },
+            "remarks": "For AWS WAF and Shield Advanced policies, Firewall Manager does the following:\n\n- Deletes rule groups created by Firewall Manager\n- Removes web ACLs from in-scope resources\n- Deletes web ACLs that contain no rules or rule groups\n\nFor security group policies, Firewall Manager does the following for each security group in the policy:\n\n- Disassociates the security group from in-scope resources\n- Deletes the security group if it was created through Firewall Manager and if it's no longer associated with any resources through another policy\n\nAfter the cleanup, in-scope resources are no longer protected by web ACLs in this policy. Protection of out-of-scope resources remains unchanged. Scope is determined by tags that you create and accounts that you associate with the policy. When creating the policy, if you specify that only resources in specific accounts or with specific tags are in scope of the policy, those accounts and resources are handled by the policy. All others are out of scope. If you don't specify tags or accounts, all resources are in scope.",
+            "stability": "external",
+            "summary": "Used when deleting a policy. If `true` , Firewall Manager performs cleanup according to the policy type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 277
+          },
+          "name": "deleteAllPolicyResources",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-excludemap"
+            },
+            "remarks": "Specifying an OU is the equivalent of specifying all accounts in the OU and in any of its child OUs, including any child OUs and accounts that are added at a later time.\n\nYou can specify inclusions or exclusions, but not both. If you specify an `IncludeMap` , AWS Firewall Manager applies the policy to all accounts specified by the `IncludeMap` , and does not evaluate any `ExcludeMap` specifications. If you do not specify an `IncludeMap` , then Firewall Manager applies the policy to all accounts except for those specified by the `ExcludeMap` .\n\nYou can specify account IDs, OUs, or a combination:\n\n- Specify account IDs by setting the key to `ACCOUNT` . For example, the following is a valid map: `{“ACCOUNT” : [“accountID1”, “accountID2”]}` .\n- Specify OUs by setting the key to `ORGUNIT` . For example, the following is a valid map: `{“ORGUNIT” : [“ouid111”, “ouid112”]}` .\n- Specify accounts and OUs together in a single map, separated with a comma. For example, the following is a valid map: `{“ACCOUNT” : [“accountID1”, “accountID2”], “ORGUNIT” : [“ouid111”, “ouid112”]}` .",
+            "stability": "external",
+            "summary": "Specifies the AWS account IDs and AWS Organizations organizational units (OUs) to exclude from the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 292
+          },
+          "name": "excludeMap",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-fms.CfnPolicy.IEMapProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-includemap"
+            },
+            "remarks": "Specifying an OU is the equivalent of specifying all accounts in the OU and in any of its child OUs, including any child OUs and accounts that are added at a later time.\n\nYou can specify inclusions or exclusions, but not both. If you specify an `IncludeMap` , AWS Firewall Manager applies the policy to all accounts specified by the `IncludeMap` , and does not evaluate any `ExcludeMap` specifications. If you do not specify an `IncludeMap` , then Firewall Manager applies the policy to all accounts except for those specified by the `ExcludeMap` .\n\nYou can specify account IDs, OUs, or a combination:\n\n- Specify account IDs by setting the key to `ACCOUNT` . For example, the following is a valid map: `{“ACCOUNT” : [“accountID1”, “accountID2”]}` .\n- Specify OUs by setting the key to `ORGUNIT` . For example, the following is a valid map: `{“ORGUNIT” : [“ouid111”, “ouid112”]}` .\n- Specify accounts and OUs together in a single map, separated with a comma. For example, the following is a valid map: `{“ACCOUNT” : [“accountID1”, “accountID2”], “ORGUNIT” : [“ouid111”, “ouid112”]}` .",
+            "stability": "external",
+            "summary": "Specifies the AWS account IDs and AWS Organizations organizational units (OUs) to include in the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 307
+          },
+          "name": "includeMap",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-fms.CfnPolicy.IEMapProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-policydescription"
+            },
+            "stability": "external",
+            "summary": "`AWS::FMS::Policy.PolicyDescription`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 314
+          },
+          "name": "policyDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-resourcescleanup"
+            },
+            "remarks": "For example, Firewall Manager will disassociate a Firewall Manager managed web ACL from a protected customer resource when the customer resource leaves policy scope.\n\nBy default, Firewall Manager doesn't remove protections or delete Firewall Manager managed resources.\n\nThis option is not available for Shield Advanced or AWS WAF Classic policies.",
+            "stability": "external",
+            "summary": "Indicates whether AWS Firewall Manager should automatically remove protections from resources that leave the policy scope and clean up resources that Firewall Manager is managing for accounts when those accounts leave policy scope."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 325
+          },
+          "name": "resourcesCleanUp",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-resourcesetids"
+            },
+            "stability": "external",
+            "summary": "`AWS::FMS::Policy.ResourceSetIds`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 332
+          },
+          "name": "resourceSetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-resourcetags"
+            },
+            "remarks": "If this isn't set, then tags aren't used to modify policy scope. See also `ExcludeResourceTags` .",
+            "stability": "external",
+            "summary": "An array of `ResourceTag` objects, used to explicitly include resources in the policy scope or explicitly exclude them."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 339
+          },
+          "name": "resourceTags",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-fms.CfnPolicy.ResourceTagProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-resourcetype"
+            },
+            "remarks": "This is in the format shown in the [AWS Resource Types Reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) . To apply this policy to multiple resource types, specify a resource type of `ResourceTypeList` and then specify the resource types in a `ResourceTypeList` .\n\nFor AWS WAF and Shield Advanced, example resource types include `AWS::ElasticLoadBalancingV2::LoadBalancer` and `AWS::CloudFront::Distribution` . For a security group common policy, valid values are `AWS::EC2::NetworkInterface` and `AWS::EC2::Instance` . For a security group content audit policy, valid values are `AWS::EC2::SecurityGroup` , `AWS::EC2::NetworkInterface` , and `AWS::EC2::Instance` . For a security group usage audit policy, the value is `AWS::EC2::SecurityGroup` . For an AWS Network Firewall policy or DNS Firewall policy, the value is `AWS::EC2::VPC` .",
+            "stability": "external",
+            "summary": "The type of resource protected by or in scope of the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 348
+          },
+          "name": "resourceType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-resourcetypelist"
+            },
+            "remarks": "Use this only to specify multiple resource types. To specify a single resource type, use `ResourceType` .",
+            "stability": "external",
+            "summary": "An array of `ResourceType` objects."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 355
+          },
+          "name": "resourceTypeList",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fms-policy.html#cfn-fms-policy-tags"
+            },
+            "remarks": "The key:value pair can be anything you define. Typically, the tag key represents a category (such as \"environment\") and the tag value represents a specific value within that category (such as \"test,\" \"development,\" or \"production\"). You can add up to 50 tags to each AWS resource.",
+            "stability": "external",
+            "summary": "A collection of key:value pairs associated with an AWS resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fms.generated.ts",
+            "line": 362
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-fms.CfnPolicy.PolicyTagProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/fms.generated:CfnPolicyProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "5YG9TnxVLEMhaj/UpHHe2nQ/g8lUxGFQn1HVOV0/tUc="
+}

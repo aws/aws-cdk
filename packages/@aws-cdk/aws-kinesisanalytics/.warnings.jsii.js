@@ -1,0 +1,229 @@
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationProps(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication_CSVMappingParametersProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication_InputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication_InputLambdaProcessorProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication_InputParallelismProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication_InputProcessingConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication_InputSchemaProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication_JSONMappingParametersProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication_KinesisFirehoseInputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication_KinesisStreamsInputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication_MappingParametersProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication_RecordColumnProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplication_RecordFormatProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputProps(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutput(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutput_DestinationSchemaProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutput_KinesisFirehoseOutputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutput_KinesisStreamsOutputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutput_LambdaOutputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutput_OutputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceProps(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_CSVMappingParametersProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_JSONMappingParametersProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_MappingParametersProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_RecordColumnProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_RecordFormatProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_ReferenceDataSourceProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_ReferenceSchemaProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_S3ReferenceDataSourceProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2Props(p) {
+    if (p == null)
+        return;
+    visitedObjects.add(p);
+    try {
+        if (p.tags != null)
+            for (const o of p.tags)
+                if (!visitedObjects.has(o))
+                    require("@aws-cdk/core/.warnings.jsii.js")._aws_cdk_core_CfnTag(o);
+    }
+    finally {
+        visitedObjects.delete(p);
+    }
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ApplicationCodeConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ApplicationConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ApplicationMaintenanceConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ApplicationRestoreConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ApplicationSnapshotConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_CSVMappingParametersProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_CatalogConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_CheckpointConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_CodeContentProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_CustomArtifactConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_DeployAsApplicationConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_EnvironmentPropertiesProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_FlinkApplicationConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_FlinkRunConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_GlueDataCatalogConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_InputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_InputLambdaProcessorProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_InputParallelismProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_InputProcessingConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_InputSchemaProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_JSONMappingParametersProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_KinesisFirehoseInputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_KinesisStreamsInputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_MappingParametersProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_MavenReferenceProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_MonitoringConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ParallelismConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_PropertyGroupProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_RecordColumnProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_RecordFormatProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_RunConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_S3ContentBaseLocationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_S3ContentLocationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_SqlApplicationConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_VpcConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ZeppelinApplicationConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ZeppelinMonitoringConfigurationProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationCloudWatchLoggingOptionV2Props(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationCloudWatchLoggingOptionV2(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationCloudWatchLoggingOptionV2_CloudWatchLoggingOptionProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2Props(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2_DestinationSchemaProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2_KinesisFirehoseOutputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2_KinesisStreamsOutputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2_LambdaOutputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2_OutputProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2Props(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_CSVMappingParametersProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_JSONMappingParametersProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_MappingParametersProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_RecordColumnProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_RecordFormatProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_ReferenceDataSourceProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_ReferenceSchemaProperty(p) {
+}
+function _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_S3ReferenceDataSourceProperty(p) {
+}
+function print(name, deprecationMessage) {
+    const deprecated = process.env.JSII_DEPRECATED;
+    const deprecationMode = ["warn", "fail", "quiet"].includes(deprecated) ? deprecated : "warn";
+    const message = `${name} is deprecated.\n  ${deprecationMessage.trim()}\n  This API will be removed in the next major release.`;
+    switch (deprecationMode) {
+        case "fail":
+            throw new DeprecationError(message);
+        case "warn":
+            console.warn("[WARNING]", message);
+            break;
+    }
+}
+function getPropertyDescriptor(obj, prop) {
+    const descriptor = Object.getOwnPropertyDescriptor(obj, prop);
+    if (descriptor) {
+        return descriptor;
+    }
+    const proto = Object.getPrototypeOf(obj);
+    const prototypeDescriptor = proto && getPropertyDescriptor(proto, prop);
+    if (prototypeDescriptor) {
+        return prototypeDescriptor;
+    }
+    return {};
+}
+const visitedObjects = new Set();
+class DeprecationError extends Error {
+    constructor(...args) {
+        super(...args);
+        Object.defineProperty(this, "name", {
+            configurable: false,
+            enumerable: true,
+            value: "DeprecationError",
+            writable: false,
+        });
+    }
+}
+module.exports = { print, getPropertyDescriptor, DeprecationError, _aws_cdk_aws_kinesisanalytics_CfnApplicationProps, _aws_cdk_aws_kinesisanalytics_CfnApplication, _aws_cdk_aws_kinesisanalytics_CfnApplication_CSVMappingParametersProperty, _aws_cdk_aws_kinesisanalytics_CfnApplication_InputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplication_InputLambdaProcessorProperty, _aws_cdk_aws_kinesisanalytics_CfnApplication_InputParallelismProperty, _aws_cdk_aws_kinesisanalytics_CfnApplication_InputProcessingConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplication_InputSchemaProperty, _aws_cdk_aws_kinesisanalytics_CfnApplication_JSONMappingParametersProperty, _aws_cdk_aws_kinesisanalytics_CfnApplication_KinesisFirehoseInputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplication_KinesisStreamsInputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplication_MappingParametersProperty, _aws_cdk_aws_kinesisanalytics_CfnApplication_RecordColumnProperty, _aws_cdk_aws_kinesisanalytics_CfnApplication_RecordFormatProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputProps, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutput, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutput_DestinationSchemaProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutput_KinesisFirehoseOutputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutput_KinesisStreamsOutputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutput_LambdaOutputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutput_OutputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceProps, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_CSVMappingParametersProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_JSONMappingParametersProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_MappingParametersProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_RecordColumnProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_RecordFormatProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_ReferenceDataSourceProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_ReferenceSchemaProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSource_S3ReferenceDataSourceProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2Props, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ApplicationCodeConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ApplicationConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ApplicationMaintenanceConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ApplicationRestoreConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ApplicationSnapshotConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_CSVMappingParametersProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_CatalogConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_CheckpointConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_CodeContentProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_CustomArtifactConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_DeployAsApplicationConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_EnvironmentPropertiesProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_FlinkApplicationConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_FlinkRunConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_GlueDataCatalogConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_InputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_InputLambdaProcessorProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_InputParallelismProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_InputProcessingConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_InputSchemaProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_JSONMappingParametersProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_KinesisFirehoseInputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_KinesisStreamsInputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_MappingParametersProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_MavenReferenceProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_MonitoringConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ParallelismConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_PropertyGroupProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_RecordColumnProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_RecordFormatProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_RunConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_S3ContentBaseLocationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_S3ContentLocationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_SqlApplicationConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_VpcConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ZeppelinApplicationConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationV2_ZeppelinMonitoringConfigurationProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationCloudWatchLoggingOptionV2Props, _aws_cdk_aws_kinesisanalytics_CfnApplicationCloudWatchLoggingOptionV2, _aws_cdk_aws_kinesisanalytics_CfnApplicationCloudWatchLoggingOptionV2_CloudWatchLoggingOptionProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2Props, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2_DestinationSchemaProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2_KinesisFirehoseOutputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2_KinesisStreamsOutputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2_LambdaOutputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationOutputV2_OutputProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2Props, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_CSVMappingParametersProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_JSONMappingParametersProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_MappingParametersProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_RecordColumnProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_RecordFormatProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_ReferenceDataSourceProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_ReferenceSchemaProperty, _aws_cdk_aws_kinesisanalytics_CfnApplicationReferenceDataSourceV2_S3ReferenceDataSourceProperty };

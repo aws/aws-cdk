@@ -1,0 +1,1691 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::DAX",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "dax"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-dax",
+  "readme": {
+    "markdown": "# Amazon DynamoDB Accelerator Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as dax from '@aws-cdk/aws-dax';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for DAX construct libraries](https://constructs.dev/search?q=dax)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::DAX resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DAX.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::DAX](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_DAX.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-dax",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.DAX",
+      "packageId": "Amazon.CDK.AWS.DAX"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "dax",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.dax"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-dax"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-dax",
+      "module": "aws_cdk.aws_dax"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-dax.CfnCluster": {
+      "assembly": "@aws-cdk/aws-dax",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::DAX::Cluster",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html"
+        },
+        "remarks": "Creates a DAX cluster. All nodes in the cluster run the same DAX caching software.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::DAX::Cluster`."
+      },
+      "fqn": "@aws-cdk/aws-dax.CfnCluster",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::DAX::Cluster`."
+        },
+        "locationInModule": {
+          "filename": "lib/dax.generated.ts",
+          "line": 404
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-dax.CfnClusterProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/dax.generated.ts",
+        "line": 231
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 435
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 459
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnCluster",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 235
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "`{ \"Fn::GetAtt\": [\" MyDAXCluster \", \"Arn\"] }`\n\nReturns a value similar to the following:\n\n`arn:aws:dax:us-east-1:111122223333:cache/MyDAXCluster`",
+            "stability": "external",
+            "summary": "Returns the ARN of the DAX cluster. For example:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 266
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ClusterDiscoveryEndpoint"
+            },
+            "remarks": "`{ \"Fn::GetAtt\": [\" MyDAXCluster \", \"ClusterDiscoveryEndpoint\"] }`\n\nReturns a value similar to the following:\n\n`mydaxcluster.0h3d6x.clustercfg.dax.use1.cache.amazonaws.com:8111`",
+            "stability": "external",
+            "summary": "Returns the endpoint of the DAX cluster. For example:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 278
+          },
+          "name": "attrClusterDiscoveryEndpoint",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ClusterDiscoveryEndpointURL"
+            },
+            "stability": "external",
+            "summary": "Returns the endpoint URL of the DAX cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 284
+          },
+          "name": "attrClusterDiscoveryEndpointUrl",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 440
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-tags"
+            },
+            "stability": "external",
+            "summary": "A set of tags to associate with the DAX cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 395
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-iamrolearn"
+            },
+            "remarks": "At runtime, DAX will assume this role and use the role's permissions to access DynamoDB on your behalf.",
+            "stability": "external",
+            "summary": "A valid Amazon Resource Name (ARN) that identifies an IAM role."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 291
+          },
+          "name": "iamRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-nodetype"
+            },
+            "remarks": "(All nodes in a DAX cluster are of the same type.)",
+            "stability": "external",
+            "summary": "The node type for the nodes in the cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 298
+          },
+          "name": "nodeType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-replicationfactor"
+            },
+            "remarks": "A replication factor of 1 will create a single-node cluster, without any read replicas. For additional fault tolerance, you can create a multiple node cluster with one or more read replicas. To do this, set `ReplicationFactor` to a number between 3 (one primary and two read replicas) and 10 (one primary and nine read replicas). `If the AvailabilityZones` parameter is provided, its length must equal the `ReplicationFactor` .\n\n> AWS recommends that you have at least two read replicas per cluster.",
+            "stability": "external",
+            "summary": "The number of nodes in the DAX cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 307
+          },
+          "name": "replicationFactor",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-availabilityzones"
+            },
+            "remarks": "If provided, the length of this list must equal the `ReplicationFactor` parameter. If you omit this parameter, DAX will spread the nodes across Availability Zones for the highest availability.",
+            "stability": "external",
+            "summary": "The Availability Zones (AZs) in which the cluster nodes will reside after the cluster has been created or updated."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 314
+          },
+          "name": "availabilityZones",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-clusterendpointencryptiontype"
+            },
+            "remarks": "- `NONE` - The cluster's endpoint will be unencrypted.\n- `TLS` - The cluster's endpoint will be encrypted with Transport Layer Security, and will provide an x509 certificate for authentication.\n\nThe default value is `NONE` .",
+            "stability": "external",
+            "summary": "The encryption type of the cluster's endpoint. Available values are:."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 326
+          },
+          "name": "clusterEndpointEncryptionType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-clustername"
+            },
+            "stability": "external",
+            "summary": "The name of the DAX cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 333
+          },
+          "name": "clusterName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-description"
+            },
+            "stability": "external",
+            "summary": "The description of the cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 340
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-notificationtopicarn"
+            },
+            "remarks": "> The Amazon SNS topic owner must be same as the DAX cluster owner.",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the Amazon SNS topic to which notifications will be sent."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 349
+          },
+          "name": "notificationTopicArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-parametergroupname"
+            },
+            "stability": "external",
+            "summary": "The parameter group to be associated with the DAX cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 356
+          },
+          "name": "parameterGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-preferredmaintenancewindow"
+            },
+            "remarks": "For example: `sun:01:00-sun:09:00` . Cluster maintenance normally takes less than 30 minutes, and is performed automatically within the maintenance window.",
+            "stability": "external",
+            "summary": "A range of time when maintenance of DAX cluster software will be performed."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 363
+          },
+          "name": "preferredMaintenanceWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-securitygroupids"
+            },
+            "remarks": "(Each of the security group ID is system-generated.)\n\nIf this parameter is not specified, DAX assigns the default VPC security group to each node.",
+            "stability": "external",
+            "summary": "A list of security group IDs to be assigned to each node in the DAX cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 372
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-ssespecification"
+            },
+            "stability": "external",
+            "summary": "Represents the settings used to enable server-side encryption on the cluster."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 379
+          },
+          "name": "sseSpecification",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-dax.CfnCluster.SSESpecificationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-subnetgroupname"
+            },
+            "remarks": "> DAX clusters can only run in an Amazon VPC environment. All of the subnets that you specify in a subnet group must exist in the same VPC.",
+            "stability": "external",
+            "summary": "The name of the subnet group to be used for the replication group."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 388
+          },
+          "name": "subnetGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dax.generated:CfnCluster"
+    },
+    "@aws-cdk/aws-dax.CfnCluster.SSESpecificationProperty": {
+      "assembly": "@aws-cdk/aws-dax",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dax-cluster-ssespecification.html"
+        },
+        "stability": "external",
+        "summary": "Represents the settings used to enable server-side encryption."
+      },
+      "fqn": "@aws-cdk/aws-dax.CfnCluster.SSESpecificationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dax.generated.ts",
+        "line": 473
+      },
+      "name": "SSESpecificationProperty",
+      "namespace": "CfnCluster",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dax-cluster-ssespecification.html#cfn-dax-cluster-ssespecification-sseenabled"
+            },
+            "stability": "external",
+            "summary": "Indicates whether server-side encryption is enabled (true) or disabled (false) on the cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 479
+          },
+          "name": "sseEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/dax.generated:CfnCluster.SSESpecificationProperty"
+    },
+    "@aws-cdk/aws-dax.CfnClusterProps": {
+      "assembly": "@aws-cdk/aws-dax",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnCluster`."
+      },
+      "fqn": "@aws-cdk/aws-dax.CfnClusterProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dax.generated.ts",
+        "line": 20
+      },
+      "name": "CfnClusterProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-iamrolearn"
+            },
+            "remarks": "At runtime, DAX will assume this role and use the role's permissions to access DynamoDB on your behalf.",
+            "stability": "external",
+            "summary": "A valid Amazon Resource Name (ARN) that identifies an IAM role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 27
+          },
+          "name": "iamRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-nodetype"
+            },
+            "remarks": "(All nodes in a DAX cluster are of the same type.)",
+            "stability": "external",
+            "summary": "The node type for the nodes in the cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 34
+          },
+          "name": "nodeType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-replicationfactor"
+            },
+            "remarks": "A replication factor of 1 will create a single-node cluster, without any read replicas. For additional fault tolerance, you can create a multiple node cluster with one or more read replicas. To do this, set `ReplicationFactor` to a number between 3 (one primary and two read replicas) and 10 (one primary and nine read replicas). `If the AvailabilityZones` parameter is provided, its length must equal the `ReplicationFactor` .\n\n> AWS recommends that you have at least two read replicas per cluster.",
+            "stability": "external",
+            "summary": "The number of nodes in the DAX cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 43
+          },
+          "name": "replicationFactor",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-availabilityzones"
+            },
+            "remarks": "If provided, the length of this list must equal the `ReplicationFactor` parameter. If you omit this parameter, DAX will spread the nodes across Availability Zones for the highest availability.",
+            "stability": "external",
+            "summary": "The Availability Zones (AZs) in which the cluster nodes will reside after the cluster has been created or updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 50
+          },
+          "name": "availabilityZones",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-clusterendpointencryptiontype"
+            },
+            "remarks": "- `NONE` - The cluster's endpoint will be unencrypted.\n- `TLS` - The cluster's endpoint will be encrypted with Transport Layer Security, and will provide an x509 certificate for authentication.\n\nThe default value is `NONE` .",
+            "stability": "external",
+            "summary": "The encryption type of the cluster's endpoint. Available values are:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 62
+          },
+          "name": "clusterEndpointEncryptionType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-clustername"
+            },
+            "stability": "external",
+            "summary": "The name of the DAX cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 69
+          },
+          "name": "clusterName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-description"
+            },
+            "stability": "external",
+            "summary": "The description of the cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 76
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-notificationtopicarn"
+            },
+            "remarks": "> The Amazon SNS topic owner must be same as the DAX cluster owner.",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the Amazon SNS topic to which notifications will be sent."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 85
+          },
+          "name": "notificationTopicArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-parametergroupname"
+            },
+            "stability": "external",
+            "summary": "The parameter group to be associated with the DAX cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 92
+          },
+          "name": "parameterGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-preferredmaintenancewindow"
+            },
+            "remarks": "For example: `sun:01:00-sun:09:00` . Cluster maintenance normally takes less than 30 minutes, and is performed automatically within the maintenance window.",
+            "stability": "external",
+            "summary": "A range of time when maintenance of DAX cluster software will be performed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 99
+          },
+          "name": "preferredMaintenanceWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-securitygroupids"
+            },
+            "remarks": "(Each of the security group ID is system-generated.)\n\nIf this parameter is not specified, DAX assigns the default VPC security group to each node.",
+            "stability": "external",
+            "summary": "A list of security group IDs to be assigned to each node in the DAX cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 108
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-ssespecification"
+            },
+            "stability": "external",
+            "summary": "Represents the settings used to enable server-side encryption on the cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 115
+          },
+          "name": "sseSpecification",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-dax.CfnCluster.SSESpecificationProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-subnetgroupname"
+            },
+            "remarks": "> DAX clusters can only run in an Amazon VPC environment. All of the subnets that you specify in a subnet group must exist in the same VPC.",
+            "stability": "external",
+            "summary": "The name of the subnet group to be used for the replication group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 124
+          },
+          "name": "subnetGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-cluster.html#cfn-dax-cluster-tags"
+            },
+            "stability": "external",
+            "summary": "A set of tags to associate with the DAX cluster."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 131
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/dax.generated:CfnClusterProps"
+    },
+    "@aws-cdk/aws-dax.CfnParameterGroup": {
+      "assembly": "@aws-cdk/aws-dax",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::DAX::ParameterGroup",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-parametergroup.html"
+        },
+        "remarks": "A named set of parameters that are applied to all of the nodes in a DAX cluster.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::DAX::ParameterGroup`."
+      },
+      "fqn": "@aws-cdk/aws-dax.CfnParameterGroup",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::DAX::ParameterGroup`."
+        },
+        "locationInModule": {
+          "filename": "lib/dax.generated.ts",
+          "line": 681
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-dax.CfnParameterGroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/dax.generated.ts",
+        "line": 626
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 695
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 708
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnParameterGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 630
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 700
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-parametergroup.html#cfn-dax-parametergroup-parameternamevalues"
+            },
+            "remarks": "Each element in the array represents a single parameter.\n\n> `record-ttl-millis` and `query-ttl-millis` are the only supported parameter names. For more details, see [Configuring TTL Settings](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.cluster-management.html#DAX.cluster-management.custom-settings.ttl) .",
+            "stability": "external",
+            "summary": "An array of name-value pairs for the parameters in the group."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 672
+          },
+          "name": "parameterNameValues",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-parametergroup.html#cfn-dax-parametergroup-description"
+            },
+            "stability": "external",
+            "summary": "A description of the parameter group."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 656
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-parametergroup.html#cfn-dax-parametergroup-parametergroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the parameter group."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 663
+          },
+          "name": "parameterGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dax.generated:CfnParameterGroup"
+    },
+    "@aws-cdk/aws-dax.CfnParameterGroupProps": {
+      "assembly": "@aws-cdk/aws-dax",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-parametergroup.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnParameterGroup`."
+      },
+      "fqn": "@aws-cdk/aws-dax.CfnParameterGroupProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dax.generated.ts",
+        "line": 539
+      },
+      "name": "CfnParameterGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-parametergroup.html#cfn-dax-parametergroup-description"
+            },
+            "stability": "external",
+            "summary": "A description of the parameter group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 546
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-parametergroup.html#cfn-dax-parametergroup-parametergroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the parameter group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 553
+          },
+          "name": "parameterGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-parametergroup.html#cfn-dax-parametergroup-parameternamevalues"
+            },
+            "remarks": "Each element in the array represents a single parameter.\n\n> `record-ttl-millis` and `query-ttl-millis` are the only supported parameter names. For more details, see [Configuring TTL Settings](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DAX.cluster-management.html#DAX.cluster-management.custom-settings.ttl) .",
+            "stability": "external",
+            "summary": "An array of name-value pairs for the parameters in the group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 562
+          },
+          "name": "parameterNameValues",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/dax.generated:CfnParameterGroupProps"
+    },
+    "@aws-cdk/aws-dax.CfnSubnetGroup": {
+      "assembly": "@aws-cdk/aws-dax",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::DAX::SubnetGroup",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-subnetgroup.html"
+        },
+        "remarks": "Creates a new subnet group.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::DAX::SubnetGroup`."
+      },
+      "fqn": "@aws-cdk/aws-dax.CfnSubnetGroup",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::DAX::SubnetGroup`."
+        },
+        "locationInModule": {
+          "filename": "lib/dax.generated.ts",
+          "line": 860
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-dax.CfnSubnetGroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/dax.generated.ts",
+        "line": 807
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 875
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 888
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSubnetGroup",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 811
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 880
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-subnetgroup.html#cfn-dax-subnetgroup-subnetids"
+            },
+            "stability": "external",
+            "summary": "A list of VPC subnet IDs for the subnet group."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 837
+          },
+          "name": "subnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-subnetgroup.html#cfn-dax-subnetgroup-description"
+            },
+            "stability": "external",
+            "summary": "The description of the subnet group."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 844
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-subnetgroup.html#cfn-dax-subnetgroup-subnetgroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the subnet group."
+          },
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 851
+          },
+          "name": "subnetGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dax.generated:CfnSubnetGroup"
+    },
+    "@aws-cdk/aws-dax.CfnSubnetGroupProps": {
+      "assembly": "@aws-cdk/aws-dax",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-subnetgroup.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSubnetGroup`."
+      },
+      "fqn": "@aws-cdk/aws-dax.CfnSubnetGroupProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/dax.generated.ts",
+        "line": 721
+      },
+      "name": "CfnSubnetGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-subnetgroup.html#cfn-dax-subnetgroup-subnetids"
+            },
+            "stability": "external",
+            "summary": "A list of VPC subnet IDs for the subnet group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 728
+          },
+          "name": "subnetIds",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-subnetgroup.html#cfn-dax-subnetgroup-description"
+            },
+            "stability": "external",
+            "summary": "The description of the subnet group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 735
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dax-subnetgroup.html#cfn-dax-subnetgroup-subnetgroupname"
+            },
+            "stability": "external",
+            "summary": "The name of the subnet group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/dax.generated.ts",
+            "line": 742
+          },
+          "name": "subnetGroupName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/dax.generated:CfnSubnetGroupProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "NgNOg+xGfk83xbJlV2fJeuVlamBnUGauUIPINqe04+8="
+}

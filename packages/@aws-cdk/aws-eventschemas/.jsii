@@ -1,0 +1,1924 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::EventSchemas",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::EventSchemas",
+    "aws-eventschemas"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-eventschemas",
+  "readme": {
+    "markdown": "# AWS::EventSchemas Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as eventschemas from '@aws-cdk/aws-eventschemas';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for EventSchemas construct libraries](https://constructs.dev/search?q=eventschemas)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::EventSchemas resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_EventSchemas.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::EventSchemas](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_EventSchemas.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-eventschemas",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.EventSchemas",
+      "packageId": "Amazon.CDK.AWS.EventSchemas"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "eventschemas",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.eventschemas"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-eventschemas"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-eventschemas",
+      "module": "aws_cdk.aws_eventschemas"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-eventschemas.CfnDiscoverer": {
+      "assembly": "@aws-cdk/aws-eventschemas",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::EventSchemas::Discoverer",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-discoverer.html"
+        },
+        "remarks": "Use the `AWS::EventSchemas::Discoverer` resource to specify a *discoverer* that is associated with an event bus. A discoverer allows the Amazon EventBridge Schema Registry to automatically generate schemas based on events on an event bus.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::EventSchemas::Discoverer`."
+      },
+      "fqn": "@aws-cdk/aws-eventschemas.CfnDiscoverer",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::EventSchemas::Discoverer`."
+        },
+        "locationInModule": {
+          "filename": "lib/eventschemas.generated.ts",
+          "line": 194
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-eventschemas.CfnDiscovererProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/eventschemas.generated.ts",
+        "line": 116
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 213
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 227
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnDiscoverer",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 120
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CrossAccount"
+            },
+            "remarks": "Default is True.",
+            "stability": "external",
+            "summary": "Defines whether event schemas from other accounts are discovered."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 145
+          },
+          "name": "attrCrossAccount",
+          "type": {
+            "fqn": "@aws-cdk/core.IResolvable"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DiscovererArn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the discoverer."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 151
+          },
+          "name": "attrDiscovererArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "DiscovererId"
+            },
+            "stability": "external",
+            "summary": "The ID of the discoverer."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 157
+          },
+          "name": "attrDiscovererId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 218
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-discoverer.html#cfn-eventschemas-discoverer-tags"
+            },
+            "stability": "external",
+            "summary": "Tags associated with the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 185
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-discoverer.html#cfn-eventschemas-discoverer-sourcearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the event bus."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 164
+          },
+          "name": "sourceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-discoverer.html#cfn-eventschemas-discoverer-crossaccount"
+            },
+            "stability": "external",
+            "summary": "Allows for the discovery of the event schemas that are sent to the event bus from another account."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 171
+          },
+          "name": "crossAccount",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-discoverer.html#cfn-eventschemas-discoverer-description"
+            },
+            "stability": "external",
+            "summary": "A description for the discoverer."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 178
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/eventschemas.generated:CfnDiscoverer"
+    },
+    "@aws-cdk/aws-eventschemas.CfnDiscoverer.TagsEntryProperty": {
+      "assembly": "@aws-cdk/aws-eventschemas",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eventschemas-discoverer-tagsentry.html"
+        },
+        "stability": "external",
+        "summary": "Tags to associate with the discoverer."
+      },
+      "fqn": "@aws-cdk/aws-eventschemas.CfnDiscoverer.TagsEntryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/eventschemas.generated.ts",
+        "line": 241
+      },
+      "name": "TagsEntryProperty",
+      "namespace": "CfnDiscoverer",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eventschemas-discoverer-tagsentry.html#cfn-eventschemas-discoverer-tagsentry-key"
+            },
+            "stability": "external",
+            "summary": "They key of a key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 247
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eventschemas-discoverer-tagsentry.html#cfn-eventschemas-discoverer-tagsentry-value"
+            },
+            "stability": "external",
+            "summary": "They value of a key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 253
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/eventschemas.generated:CfnDiscoverer.TagsEntryProperty"
+    },
+    "@aws-cdk/aws-eventschemas.CfnDiscovererProps": {
+      "assembly": "@aws-cdk/aws-eventschemas",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-discoverer.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnDiscoverer`."
+      },
+      "fqn": "@aws-cdk/aws-eventschemas.CfnDiscovererProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/eventschemas.generated.ts",
+        "line": 20
+      },
+      "name": "CfnDiscovererProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-discoverer.html#cfn-eventschemas-discoverer-sourcearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the event bus."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 27
+          },
+          "name": "sourceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-discoverer.html#cfn-eventschemas-discoverer-crossaccount"
+            },
+            "stability": "external",
+            "summary": "Allows for the discovery of the event schemas that are sent to the event bus from another account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 34
+          },
+          "name": "crossAccount",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-discoverer.html#cfn-eventschemas-discoverer-description"
+            },
+            "stability": "external",
+            "summary": "A description for the discoverer."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 41
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-discoverer.html#cfn-eventschemas-discoverer-tags"
+            },
+            "stability": "external",
+            "summary": "Tags associated with the resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 48
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-eventschemas.CfnDiscoverer.TagsEntryProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/eventschemas.generated:CfnDiscovererProps"
+    },
+    "@aws-cdk/aws-eventschemas.CfnRegistry": {
+      "assembly": "@aws-cdk/aws-eventschemas",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::EventSchemas::Registry",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registry.html"
+        },
+        "remarks": "Use the `AWS::EventSchemas::Registry` to specify a schema registry. Schema registries are containers for Schemas. Registries collect and organize schemas so that your schemas are in logical groups.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::EventSchemas::Registry`."
+      },
+      "fqn": "@aws-cdk/aws-eventschemas.CfnRegistry",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::EventSchemas::Registry`."
+        },
+        "locationInModule": {
+          "filename": "lib/eventschemas.generated.ts",
+          "line": 468
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-eventschemas.CfnRegistryProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/eventschemas.generated.ts",
+        "line": 403
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 484
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 497
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRegistry",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 407
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "RegistryArn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the registry."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 432
+          },
+          "name": "attrRegistryArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "RegistryName"
+            },
+            "stability": "external",
+            "summary": "The name of the registry."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 438
+          },
+          "name": "attrRegistryName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 489
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registry.html#cfn-eventschemas-registry-tags"
+            },
+            "stability": "external",
+            "summary": "Tags to associate with the registry."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 459
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registry.html#cfn-eventschemas-registry-description"
+            },
+            "stability": "external",
+            "summary": "A description of the registry to be created."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 445
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registry.html#cfn-eventschemas-registry-registryname"
+            },
+            "stability": "external",
+            "summary": "The name of the schema registry."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 452
+          },
+          "name": "registryName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/eventschemas.generated:CfnRegistry"
+    },
+    "@aws-cdk/aws-eventschemas.CfnRegistry.TagsEntryProperty": {
+      "assembly": "@aws-cdk/aws-eventschemas",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eventschemas-registry-tagsentry.html"
+        },
+        "stability": "external",
+        "summary": "Tags to associate with the schema registry."
+      },
+      "fqn": "@aws-cdk/aws-eventschemas.CfnRegistry.TagsEntryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/eventschemas.generated.ts",
+        "line": 511
+      },
+      "name": "TagsEntryProperty",
+      "namespace": "CfnRegistry",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eventschemas-registry-tagsentry.html#cfn-eventschemas-registry-tagsentry-key"
+            },
+            "stability": "external",
+            "summary": "They key of a key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 517
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eventschemas-registry-tagsentry.html#cfn-eventschemas-registry-tagsentry-value"
+            },
+            "stability": "external",
+            "summary": "They value of a key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 523
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/eventschemas.generated:CfnRegistry.TagsEntryProperty"
+    },
+    "@aws-cdk/aws-eventschemas.CfnRegistryPolicy": {
+      "assembly": "@aws-cdk/aws-eventschemas",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::EventSchemas::RegistryPolicy",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registrypolicy.html"
+        },
+        "remarks": "Use the `AWS::EventSchemas::RegistryPolicy` resource to specify resource-based policies for an EventBridge Schema Registry.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::EventSchemas::RegistryPolicy`."
+      },
+      "fqn": "@aws-cdk/aws-eventschemas.CfnRegistryPolicy",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::EventSchemas::RegistryPolicy`."
+        },
+        "locationInModule": {
+          "filename": "lib/eventschemas.generated.ts",
+          "line": 734
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-eventschemas.CfnRegistryPolicyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/eventschemas.generated.ts",
+        "line": 675
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 751
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 764
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRegistryPolicy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 679
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Id"
+            },
+            "stability": "external",
+            "summary": "The ID of the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 704
+          },
+          "name": "attrId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 756
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registrypolicy.html#cfn-eventschemas-registrypolicy-policy"
+            },
+            "stability": "external",
+            "summary": "A resource-based policy."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 711
+          },
+          "name": "policy",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registrypolicy.html#cfn-eventschemas-registrypolicy-registryname"
+            },
+            "stability": "external",
+            "summary": "The name of the registry."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 718
+          },
+          "name": "registryName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registrypolicy.html#cfn-eventschemas-registrypolicy-revisionid"
+            },
+            "stability": "external",
+            "summary": "The revision ID of the policy."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 725
+          },
+          "name": "revisionId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/eventschemas.generated:CfnRegistryPolicy"
+    },
+    "@aws-cdk/aws-eventschemas.CfnRegistryPolicyProps": {
+      "assembly": "@aws-cdk/aws-eventschemas",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registrypolicy.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRegistryPolicy`."
+      },
+      "fqn": "@aws-cdk/aws-eventschemas.CfnRegistryPolicyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/eventschemas.generated.ts",
+        "line": 588
+      },
+      "name": "CfnRegistryPolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registrypolicy.html#cfn-eventschemas-registrypolicy-policy"
+            },
+            "stability": "external",
+            "summary": "A resource-based policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 595
+          },
+          "name": "policy",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registrypolicy.html#cfn-eventschemas-registrypolicy-registryname"
+            },
+            "stability": "external",
+            "summary": "The name of the registry."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 602
+          },
+          "name": "registryName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registrypolicy.html#cfn-eventschemas-registrypolicy-revisionid"
+            },
+            "stability": "external",
+            "summary": "The revision ID of the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 609
+          },
+          "name": "revisionId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/eventschemas.generated:CfnRegistryPolicyProps"
+    },
+    "@aws-cdk/aws-eventschemas.CfnRegistryProps": {
+      "assembly": "@aws-cdk/aws-eventschemas",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registry.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRegistry`."
+      },
+      "fqn": "@aws-cdk/aws-eventschemas.CfnRegistryProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/eventschemas.generated.ts",
+        "line": 318
+      },
+      "name": "CfnRegistryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registry.html#cfn-eventschemas-registry-description"
+            },
+            "stability": "external",
+            "summary": "A description of the registry to be created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 325
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registry.html#cfn-eventschemas-registry-registryname"
+            },
+            "stability": "external",
+            "summary": "The name of the schema registry."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 332
+          },
+          "name": "registryName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-registry.html#cfn-eventschemas-registry-tags"
+            },
+            "stability": "external",
+            "summary": "Tags to associate with the registry."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 339
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-eventschemas.CfnRegistry.TagsEntryProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/eventschemas.generated:CfnRegistryProps"
+    },
+    "@aws-cdk/aws-eventschemas.CfnSchema": {
+      "assembly": "@aws-cdk/aws-eventschemas",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::EventSchemas::Schema",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html"
+        },
+        "remarks": "Use the `AWS::EventSchemas::Schema` resource to specify an event schema.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::EventSchemas::Schema`."
+      },
+      "fqn": "@aws-cdk/aws-eventschemas.CfnSchema",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::EventSchemas::Schema`."
+        },
+        "locationInModule": {
+          "filename": "lib/eventschemas.generated.ts",
+          "line": 991
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-eventschemas.CfnSchemaProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/eventschemas.generated.ts",
+        "line": 897
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 1014
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 1030
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSchema",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 901
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SchemaArn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the schema."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 926
+          },
+          "name": "attrSchemaArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SchemaName"
+            },
+            "stability": "external",
+            "summary": "The name of the schema."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 932
+          },
+          "name": "attrSchemaName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SchemaVersion"
+            },
+            "stability": "external",
+            "summary": "The version number of the schema."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 938
+          },
+          "name": "attrSchemaVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 1019
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html#cfn-eventschemas-schema-tags"
+            },
+            "stability": "external",
+            "summary": "Tags associated with the schema."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 982
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html#cfn-eventschemas-schema-content"
+            },
+            "stability": "external",
+            "summary": "The source of the schema definition."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 945
+          },
+          "name": "content",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html#cfn-eventschemas-schema-registryname"
+            },
+            "stability": "external",
+            "summary": "The name of the schema registry."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 952
+          },
+          "name": "registryName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html#cfn-eventschemas-schema-type"
+            },
+            "remarks": "Valid types include `OpenApi3` and `JSONSchemaDraft4` .",
+            "stability": "external",
+            "summary": "The type of schema."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 961
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html#cfn-eventschemas-schema-description"
+            },
+            "stability": "external",
+            "summary": "A description of the schema."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 968
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html#cfn-eventschemas-schema-schemaname"
+            },
+            "stability": "external",
+            "summary": "The name of the schema."
+          },
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 975
+          },
+          "name": "schemaName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/eventschemas.generated:CfnSchema"
+    },
+    "@aws-cdk/aws-eventschemas.CfnSchema.TagsEntryProperty": {
+      "assembly": "@aws-cdk/aws-eventschemas",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eventschemas-schema-tagsentry.html"
+        },
+        "stability": "external",
+        "summary": "Tags to associate with the schema."
+      },
+      "fqn": "@aws-cdk/aws-eventschemas.CfnSchema.TagsEntryProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/eventschemas.generated.ts",
+        "line": 1044
+      },
+      "name": "TagsEntryProperty",
+      "namespace": "CfnSchema",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eventschemas-schema-tagsentry.html#cfn-eventschemas-schema-tagsentry-key"
+            },
+            "stability": "external",
+            "summary": "They key of a key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 1050
+          },
+          "name": "key",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-eventschemas-schema-tagsentry.html#cfn-eventschemas-schema-tagsentry-value"
+            },
+            "stability": "external",
+            "summary": "They value of a key-value pair."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 1056
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/eventschemas.generated:CfnSchema.TagsEntryProperty"
+    },
+    "@aws-cdk/aws-eventschemas.CfnSchemaProps": {
+      "assembly": "@aws-cdk/aws-eventschemas",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSchema`."
+      },
+      "fqn": "@aws-cdk/aws-eventschemas.CfnSchemaProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/eventschemas.generated.ts",
+        "line": 777
+      },
+      "name": "CfnSchemaProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html#cfn-eventschemas-schema-content"
+            },
+            "stability": "external",
+            "summary": "The source of the schema definition."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 784
+          },
+          "name": "content",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html#cfn-eventschemas-schema-registryname"
+            },
+            "stability": "external",
+            "summary": "The name of the schema registry."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 791
+          },
+          "name": "registryName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html#cfn-eventschemas-schema-type"
+            },
+            "remarks": "Valid types include `OpenApi3` and `JSONSchemaDraft4` .",
+            "stability": "external",
+            "summary": "The type of schema."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 800
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html#cfn-eventschemas-schema-description"
+            },
+            "stability": "external",
+            "summary": "A description of the schema."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 807
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html#cfn-eventschemas-schema-schemaname"
+            },
+            "stability": "external",
+            "summary": "The name of the schema."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 814
+          },
+          "name": "schemaName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-eventschemas-schema.html#cfn-eventschemas-schema-tags"
+            },
+            "stability": "external",
+            "summary": "Tags associated with the schema."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/eventschemas.generated.ts",
+            "line": 821
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-eventschemas.CfnSchema.TagsEntryProperty"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/eventschemas.generated:CfnSchemaProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "chf3e4byJLBkhhUF3V9OMUUjNh7FZkCmFKuKH4SydEE="
+}

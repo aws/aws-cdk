@@ -1,0 +1,752 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::IoTCoreDeviceAdvisor",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::IoTCoreDeviceAdvisor",
+    "aws-iotcoredeviceadvisor"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-iotcoredeviceadvisor",
+  "readme": {
+    "markdown": "# AWS::IoTCoreDeviceAdvisor Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as iotcoredeviceadvisor from '@aws-cdk/aws-iotcoredeviceadvisor';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for IoTCoreDeviceAdvisor construct libraries](https://constructs.dev/search?q=iotcoredeviceadvisor)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::IoTCoreDeviceAdvisor resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_IoTCoreDeviceAdvisor.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::IoTCoreDeviceAdvisor](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_IoTCoreDeviceAdvisor.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-iotcoredeviceadvisor",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "assemblyOriginatorKeyFile": "../../key.snk",
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.IoTCoreDeviceAdvisor",
+      "packageId": "Amazon.CDK.AWS.IoTCoreDeviceAdvisor",
+      "signAssembly": true
+    },
+    "java": {
+      "maven": {
+        "artifactId": "iotcoredeviceadvisor",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.iotcoredeviceadvisor"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-iotcoredeviceadvisor"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-iotcoredeviceadvisor",
+      "module": "aws_cdk.aws_iotcoredeviceadvisor"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-iotcoredeviceadvisor.CfnSuiteDefinition": {
+      "assembly": "@aws-cdk/aws-iotcoredeviceadvisor",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::IoTCoreDeviceAdvisor::SuiteDefinition",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotcoredeviceadvisor-suitedefinition.html"
+        },
+        "remarks": "Creates a Device Advisor test suite.\n\nRequires permission to access the [CreateSuiteDefinition](https://docs.aws.amazon.com//service-authorization/latest/reference/list_awsiot.html#awsiot-actions-as-permissions) action.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::IoTCoreDeviceAdvisor::SuiteDefinition`."
+      },
+      "fqn": "@aws-cdk/aws-iotcoredeviceadvisor.CfnSuiteDefinition",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::IoTCoreDeviceAdvisor::SuiteDefinition`."
+        },
+        "locationInModule": {
+          "filename": "lib/iotcoredeviceadvisor.generated.ts",
+          "line": 214
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-iotcoredeviceadvisor.CfnSuiteDefinitionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/iotcoredeviceadvisor.generated.ts",
+        "line": 124
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 231
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 243
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSuiteDefinition",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 128
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SuiteDefinitionArn"
+            },
+            "stability": "external",
+            "summary": "The Arn of the Suite Definition."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 153
+          },
+          "name": "attrSuiteDefinitionArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SuiteDefinitionId"
+            },
+            "stability": "external",
+            "summary": "The version of the Suite Definition."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 159
+          },
+          "name": "attrSuiteDefinitionId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SuiteDefinitionVersion"
+            },
+            "stability": "external",
+            "summary": "The ID of the Suite Definition."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 165
+          },
+          "name": "attrSuiteDefinitionVersion",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 236
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotcoredeviceadvisor-suitedefinition.html#cfn-iotcoredeviceadvisor-suitedefinition-tags"
+            },
+            "stability": "external",
+            "summary": "Metadata that can be used to manage the the Suite Definition."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 205
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotcoredeviceadvisor-suitedefinition.html#cfn-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration"
+            },
+            "remarks": "- ***devicePermissionRoleArn*** - The device permission arn.\n\nThis is a required element.\n\n*Type:* String\n- ***devices*** - The list of configured devices under test. For more information on devices under test, see [DeviceUnderTest](https://docs.aws.amazon.com/iot/latest/apireference/API_iotdeviceadvisor_DeviceUnderTest.html)\n\nNot a required element.\n\n*Type:* List of devices under test\n- ***intendedForQualification*** - The tests intended for qualification in a suite.\n\nNot a required element.\n\n*Type:* Boolean\n- ***rootGroup*** - The test suite root group. For more information on creating and using root groups see the [Device Advisor workflow](https://docs.aws.amazon.com/iot/latest/developerguide/device-advisor-workflow.html) .\n\nThis is a required element.\n\n*Type:* String\n- ***suiteDefinitionName*** - The Suite Definition Configuration name.\n\nThis is a required element.\n\n*Type:* String",
+            "stability": "external",
+            "summary": "The configuration of the Suite Definition. Listed below are the required elements of the `SuiteDefinitionConfiguration` ."
+          },
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 198
+          },
+          "name": "suiteDefinitionConfiguration",
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/iotcoredeviceadvisor.generated:CfnSuiteDefinition"
+    },
+    "@aws-cdk/aws-iotcoredeviceadvisor.CfnSuiteDefinition.DeviceUnderTestProperty": {
+      "assembly": "@aws-cdk/aws-iotcoredeviceadvisor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotcoredeviceadvisor-suitedefinition-deviceundertest.html"
+        },
+        "remarks": "A thing ARN or a certificate ARN is required.",
+        "stability": "external",
+        "summary": "Information of a test device."
+      },
+      "fqn": "@aws-cdk/aws-iotcoredeviceadvisor.CfnSuiteDefinition.DeviceUnderTestProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iotcoredeviceadvisor.generated.ts",
+        "line": 257
+      },
+      "name": "DeviceUnderTestProperty",
+      "namespace": "CfnSuiteDefinition",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotcoredeviceadvisor-suitedefinition-deviceundertest.html#cfn-iotcoredeviceadvisor-suitedefinition-deviceundertest-certificatearn"
+            },
+            "stability": "external",
+            "summary": "Lists devices certificate ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 263
+          },
+          "name": "certificateArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotcoredeviceadvisor-suitedefinition-deviceundertest.html#cfn-iotcoredeviceadvisor-suitedefinition-deviceundertest-thingarn"
+            },
+            "stability": "external",
+            "summary": "Lists devices thing ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 269
+          },
+          "name": "thingArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iotcoredeviceadvisor.generated:CfnSuiteDefinition.DeviceUnderTestProperty"
+    },
+    "@aws-cdk/aws-iotcoredeviceadvisor.CfnSuiteDefinition.SuiteDefinitionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-iotcoredeviceadvisor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Gets the suite definition configuration."
+      },
+      "fqn": "@aws-cdk/aws-iotcoredeviceadvisor.CfnSuiteDefinition.SuiteDefinitionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iotcoredeviceadvisor.generated.ts",
+        "line": 333
+      },
+      "name": "SuiteDefinitionConfigurationProperty",
+      "namespace": "CfnSuiteDefinition",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration.html#cfn-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration-devicepermissionrolearn"
+            },
+            "remarks": "This is a required parameter.",
+            "stability": "external",
+            "summary": "Gets the device permission ARN."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 339
+          },
+          "name": "devicePermissionRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration.html#cfn-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration-rootgroup"
+            },
+            "remarks": "This is a required parameter.",
+            "stability": "external",
+            "summary": "Gets the test suite root group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 357
+          },
+          "name": "rootGroup",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration.html#cfn-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration-devices"
+            },
+            "stability": "external",
+            "summary": "Gets the devices configured."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 345
+          },
+          "name": "devices",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-iotcoredeviceadvisor.CfnSuiteDefinition.DeviceUnderTestProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration.html#cfn-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration-intendedforqualification"
+            },
+            "stability": "external",
+            "summary": "Gets the tests intended for qualification in a suite."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 351
+          },
+          "name": "intendedForQualification",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration.html#cfn-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration-suitedefinitionname"
+            },
+            "remarks": "This is a required parameter.",
+            "stability": "external",
+            "summary": "Gets the suite definition name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 363
+          },
+          "name": "suiteDefinitionName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/iotcoredeviceadvisor.generated:CfnSuiteDefinition.SuiteDefinitionConfigurationProperty"
+    },
+    "@aws-cdk/aws-iotcoredeviceadvisor.CfnSuiteDefinitionProps": {
+      "assembly": "@aws-cdk/aws-iotcoredeviceadvisor",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotcoredeviceadvisor-suitedefinition.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSuiteDefinition`."
+      },
+      "fqn": "@aws-cdk/aws-iotcoredeviceadvisor.CfnSuiteDefinitionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/iotcoredeviceadvisor.generated.ts",
+        "line": 20
+      },
+      "name": "CfnSuiteDefinitionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotcoredeviceadvisor-suitedefinition.html#cfn-iotcoredeviceadvisor-suitedefinition-suitedefinitionconfiguration"
+            },
+            "remarks": "- ***devicePermissionRoleArn*** - The device permission arn.\n\nThis is a required element.\n\n*Type:* String\n- ***devices*** - The list of configured devices under test. For more information on devices under test, see [DeviceUnderTest](https://docs.aws.amazon.com/iot/latest/apireference/API_iotdeviceadvisor_DeviceUnderTest.html)\n\nNot a required element.\n\n*Type:* List of devices under test\n- ***intendedForQualification*** - The tests intended for qualification in a suite.\n\nNot a required element.\n\n*Type:* Boolean\n- ***rootGroup*** - The test suite root group. For more information on creating and using root groups see the [Device Advisor workflow](https://docs.aws.amazon.com/iot/latest/developerguide/device-advisor-workflow.html) .\n\nThis is a required element.\n\n*Type:* String\n- ***suiteDefinitionName*** - The Suite Definition Configuration name.\n\nThis is a required element.\n\n*Type:* String",
+            "stability": "external",
+            "summary": "The configuration of the Suite Definition. Listed below are the required elements of the `SuiteDefinitionConfiguration` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 53
+          },
+          "name": "suiteDefinitionConfiguration",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iotcoredeviceadvisor-suitedefinition.html#cfn-iotcoredeviceadvisor-suitedefinition-tags"
+            },
+            "stability": "external",
+            "summary": "Metadata that can be used to manage the the Suite Definition."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/iotcoredeviceadvisor.generated.ts",
+            "line": 60
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/iotcoredeviceadvisor.generated:CfnSuiteDefinitionProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "Xyy35Grlo23XvtLpyyGGcTFcr0dfjLs4Yxg2NzYhYjg="
+}

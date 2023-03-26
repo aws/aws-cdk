@@ -1,0 +1,1449 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::OpsWorksCM",
+  "docs": {
+    "stability": "experimental"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.73.0 (build 6faeda3)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "AWS::OpsWorksCM",
+    "aws-opsworkscm"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-opsworkscm",
+  "readme": {
+    "markdown": "# AWS OpsWorks CM Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.\n>\n> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n\n```ts nofixture\nimport * as opsworkscm from '@aws-cdk/aws-opsworkscm';\n```\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:\n\n- Search [Construct Hub for OpsWorksCM construct libraries](https://constructs.dev/search?q=opsworkscm)\n- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::OpsWorksCM resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_OpsWorksCM.html) directly.\n\n\n<!--BEGIN CFNONLY DISCLAIMER-->\n\nThere are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet.\nHowever, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.\n\nFor more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::OpsWorksCM](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_OpsWorksCM.html).\n\n(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)\n\n<!--END CFNONLY DISCLAIMER-->\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-opsworkscm",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.OpsWorksCM",
+      "packageId": "Amazon.CDK.AWS.OpsWorksCM"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "opsworkscm",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.opsworkscm"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-opsworkscm"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-opsworkscm",
+      "module": "aws_cdk.aws_opsworkscm"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-opsworkscm.CfnServer": {
+      "assembly": "@aws-cdk/aws-opsworkscm",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::OpsWorksCM::Server",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html"
+        },
+        "remarks": "The `AWS::OpsWorksCM::Server` resource creates an AWS OpsWorks for Chef Automate or OpsWorks for Puppet Enterprise configuration management server. For more information, see [Create a Chef Automate Server in AWS CloudFormation](https://docs.aws.amazon.com/opsworks/latest/userguide/opscm-create-server-cfn.html) or [Create a Puppet Enterprise Master in AWS CloudFormation](https://docs.aws.amazon.com/opsworks/latest/userguide/opspup-create-server-cfn.html) in the *AWS OpsWorks User Guide* , and [CreateServer](https://docs.aws.amazon.com/opsworks-cm/latest/APIReference/API_CreateServer.html) in the *AWS OpsWorks CM API Reference* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::OpsWorksCM::Server`."
+      },
+      "fqn": "@aws-cdk/aws-opsworkscm.CfnServer",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::OpsWorksCM::Server`."
+        },
+        "locationInModule": {
+          "filename": "lib/opsworkscm.generated.ts",
+          "line": 561
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-opsworkscm.CfnServerProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/opsworkscm.generated.ts",
+        "line": 326
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 599
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 630
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnServer",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 330
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the server, such as `arn:aws:OpsWorksCM:us-east-1:123456789012:server/server-a1bzhi` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 355
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Endpoint"
+            },
+            "remarks": "Example: `myserver-asdfghjkl.us-east-1.opsworks.io` .",
+            "stability": "external",
+            "summary": "A DNS name that can be used to access the engine."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 361
+          },
+          "name": "attrEndpoint",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Id"
+            },
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 367
+          },
+          "name": "attrId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 604
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-tags"
+            },
+            "remarks": "- The key cannot be empty.\n- The key can be a maximum of 127 characters, and can contain only Unicode letters, numbers, or separators, or the following special characters: `+ - = . _ : / @`\n- The value can be a maximum 255 characters, and contain only Unicode letters, numbers, or separators, or the following special characters: `+ - = . _ : / @`\n- Leading and trailing spaces are trimmed from both the key and value.\n- A maximum of 50 user-applied tags is allowed for any AWS OpsWorks CM server.",
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values to attach to an AWS OpsWorks for Chef Automate or OpsWorks for Puppet Enterprise server."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 552
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-instanceprofilearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the instance profile that your Amazon EC2 instances use."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 374
+          },
+          "name": "instanceProfileArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-instancetype"
+            },
+            "remarks": "For example, `m5.large` .",
+            "stability": "external",
+            "summary": "The Amazon EC2 instance type to use."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 381
+          },
+          "name": "instanceType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-servicerolearn"
+            },
+            "remarks": "Although the AWS OpsWorks management console typically creates the service role for you, if you are using the AWS CLI or API commands, run the service-role-creation.yaml AWS CloudFormation template, located at https://s3.amazonaws.com/opsworks-cm-us-east-1-prod-default-assets/misc/opsworks-cm-roles.yaml. This template creates a CloudFormation stack that includes the service role and instance profile that you need.",
+            "stability": "external",
+            "summary": "The service role that the AWS OpsWorks CM service backend uses to work with your account."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 388
+          },
+          "name": "serviceRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-associatepublicipaddress"
+            },
+            "remarks": "Valid values are `true` or `false` . The default value is `true` .",
+            "stability": "external",
+            "summary": "Associate a public IP address with a server that you are launching."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 395
+          },
+          "name": "associatePublicIpAddress",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-backupid"
+            },
+            "stability": "external",
+            "summary": "If you specify this field, AWS OpsWorks CM creates the server by using the backup represented by BackupId."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 402
+          },
+          "name": "backupId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-backupretentioncount"
+            },
+            "remarks": "Whenever a new backup is created, AWS OpsWorks CM deletes the oldest backups if this number is exceeded. The default value is `1` .",
+            "stability": "external",
+            "summary": "The number of automated backups that you want to keep."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 409
+          },
+          "name": "backupRetentionCount",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-customcertificate"
+            },
+            "remarks": "- You can provide either a self-signed, custom certificate, or the full certificate chain.\n- The certificate must be a valid X509 certificate, or a certificate chain in PEM format.\n- The certificate must be valid at the time of upload. A certificate can't be used before its validity period begins (the certificate's `NotBefore` date), or after it expires (the certificate's `NotAfter` date).\n- The certificate’s common name or subject alternative names (SANs), if present, must match the value of `CustomDomain` .\n- The certificate must match the value of `CustomPrivateKey` .",
+            "stability": "external",
+            "summary": "Supported on servers running Chef Automate 2.0 only. A PEM-formatted HTTPS certificate. The value can be be a single, self-signed certificate, or a certificate chain. If you specify a custom certificate, you must also specify values for `CustomDomain` and `CustomPrivateKey` . The following are requirements for the `CustomCertificate` value:."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 422
+          },
+          "name": "customCertificate",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-customdomain"
+            },
+            "stability": "external",
+            "summary": "Supported on servers running Chef Automate 2.0 only. An optional public endpoint of a server, such as `https://aws.my-company.com` . To access the server, create a CNAME DNS record in your preferred DNS service that points the custom domain to the endpoint that is generated when the server is created (the value of the CreateServer Endpoint attribute). You cannot access the server by using the generated `Endpoint` value if the server is using a custom domain. If you specify a custom domain, you must also specify values for `CustomCertificate` and `CustomPrivateKey` ."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 429
+          },
+          "name": "customDomain",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-customprivatekey"
+            },
+            "stability": "external",
+            "summary": "Supported on servers running Chef Automate 2.0 only. A private key in PEM format for connecting to the server by using HTTPS. The private key must not be encrypted; it cannot be protected by a password or passphrase. If you specify a custom private key, you must also specify values for `CustomDomain` and `CustomCertificate` ."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 436
+          },
+          "name": "customPrivateKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-disableautomatedbackup"
+            },
+            "remarks": "Valid values are `true` or `false` . The default value is `true` .",
+            "stability": "external",
+            "summary": "Enable or disable scheduled backups."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 443
+          },
+          "name": "disableAutomatedBackup",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-engine"
+            },
+            "remarks": "Valid values include `ChefAutomate` and `Puppet` .",
+            "stability": "external",
+            "summary": "The configuration management engine to use."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 450
+          },
+          "name": "engine",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-engineattributes"
+            },
+            "remarks": "**Attributes accepted in a Chef createServer request:** - `CHEF_AUTOMATE_PIVOTAL_KEY` : A base64-encoded RSA public key. The corresponding private key is required to access the Chef API. When no CHEF_AUTOMATE_PIVOTAL_KEY is set, a private key is generated and returned in the response. When you are specifying the value of CHEF_AUTOMATE_PIVOTAL_KEY as a parameter in the AWS CloudFormation console, you must add newline ( `\\n` ) characters at the end of each line of the pivotal key value.\n- `CHEF_AUTOMATE_ADMIN_PASSWORD` : The password for the administrative user in the Chef Automate web-based dashboard. The password length is a minimum of eight characters, and a maximum of 32. The password can contain letters, numbers, and special characters (!/@#$%^&+=_). The password must contain at least one lower case letter, one upper case letter, one number, and one special character. When no CHEF_AUTOMATE_ADMIN_PASSWORD is set, one is generated and returned in the response.\n\n**Attributes accepted in a Puppet createServer request:** - `PUPPET_ADMIN_PASSWORD` : To work with the Puppet Enterprise console, a password must use ASCII characters.\n- `PUPPET_R10K_REMOTE` : The r10k remote is the URL of your control repository (for example, ssh://git@your.git-repo.com:user/control-repo.git). Specifying an r10k remote opens TCP port 8170.\n- `PUPPET_R10K_PRIVATE_KEY` : If you are using a private Git repository, add PUPPET_R10K_PRIVATE_KEY to specify a PEM-encoded private SSH key.",
+            "stability": "external",
+            "summary": "Optional engine attributes on a specified server."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 464
+          },
+          "name": "engineAttributes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-opsworkscm.CfnServer.EngineAttributeProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-enginemodel"
+            },
+            "remarks": "Valid values in this release include `Monolithic` for Puppet and `Single` for Chef.",
+            "stability": "external",
+            "summary": "The engine model of the server."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 471
+          },
+          "name": "engineModel",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-engineversion"
+            },
+            "remarks": "For a Chef server, the valid value for EngineVersion is currently `2` . For a Puppet server, valid values are `2019` or `2017` .",
+            "stability": "external",
+            "summary": "The major release version of the engine that you want to use."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 478
+          },
+          "name": "engineVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-keypair"
+            },
+            "remarks": "This parameter is optional; if desired, you may specify this parameter to connect to your instances by using SSH.",
+            "stability": "external",
+            "summary": "The Amazon EC2 key pair to set for the instance."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 485
+          },
+          "name": "keyPair",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-preferredbackupwindow"
+            },
+            "remarks": "Valid values must be specified in one of the following formats:\n\n- `HH:MM` for daily backups\n- `DDD:HH:MM` for weekly backups\n\n`MM` must be specified as `00` . The specified time is in coordinated universal time (UTC). The default value is a random, daily start time.\n\n*Example:* `08:00` , which represents a daily start time of 08:00 UTC.\n\n*Example:* `Mon:08:00` , which represents a start time of every Monday at 08:00 UTC. (8:00 a.m.)",
+            "stability": "external",
+            "summary": "The start time for a one-hour period during which AWS OpsWorks CM backs up application-level data on your server if automated backups are enabled."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 501
+          },
+          "name": "preferredBackupWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-preferredmaintenancewindow"
+            },
+            "remarks": "Valid values must be specified in the following format: `DDD:HH:MM` . `MM` must be specified as `00` . The specified time is in coordinated universal time (UTC). The default value is a random one-hour period on Tuesday, Wednesday, or Friday. See `TimeWindowDefinition` for more information.\n\n*Example:* `Mon:08:00` , which represents a start time of every Monday at 08:00 UTC. (8:00 a.m.)",
+            "stability": "external",
+            "summary": "The start time for a one-hour period each week during which AWS OpsWorks CM performs maintenance on the instance."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 510
+          },
+          "name": "preferredMaintenanceWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-securitygroupids"
+            },
+            "remarks": "If you add this parameter, the specified security groups must be within the VPC that is specified by `SubnetIds` .\n\nIf you do not specify this parameter, AWS OpsWorks CM creates one new security group that uses TCP ports 22 and 443, open to 0.0.0.0/0 (everyone).",
+            "stability": "external",
+            "summary": "A list of security group IDs to attach to the Amazon EC2 instance."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 519
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-servername"
+            },
+            "remarks": "The server name must be unique within your AWS account, within each region. Server names must start with a letter; then letters, numbers, or hyphens (-) are allowed, up to a maximum of 40 characters.",
+            "stability": "external",
+            "summary": "The name of the server."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 526
+          },
+          "name": "serverName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-subnetids"
+            },
+            "remarks": "Amazon EC2-Classic customers: This field is required. All servers must run within a VPC. The VPC must have \"Auto Assign Public IP\" enabled.\n\nEC2-VPC customers: This field is optional. If you do not specify subnet IDs, your EC2 instances are created in a default subnet that is selected by Amazon EC2. If you specify subnet IDs, the VPC must have \"Auto Assign Public IP\" enabled.\n\nFor more information about supported Amazon EC2 platforms, see [Supported Platforms](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-supported-platforms.html) .",
+            "stability": "external",
+            "summary": "The IDs of subnets in which to launch the server EC2 instance."
+          },
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 539
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/opsworkscm.generated:CfnServer"
+    },
+    "@aws-cdk/aws-opsworkscm.CfnServer.EngineAttributeProperty": {
+      "assembly": "@aws-cdk/aws-opsworkscm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opsworkscm-server-engineattribute.html"
+        },
+        "remarks": "`EngineAttribute` is a property of the `AWS::OpsWorksCM::Server` resource type.",
+        "stability": "external",
+        "summary": "The `EngineAttribute` property type specifies administrator credentials for an AWS OpsWorks for Chef Automate or OpsWorks for Puppet Enterprise server."
+      },
+      "fqn": "@aws-cdk/aws-opsworkscm.CfnServer.EngineAttributeProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/opsworkscm.generated.ts",
+        "line": 644
+      },
+      "name": "EngineAttributeProperty",
+      "namespace": "CfnServer",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opsworkscm-server-engineattribute.html#cfn-opsworkscm-server-engineattribute-name"
+            },
+            "remarks": "*Attribute name for Chef Automate servers:*\n\n- `CHEF_AUTOMATE_ADMIN_PASSWORD`\n\n*Attribute names for Puppet Enterprise servers:*\n\n- `PUPPET_ADMIN_PASSWORD`\n- `PUPPET_R10K_REMOTE`\n- `PUPPET_R10K_PRIVATE_KEY`",
+            "stability": "external",
+            "summary": "The name of the engine attribute."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 660
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opsworkscm-server-engineattribute.html#cfn-opsworkscm-server-engineattribute-value"
+            },
+            "remarks": "*Attribute value for Chef Automate servers:*\n\n- `CHEF_AUTOMATE_PIVOTAL_KEY` : A base64-encoded RSA public key. The corresponding private key is required to access the Chef API. You can generate this key by running the following [OpenSSL](https://docs.aws.amazon.com/https://www.openssl.org/) command on Linux-based computers.\n\n`openssl genrsa -out *pivotal_key_file_name* .pem 2048`\n\nOn Windows-based computers, you can use the PuTTYgen utility to generate a base64-encoded RSA private key. For more information, see [PuTTYgen - Key Generator for PuTTY on Windows](https://docs.aws.amazon.com/https://www.ssh.com/ssh/putty/windows/puttygen) on SSH.com.\n\n*Attribute values for Puppet Enterprise servers:*\n\n- `PUPPET_ADMIN_PASSWORD` : An administrator password that you can use to sign in to the Puppet Enterprise console webpage after the server is online. The password must use between 8 and 32 ASCII characters.\n- `PUPPET_R10K_REMOTE` : The r10k remote is the URL of your control repository (for example, ssh://git@your.git-repo.com:user/control-repo.git). Specifying an r10k remote opens TCP port 8170.\n- `PUPPET_R10K_PRIVATE_KEY` : If you are using a private Git repository, add `PUPPET_R10K_PRIVATE_KEY` to specify a PEM-encoded private SSH key.",
+            "stability": "external",
+            "summary": "The value of the engine attribute."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 680
+          },
+          "name": "value",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/opsworkscm.generated:CfnServer.EngineAttributeProperty"
+    },
+    "@aws-cdk/aws-opsworkscm.CfnServerProps": {
+      "assembly": "@aws-cdk/aws-opsworkscm",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnServer`."
+      },
+      "fqn": "@aws-cdk/aws-opsworkscm.CfnServerProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/opsworkscm.generated.ts",
+        "line": 20
+      },
+      "name": "CfnServerProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-instanceprofilearn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the instance profile that your Amazon EC2 instances use."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 27
+          },
+          "name": "instanceProfileArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-instancetype"
+            },
+            "remarks": "For example, `m5.large` .",
+            "stability": "external",
+            "summary": "The Amazon EC2 instance type to use."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 34
+          },
+          "name": "instanceType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-servicerolearn"
+            },
+            "remarks": "Although the AWS OpsWorks management console typically creates the service role for you, if you are using the AWS CLI or API commands, run the service-role-creation.yaml AWS CloudFormation template, located at https://s3.amazonaws.com/opsworks-cm-us-east-1-prod-default-assets/misc/opsworks-cm-roles.yaml. This template creates a CloudFormation stack that includes the service role and instance profile that you need.",
+            "stability": "external",
+            "summary": "The service role that the AWS OpsWorks CM service backend uses to work with your account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 41
+          },
+          "name": "serviceRoleArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-associatepublicipaddress"
+            },
+            "remarks": "Valid values are `true` or `false` . The default value is `true` .",
+            "stability": "external",
+            "summary": "Associate a public IP address with a server that you are launching."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 48
+          },
+          "name": "associatePublicIpAddress",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-backupid"
+            },
+            "stability": "external",
+            "summary": "If you specify this field, AWS OpsWorks CM creates the server by using the backup represented by BackupId."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 55
+          },
+          "name": "backupId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-backupretentioncount"
+            },
+            "remarks": "Whenever a new backup is created, AWS OpsWorks CM deletes the oldest backups if this number is exceeded. The default value is `1` .",
+            "stability": "external",
+            "summary": "The number of automated backups that you want to keep."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 62
+          },
+          "name": "backupRetentionCount",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-customcertificate"
+            },
+            "remarks": "- You can provide either a self-signed, custom certificate, or the full certificate chain.\n- The certificate must be a valid X509 certificate, or a certificate chain in PEM format.\n- The certificate must be valid at the time of upload. A certificate can't be used before its validity period begins (the certificate's `NotBefore` date), or after it expires (the certificate's `NotAfter` date).\n- The certificate’s common name or subject alternative names (SANs), if present, must match the value of `CustomDomain` .\n- The certificate must match the value of `CustomPrivateKey` .",
+            "stability": "external",
+            "summary": "Supported on servers running Chef Automate 2.0 only. A PEM-formatted HTTPS certificate. The value can be be a single, self-signed certificate, or a certificate chain. If you specify a custom certificate, you must also specify values for `CustomDomain` and `CustomPrivateKey` . The following are requirements for the `CustomCertificate` value:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 75
+          },
+          "name": "customCertificate",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-customdomain"
+            },
+            "stability": "external",
+            "summary": "Supported on servers running Chef Automate 2.0 only. An optional public endpoint of a server, such as `https://aws.my-company.com` . To access the server, create a CNAME DNS record in your preferred DNS service that points the custom domain to the endpoint that is generated when the server is created (the value of the CreateServer Endpoint attribute). You cannot access the server by using the generated `Endpoint` value if the server is using a custom domain. If you specify a custom domain, you must also specify values for `CustomCertificate` and `CustomPrivateKey` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 82
+          },
+          "name": "customDomain",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-customprivatekey"
+            },
+            "stability": "external",
+            "summary": "Supported on servers running Chef Automate 2.0 only. A private key in PEM format for connecting to the server by using HTTPS. The private key must not be encrypted; it cannot be protected by a password or passphrase. If you specify a custom private key, you must also specify values for `CustomDomain` and `CustomCertificate` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 89
+          },
+          "name": "customPrivateKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-disableautomatedbackup"
+            },
+            "remarks": "Valid values are `true` or `false` . The default value is `true` .",
+            "stability": "external",
+            "summary": "Enable or disable scheduled backups."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 96
+          },
+          "name": "disableAutomatedBackup",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-engine"
+            },
+            "remarks": "Valid values include `ChefAutomate` and `Puppet` .",
+            "stability": "external",
+            "summary": "The configuration management engine to use."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 103
+          },
+          "name": "engine",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-engineattributes"
+            },
+            "remarks": "**Attributes accepted in a Chef createServer request:** - `CHEF_AUTOMATE_PIVOTAL_KEY` : A base64-encoded RSA public key. The corresponding private key is required to access the Chef API. When no CHEF_AUTOMATE_PIVOTAL_KEY is set, a private key is generated and returned in the response. When you are specifying the value of CHEF_AUTOMATE_PIVOTAL_KEY as a parameter in the AWS CloudFormation console, you must add newline ( `\\n` ) characters at the end of each line of the pivotal key value.\n- `CHEF_AUTOMATE_ADMIN_PASSWORD` : The password for the administrative user in the Chef Automate web-based dashboard. The password length is a minimum of eight characters, and a maximum of 32. The password can contain letters, numbers, and special characters (!/@#$%^&+=_). The password must contain at least one lower case letter, one upper case letter, one number, and one special character. When no CHEF_AUTOMATE_ADMIN_PASSWORD is set, one is generated and returned in the response.\n\n**Attributes accepted in a Puppet createServer request:** - `PUPPET_ADMIN_PASSWORD` : To work with the Puppet Enterprise console, a password must use ASCII characters.\n- `PUPPET_R10K_REMOTE` : The r10k remote is the URL of your control repository (for example, ssh://git@your.git-repo.com:user/control-repo.git). Specifying an r10k remote opens TCP port 8170.\n- `PUPPET_R10K_PRIVATE_KEY` : If you are using a private Git repository, add PUPPET_R10K_PRIVATE_KEY to specify a PEM-encoded private SSH key.",
+            "stability": "external",
+            "summary": "Optional engine attributes on a specified server."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 117
+          },
+          "name": "engineAttributes",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-opsworkscm.CfnServer.EngineAttributeProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-enginemodel"
+            },
+            "remarks": "Valid values in this release include `Monolithic` for Puppet and `Single` for Chef.",
+            "stability": "external",
+            "summary": "The engine model of the server."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 124
+          },
+          "name": "engineModel",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-engineversion"
+            },
+            "remarks": "For a Chef server, the valid value for EngineVersion is currently `2` . For a Puppet server, valid values are `2019` or `2017` .",
+            "stability": "external",
+            "summary": "The major release version of the engine that you want to use."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 131
+          },
+          "name": "engineVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-keypair"
+            },
+            "remarks": "This parameter is optional; if desired, you may specify this parameter to connect to your instances by using SSH.",
+            "stability": "external",
+            "summary": "The Amazon EC2 key pair to set for the instance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 138
+          },
+          "name": "keyPair",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-preferredbackupwindow"
+            },
+            "remarks": "Valid values must be specified in one of the following formats:\n\n- `HH:MM` for daily backups\n- `DDD:HH:MM` for weekly backups\n\n`MM` must be specified as `00` . The specified time is in coordinated universal time (UTC). The default value is a random, daily start time.\n\n*Example:* `08:00` , which represents a daily start time of 08:00 UTC.\n\n*Example:* `Mon:08:00` , which represents a start time of every Monday at 08:00 UTC. (8:00 a.m.)",
+            "stability": "external",
+            "summary": "The start time for a one-hour period during which AWS OpsWorks CM backs up application-level data on your server if automated backups are enabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 154
+          },
+          "name": "preferredBackupWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-preferredmaintenancewindow"
+            },
+            "remarks": "Valid values must be specified in the following format: `DDD:HH:MM` . `MM` must be specified as `00` . The specified time is in coordinated universal time (UTC). The default value is a random one-hour period on Tuesday, Wednesday, or Friday. See `TimeWindowDefinition` for more information.\n\n*Example:* `Mon:08:00` , which represents a start time of every Monday at 08:00 UTC. (8:00 a.m.)",
+            "stability": "external",
+            "summary": "The start time for a one-hour period each week during which AWS OpsWorks CM performs maintenance on the instance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 163
+          },
+          "name": "preferredMaintenanceWindow",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-securitygroupids"
+            },
+            "remarks": "If you add this parameter, the specified security groups must be within the VPC that is specified by `SubnetIds` .\n\nIf you do not specify this parameter, AWS OpsWorks CM creates one new security group that uses TCP ports 22 and 443, open to 0.0.0.0/0 (everyone).",
+            "stability": "external",
+            "summary": "A list of security group IDs to attach to the Amazon EC2 instance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 172
+          },
+          "name": "securityGroupIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-servername"
+            },
+            "remarks": "The server name must be unique within your AWS account, within each region. Server names must start with a letter; then letters, numbers, or hyphens (-) are allowed, up to a maximum of 40 characters.",
+            "stability": "external",
+            "summary": "The name of the server."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 179
+          },
+          "name": "serverName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-subnetids"
+            },
+            "remarks": "Amazon EC2-Classic customers: This field is required. All servers must run within a VPC. The VPC must have \"Auto Assign Public IP\" enabled.\n\nEC2-VPC customers: This field is optional. If you do not specify subnet IDs, your EC2 instances are created in a default subnet that is selected by Amazon EC2. If you specify subnet IDs, the VPC must have \"Auto Assign Public IP\" enabled.\n\nFor more information about supported Amazon EC2 platforms, see [Supported Platforms](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-supported-platforms.html) .",
+            "stability": "external",
+            "summary": "The IDs of subnets in which to launch the server EC2 instance."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 192
+          },
+          "name": "subnetIds",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-opsworkscm-server.html#cfn-opsworkscm-server-tags"
+            },
+            "remarks": "- The key cannot be empty.\n- The key can be a maximum of 127 characters, and can contain only Unicode letters, numbers, or separators, or the following special characters: `+ - = . _ : / @`\n- The value can be a maximum 255 characters, and contain only Unicode letters, numbers, or separators, or the following special characters: `+ - = . _ : / @`\n- Leading and trailing spaces are trimmed from both the key and value.\n- A maximum of 50 user-applied tags is allowed for any AWS OpsWorks CM server.",
+            "stability": "external",
+            "summary": "A map that contains tag keys and tag values to attach to an AWS OpsWorks for Chef Automate or OpsWorks for Puppet Enterprise server."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/opsworkscm.generated.ts",
+            "line": 205
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/opsworkscm.generated:CfnServerProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "CUxfGQCCtOYaJ7DlmNi02k1/aQR/ti4RPZYMVGdpfxs="
+}
