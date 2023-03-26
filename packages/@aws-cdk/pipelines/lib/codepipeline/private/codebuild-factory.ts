@@ -7,7 +7,6 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { Stack, Token } from '@aws-cdk/core';
 import { Construct, IDependable, Node } from 'constructs';
-import { mergeBuildSpecs } from './buildspecs';
 import { FileSetLocation, ShellStep, StackOutputReference } from '../../blueprint';
 import { StepOutput } from '../../helpers-internal/step-output';
 import { cloudAssemblyBuildSpecDir, obtainScope } from '../../private/construct-internals';

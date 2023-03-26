@@ -10,12 +10,6 @@ import { IBucket } from '@aws-cdk/aws-s3';
 import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { ArtifactMap } from './artifact-map';
-import { CodeBuildStep } from './codebuild-step';
-import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
-import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
-import { namespaceStepOutputs } from './private/outputs';
-import { StackOutputsMap } from './stack-outputs-map';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
 import { GraphNodeCollection, isGraph, AGraphNode, PipelineGraph } from '../helpers-internal';
@@ -28,6 +22,12 @@ import { toPosixPath } from '../private/fs';
 import { actionName, stackVariableNamespace } from '../private/identifiers';
 import { enumerate, flatten, maybeSuffix, noUndefined } from '../private/javascript';
 import { writeTemplateConfiguration } from '../private/template-configuration';
+import { ArtifactMap } from './artifact-map';
+import { CodeBuildStep } from './codebuild-step';
+import { CodePipelineActionFactoryResult, ICodePipelineActionFactory } from './codepipeline-action-factory';
+import { CodeBuildFactory, mergeCodeBuildOptions } from './private/codebuild-factory';
+import { namespaceStepOutputs } from './private/outputs';
+import { StackOutputsMap } from './stack-outputs-map';
 
 
 /**
