@@ -768,18 +768,14 @@ new pipelines.CodeBuildStep('Synth', {
   ],
 
   // Control logging options
-  logging: {
-    cloudWatch: {
-      logGroup: logGroup,
-      prefix: 'prefix',
-      enabled: true,
-    },
-    s3: {
-      encrypted: true,
-      bucket: bucket,
-      prefix: 's3prefix',
-      enabled: true,
-    },
+  cloudWatchLogging: {
+    logGroup: logGroup,
+    prefix: 'prefix',
+  },
+  s3Logging: {
+    encrypted: true,
+    bucket: bucket,
+    prefix: 's3prefix',
   },
 });
 ```
@@ -791,6 +787,8 @@ or just for the synth, asset publishing, and self-mutation projects by passing `
 ```ts
 declare const vpc: ec2.Vpc;
 declare const mySecurityGroup: ec2.SecurityGroup;
+declare const bucket: s3.Bucket;
+declare const logGroup: logs.LogGroup;
 new pipelines.CodePipeline(this, 'Pipeline', {
   // Standard CodePipeline properties
   synth: new pipelines.ShellStep('Synth', {
@@ -826,6 +824,17 @@ new pipelines.CodePipeline(this, 'Pipeline', {
     rolePolicy: [
       new iam.PolicyStatement({ /* ... */ }),
     ],
+
+    // Control logging options
+    cloudWatchLogging: {
+      logGroup: logGroup,
+      prefix: 'prefix',
+    },
+    s3Logging: {
+      encrypted: true,
+      bucket: bucket,
+      prefix: 's3prefix',
+    },
   },
 
   synthCodeBuildDefaults: { /* ... */ },
