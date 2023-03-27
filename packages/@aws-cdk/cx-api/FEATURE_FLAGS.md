@@ -901,6 +901,7 @@ of the `id`s, the `name`s of the columns can be changed without data loss.
 | (not in v1) |  |  |
 | 2.68.0 | `false` | `true` |
 
+
 ### @aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2
 
 *Enable AmazonEMRServicePolicy_v2 managed policies* (fix)
@@ -912,7 +913,7 @@ If this flag is set, the default behavior is to use the new `AmazonEMRServicePol
 managed policies.
 
 This is a feature flag as the old behavior will be deprecated, but some resources may require manual
-intervention since they don't automatically have the appropriate tags propagated.
+intervention since they might not have the appropriate tags propagated automatically.
 
 
 | Since | Default | Recommended |
