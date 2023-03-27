@@ -4,6 +4,13 @@
   "description": "Version 2 of the AWS Cloud Development Kit library",
   "main": "index.js",
   "types": "index.d.ts",
+  "typesVersions": {
+    "<=3.9": {
+      "*": [
+        ".types-compat/ts3.9/*"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
@@ -177,6 +184,7 @@
     "@aws-cdk/aws-codestarnotifications": "0.0.0",
     "@aws-cdk/aws-cognito": "0.0.0",
     "@aws-cdk/aws-cognito-identitypool": "0.0.0",
+    "@aws-cdk/aws-comprehend": "0.0.0",
     "@aws-cdk/aws-config": "0.0.0",
     "@aws-cdk/aws-connect": "0.0.0",
     "@aws-cdk/aws-connectcampaigns": "0.0.0",
@@ -238,6 +246,7 @@
     "@aws-cdk/aws-imagebuilder": "0.0.0",
     "@aws-cdk/aws-inspector": "0.0.0",
     "@aws-cdk/aws-inspectorv2": "0.0.0",
+    "@aws-cdk/aws-internetmonitor": "0.0.0",
     "@aws-cdk/aws-iot": "0.0.0",
     "@aws-cdk/aws-iot-actions": "0.0.0",
     "@aws-cdk/aws-iot1click": "0.0.0",
@@ -252,6 +261,7 @@
     "@aws-cdk/aws-iottwinmaker": "0.0.0",
     "@aws-cdk/aws-iotwireless": "0.0.0",
     "@aws-cdk/aws-ivs": "0.0.0",
+    "@aws-cdk/aws-ivschat": "0.0.0",
     "@aws-cdk/aws-kafkaconnect": "0.0.0",
     "@aws-cdk/aws-kendra": "0.0.0",
     "@aws-cdk/aws-kendraranking": "0.0.0",
@@ -357,9 +367,11 @@
     "@aws-cdk/aws-stepfunctions-tasks": "0.0.0",
     "@aws-cdk/aws-supportapp": "0.0.0",
     "@aws-cdk/aws-synthetics": "0.0.0",
+    "@aws-cdk/aws-systemsmanagersap": "0.0.0",
     "@aws-cdk/aws-timestream": "0.0.0",
     "@aws-cdk/aws-transfer": "0.0.0",
     "@aws-cdk/aws-voiceid": "0.0.0",
+    "@aws-cdk/aws-vpclattice": "0.0.0",
     "@aws-cdk/aws-waf": "0.0.0",
     "@aws-cdk/aws-wafregional": "0.0.0",
     "@aws-cdk/aws-wafv2": "0.0.0",
@@ -385,7 +397,7 @@
     "esbuild": "^0.17.11",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
-    "typescript": "~3.8.3"
+    "typescript": "~4.9.5"
   },
   "peerDependencies": {
     "constructs": "^10.0.0"

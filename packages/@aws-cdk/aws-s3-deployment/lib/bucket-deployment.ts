@@ -152,7 +152,7 @@ export interface BucketDeploymentProps {
    * @default - No user metadata is set
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
    */
-  readonly metadata?: UserDefinedObjectMetadata;
+  readonly metadata?: { [key: string]: string };
 
   /**
    * System-defined cache-control metadata to be set on all objects in the deployment.
@@ -567,10 +567,14 @@ export class BucketDeployment extends Construct {
 }
 
 /**
- * Metadata
+ * Metadata.
+ *
+ * The `x-amz-meta-` prefix will automatically be added to keys.
+ *
+ * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
  */
 
-function mapUserMetadata(metadata: UserDefinedObjectMetadata) {
+function mapUserMetadata(metadata: { [key: string]: string }) {
   const mapKey = (key: string) => key.toLowerCase();
 
   return Object.keys(metadata).reduce((o, key) => ({ ...o, [mapKey(key)]: metadata[key] }), {});
@@ -754,12 +758,19 @@ export class Expires {
 
 /**
  * Custom user defined metadata.
+ *
+ * @deprecated Use raw property bags instead (object literals, `Map<String,Object>`, etc... )
  */
 export interface UserDefinedObjectMetadata {
   /**
    * Arbitrary metadata key-values
    * The `x-amz-meta-` prefix will automatically be added to keys.
+   *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#UserMetadata
+   *
+   * This index signature is not usable in non-TypeScript/JavaScript languages.
+   *
+   * @jsii ignore
    */
   readonly [key: string]: string;
 }

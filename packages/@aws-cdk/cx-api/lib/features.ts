@@ -85,6 +85,7 @@ export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTem
 export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
 export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
 export const VALIDATION_REPORT_JSON = '@aws-cdk/core:validationReportJson';
+export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -740,6 +741,22 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       Validation reports may be displayed in a human-readable format or in JSON format.
       This flag enables the JSON format.
+      `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
+  [ENABLE_EMR_SERVICE_POLICY_V2]: {
+    type: FlagType.BugFix,
+    summary: 'Enable AmazonEMRServicePolicy_v2 managed policies',
+    detailsMd: `
+      If this flag is not set, the default behavior for \`EmrCreateCluster\` is
+      to use \`AmazonElasticMapReduceRole\` managed policies.
+
+      If this flag is set, the default behavior is to use the new \`AmazonEMRServicePolicy_v2\`
+      managed policies.
+
+      This is a feature flag as the old behavior will be deprecated, but some resources may require manual
+      intervention since they might not have the appropriate tags propagated automatically.
       `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
