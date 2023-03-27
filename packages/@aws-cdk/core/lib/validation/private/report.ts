@@ -63,6 +63,11 @@ export interface PluginReportJson {
    * Report summary.
    */
   readonly summary: PolicyValidationReportSummary;
+
+  /**
+   * Plugin version.
+   */
+  readonly version?: string;
 }
 
 /**
@@ -118,6 +123,7 @@ export class PolicyValidationReportFormatter {
       output.push('');
       output.push(table([
         [`Plugin: ${plugin.summary.pluginName}`],
+        [`Version: ${plugin.version ?? 'N/A'}`],
         [`Status: ${plugin.summary.status}`],
       ], {
         header: { content: 'Plugin Report' },
@@ -189,6 +195,7 @@ export class PolicyValidationReportFormatter {
       pluginReports: reps
         .filter(rep => !rep.success)
         .map(rep => ({
+          version: rep.pluginVersion,
           summary: {
             pluginName: rep.pluginName,
             status: rep.success ? report.PolicyValidationReportStatus.SUCCESS : report.PolicyValidationReportStatus.FAILURE,

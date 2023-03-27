@@ -38,6 +38,16 @@ export interface IPolicyValidationPluginBeta1 {
   readonly name: string;
 
   /**
+   * The version of the plugin, following the Semantic Versioning specification (see
+   * https://semver.org/). This version is used for analytics purposes, to
+   * measure the usage of different plugins and different versions. The value of
+   * this property should be kept in sync with the actual version of the
+   * software package. If the version is not provided or is not a valid semantic
+   * version, it will be reported as `0.0.0`.
+   */
+  readonly version?: string;
+
+  /**
    * The method that will be called by the CDK framework to perform
    * validations. This is where the plugin will evaluate the CloudFormation
    * templates for compliance and report and violations

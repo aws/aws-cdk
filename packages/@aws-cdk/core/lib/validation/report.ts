@@ -93,6 +93,12 @@ export interface PolicyValidationPluginReportBeta1 {
   readonly success: boolean;
 
   /**
+   * The version of the plugin that created the report.
+   * @default - no version
+   */
+  readonly pluginVersion?: string;
+
+  /**
    * Arbitrary information about the report.
    *
    * @default - no metadata

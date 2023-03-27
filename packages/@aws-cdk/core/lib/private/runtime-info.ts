@@ -58,9 +58,7 @@ function addValidationPluginInfo(stack: Stack, allConstructInfos: ConstructInfo[
             // the fqn can be in the format of `package.module.construct`
             // those get pulled out into separate fields
             fqn: `policyValidation.${plugin.name}`,
-            // we don't have a good way of getting a version from the plugin
-            // this needs to be in the format of `x.x.x`
-            version: '0.0.0',
+            version: plugin.version ?? '0.0.0',
           };
         },
       ));

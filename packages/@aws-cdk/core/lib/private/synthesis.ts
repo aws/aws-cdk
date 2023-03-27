@@ -119,6 +119,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
       reports.push({
         success: false,
         pluginName: plugin.name,
+        pluginVersion: plugin.version,
         violations: [],
         metadata: {
           error: `Validation plugin '${plugin.name}' failed: ${e.message}`,

@@ -161,7 +161,7 @@ Policy Validation Report Summary
             resourceLogicalId: 'DefaultResource',
             templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
           }],
-        }]),
+        }], '1.2.3'),
       ],
     });
     const stage1 = new core.Stage(app, 'Stage1', {
@@ -233,7 +233,7 @@ Policy Validation Report Summary
     expect(report).toEqual(`Validation Report
 -----------------
 
-${generateTable('test-plugin2', 'failure')}
+${generateTable('test-plugin2', 'failure', 'N/A')}
 
 (Violations)
 
@@ -262,7 +262,7 @@ ${reset(red(bright('test-rule2 (1 occurrences)')))}
 
   Description: do something
 
-${generateTable('test-plugin4', 'failure')}
+${generateTable('test-plugin4', 'failure', 'N/A')}
 
 (Violations)
 
@@ -291,7 +291,7 @@ ${reset(red(bright('test-rule4 (1 occurrences)')))}
 
   Description: do something
 
-${generateTable('test-plugin3', 'failure')}
+${generateTable('test-plugin3', 'failure', 'N/A')}
 
 (Violations)
 
@@ -320,7 +320,7 @@ ${reset(red(bright('test-rule3 (1 occurrences)')))}
 
   Description: do something
 
-${generateTable('test-plugin1', 'failure')}
+${generateTable('test-plugin1', 'failure', '1.2.3')}
 
 (Violations)
 
@@ -545,7 +545,7 @@ Policy Validation Report Summary
     expect(report).toEqual(`Validation Report
 -----------------
 
-${generateTable('plugin1', 'failure')}
+${generateTable('plugin1', 'failure', 'N/A')}
 
 (Violations)
 
@@ -570,7 +570,7 @@ ${reset(red(bright('rule-1 (1 occurrences)')))}
 
   Description: do something
 
-${generateTable('plugin2', 'failure')}
+${generateTable('plugin2', 'failure', 'N/A')}
 
 (Violations)
 
@@ -634,7 +634,7 @@ ${table([
     expect(report).toEqual(`Validation Report
 -----------------
 
-${generateTable('plugin2', 'failure')}
+${generateTable('plugin2', 'failure', 'N/A')}
 
 (Violations)
 
@@ -701,7 +701,7 @@ ${table([
 
     const report = consoleErrorMock.mock.calls[0][0];
     expect(report).toContain('error: Validation plugin \'broken-plugin\' failed: Something went wrong');
-    expect(report).toContain(generateTable('test-plugin', 'failure'));
+    expect(report).toContain(generateTable('test-plugin', 'failure', 'N/A'));
   });
 
   test('plugin tries to modify a template', () => {
@@ -803,16 +803,20 @@ ${table([
 });
 
 class FakePlugin implements core.IPolicyValidationPluginBeta1 {
-  // public readonly name = 'test-plugin';
+  private _version?: string;
 
   constructor(
     public readonly name: string,
-    private readonly violations: PolicyViolationBeta1[]) {}
+    private readonly violations: PolicyViolationBeta1[],
+    readonly version?: string) {
+    this._version = version;
+  }
 
   validate(_context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
     return {
       success: this.violations.length === 0,
       violations: this.violations,
+      pluginVersion: this._version,
     };
   }
 }
@@ -848,9 +852,10 @@ interface ValidationReportData {
   ruleMetadata?: { [key: string]: string };
 }
 
-function generateTable(pluginName: string, status: string): string {
+function generateTable(pluginName: string, status: string, pluginVersion: string): string {
   return table([
     [`Plugin: ${pluginName}`],
+    [`Version: ${pluginVersion}`],
     [`Status: ${status}`],
   ], {
     header: { content: 'Plugin Report' },
@@ -871,6 +876,7 @@ const validationReport = (data: ValidationReportData) => {
     '╔═════════════════════════╗',
     '║      Plugin Report      ║',
     '║   Plugin: test-plugin   ║',
+    '║   Version: N/A          ║',
     '║   Status: failure       ║',
     '╚═════════════════════════╝',
     '',
