@@ -234,6 +234,7 @@ async function makeAwsCdkLib(target: string) {
       ...pkgJson['cdk-build'],
       pre: [
         'npx ts-node region-info/build-tools/generate-static-data.ts',
+        'node aws-events-targets/build-tools/gen.js',
         '(cp -f $(node -p \'require.resolve(\"aws-sdk/apis/metadata.json\")\') custom-resources/lib/aws-custom-resource/sdk-api-metadata.json && rm -rf custom-resources/test/aws-custom-resource/cdk.out)',
         '(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)',
         '(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzvf fixtures.tar.gz)',
