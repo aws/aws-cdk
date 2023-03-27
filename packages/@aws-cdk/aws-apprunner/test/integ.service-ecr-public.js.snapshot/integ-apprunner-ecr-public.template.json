@@ -5,6 +5,7 @@
    "Properties": {
     "SourceConfiguration": {
      "AuthenticationConfiguration": {},
+     "AutoDeploymentsEnabled": false,
      "ImageRepository": {
       "ImageConfiguration": {
        "Port": "8000"
