@@ -1377,7 +1377,7 @@ write a class that implements this interface. There are two things you need to
 implement: the plugin name (by overriding the `name` property), and the
 `validate()` method.
 
-The framework will call `validate()`, passing an `IValidationContext` object.
+The framework will call `validate()`, passing an `IValidationContextBeta1` object.
 The location of the templates to be validated is given by `templatePaths`. The
 plugin should return an instance of `ValidationPluginReport`. This object
 represents the report that the user wil receive at the end of the synthesis.
