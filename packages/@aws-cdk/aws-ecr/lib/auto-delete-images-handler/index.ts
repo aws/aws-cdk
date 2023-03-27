@@ -72,7 +72,7 @@ async function onDelete(repositoryName: string) {
   }
   try {
     await emptyRepository({ repositoryName });
-  } catch (e) {
+  } catch (e: any) {
     if (e.name !== 'RepositoryNotFoundException') {
       throw e;
     }
