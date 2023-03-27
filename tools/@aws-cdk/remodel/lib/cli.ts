@@ -251,6 +251,8 @@ async function makeAwsCdkLib(target: string) {
     'devDependencies': {
       ...filteredDevDeps,
       '@aws-cdk/cfn2ts': '0.0.0',
+      // used by aws-certificatemanager tests, previously resolved as transient dep
+      'lambda-tester': '^3.6.0',
       // Dev dependencies from packages being bundled
       '@types/aws-lambda': '^8.10.111',
       '@types/jest': '^27.5.2',
@@ -392,6 +394,9 @@ export async function postRun(dir: string) {
   const integPackagesDir = path.join(dir, 'packages', '@aws-cdk-testing', 'framework-integ');
   // Update integ snapshots that are expected to change
   await exec(`yarn integ-runner --update-on-failed --dry-run ${dryRunInteg.join(' ')}`, { cwd: integPackagesDir });
+
+  const awsCdkLibDir = path.join(dir, 'packages', 'aws-cdk-lib');
+  await exec('yarn test -u', { cwd: awsCdkLibDir });
 
   // Run full build to make sure everything works
   // await e('yarn build --skip-prereqs --skip-compat');
