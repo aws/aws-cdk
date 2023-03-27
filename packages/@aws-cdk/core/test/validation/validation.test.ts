@@ -4,7 +4,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { table } from 'table';
 import * as core from '../../lib';
-import { PolicyValidationPluginReport, PolicyViolation } from '../../lib';
+import { PolicyValidationPluginReportBeta1, PolicyViolationBeta1 } from '../../lib';
 
 
 let consoleErrorMock: jest.SpyInstance;
@@ -807,9 +807,9 @@ class FakePlugin implements core.IPolicyValidationPluginBeta1 {
 
   constructor(
     public readonly name: string,
-    private readonly violations: PolicyViolation[]) {}
+    private readonly violations: PolicyViolationBeta1[]) {}
 
-  validate(_context: core.IPolicyValidationContext): PolicyValidationPluginReport {
+  validate(_context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
     return {
       success: this.violations.length === 0,
       violations: this.violations,
@@ -820,7 +820,7 @@ class FakePlugin implements core.IPolicyValidationPluginBeta1 {
 class RoguePlugin implements core.IPolicyValidationPluginBeta1 {
   public readonly name = 'rogue-plugin';
 
-  validate(context: core.IPolicyValidationContext): PolicyValidationPluginReport {
+  validate(context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
     const templatePath = context.templatePaths[0];
     fs.writeFileSync(templatePath, 'malicious data');
     return {
@@ -833,7 +833,7 @@ class RoguePlugin implements core.IPolicyValidationPluginBeta1 {
 class BrokenPlugin implements core.IPolicyValidationPluginBeta1 {
   public readonly name = 'broken-plugin';
 
-  validate(_context: core.IPolicyValidationContext): PolicyValidationPluginReport {
+  validate(_context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
     throw new Error('Something went wrong');
   }
 }

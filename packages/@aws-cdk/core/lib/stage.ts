@@ -152,7 +152,7 @@ export class Stage extends Construct {
    *
    * @default - no validation plugins are used
    */
-  public readonly policyValidation: IPolicyValidationPluginBeta1[] = [];
+  public readonly policyValidationBeta1: IPolicyValidationPluginBeta1[] = [];
 
 
   constructor(scope: Construct, id: string, props: StageProps = {}) {
@@ -176,7 +176,7 @@ export class Stage extends Construct {
     this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
 
     if (props.policyValidationBeta1) {
-      this.policyValidation = props.policyValidationBeta1;
+      this.policyValidationBeta1 = props.policyValidationBeta1;
     }
   }
 

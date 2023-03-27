@@ -52,7 +52,7 @@ function addValidationPluginInfo(stack: Stack, allConstructInfos: ConstructInfo[
       done = true;
     }
     if (stage) {
-      allConstructInfos.push(...stage.policyValidation.map(
+      allConstructInfos.push(...stage.policyValidationBeta1.map(
         plugin => {
           return {
             // the fqn can be in the format of `package.module.construct`

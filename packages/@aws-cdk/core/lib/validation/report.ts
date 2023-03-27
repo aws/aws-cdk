@@ -1,7 +1,7 @@
 /**
  * Violation produced by the validation plugin.
  */
-export interface PolicyViolation {
+export interface PolicyViolationBeta1 {
   /**
    * The name of the rule.
    */
@@ -81,11 +81,11 @@ export enum PolicyValidationReportStatus {
 /**
  * The report emitted by the plugin after evaluation.
  */
-export interface PolicyValidationPluginReport {
+export interface PolicyValidationPluginReportBeta1 {
   /**
    * List of violations in the report.
    */
-  readonly violations: PolicyViolation[];
+  readonly violations: PolicyViolationBeta1[];
 
   /**
    * Whether or not the report was successful.

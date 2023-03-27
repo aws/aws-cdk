@@ -1,6 +1,6 @@
 import * as zlib from 'zlib';
 import { Construct } from 'constructs';
-import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContext, Stage, PolicyValidationPluginReport } from '../lib';
+import { App, Stack, IPolicyValidationPluginBeta1, IPolicyValidationContextBeta1, Stage, PolicyValidationPluginReportBeta1 } from '../lib';
 import { formatAnalytics } from '../lib/private/metadata-resource';
 import { ConstructInfo } from '../lib/private/runtime-info';
 
@@ -196,7 +196,7 @@ class TestThirdPartyConstruct extends Construct {
 class ValidationPlugin implements IPolicyValidationPluginBeta1 {
   constructor(public readonly name: string) {}
 
-  validate(_context: IPolicyValidationContext): PolicyValidationPluginReport {
+  validate(_context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
     return {
       success: true,
       violations: [],

@@ -8,7 +8,7 @@ import * as report from '../report';
 /**
  * Validation produced by the validation plugin, in construct terms.
  */
-export interface PolicyViolationConstructAware extends report.PolicyViolation {
+export interface PolicyViolationConstructAware extends report.PolicyViolationBeta1 {
   /**
    * The constructs violating this rule.
    */
@@ -91,7 +91,7 @@ export interface PolicyValidationReportSummary {
 /**
  * The report containing the name of the plugin that created it.
  */
-export interface NamedValidationPluginReport extends report.PolicyValidationPluginReport {
+export interface NamedValidationPluginReport extends report.PolicyValidationPluginReportBeta1 {
   /**
    * The name of the plugin that created the report
    */
