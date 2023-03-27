@@ -6,6 +6,7 @@ dist
 *.snk
 !.eslintrc.js
 !config/*.js
+!template/*.js
 junit.xml
 
 .LAST_BUILD
