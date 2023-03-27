@@ -751,7 +751,7 @@ ${table([
       app.synth();
     }).toThrow(/Validation failed/);
 
-    const report = fs.readFileSync(path.join(app.outdir, 'policy-validation.json')).toString('utf-8');
+    const report = fs.readFileSync(path.join(app.outdir, 'policy-validation-report.json')).toString('utf-8');
     expect(JSON.parse(report)).toEqual(expect.objectContaining({
       title: 'Validation Report',
       pluginReports: [
