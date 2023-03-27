@@ -207,13 +207,15 @@
     "constructs": "^10.0.0",
     "fs-extra": "^9.1.0",
     "ignore": "^5.2.4",
-    "minimatch": "^3.1.2"
+    "minimatch": "^3.1.2",
+    "table": "^6.8.1"
   },
   "bundledDependencies": [
     "fs-extra",
     "minimatch",
     "@balena/dockerignore",
-    "ignore"
+    "ignore",
+    "table"
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
