@@ -18,7 +18,7 @@ import { IPolicyValidationPluginBeta1 } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
 import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
 
-const POLICY_VALIDATION_FILE_PATH = 'policy-validation.json';
+const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 
 /**
  * Options for `synthesize()`
