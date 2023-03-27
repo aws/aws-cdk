@@ -589,6 +589,14 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
+  test('can be imported from arn', () => {
+    // WHEN
+    const ce = ManagedEc2EcsComputeEnvironment.fromComputeEnvironmentArn(stack, 'import', 'arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
+
+    // THEN
+    expect(ce.computeEnvironmentArn).toEqual('arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
+  });
+
   test('throws when no instance types are provided', () => {
     new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,

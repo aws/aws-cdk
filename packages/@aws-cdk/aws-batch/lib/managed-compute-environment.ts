@@ -1,6 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as eks from '@aws-cdk/aws-eks';
 import * as iam from '@aws-cdk/aws-iam';
+import { IRole } from '@aws-cdk/aws-iam';
 import { Duration, Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
@@ -92,6 +93,9 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
   readonly updateToLatestImageVersion?: boolean;
 }
 
+/**
+ * Props for a ManagedComputeEnvironment
+ */
 export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps {
   /**
   * The maximum vCpus this `ManagedComputeEnvironment` can scale up to.
@@ -188,6 +192,7 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
 }
 
 /**
+ * Abstract base class for ManagedComputeEnvironments
  * @internal
  */
 export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBase implements IManagedComputeEnvironment {
@@ -239,6 +244,9 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
   }
 }
 
+/**
+ * A ManagedComputeEnvironment that uses ECS orchestration on EC2 instances.
+ */
 export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnvironment {
   /**
    * Configure which AMIs this Compute Environment can launch.
@@ -272,11 +280,13 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
   readonly spotBidPercentage?: number;
 
   /**
-   * blah
+   * The service-linked role that Spot Fleet needs to launch instances on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/spot_fleet_IAM_role.html
    *
    * @default - a new Role will be created
    */
-  readonly spotIamFleetRole?: iam.IRole;
+  readonly spotFleetRole?: iam.IRole;
 
   /**
    * The instance types that this Compute Environment can launch.
@@ -285,8 +295,9 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
   readonly instanceTypes: ec2.InstanceType[];
 
   /**
-   * The instance types that this Compute Environment can launch.
+   * The instance classes that this Compute Environment can launch.
    * Which one is chosen depends on the `AllocationStrategy` used.
+   * Batch will automatically choose the size.
    */
   readonly instanceClasses: ec2.InstanceClass[];
 
@@ -302,6 +313,8 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
 
   /**
    * The execution Role that instances launched by this Compute Environment will use.
+   *
+   * @default a role will be created
    */
   readonly instanceRole?: iam.IRole;
 
@@ -313,6 +326,8 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    * launch template and this Compute Environment, **the
    * `securityGroup`s on the Compute Environment override the
    * ones on the launch template.
+   *
+   * @default no launch template
    */
   readonly launchTemplate?: ec2.ILaunchTemplate;
 
@@ -332,139 +347,232 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    * within a single Availability Zone with high network flow potential.
    *
    * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+   *
+   * @default no placement group
    */
   readonly placementGroup?: ec2.IPlacementGroup;
 }
 
+/**
+ * Base interface for containing all information needed to
+ * configure a MachineImage in Batch
+ */
 interface MachineImage {
+  /**
+   * The machine image to use
+   */
   readonly image?: ec2.IMachineImage;
 }
 
+/**
+ * A Batch MachineImage that is compatible with ECS
+ */
 export interface EcsMachineImage extends MachineImage {
+  /**
+   * Tells Batch which instance type to launch this image on
+   */
   readonly imageType?: EcsMachineImageType;
 }
 
+/**
+ * A Batch MachineImage that is compatible with EKS
+ */
 export interface EksMachineImage extends MachineImage{
+  /**
+   * Tells Batch which instance type to launch this image on
+   */
   readonly imageType?: EksMachineImageType;
 }
 
+/**
+ * Maps the image to instance types
+ */
 export enum EcsMachineImageType {
+  /**
+   * Tells Batch that this machine image runs on non-GPU instances
+   */
   ECS_AL2 = 'ECS_AL2',
+
+  /**
+   * Tells Batch that this machine image runs on GPU instances
+   */
   ECS_AL2_NVIDIA = 'ECS_AL2_NVIDIA',
 }
 
+/**
+ * Maps the image to instance types
+ */
 export enum EksMachineImageType {
+  /**
+   * Tells Batch that this machine image runs on non-GPU instances
+   */
   EKS_AL2 = 'EKS_AL2',
+
+  /**
+   * Tells Batch that this machine image runs on GPU instances
+   */
   EKS_AL2_NVIDIA = 'EKS_AL2_NVIDIA',
 }
 
+/**
+ * Determines how this compute environment chooses instances to spawn
+ *
+ * @see https://aws.amazon.com/blogs/compute/optimizing-for-cost-availability-and-throughput-by-selecting-your-aws-batch-allocation-strategy/
+ */
 export enum AllocationStrategy {
+  /**
+   * Batch chooses the lowest-cost instance type that fits all the jobs in the queue.
+   * If instances of that type are not available, the queue will not choose a new type;
+   * instead, it will wait for the instance to become available.
+   * This can stall your `Queue`, with your compute environment only using part of its max capacity
+   * (or none at all) until the `BEST_FIT` instance becomes available.
+   * This allocation strategy keeps costs lower but can limit scaling.
+   * `BEST_FIT` isn't supported when updating compute environments
+   */
   BEST_FIT = 'BEST_FIT',
+
+  /**
+   * This is the default Allocation Strategy if `spot` is `false` or unspecified.
+   * This strategy will examine the Jobs in the queue and choose whichever instance type meets the requirements
+   * of the jobs in the queue and with the lowest cost per vCPU, just as `BEST_FIT`.
+   * However, if not all of the capacity can be filled with this instance type,
+   * it will choose a new next-best instance type to run any jobs that couldn’t fit into the `BEST_FIT` capacity.
+   * To make the most use of this allocation strategy,
+   * it is recommended to use as many instance classes as is feasible for your workload.
+   */
   BEST_FIT_PROGRESSIVE = 'BEST_FIT_PROGRESSIVE',
+
+  /**
+   * If your workflow tolerates interruptions, you should enable `spot` on your `ComputeEnvironment`
+   * and use `SPOT_CAPACITY_OPTIMIZED` (this is the default if `spot` is enabled).
+   * This will tell Batch to choose the instance types from the ones you’ve specified that have
+   * the most spot capacity available to minimize the chance of interruption.
+   * To get the most benefit from your spot instances,
+   * you should allow Batch to choose from as many different instance types as possible.
+   */
   SPOT_CAPACITY_OPTIMIZED = 'SPOT_CAPACITY_OPTIMIZED',
 }
 
+/**
+ * Props for a ManagedEc2EcsComputeEnvironment
+ */
 export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvironmentProps {
   /**
-    * Whether or not to use batch's optimal instance type.
-    * The optimal instance type is equivalent to adding the
-    * C4, M4, and R4 instance classes. You can specify other instance classes
-    * (of the same architecture) in addition to the optimal instance classes.
-    *
-    * @default true
-    */
+   * Whether or not to use batch's optimal instance type.
+   * The optimal instance type is equivalent to adding the
+   * C4, M4, and R4 instance classes. You can specify other instance classes
+   * (of the same architecture) in addition to the optimal instance classes.
+   *
+   * @default true
+   */
   readonly useOptimalInstanceClasses?: boolean;
 
   /**
-  * Configure which AMIs this Compute Environment can launch.
-  * If you specify this property with only `image` specified, then the
-  * `imageType` will default to `ECS_AL2`. *If your image needs GPU resources,
-  * specify `ECS_AL2_NVIDIA`; otherwise, the instances will not be able to properly
-  * join the ComputeEnvironment*.
-  *
-  * @default
-  * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances
-  */
+   * Configure which AMIs this Compute Environment can launch.
+   * If you specify this property with only `image` specified, then the
+   * `imageType` will default to `ECS_AL2`. *If your image needs GPU resources,
+   * specify `ECS_AL2_NVIDIA`; otherwise, the instances will not be able to properly
+   * join the ComputeEnvironment*.
+   *
+   * @default
+   * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances
+   */
   readonly images?: EcsMachineImage[];
 
   /**
-    * The allocation strategy to use if not enough instances of
-    * the best fitting instance type can be allocated.
-    *
-    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-    * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
-    */
+   * The allocation strategy to use if not enough instances of
+   * the best fitting instance type can be allocated.
+   *
+   * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
+   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   */
   readonly allocationStrategy?: AllocationStrategy;
 
   /**
-    * The maximum percentage that a Spot Instance price can be when compared with the
-    * On-Demand price for that instance type before instances are launched.
-    * For example, if your maximum percentage is 20%, the Spot price must be
-    * less than 20% of the current On-Demand price for that Instance.
-    * You always pay the lowest market price and never more than your maximum percentage.
-    * For most use cases, Batch recommends leaving this field empty.
-    *
-    * Implies `spot == true` if set
-    *
-    * @default - 100%
-    */
+   * The maximum percentage that a Spot Instance price can be when compared with the
+   * On-Demand price for that instance type before instances are launched.
+   * For example, if your maximum percentage is 20%, the Spot price must be
+   * less than 20% of the current On-Demand price for that Instance.
+   * You always pay the lowest market price and never more than your maximum percentage.
+   * For most use cases, Batch recommends leaving this field empty.
+   *
+   * Implies `spot == true` if set
+   *
+   * @default 100%
+   */
   readonly spotBidPercentage?: number;
 
   /**
-   * blah
+   * The service-linked role that Spot Fleet needs to launch instances on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/spot_fleet_IAM_role.html
    *
    * @default - a new role will be created
    */
   readonly spotFleetRole?: iam.IRole;
 
   /**
-    * The instance types that this Compute Environment can launch.
-    * Which one is chosen depends on the `AllocationStrategy` used.
-    */
+   * The instance types that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   *
+   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
+   */
   readonly instanceTypes?: ec2.InstanceType[];
 
   /**
-    * The instance types that this Compute Environment can launch.
-    * Which one is chosen depends on the `AllocationStrategy` used.
-    */
+   * The instance classes that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   * Batch will automatically choose the instance size.
+   *
+   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
+   */
   readonly instanceClasses?: ec2.InstanceClass[];
 
   /**
-    * The execution Role that instances launched by this Compute Environment will use.
-    */
+   * The execution Role that instances launched by this Compute Environment will use.
+   *
+   * @default an instance role will be created
+   */
   readonly instanceRole?: iam.IRole;
 
   /**
-    * The Launch Template that this Compute Environment
-    * will use to provision EC2 Instances.
-    *
-    * *Note*: if `securityGroups` is specified on both your
-    * launch template and this Compute Environment, **the
-    * `securityGroup`s on the Compute Environment override the
-    * ones on the launch template.
-    */
+   * The Launch Template that this Compute Environment
+   * will use to provision EC2 Instances.
+   *
+   * *Note*: if `securityGroups` is specified on both your
+   * launch template and this Compute Environment, **the
+   * `securityGroup`s on the Compute Environment override the
+   * ones on the launch template.
+   *
+   * @default no launch template
+   */
   readonly launchTemplate?: ec2.ILaunchTemplate;
 
   /**
-    * The minimum vCPUs that an environment should maintain,
-    * even if the compute environment is DISABLED.
-    *
-    * @default 0
-    */
+   * The minimum vCPUs that an environment should maintain,
+   * even if the compute environment is DISABLED.
+   *
+   * @default 0
+   */
   readonly minvCpus?: number;
 
   /**
-    * The EC2 placement group to associate with your compute resources.
-    * If you intend to submit multi-node parallel jobs to this Compute Environment,
-    * you should consider creating a cluster placement group and associate it with your compute resources.
-    * This keeps your multi-node parallel job on a logical grouping of instances
-    * within a single Availability Zone with high network flow potential.
-    *
-    * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
-    */
+   * The EC2 placement group to associate with your compute resources.
+   * If you intend to submit multi-node parallel jobs to this Compute Environment,
+   * you should consider creating a cluster placement group and associate it with your compute resources.
+   * This keeps your multi-node parallel job on a logical grouping of instances
+   * within a single Availability Zone with high network flow potential.
+   *
+   * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+   *
+   * @default no placement group
+   */
   readonly placementGroup?: ec2.IPlacementGroup;
 }
 
+/**
+ * A ManagedComputeEnvironment that uses ECS orchestration on EC2 instances.
+ */
 export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EcsComputeEnvironment {
   readonly images?: EcsMachineImage[];
   readonly allocationStrategy?: AllocationStrategy;
@@ -537,16 +645,24 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
   }
 
+  /**
+   * Add an instance type to this compute environment
+   */
   public addInstanceType(instanceType: ec2.InstanceType): void {
     this.instanceTypes.push(instanceType);
   }
 
-  public addInstanceClass (instanceClass: ec2.InstanceClass): void {
+  /**
+   * Add an instance class to this compute environment
+   */
+  public addInstanceClass(instanceClass: ec2.InstanceClass): void {
     this.instanceClasses.push(instanceClass);
   }
-
 }
 
+/**
+ * A ManagedComputeEnvironment that uses EKS orchestration on EC2 instances.
+ */
 interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
   /**
    * The namespace of the Cluster
@@ -560,88 +676,99 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
   /**
    * The cluster that backs this Compute Environment. Required
    * for Compute Environments running Kubernetes jobs.
+   *
+   * Please ensure that you have followed the steps at
+   *
+   * https://docs.aws.amazon.com/batch/latest/userguide/getting-started-eks.html
+   *
+   * before attempting to deploy a `ManagedEc2EksComputeEnvironment` that uses this cluster.
+   * If you do not follow the steps in the link, the deployment fail with a message that the
+   * compute environment did not stabilize.
    */
   readonly eksCluster: eks.ICluster;
 
   /**
-  * Configure which AMIs this Compute Environment can launch.
-  *
-  * @default
-  * EKS_AL2 for non-GPU instances, EKS_AL2_NVIDIA for GPU instances,
-  */
+   * Configure which AMIs this Compute Environment can launch.
+   *
+   * @default
+   * EKS_AL2 for non-GPU instances, EKS_AL2_NVIDIA for GPU instances,
+   */
   readonly images?: EksMachineImage[];
 
   /**
-    * The allocation strategy to use if not enough instances of
-    * the best fitting instance type can be allocated.
-    *
-    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-    * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
-    */
+   * The allocation strategy to use if not enough instances of
+   * the best fitting instance type can be allocated.
+   *
+   * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
+   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   */
   readonly allocationStrategy?: AllocationStrategy;
 
   /**
-    * The maximum percentage that a Spot Instance price can be when compared with the
-    * On-Demand price for that instance type before instances are launched.
-    * For example, if your maximum percentage is 20%, the Spot price must be
-    * less than 20% of the current On-Demand price for that Instance.
-    * You always pay the lowest market price and never more than your maximum percentage.
-    * For most use cases, Batch recommends leaving this field empty.
-    *
-    * Implies `spot == true` if set
-    *
-    * @default - 100%
-    */
+   * The maximum percentage that a Spot Instance price can be when compared with the
+   * On-Demand price for that instance type before instances are launched.
+   * For example, if your maximum percentage is 20%, the Spot price must be
+   * less than 20% of the current On-Demand price for that Instance.
+   * You always pay the lowest market price and never more than your maximum percentage.
+   * For most use cases, Batch recommends leaving this field empty.
+   *
+   * Implies `spot == true` if set
+   *
+   * @default - 100%
+   */
   readonly spotBidPercentage?: number;
 
   /**
-    * The instance types that this Compute Environment can launch.
-    * Which one is chosen depends on the `AllocationStrategy` used.
-    */
+   * The instance types that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   */
   readonly instanceTypes: ec2.InstanceType[];
 
   /**
-    * The instance types that this Compute Environment can launch.
-    * Which one is chosen depends on the `AllocationStrategy` used.
-    */
+   * The instance types that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   */
   readonly instanceClasses: ec2.InstanceClass[];
 
   /**
-    * The execution Role that instances launched by this Compute Environment will use.
-    */
+   * The execution Role that instances launched by this Compute Environment will use.
+   */
   readonly instanceRole?: iam.IRole;
 
   /**
-    * The Launch Template that this Compute Environment
-    * will use to provision EC2 Instances.
-    *
-    * *Note*: if `securityGroups` is specified on both your
-    * launch template and this Compute Environment, **the
-    * `securityGroup`s on the Compute Environment override the
-    * ones on the launch template.
-    */
+   * The Launch Template that this Compute Environment
+   * will use to provision EC2 Instances.
+   *
+   * *Note*: if `securityGroups` is specified on both your
+   * launch template and this Compute Environment, **the
+   * `securityGroup`s on the Compute Environment override the
+   * ones on the launch template.
+   */
   readonly launchTemplate?: ec2.ILaunchTemplate;
 
   /**
-    * The minimum vCPUs that an environment should maintain,
-    * even if the compute environment is DISABLED.
-    *
-    * @default 0
-    */
+   * The minimum vCPUs that an environment should maintain,
+   * even if the compute environment is DISABLED.
+   *
+   * @default 0
+   */
   readonly minvCpus?: number;
 
   /**
-    * The EC2 placement group to associate with your compute resources.
-    * If you intend to submit multi-node parallel jobs to this Compute Environment,
-    * you should consider creating a cluster placement group and associate it with your compute resources.
-    * This keeps your multi-node parallel job on a logical grouping of instances
-    * within a single Availability Zone with high network flow potential.
-    *
-    * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
-    */
+   * The EC2 placement group to associate with your compute resources.
+   * If you intend to submit multi-node parallel jobs to this Compute Environment,
+   * you should consider creating a cluster placement group and associate it with your compute resources.
+   * This keeps your multi-node parallel job on a logical grouping of instances
+   * within a single Availability Zone with high network flow potential.
+   *
+   * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+   */
   readonly placementGroup?: ec2.IPlacementGroup;
 }
 
+/**
+ * Props for a ManagedEc2EksComputeEnvironment
+ */
 export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvironmentProps {
   /**
    * The namespace of the Cluster
@@ -663,104 +790,109 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
   readonly eksCluster: eks.ICluster;
 
   /**
-    * Whether or not to use batch's optimal instance type.
-    * The optimal instance type is equivalent to adding the
-    * C4, M4, and R4 instance classes. You can specify other instance classes
-    * (of the same architecture) in addition to the optimal instance classes.
-    *
-    * @default true
-    */
+   * Whether or not to use batch's optimal instance type.
+   * The optimal instance type is equivalent to adding the
+   * C4, M4, and R4 instance classes. You can specify other instance classes
+   * (of the same architecture) in addition to the optimal instance classes.
+   *
+   * @default true
+   */
   readonly useOptimalInstanceClasses?: boolean;
 
   /**
-  * Configure which AMIs this Compute Environment can launch.
-  *
-  * @default
-  * If `imageKubernetesVersion` is specified,
-  * - EKS_AL2 for non-GPU instances, EKS_AL2_NVIDIA for GPU instances,
-  * Otherwise,
-  * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances,
-  */
+   * Configure which AMIs this Compute Environment can launch.
+   *
+   * @default
+   * If `imageKubernetesVersion` is specified,
+   * - EKS_AL2 for non-GPU instances, EKS_AL2_NVIDIA for GPU instances,
+   * Otherwise,
+   * - ECS_AL2 for non-GPU instances, ECS_AL2_NVIDIA for GPU instances,
+   */
   readonly images?: EksMachineImage[];
 
   /**
-    * The allocation strategy to use if not enough instances of
-    * the best fitting instance type can be allocated.
-    *
-    * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
-    * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
-    */
+   * The allocation strategy to use if not enough instances of
+   * the best fitting instance type can be allocated.
+   *
+   * @default - `BEST_FIT_PROGRESSIVE` if not using Spot instances,
+   * `SPOT_CAPACITY_OPTIMIZED` if using Spot instances.
+   */
   readonly allocationStrategy?: AllocationStrategy;
 
   /**
-    * The maximum percentage that a Spot Instance price can be when compared with the
-    * On-Demand price for that instance type before instances are launched.
-    * For example, if your maximum percentage is 20%, the Spot price must be
-    * less than 20% of the current On-Demand price for that Instance.
-    * You always pay the lowest market price and never more than your maximum percentage.
-    * For most use cases, Batch recommends leaving this field empty.
-    *
-    * Implies `spot == true` if set
-    *
-    * @default - 100%
-    */
+   * The maximum percentage that a Spot Instance price can be when compared with the
+   * On-Demand price for that instance type before instances are launched.
+   * For example, if your maximum percentage is 20%, the Spot price must be
+   * less than 20% of the current On-Demand price for that Instance.
+   * You always pay the lowest market price and never more than your maximum percentage.
+   * For most use cases, Batch recommends leaving this field empty.
+   *
+   * Implies `spot == true` if set
+   *
+   * @default - 100%
+   */
   readonly spotBidPercentage?: number;
 
   /**
-    * The instance types that this Compute Environment can launch.
-    * Which one is chosen depends on the `AllocationStrategy` used.
-    */
+   * The instance types that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   */
   readonly instanceTypes?: ec2.InstanceType[];
 
   /**
-    * The instance types that this Compute Environment can launch.
-    * Which one is chosen depends on the `AllocationStrategy` used.
-    */
+   * The instance types that this Compute Environment can launch.
+   * Which one is chosen depends on the `AllocationStrategy` used.
+   */
   readonly instanceClasses?: ec2.InstanceClass[];
 
   /**
-    * The execution Role that instances launched by this Compute Environment will use.
-    */
+   * The execution Role that instances launched by this Compute Environment will use.
+   */
   readonly instanceRole?: iam.IRole;
 
   /**
-   * blah
+   * The service-linked role that Spot Fleet needs to launch instances on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/spot_fleet_IAM_role.html
    *
    * @default - a new role will be created
    */
   readonly spotFleetRole?: iam.IRole;
 
   /**
-    * The Launch Template that this Compute Environment
-    * will use to provision EC2 Instances.
-    *
-    * *Note*: if `securityGroups` is specified on both your
-    * launch template and this Compute Environment, **the
-    * `securityGroup`s on the Compute Environment override the
-    * ones on the launch template.
-    */
+   * The Launch Template that this Compute Environment
+   * will use to provision EC2 Instances.
+   *
+   * *Note*: if `securityGroups` is specified on both your
+   * launch template and this Compute Environment, **the
+   * `securityGroup`s on the Compute Environment override the
+   * ones on the launch template.**
+   */
   readonly launchTemplate?: ec2.ILaunchTemplate;
 
   /**
-    * The minimum vCPUs that an environment should maintain,
-    * even if the compute environment is DISABLED.
-    *
-    * @default 0
-    */
+   * The minimum vCPUs that an environment should maintain,
+   * even if the compute environment is DISABLED.
+   *
+   * @default 0
+   */
   readonly minvCpus?: number;
 
   /**
-    * The EC2 placement group to associate with your compute resources.
-    * If you intend to submit multi-node parallel jobs to this Compute Environment,
-    * you should consider creating a cluster placement group and associate it with your compute resources.
-    * This keeps your multi-node parallel job on a logical grouping of instances
-    * within a single Availability Zone with high network flow potential.
-    *
-    * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
-    */
+   * The EC2 placement group to associate with your compute resources.
+   * If you intend to submit multi-node parallel jobs to this Compute Environment,
+   * you should consider creating a cluster placement group and associate it with your compute resources.
+   * This keeps your multi-node parallel job on a logical grouping of instances
+   * within a single Availability Zone with high network flow potential.
+   *
+   * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+   */
   readonly placementGroup?: ec2.IPlacementGroup;
 }
 
+/**
+ * A ManagedComputeEnvironment that uses ECS orchestration on EC2 instances.
+ */
 export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EksComputeEnvironment {
   readonly kubernetesNamespace?: string;
   readonly eksCluster: eks.ICluster;
@@ -848,15 +980,24 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.instanceTypes.push(instanceType);
   }
 
-  public addInstanceClass (instanceClass: ec2.InstanceClass): void {
+  public addInstanceClass(instanceClass: ec2.InstanceClass): void {
     this.instanceClasses.push(instanceClass);
   }
 }
 
-export interface IFargateComputeEnvironment extends IManagedComputeEnvironment {}
+/**
+ * A ManagedComputeEnvironment that uses ECS orchestration on Fargate instances.
+ */
+export interface IFargateComputeEnvironment extends IManagedComputeEnvironment { }
 
-export interface FargateComputeEnvironmentProps extends ManagedComputeEnvironmentProps {}
+/**
+ * Props for a FargateComputeEnvironment
+ */
+export interface FargateComputeEnvironmentProps extends ManagedComputeEnvironmentProps { }
 
+/**
+ * A ManagedComputeEnvironment that uses ECS orchestration on Fargate instances.
+ */
 export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase implements IFargateComputeEnvironment {
   public readonly computeEnvironmentArn: string;
 
@@ -908,13 +1049,13 @@ function createInstanceRoleAndProfile(scope: Construct, instanceRole?: iam.IRole
   return result;
 }
 
-function createSpotFleetRole(scope: Construct) {
+function createSpotFleetRole(scope: Construct): IRole {
   return new iam.Role(scope, 'SpotFleetRole', {
     assumedBy: new iam.ServicePrincipal('spotfleet.amazonaws.com'),
   });
 }
 
-function determineAllocationStrategy(id: string, allocationStrategy?: AllocationStrategy, spot?: boolean) {
+function determineAllocationStrategy(id: string, allocationStrategy?: AllocationStrategy, spot?: boolean): AllocationStrategy | undefined {
   let result = allocationStrategy;
   if (!allocationStrategy) {
     result = spot ? AllocationStrategy.SPOT_CAPACITY_OPTIMIZED : AllocationStrategy.BEST_FIT_PROGRESSIVE;
@@ -933,7 +1074,7 @@ function validateInstances(types?: ec2.InstanceType[], classes?: ec2.InstanceCla
   return [];
 }
 
-function validateSpotConfig(id: string, spot?: boolean, spotBidPercentage?: number, spotFleetRole?: iam.IRole) {
+function validateSpotConfig(id: string, spot?: boolean, spotBidPercentage?: number, spotFleetRole?: iam.IRole): void {
   if (spotBidPercentage) {
     if (!spot) {
       throw new Error(`Managed ComputeEnvironment '${id}' specifies 'spotBidPercentage' without specifying 'spot'`);
@@ -951,7 +1092,7 @@ function validateSpotConfig(id: string, spot?: boolean, spotBidPercentage?: numb
   }
 }
 
-function validateVCpus(id: string, minvCpus: number, maxvCpus: number) {
+function validateVCpus(id: string, minvCpus: number, maxvCpus: number): void {
   if (minvCpus < 0) {
     throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${minvCpus} < 0; 'minvCpus' cannot be less than zero`);
   }

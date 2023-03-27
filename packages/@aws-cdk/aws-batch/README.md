@@ -28,8 +28,8 @@ Batch can dynamically provision [Amazon EC2](https://aws.amazon.com/ec2/) Instan
 and simplifies the planning, scheduling, and executions of your batch workloads. Batch achieves this through four different resources:
 
 * ComputeEnvironments: Contain the resources used to execute Jobs
-* JobDefinitions: Defines a type of Job that can be submitted
-* JobQueues: Routes waiting Jobs to ComputeEnvironments
+* JobDefinitions: Define a type of Job that can be submitted
+* JobQueues: Route waiting Jobs to ComputeEnvironments
 * SchedulingPolicies: Applied to Queues to control how and when Jobs exit the JobQueue and enter the ComputeEnvironment
 
 `ComputeEnvironment`s can be managed or unmanaged. Batch will automatically provision EC2 Instances in a managed `ComputeEnvironment` and will
@@ -39,8 +39,11 @@ to support a Batch ComputeEnvironment before linking it). You can use Launch Tem
 will be provisioned.
 
 `JobDefinition`s can use either ECS resources or EKS resources. ECS `JobDefinition`s can use multiple containers to execute distributed workloads.
+EKS `JobDefinition`s can only execute a single container. Submitted Jobs use `JobDefinition`s as templates.
 
+`JobQueue`s must link at least one `ComputeEnvironment`. Jobs exit the Queue in FIFO order unless a `SchedulingPolicy` is specified.
 
+`SchedulingPolicy`s tell the Scheduler how to choose which Jobs should be executed next by the ComputeEnvironment.
 
 ## Use Cases & Examples
 
@@ -126,10 +129,10 @@ computeEnv.addInstanceClass(ec2.InstanceClass.R4);
 
 Batch provides different Allocation Strategies to help it choose which instances to provision.
 If your workflow tolerates interruptions, you should enable `spot` on your `ComputeEnvironment`
-and use `SPOT_CAPACITY_OPTIMIZED` (this is the default is `spot` is enabled).
+and use `SPOT_CAPACITY_OPTIMIZED` (this is the default if `spot` is enabled).
 This will tell Batch to choose the instance types from the ones you’ve specified that have
 the most spot capacity available to minimize the chance of interruption.
-This means that to get the most benefit from your spot instances,
+To get the most benefit from your spot instances,
 you should allow Batch to choose from as many different instance types as possible.
 
 If your workflow does not tolerate interruptions and you want to minimize your costs,
@@ -258,7 +261,7 @@ BJobRequirement * numBJobs = AJobRequirement * numAJobs
 numAJobs = 2 * numBJobs
 ```
 
-This means that the scheduler will schedule two `'A'` jobs for each `'B'` job.
+Thus the scheduler will schedule two `'A'` jobs for each `'B'` job.
 
 You can control the weight factors to change these ratios, but note that
 weight factors are inversely correlated with the vCpus allocated to the corresponding share.
@@ -287,7 +290,7 @@ Following similar algebra as above:
 numAJobs = 4 * numBJobs
 ```
 
-This means that for each `'B'` job, the scheduler will schedule four (4) `'A'` jobs.
+Thus for each `'B'` job, the scheduler will schedule four (4) `'A'` jobs.
 
 If the `weightFactor`s were reversed instead:
 
@@ -313,7 +316,7 @@ BJobRequirement * numBJobs = 2 * AJobRequirement * numAJobs =>
 numBJobs = numAJobs
 ```
 
-This means that for each `'B'` job, the scheduler will schedule one (1) `'A'` job.
+Thus for each `'B'` job, the scheduler will schedule one (1) `'A'` job.
 
 The second example would be configured like this:
 
@@ -333,7 +336,7 @@ new batch.JobQueue(this, 'JobQueue', {
 });
 ```
 
-Note: The scheduler will only consider the current usage of the compute environment unless you specify `shareDecay`.
+*Note*: The scheduler will only consider the current usage of the compute environment unless you specify `shareDecay`.
 For example, a `shareDecay` of 5 minutes in the above example means that at any given point in time, twice as many `'A'` jobs
 will be scheduled for each `'B'` job, but only for the past 5 minutes. If `'B'` jobs run longer than 5 minutes, then
 the scheduler is allowed to put more than two `'A'` jobs for each `'B'` job, because the usage of those long-running
@@ -424,10 +427,9 @@ the `Reason` class. This example shows some common failure reasons:
 
 ```ts
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
-   containerDefinition: new batch.ContainerDefinition(this, 'containerDefn', {
+   containerDefinition: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
     memoryLimitMiB: 2048,
-    compatibility: Compatibility.EC2, // specify FARGATE for Fargate workflows
   }),
   attempts: 5,
   retryStrategies: [{
@@ -468,10 +470,9 @@ This examples creates a `JobDefinition` that runs a single container with ECS:
 
 ```ts
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
-  containerDefinition: new batch.ContainerDefinition(this, 'containerDefn', {
+  containerDefinition: new batch.Ec2ContainerDefinition(this, 'containerDefn', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
     memoryLimitMiB: 2048,
-    compatibility: Compatibility.EC2, // specify FARGATE for Fargate workflows
   }),
 });
 ```
@@ -494,22 +495,17 @@ jobDefn.addVolume({
 Batch also supports running workflows on EKS. The following example creates a `JobDefinition` that runs on EKS:
 
 ```ts
-const eksContainer = new batch.EksContainerDefinition(this, 'myEksContainer', {
-   image: ContainerImage.fromRegistry('my-registry/my-image:latest'),
-});
-const eksPod = new batch.EksPod(this, 'myEksPod', {
-   containers: [eksContainer],
-});
-new batch.EksJobDefinition(this, 'myEksJobDefn', {
-   pod: eksPod,
-});
-// alternative using convienience methods:
-const pod = new batch.EksPod(this, 'myEksPod');
-const jobDefn = new batch.EksJobDefinition(this, 'myEksJobDefn', {
-  pod,
-});
-jobDefn.addContainer('myEksContainer', { // adds to the Pod
-  image: ecs.ContainerImage.fromRegistry('my-registry/my-image:latest'),
+const jobDefn = new batch.EksJobDefinition(this, 'eksf2', {
+  containerDefinition: new batch.EksContainerDefinition(this, 'container', {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    volumes: [EksVolume.emptyDir({
+      name: 'myEmptyDirVolume',
+      mountPath: '/mount/path',
+      medium: batch.EmptyDirMediumType.MEMORY,
+      readonly: true,
+      sizeLimit: Size.mebibytes(2048),
+    })],
+  }),
 });
 ```
 

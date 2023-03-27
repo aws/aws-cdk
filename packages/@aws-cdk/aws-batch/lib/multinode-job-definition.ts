@@ -82,6 +82,8 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   readonly instanceType: ec2.InstanceType;
   readonly mainNode?: number;
 
+  public readonly jobDefinitionArn: string;
+
   constructor(scope: Construct, id: string, props: MultiNodeJobDefinitionProps) {
     super(scope, id, props);
 
@@ -89,7 +91,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     this.mainNode = props.mainNode;
     this.instanceType = props.instanceType;
 
-    new CfnJobDefinition(this, 'Resource', {
+    const resource = new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,
       type: 'multinode',
       nodeProperties: {
@@ -108,6 +110,11 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
         }),
       },
       platformCapabilities: [Compatibility.EC2],
+    });
+    this.jobDefinitionArn = this.getResourceArnAttribute(resource.ref, {
+      service: 'batch',
+      resource: 'job-definition',
+      resourceName: this.physicalName,
     });
   }
 

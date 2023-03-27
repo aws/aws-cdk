@@ -10,7 +10,7 @@ test('JobQueue respects computeEnvironments', () => {
   const vpc = new Vpc(stack, 'vpc');
 
   // WHEN
-  new JobQueue(stack, 'JobQueue', {
+  new JobQueue(stack, 'joBBQ', {
     computeEnvironments: [{
       computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
         vpc,
@@ -36,7 +36,7 @@ test('JobQueue respects enabled', () => {
   const vpc = new Vpc(stack, 'vpc');
 
   // WHEN
-  new JobQueue(stack, 'JobQueue', {
+  new JobQueue(stack, 'joBBQ', {
     computeEnvironments: [{
       computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
         vpc,
@@ -64,7 +64,7 @@ test('JobQueue respects name', () => {
   const vpc = new Vpc(stack, 'vpc');
 
   // WHEN
-  new JobQueue(stack, 'JobQueue', {
+  new JobQueue(stack, 'joBBQ', {
     computeEnvironments: [{
       computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
         vpc,
@@ -122,7 +122,7 @@ test('JobQueue respects addComputeEnvironment', () => {
   const vpc = new Vpc(stack, 'vpc');
 
   // WHEN
-  const joBBQ = new JobQueue(stack, 'JobQueue', {
+  const queue = new JobQueue(stack, 'JobQueue', {
     computeEnvironments: [{
       computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'FirstCE', {
         vpc,
@@ -133,7 +133,7 @@ test('JobQueue respects addComputeEnvironment', () => {
     schedulingPolicy: new FairshareSchedulingPolicy(stack, 'FairsharePolicy'),
   });
 
-  joBBQ.addComputeEnvironment(
+  queue.addComputeEnvironment(
     new ManagedEc2EcsComputeEnvironment(stack, 'SecondCE', {
       vpc,
     }),
@@ -157,4 +157,44 @@ test('JobQueue respects addComputeEnvironment', () => {
       'Fn::GetAtt': ['FairsharePolicy51969009', 'Arn'],
     },
   });
+});
+
+test('can be imported from ARN', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const queue = JobQueue.fromJobQueueArn(stack, 'importedJobQueue',
+    'arn:aws:batch:us-east-1:123456789012:job-queue/importedJobQueue');
+
+  // THEN
+  expect(queue.jobQueueArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-queue/importedJobQueue');
+});
+
+test('JobQueue throws when the same order is assigned to multiple ComputeEnvironments', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new Vpc(stack, 'vpc');
+
+  // WHEN
+  const joBBQ = new JobQueue(stack, 'joBBQ', {
+    computeEnvironments: [{
+      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'FirstCE', {
+        vpc,
+      }),
+      order: 1,
+    }],
+    priority: 10,
+  });
+
+  joBBQ.addComputeEnvironment(
+    new ManagedEc2EcsComputeEnvironment(stack, 'SecondCE', {
+      vpc,
+    }),
+    1,
+  );
+
+  expect(() => {
+    Template.fromStack(stack);
+  }).toThrow(/assigns the same order to different ComputeEnvironments/);
 });

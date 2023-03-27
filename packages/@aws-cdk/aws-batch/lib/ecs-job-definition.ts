@@ -28,16 +28,24 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
 export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefinition {
   readonly containerDefinition?: IEcsContainerDefinition
 
+  public readonly jobDefinitionArn: string;
+
   constructor(scope: Construct, id: string, props?: EcsJobDefinitionProps) {
     super(scope, id, props);
 
     this.containerDefinition = props?.containerDefinition;
 
-    new CfnJobDefinition(this, 'Resource', {
+    const resource = new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,
       type: 'container',
       containerProperties: this.containerDefinition?.renderContainerDefinition(),
       platformCapabilities: this.renderPlatformCapabilities(),
+    });
+
+    this.jobDefinitionArn = this.getResourceArnAttribute(resource.ref, {
+      service: 'batch',
+      resource: 'job-definition',
+      resourceName: this.physicalName,
     });
   }
 

@@ -1,5 +1,5 @@
 import * as iam from '@aws-cdk/aws-iam';
-import { IResource, Resource } from '@aws-cdk/core';
+import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironmentProps } from './batch.generated';
 
@@ -80,6 +80,19 @@ export interface ComputeEnvironmentProps {
  * @internal
  */
 export abstract class ComputeEnvironmentBase extends Resource implements IComputeEnvironment {
+  public static fromComputeEnvironmentArn(scope: Construct, id: string, computeEnvironmentArn: string): IComputeEnvironment {
+    const stack = Stack.of(scope);
+    const computeEnvironmentName = stack.splitArn(computeEnvironmentArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+
+    class Import extends Resource implements IComputeEnvironment {
+      public readonly computeEnvironmentArn = computeEnvironmentArn;
+      public readonly computeEnvironmentName = computeEnvironmentName;
+      public readonly enabled = true;
+    }
+
+    return new Import(scope, id);
+  }
+
   readonly name?: string | undefined;
   readonly serviceRole?: iam.IRole | undefined;
   readonly enabled: boolean;

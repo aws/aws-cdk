@@ -2,28 +2,48 @@ import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnPlacementGroup } from './ec2.generated';
 
+/**
+ * Determines where your instances are placed on the underlying hardware according to the specified PlacementGroupStrategy
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+ */
 export interface IPlacementGroup extends IResource {
   /**
-   * The number of partitions. Valid only when Strategy is set to partition.
+   * The number of partitions. Valid only when Strategy is set to PARTITION.
    */
   partitions?: number;
 
   /**
-   * Determines how this placement group spreads instances
+   * Places instances on distinct hardware. Spread placement groups are recommended for applications
+   * that have a small number of critical instances that should be kept separate from each other.
+   * Launching instances in a spread level placement group reduces the risk of simultaneous failures
+   * that might occur when instances share the same equipment.
+   * Spread level placement groups provide access to distinct hardware,
+   * and are therefore suitable for mixing instance types or launching instances over time.
+   * If you start or launch an instance in a spread placement group and there is insufficient
+   * unique hardware to fulfill the request, the request fails. Amazon EC2 makes more distinct hardware
+   * available over time, so you can try your request again later.
+   * Placement groups can spread instances across racks or hosts.
+   * You can use host level spread placement groups only with AWS Outposts.
    */
   spreadLevel?: PlacementGroupSpreadLevel;
 
   /**
-   * Determines how this placement group launches instances
+   * Which strategy to use when launching instances
    */
   strategy?: PlacementGroupStrategy;
 
   /**
+   * The name of this placement group
+   *
    * @attribute
    */
   readonly placementGroupName: string;
 }
 
+/**
+ * Props for a PlacementGroup
+ */
 export interface PlacementGroupProps {
   /**
    * The number of partitions. Valid only when Strategy is set to partition.
@@ -43,31 +63,59 @@ export interface PlacementGroupProps {
   readonly strategy?: PlacementGroupStrategy;
 }
 
+/**
+ * Determines how this placement group spreads instances
+ */
 export enum PlacementGroupSpreadLevel {
+  /**
+   * Host spread level placement groups are only available with AWS Outposts.
+   * For host spread level placement groups, there are no restrictions for running instances per Outposts.
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups-outpost.html
+   */
   HOST = 'host',
+
+  /**
+   * Each instance is launched on a separate rack.
+   * Each has its own network and power source.
+   * A rack spread placement group can span multiple Availability Zones in the same Region.
+   * For rack spread level placement groups, you can have a maximum of seven running instances per Availability Zone per group.
+   */
   RACK = 'rack',
 }
 
+/**
+ * Which strategy to use when launching instances
+ */
 export enum PlacementGroupStrategy {
+  /**
+   * Packs instances close together inside an Availability Zone.
+   * This strategy enables workloads to achieve the low-latency network
+   * performance necessary for tightly-coupled node-to-node communication that
+   * is typical of high-performance computing (HPC) applications.
+   */
   CLUSTER = 'cluster',
+
+  /**
+   * Spreads your instances across logical partitions such that groups of instances
+   * in one partition do not share the underlying hardware with groups of instances
+   * in different partitions.
+   *
+   * This strategy is typically used by large distributed and replicated workloads,
+   * such as Hadoop, Cassandra, and Kafka.
+   */
   PARTITION = 'partition',
+
+  /**
+   * Strictly places a small group of instances across distinct underlying hardware
+   * to reduce correlated failures.
+   */
   SPREAD = 'spread',
 }
 
 export class PlacementGroup extends Resource implements IPlacementGroup {
-  /**
-   * The number of partitions. Valid only when Strategy is set to partition.
-   */
   partitions?: number;
-
-  /**
-   * Determines how this placement group spreads instances
-   */
   spreadLevel?: PlacementGroupSpreadLevel;
-
-  /**
-   * Determines how this placement group launches instances
-   */
   strategy?: PlacementGroupStrategy;
 
   public readonly placementGroupName: string;
@@ -107,6 +155,5 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
       resource: 'compute-environment',
       resourceName: this.physicalName,
     });
-
   }
 }

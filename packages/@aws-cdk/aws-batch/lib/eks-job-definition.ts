@@ -110,6 +110,8 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
   readonly useHostNetwork?: boolean;
   readonly serviceAccount?: string;
 
+  public readonly jobDefinitionArn: string;
+
   constructor(scope: Construct, id: string, props: EksJobDefinitionProps) {
     super(scope, id, props);
 
@@ -118,7 +120,8 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
     this.useHostNetwork = props.useHostNetwork;
     this.serviceAccount = props.serviceAccount;
 
-    new CfnJobDefinition(this, 'Resource', {
+
+    const resource = new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,
       type: 'container',
       eksProperties: {
@@ -162,6 +165,11 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
           }),
         },
       },
+    });
+    this.jobDefinitionArn = this.getResourceArnAttribute(resource.ref, {
+      service: 'batch',
+      resource: 'job-definition',
+      resourceName: this.physicalName,
     });
   }
 }

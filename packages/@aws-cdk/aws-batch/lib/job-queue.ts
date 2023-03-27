@@ -46,6 +46,13 @@ export interface IJobQueue extends IResource {
    * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
    */
   readonly schedulingPolicy?: ISchedulingPolicy
+
+  /**
+   * The ARN of this job queue
+   *
+   * @attribute
+   */
+  readonly jobQueueArn: string;
 }
 
 export interface JobQueueProps {
@@ -98,11 +105,23 @@ export interface OrderedComputeEnvironment {
 }
 
 export class JobQueue extends Resource implements IJobQueue {
+  public static fromJobQueueArn(scope: Construct, id: string, jobQueueArn: string): IJobQueue {
+    class Import extends Resource implements IJobQueue {
+      public readonly computeEnvironments = [];
+      public readonly priority = 0;
+      public readonly jobQueueArn = jobQueueArn;
+    }
+
+    return new Import(scope, id);
+  }
+
   readonly computeEnvironments: OrderedComputeEnvironment[]
   readonly priority: number
   readonly name?: string
   readonly enabled?: boolean
   readonly schedulingPolicy?: ISchedulingPolicy
+
+  public readonly jobQueueArn: string;
 
   constructor(scope: Construct, id: string, props: JobQueueProps) {
     super(scope, id, {
@@ -115,7 +134,7 @@ export class JobQueue extends Resource implements IJobQueue {
     this.enabled = props.enabled;
     this.schedulingPolicy = props.schedulingPolicy;
 
-    new CfnJobQueue(this, id, {
+    const resource = new CfnJobQueue(this, id, {
       computeEnvironmentOrder: Lazy.any({
         produce: () => this.computeEnvironments.map((ce) => {
           return {
@@ -129,6 +148,14 @@ export class JobQueue extends Resource implements IJobQueue {
       state: this.enabled === undefined ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       schedulingPolicyArn: this.schedulingPolicy?.schedulingPolicyArn,
     });
+
+    this.jobQueueArn = this.getResourceArnAttribute(resource.attrJobQueueArn, {
+      service: 'batch',
+      resource: 'job-queue',
+      resourceName: this.physicalName,
+    });
+
+    this.node.addValidation({ validate: () => validateOrderedComputeEnvironments(this.computeEnvironments) });
   }
 
   addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number): void {
@@ -137,4 +164,17 @@ export class JobQueue extends Resource implements IJobQueue {
       order,
     });
   }
+}
+
+function validateOrderedComputeEnvironments(computeEnvironments: OrderedComputeEnvironment[]): string[] {
+  const seenOrders: number[] = [];
+
+  for (const ce of computeEnvironments) {
+    if (seenOrders.includes(ce.order)) {
+      return ['assigns the same order to different ComputeEnvironments'];
+    }
+    seenOrders.push(ce.order);
+  }
+
+  return [];
 }

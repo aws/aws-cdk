@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { InstanceClass, InstanceSize, InstanceType } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { Duration, Stack } from '@aws-cdk/core';
+import { /*Aws,*/ Duration, Stack } from '@aws-cdk/core';
 import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
 import { Action, EksContainerDefinition, EcsJobDefinition, Reason, RetryStrategy, EcsEc2ContainerDefinition, EksJobDefinition, EcsJobDefinitionProps, EksJobDefinitionProps, Compatibility, MultiNodeJobDefinitionProps, MultiNodeJobDefinition } from '../lib';
 import { CfnJobDefinitionProps } from '../lib/batch.generated';
@@ -215,4 +215,25 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
       },
     });
   });
+
+  test('can be imported from ARN', () => {
+    // WHEN
+    const importedJob = JobDefinition.fromJobDefinitionArn(stack, 'importedJobDefinition',
+      'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
+
+    // THEN
+    expect(importedJob.jobDefinitionArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
+  });
+
+  /*
+  test('can be imported from name', () => {
+    // WHEN
+    const importedJob = JobDefinition.fromJobDefinitionName(stack, 'job-def-clone', 'job-def-name');
+
+    // THEN
+    expect(importedJob.jobDefinitionName).toEqual('job-def-name');
+    expect(importedJob.jobDefinitionArn)
+      .toEqual(`arn:${Aws.PARTITION}:batch:${Aws.REGION}:${Aws.ACCOUNT_ID}:job-definition/job-def-name`);
+  });
+  */
 });

@@ -9,6 +9,9 @@ import { CfnJobDefinition } from './batch.generated';
 const EFS_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/container-definition.HostVolume');
 
+/**
+ * Linux-specific options that are applied to the container.
+ */
 export class LinuxParameters extends ecs.LinuxParameters {
   /**
    * Renders the Linux parameters to the Batch version of this resource,
@@ -235,14 +238,14 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
           valueFrom: secret.secretArn,
         };
       }),
-      mountPoints: this.volumes?.map((volume) => {
+      mountPoints: this.volumes.length === 0 ? undefined : this.volumes.map((volume) => {
         return {
           containerPath: volume.containerPath,
           readOnly: volume.readonly,
           sourceVolume: volume.name,
         };
       }),
-      volumes: this.volumes.map((volume) => {
+      volumes: this.volumes.length === 0 ? undefined : this.volumes.map((volume) => {
         if (EfsVolume.isEfsVolume(volume)) {
           return {
             name: volume.name,
@@ -350,7 +353,7 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase {
   public renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       ...super.renderContainerDefinition(),
-      ulimits: this.ulimits.map((ulimit) => ({
+      ulimits: this.ulimits.length === 0 ? undefined : this.ulimits.map((ulimit) => ({
         hardLimit: ulimit.hardLimit,
         name: ulimit.name,
         softLimit: ulimit.softLimit,
