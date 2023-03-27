@@ -1372,7 +1372,7 @@ the standard output.
 ### For plugin authors
 
 The communication protocol between the CDK core module and your policy tool is
-defined by the `IValidationPlugin` interface. To create a new plugin you must
+defined by the `IValidationPluginBeta1` interface. To create a new plugin you must
 write a class that implements this interface. There are two things you need to
 implement: the plugin name (by overriding the `name` property), and the
 `validate()` method.
