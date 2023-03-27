@@ -1379,7 +1379,7 @@ implement: the plugin name (by overriding the `name` property), and the
 
 The framework will call `validate()`, passing an `IValidationContextBeta1` object.
 The location of the templates to be validated is given by `templatePaths`. The
-plugin should return an instance of `ValidationPluginReport`. This object
+plugin should return an instance of `ValidationPluginReportBeta1`. This object
 represents the report that the user wil receive at the end of the synthesis.
 
 ```ts
