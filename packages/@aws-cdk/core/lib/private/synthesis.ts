@@ -10,7 +10,6 @@ import { TreeMetadata } from './tree-metadata';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { Aspects, IAspect } from '../aspect';
-import { FeatureFlags } from '../feature-flags';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
@@ -19,6 +18,7 @@ import { ConstructTree } from '../validation/private/construct-tree';
 import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
+const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
 
 /**
  * Options for `synthesize()`
@@ -134,7 +134,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
   if (reports.length > 0) {
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
-    const formatJson = FeatureFlags.of(root).isEnabled(cxapi.VALIDATION_REPORT_JSON) ?? false;
+    const formatJson = root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? false;
     const output = formatJson
       ? formatter.formatJson(reports)
       : formatter.formatPrettyPrinted(reports);
