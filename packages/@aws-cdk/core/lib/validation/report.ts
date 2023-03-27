@@ -15,7 +15,7 @@ export interface PolicyViolationBeta1 {
   /**
    * The resources violating this rule.
    */
-  readonly violatingResources: PolicyViolatingResource[];
+  readonly violatingResources: PolicyViolatingResourceBeta1[];
 
   /**
    * How to fix the violation.
@@ -46,7 +46,7 @@ export interface PolicyViolationBeta1 {
 /**
  * Resource violating a specific rule.
  */
-export interface PolicyViolatingResource {
+export interface PolicyViolatingResourceBeta1 {
   /**
    * The logical ID of the resource in the CloudFormation template.
    */
@@ -66,7 +66,7 @@ export interface PolicyViolatingResource {
 /**
  * The final status of the validation report
  */
-export enum PolicyValidationReportStatus {
+export enum PolicyValidationReportStatusBeta1 {
   /**
    * No violations were found
    */
