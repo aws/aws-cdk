@@ -1312,7 +1312,7 @@ CloudFormation template, you can incorporate them into the CDK application.
 By using the appropriate plugin, you can make the CDK application check the
 generated CloudFormation templates against your policies immediately after
 synthesis. If there are any violations, the synthesis will fail and a report
-will be printed to the console.
+will be printed to the console or to a file (see below).
 
 > **Note**
 > This feature is considered experimental, and both the plugin API and the
@@ -1363,6 +1363,11 @@ const app = new App({
 Alternatively, you can set this context key-value pair using the `cdk.json` or
 `cdk.context.json` files in your project directory (see
 [Runtime context](https://docs.aws.amazon.com/cdk/v2/guide/context.html)).
+
+If you choose the JSON format, the CDK will print the policy validation report
+to a file called `policy-validation-report.json` in the cloud assembly
+directory. For the default, human-readable format, the report will be printed to
+the standard output.
 
 ### For plugin authors
 
