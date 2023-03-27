@@ -18,7 +18,7 @@ export interface PolicyViolationConstructAware extends report.PolicyViolationBet
 /**
  * Construct violating a specific rule.
  */
-export interface ValidationViolatingConstruct extends report.PolicyViolatingResource {
+export interface ValidationViolatingConstruct extends report.PolicyViolatingResourceBeta1 {
   /**
    * The construct path as defined in the application.
    *
@@ -77,7 +77,7 @@ export interface PolicyValidationReportSummary {
   /**
    * The final status of the validation (pass/fail)
    */
-  readonly status: report.PolicyValidationReportStatus;
+  readonly status: report.PolicyValidationReportStatusBeta1;
 
   /**
    * The name of the plugin that created the report
@@ -198,7 +198,7 @@ export class PolicyValidationReportFormatter {
           version: rep.pluginVersion,
           summary: {
             pluginName: rep.pluginName,
-            status: rep.success ? report.PolicyValidationReportStatus.SUCCESS : report.PolicyValidationReportStatus.FAILURE,
+            status: rep.success ? report.PolicyValidationReportStatusBeta1.SUCCESS : report.PolicyValidationReportStatusBeta1.FAILURE,
             metadata: rep.metadata,
           },
           violations: rep.violations.map(violation => ({
