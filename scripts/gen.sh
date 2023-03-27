@@ -2,7 +2,7 @@
 set -euo pipefail
 
 export PATH=$(npm bin):$PATH
-export NODE_OPTIONS="--max-old-space-size=4096 ${NODE_OPTIONS:-}"
+export NODE_OPTIONS="--max-old-space-size=8196 ${NODE_OPTIONS:-}"
 
 echo "============================================================================================="
 echo "installing..."
