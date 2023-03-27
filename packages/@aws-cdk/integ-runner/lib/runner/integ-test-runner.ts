@@ -285,22 +285,40 @@ export class IntegTestRunner extends IntegRunner {
           lookups: this.expectedTestSuite?.enableLookups,
         });
       }
-      // now deploy the "actual" test. If there are any assertions
-      // deploy the assertion stack as well
+      // now deploy the "actual" test.
       this.cdk.deploy({
         ...deployArgs,
         lookups: this.actualTestSuite.enableLookups,
         stacks: [
           ...actualTestCase.stacks,
-          ...actualTestCase.assertionStack ? [actualTestCase.assertionStack] : [],
         ],
-        rollback: false,
         output: path.relative(this.directory, this.cdkOutDir),
         ...actualTestCase?.cdkCommandOptions?.deploy?.args,
-        ...actualTestCase.assertionStack ? { outputsFile: path.relative(this.directory, path.join(this.cdkOutDir, 'assertion-results.json')) } : undefined,
         context: this.getContext(actualTestCase?.cdkCommandOptions?.deploy?.args?.context),
         app: this.cdkApp,
       });
+
+      // If there are any assertions
+      // deploy the assertion stack as well
+      // This is separate from the above deployment because we want to
+      // set `rollback: false`. This allows the assertion stack to deploy all the
+      // assertions instead of failing at the first failed assertion
+      // combining it with the above deployment would prevent any replacement updates
+      if (actualTestCase.assertionStack) {
+        this.cdk.deploy({
+          ...deployArgs,
+          lookups: this.actualTestSuite.enableLookups,
+          stacks: [
+            actualTestCase.assertionStack,
+          ],
+          rollback: false,
+          output: path.relative(this.directory, this.cdkOutDir),
+          ...actualTestCase?.cdkCommandOptions?.deploy?.args,
+          outputsFile: path.relative(this.directory, path.join(this.cdkOutDir, 'assertion-results.json')),
+          context: this.getContext(actualTestCase?.cdkCommandOptions?.deploy?.args?.context),
+          app: this.cdkApp,
+        });
+      }
 
       if (actualTestCase.hooks?.postDeploy) {
         actualTestCase.hooks.postDeploy.forEach(cmd => {
