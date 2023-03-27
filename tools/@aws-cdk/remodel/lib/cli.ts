@@ -228,7 +228,7 @@ async function makeAwsCdkLib(target: string) {
       ...pkgJson.scripts,
       gen: 'ts-node scripts/gen.ts',
       build: 'cdk-build',
-      test: 'jest',
+      test: 'jest --detectOpenHandles',
     },
     'cdk-build': {
       ...pkgJson['cdk-build'],
