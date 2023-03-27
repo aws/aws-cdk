@@ -395,11 +395,9 @@ export async function postRun(dir: string) {
   // Update integ snapshots that are expected to change
   await exec(`yarn integ-runner --update-on-failed --dry-run ${dryRunInteg.join(' ')}`, { cwd: integPackagesDir });
 
+  // Update any jest snapshots if needed
   const awsCdkLibDir = path.join(dir, 'packages', 'aws-cdk-lib');
   await exec('yarn test -u', { cwd: awsCdkLibDir });
-
-  // Run full build to make sure everything works
-  // await e('yarn build --skip-prereqs --skip-compat');
 }
 
 async function cleanup(dir: string, packages: BundlingResult) {
