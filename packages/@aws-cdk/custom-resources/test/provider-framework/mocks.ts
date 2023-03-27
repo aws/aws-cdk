@@ -86,7 +86,7 @@ export async function invokeFunctionMock(req: AWS.Lambda.InvocationRequest): Pro
     return {
       Payload: stringifyPayload ? JSON.stringify(ret) : ret,
     };
-  } catch (e) {
+  } catch (e: any) {
     return {
       FunctionError: 'Unhandled',
       Payload: JSON.stringify({

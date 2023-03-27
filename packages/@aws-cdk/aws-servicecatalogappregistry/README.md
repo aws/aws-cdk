@@ -126,22 +126,6 @@ import * as cdk from "@aws-cdk/core";
 
 const app = new App();
 
-class CustomAppRegistryAttributeGroup extends cdk.Stack {
-  public readonly attributeGroup: appreg.AttributeGroup
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
-    const myAttributeGroup = new appreg.AttributeGroup(app, 'MyFirstAttributeGroup', {
-      attributeGroupName: 'MyAttributeGroupName',
-      description: 'Test attribute group',
-      attributes: {},
-    });
-
-    this.attributeGroup = myAttributeGroup;
-  }
-}
-
-const customAttributeGroup = new CustomAppRegistryAttributeGroup(app, 'AppRegistryAttributeGroup');
-
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
   applications: [appreg.TargetApplication.createApplicationStack({
     applicationName: 'MyAssociatedApplication',
@@ -154,7 +138,11 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 
 // Associate application to the attribute group.
-customAttributeGroup.attributeGroup.associateWith(associatedApp.appRegistryApplication());
+associatedApp.appRegistryApplication.addAttributeGroup('MyAttributeGroup' , {
+  attributeGroupName: 'MyAttributeGroupName',
+  description: 'Test attribute group',
+  attributes: {},
+});
 
 ```
 
@@ -301,7 +289,8 @@ import * as iam from '@aws-cdk/aws-iam';
 declare const application: appreg.Application;
 declare const myRole: iam.IRole;
 declare const myUser: iam.IUser;
-application.shareApplication({
+application.shareApplication('MyShareId', {
+  name:'MyShare',
   accounts: ['123456789012'],
   organizationArns: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
   roles: [myRole],
@@ -314,7 +303,8 @@ E.g., sharing an application with multiple accounts and allowing the accounts to
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 declare const application: appreg.Application;
-application.shareApplication({
+application.shareApplication('MyShareId', {
+  name: 'MyShare',
   accounts: ['123456789012', '234567890123'],
   sharePermission: appreg.SharePermission.ALLOW_ACCESS,
 });
@@ -327,7 +317,8 @@ import * as iam from '@aws-cdk/aws-iam';
 declare const attributeGroup: appreg.AttributeGroup;
 declare const myRole: iam.IRole;
 declare const myUser: iam.IUser;
-attributeGroup.shareAttributeGroup({
+attributeGroup.shareAttributeGroup('MyShareId', {
+  name: 'MyShare',
   accounts: ['123456789012'],
   organizationArns: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
   roles: [myRole],
@@ -340,7 +331,8 @@ E.g., sharing an application with multiple accounts and allowing the accounts to
 ```ts
 import * as iam from '@aws-cdk/aws-iam';
 declare const attributeGroup: appreg.AttributeGroup;
-attributeGroup.shareAttributeGroup({
+attributeGroup.shareAttributeGroup('MyShareId', {
+  name: 'MyShare',
   accounts: ['123456789012', '234567890123'],
   sharePermission: appreg.SharePermission.ALLOW_ACCESS,
 });
