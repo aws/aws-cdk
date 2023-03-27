@@ -116,6 +116,7 @@
     "@aws-cdk/aws-stepfunctions": "0.0.0",
     "@aws-cdk/core": "0.0.0",
     "@aws-cdk/custom-resources": "0.0.0",
+    "@aws-cdk/cx-api": "^0.0.0",
     "@aws-cdk/lambda-layer-awscli": "0.0.0",
     "constructs": "^10.0.0"
   },
