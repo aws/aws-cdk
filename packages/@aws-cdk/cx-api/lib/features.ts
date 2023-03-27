@@ -84,7 +84,6 @@ export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-
 export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
 export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
 export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
-export const VALIDATION_REPORT_JSON = '@aws-cdk/core:validationReportJson';
 export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 
 export const FLAGS: Record<string, FlagInfo> = {
@@ -734,17 +733,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
-  //////////////////////////////////////////////////////////////////////
-  [VALIDATION_REPORT_JSON]: {
-    type: FlagType.VisibleContext,
-    summary: 'Whether to display validation report in JSON format',
-    detailsMd: `
-      Validation reports may be displayed in a human-readable format or in JSON format.
-      This flag enables the JSON format.
-      `,
-    introducedIn: { v2: 'V2NEXT' },
-    recommendedValue: true,
-  },
   [ENABLE_EMR_SERVICE_POLICY_V2]: {
     type: FlagType.BugFix,
     summary: 'Enable AmazonEMRServicePolicy_v2 managed policies',
