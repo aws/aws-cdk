@@ -398,6 +398,9 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
 
   protected readonly failures = new Array<StackActivity>();
 
+
+  protected hookFailureMap = new Map<string, Map<string, string>>();
+
   protected readonly stream: NodeJS.WriteStream;
 
   constructor(protected readonly props: PrinterProps) {
@@ -411,8 +414,25 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
     this.stream = props.stream;
   }
 
+  public failureReason(activity: StackActivity) {
+    const resourceStatusReason = activity.event.ResourceStatusReason ?? '';
+    const logicalResourceId = activity.event.LogicalResourceId ?? '';
+    const hookFailureReasonMap = this.hookFailureMap.get(logicalResourceId);
+
+    if (hookFailureReasonMap !== undefined) {
+      for (const hookType of hookFailureReasonMap.keys()) {
+        if (resourceStatusReason.includes(hookType)) {
+          return resourceStatusReason + ' : ' + hookFailureReasonMap.get(hookType);
+        }
+      }
+    }
+    return resourceStatusReason;
+  }
+
   public addActivity(activity: StackActivity) {
     const status = activity.event.ResourceStatus;
+    const hookStatus = activity.event.HookStatus;
+    const hookType = activity.event.HookType;
     if (!status || !activity.event.LogicalResourceId) { return; }
 
     if (status === 'ROLLBACK_IN_PROGRESS' || status === 'UPDATE_ROLLBACK_IN_PROGRESS') {
@@ -454,6 +474,16 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
         }
       }
       this.resourcesPrevCompleteState[activity.event.LogicalResourceId] = status;
+    }
+
+    if (hookStatus!== undefined && hookStatus.endsWith('_COMPLETE_FAILED') && activity.event.LogicalResourceId !== undefined && hookType !== undefined) {
+
+      if (this.hookFailureMap.has(activity.event.LogicalResourceId)) {
+        this.hookFailureMap.get(activity.event.LogicalResourceId)?.set(hookType, activity.event.HookStatusReason ?? '');
+      } else {
+        this.hookFailureMap.set(activity.event.LogicalResourceId, new Map<string, string>());
+        this.hookFailureMap.get(activity.event.LogicalResourceId)?.set(hookType, activity.event.HookStatusReason ?? '');
+      }
     }
   }
 
@@ -529,8 +559,15 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
 
     let stackTrace = '';
     const md = activity.metadata;
-    if (md && e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
-      stackTrace = md.entry.trace ? `\n\t${md.entry.trace.join('\n\t\\_ ')}` : '';
+
+    if (e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
+      if (progress == undefined || progress) {
+        e.ResourceStatusReason = e.ResourceStatusReason ? this.failureReason(activity) : '';
+      }
+      if (md) {
+        stackTrace = md.entry.trace ? `\n\t${md.entry.trace.join('\n\t\\_ ')}` : '';
+
+      }
       reasonColor = chalk.red;
     }
 
@@ -703,7 +740,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
   private failureReasonOnNextLine(activity: StackActivity) {
     return hasErrorMessage(activity.event.ResourceStatus ?? '')
-      ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${chalk.red(activity.event.ResourceStatusReason ?? '')}`
+      ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${chalk.red(this.failureReason(activity) ?? '')}`
       : '';
   }
 }
@@ -717,6 +754,7 @@ const PROGRESSBAR_EXTRA_SPACE = 2 /* leading spaces */ + 2 /* brackets */ + 4 /*
 function hasErrorMessage(status: string) {
   return status.endsWith('_FAILED') || status === 'ROLLBACK_IN_PROGRESS' || status === 'UPDATE_ROLLBACK_IN_PROGRESS';
 }
+
 
 function colorFromStatusResult(status?: string) {
   if (!status) {
@@ -767,3 +805,5 @@ function shorten(maxWidth: number, p: string) {
 
 const TIMESTAMP_WIDTH = 12;
 const STATUS_WIDTH = 20;
+
+
