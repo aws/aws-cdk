@@ -1383,7 +1383,7 @@ plugin should return an instance of `ValidationPluginReportBeta1`. This object
 represents the report that the user wil receive at the end of the synthesis.
 
 ```ts
-validate(context: ValidationContext): ValidationReport {
+validate(context: ValidationContextBeta1): ValidationReportBeta1 {
   // First read the templates using context.templatePaths...
 
   // ...then perform the validation, and then compose and return the report.
