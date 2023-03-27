@@ -181,7 +181,7 @@ export class App extends Stage {
 
     const autoSynth = props.autoSynth ?? cxapi.OUTDIR_ENV in process.env;
     if (autoSynth) {
-      // synth() guarantuees it will only execute once, so a default of 'true'
+      // synth() guarantees it will only execute once, so a default of 'true'
       // doesn't bite manual calling of the function.
       process.once('beforeExit', () => this.synth());
     }

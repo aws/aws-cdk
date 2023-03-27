@@ -330,7 +330,7 @@ export interface FileAssetLocation {
   /**
    * Like `s3ObjectUrl`, but not suitable for CloudFormation consumption
    *
-   * If there are placeholders in the S3 URL, they will be returned unreplaced
+   * If there are placeholders in the S3 URL, they will be returned un-replaced
    * and un-evaluated.
    *
    * @default - This feature cannot be used

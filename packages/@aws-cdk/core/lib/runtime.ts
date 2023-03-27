@@ -344,7 +344,7 @@ export function requireProperty(props: { [name: string]: any }, name: string, co
 /**
  * Validates if any of the given validators matches
  *
- * We add either/or words to the front of the error mesages so that they read
+ * We add either/or words to the front of the error messages so that they read
  * more nicely. Example:
  *
  *   Properties not correct for 'FunctionProps'

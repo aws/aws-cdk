@@ -13,7 +13,7 @@ export class PhysicalName {
    * If you are certain that a resource will be referenced across environments,
    * you may also specify an explicit physical name for it. This option is
    * mostly designed for reusable constructs which may or may not be referenced
-   * acrossed environments.
+   * across environments.
    */
   public static readonly GENERATE_IF_NEEDED = Token.asString(new GeneratedWhenNeededMarker());
 

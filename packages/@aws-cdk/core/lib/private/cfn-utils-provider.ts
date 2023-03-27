@@ -22,7 +22,7 @@ export abstract class CfnUtils {
   /**
    * Encode a structure to JSON at CloudFormation deployment time
    *
-   * This would have been suitable for the JSON-encoding of abitrary structures, however:
+   * This would have been suitable for the JSON-encoding of arbitrary structures, however:
    *
    * - It uses a custom resource to do the encoding, and we'd rather not use a custom
    *   resource if we can avoid it.

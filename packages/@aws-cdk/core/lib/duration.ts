@@ -63,7 +63,7 @@ export class Duration {
    * Parse a period formatted according to the ISO 8601 standard
    *
    * @see https://www.iso.org/standard/70907.html
-   * @param duration an ISO-formtted duration to be parsed.
+   * @param duration an ISO-formatted duration to be parsed.
    * @returns the parsed `Duration`.
    */
   public static parse(duration: string): Duration {

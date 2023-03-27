@@ -104,7 +104,7 @@ export class SecretValue extends Intrinsic {
     }
 
     if (options.versionStage && options.versionId) {
-      throw new Error(`verionStage: '${options.versionStage}' and versionId: '${options.versionId}' were both provided but only one is allowed`);
+      throw new Error(`versionStage: '${options.versionStage}' and versionId: '${options.versionId}' were both provided but only one is allowed`);
     }
 
     const parts = [

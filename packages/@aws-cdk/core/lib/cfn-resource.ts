@@ -221,7 +221,7 @@ export class CfnResource extends CfnRefElement {
    * template.
    *
    * @param path - The path of the property, you can use dot notation to
-   *        override values in complex types. Any intermdediate keys
+   *        override values in complex types. Any intermediate keys
    *        will be created as needed.
    * @param value - The value. Could be primitive or complex.
    */
