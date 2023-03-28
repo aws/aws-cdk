@@ -3,8 +3,6 @@ version: 0.2
 env:
   secrets-manager:
     TOKEN: $TOKEN_SECRET_ARN
-  variables:
-    NODE_OPTIONS: --max-old-size=8192
 
 phases:
   install:
