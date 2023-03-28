@@ -1,5 +1,5 @@
 {
-  "$version": "116.0.0",
+  "$version": "117.0.0",
   "PropertyTypes": {
     "AWS::Wisdom::Assistant.ServerSideEncryptionConfiguration": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-assistant-serversideencryptionconfiguration.html",
@@ -36,7 +36,7 @@
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wisdom-knowledgebase-appintegrationsconfiguration.html#cfn-wisdom-knowledgebase-appintegrationsconfiguration-objectfields",
           "DuplicatesAllowed": true,
           "PrimitiveItemType": "String",
-          "Required": true,
+          "Required": false,
           "Type": "List",
           "UpdateType": "Immutable"
         }
