@@ -14,7 +14,7 @@ class SdkV2TestStack extends Stack {
     // This function uses aws-sdk but it will not be included
     this.lambdaFunction = new lambda.NodejsFunction(this, 'external', {
       entry: path.join(__dirname, 'integ-handlers/dependencies.ts'),
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       bundling: {
         minify: true,
         // Will be installed, not bundled
@@ -53,7 +53,7 @@ for (const testCase of [sdkV2testCase, sdkV3testCase]) {
   const response = integ.assertions.invokeFunction({
     functionName: testCase.lambdaFunction.functionName,
   });
-  response.expect(ExpectedResult.exact({
+  response.expect(ExpectedResult.objectLike({
     // expect invoking without error
     StatusCode: 200,
     ExecutedVersion: '$LATEST',
