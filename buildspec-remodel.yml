@@ -3,7 +3,6 @@ version: 0.2
 env:
   secrets-manager:
     TOKEN: $TOKEN_SECRET_ARN
-    NODE_OPTIONS: --max-old-size=8192
 
 phases:
   install:
@@ -23,6 +22,7 @@ phases:
   build:
     commands:
       - cd ${HOME}/aws-cdk
+      - export NODE_OPTIONS=--max-old-size=8192
       - npx lerna run build --scope @aws-cdk/remodel --include-dependencies
       - npx remodel ${PWD} --tmp-dir ${HOME}/remodel --no-clean --dry-run
   post_build:
