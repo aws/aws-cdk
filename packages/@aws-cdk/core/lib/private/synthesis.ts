@@ -115,7 +115,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
     try {
       const report = plugin.validate({ templatePaths: paths });
       reports.push({ ...report, pluginName: plugin.name });
-    } catch (e: any) {
+    } catch (e) {
       reports.push({
         success: false,
         pluginName: plugin.name,
