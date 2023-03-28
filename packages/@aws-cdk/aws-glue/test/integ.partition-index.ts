@@ -38,7 +38,7 @@ const partitionKeys = [{
   type: glue.Schema.BIG_INT,
 }];
 
-new glue.Table(stack, 'CSVTable', {
+const csvTable = new glue.Table(stack, 'CSVTable', {
   database,
   bucket,
   tableName: 'csv_table',
@@ -47,11 +47,13 @@ new glue.Table(stack, 'CSVTable', {
   partitionIndexes: [{
     indexName: 'index1',
     keyNames: ['month'],
-  }, {
-    indexName: 'index2',
-    keyNames: ['month', 'year'],
   }],
   dataFormat: glue.DataFormat.CSV,
+});
+
+csvTable.addPartitionIndex({
+  indexName: 'index2',
+  keyNames: ['month', 'year'],
 });
 
 const jsonTable = new glue.Table(stack, 'JSONTable', {
