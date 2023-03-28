@@ -494,7 +494,8 @@ export async function fixUnitTests(dir: string) {
     ],
   ]);
 
-  const coreTreeTestPath = path.join(dir, 'core', 'test', 'private', 'tree-metadata.test.ts');
+  const coreTestPath = path.join(dir, 'core', 'test');
+  const coreTreeTestPath = path.join(coreTestPath, 'private', 'tree-metadata.test.ts');
   await replaceLinesInFile(coreTreeTestPath, [
     [
       'fqn: \'@aws-cdk/core.CfnParameter\',',
@@ -503,6 +504,30 @@ export async function fixUnitTests(dir: string) {
     [
       'fqn: \'@aws-cdk/core.CfnRule\',',
       'fqn: \'aws-cdk-lib.CfnRule\',',
+    ],
+  ]);
+
+  const coreValidationTestPath = path.join(coreTestPath, 'validation', 'validation.test.ts');
+  await replaceLinesInFile(coreValidationTestPath, [
+    [
+      'expect.stringMatching(/│ Construct: @aws-cdk\\/core.Stack/),',
+      'expect.stringMatching(/│ Construct: aws-cdk-lib.Stack/),',
+    ],
+    [
+      'expect.stringMatching(/│ Construct: @aws-cdk\\/core.CfnResource/),',
+      'expect.stringMatching(/│ Construct: aws-cdk-lib.CfnResource/),',
+    ],
+    [
+      'expect.stringMatching(/│ Construct: @aws-cdk\\/core.Stage/),',
+      'expect.stringMatching(/│ Construct: aws-cdk-lib.Stage/),',
+    ],
+    [
+      '\'construct\': \'@aws-cdk/core.Stack\',',
+      '\'construct\': \'aws-cdk-lib.Stack\',',
+    ],
+    [
+      '\'construct\': \'@aws-cdk/core.CfnResource\',',
+      '\'construct\': \'aws-cdk-lib.CfnResource\',',
     ],
   ]);
 
