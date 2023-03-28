@@ -37,7 +37,7 @@ describe('bucket', () => {
     }).toThrow(/bucketName: 5 should be a string/);
   });
 
-  test('bucket without encryption configured', () => {
+  testDeprecated('bucket without encryption configured', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
       encryption: s3.BucketEncryption.UNENCRYPTED,
@@ -338,7 +338,7 @@ describe('bucket', () => {
 
   });
 
-  test('logs to self, no encryption does not throw error', () => {
+  testDeprecated('logs to self, no encryption does not throw error', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', { encryption: s3.BucketEncryption.UNENCRYPTED, serverAccessLogsPrefix: 'test' });
@@ -382,7 +382,7 @@ describe('bucket', () => {
     }).toThrow(/SSE-S3 is the only supported default bucket encryption for Server Access Logging target buckets/);
   });
 
-  test('logs to separate bucket, no encryption does not throw error', () => {
+  testDeprecated('logs to separate bucket, no encryption does not throw error', () => {
     const stack = new cdk.Stack();
     const logBucket = new s3.Bucket(stack, 'testLogBucket', { encryption: s3.BucketEncryption.UNENCRYPTED });
     expect(() => {
