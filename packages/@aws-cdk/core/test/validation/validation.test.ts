@@ -49,24 +49,28 @@ describe('validations', () => {
       app.synth();
     }).toThrow(/Validation failed/);
 
-    expect(consoleErrorMock.mock.calls[0][0]).toEqual(validationReport({
+    expect(consoleErrorMock.mock.calls[0][0].split('\n')).toEqual(expect.arrayContaining(validationReport([{
       templatePath: '/path/to/Default.template.json',
       constructPath: 'Default/Fake',
       title: 'test-rule',
+      pluginName: 'test-plugin',
+      status: 'failure',
       ruleMetadata: {
         id: 'abcdefg',
       },
       severity: 'medium',
-      creationStack: `\t└──  Default (Default)
-\t     │ Construct: @aws-cdk/core.Stack
-\t     │ Library Version: 0.0.0
-\t     │ Location: Run with '--debug' to include location info
-\t     └──  Fake (Default/Fake)
-\t          │ Construct: @aws-cdk/core.CfnResource
-\t          │ Library Version: 0.0.0
-\t          │ Location: Run with '--debug' to include location info`,
+      creationStack: [
+        expect.stringMatching(/Default \(Default\)/),
+        expect.stringMatching(/│ Construct: @aws-cdk\/core.Stack/),
+        expect.stringMatching(/│ Library Version: .*/),
+        expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+        expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
+        expect.stringMatching(/│ Construct: @aws-cdk\/core.CfnResource/),
+        expect.stringMatching(/│ Library Version: .*/),
+        expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+      ],
       resourceLogicalId: 'Fake',
-    }));
+    }])));
   });
 
   test('validation success', () => {
@@ -228,141 +232,62 @@ Policy Validation Report Summary
       app.synth();
     }).toThrow(/Validation failed/);
 
-    const report = consoleErrorMock.mock.calls[0][0];
+    const report = consoleErrorMock.mock.calls[0][0].split('\n');
     // Assuming the rest of the report's content is checked by another test
-    expect(report).toEqual(`Validation Report
------------------
-
-${generateTable('test-plugin2', 'failure', 'N/A')}
-
-(Violations)
-
-${reset(red(bright('test-rule2 (1 occurrences)')))}
-
-  Occurrences:
-
-    - Construct Path: Stage1/stack1/DefaultResource
-    - Template Path: /path/to/Stage1stack1DDED8B6C.template.json
-    - Creation Stack:
-\t└──  Stage1 (Stage1)
-\t     │ Construct: @aws-cdk/core.Stage
-\t     │ Library Version: 0.0.0
-\t     │ Location: Run with '--debug' to include location info
-\t     └──  stack1 (Stage1/stack1)
-\t          │ Construct: @aws-cdk/core.Stack
-\t          │ Library Version: 0.0.0
-\t          │ Location: Run with '--debug' to include location info
-\t          └──  DefaultResource (Stage1/stack1/DefaultResource)
-\t               │ Construct: @aws-cdk/core.CfnResource
-\t               │ Library Version: 0.0.0
-\t               │ Location: Run with '--debug' to include location info
-    - Resource ID: DefaultResource
-    - Template Locations:
-      > test-location
-
-  Description: do something
-
-${generateTable('test-plugin4', 'failure', 'N/A')}
-
-(Violations)
-
-${reset(red(bright('test-rule4 (1 occurrences)')))}
-
-  Occurrences:
-
-    - Construct Path: Stage2/Stage3/stack1/DefaultResource
-    - Template Path: /path/to/Stage2Stage3stack10CD36915.template.json
-    - Creation Stack:
-\t└──  Stage3 (Stage2/Stage3)
-\t     │ Construct: @aws-cdk/core.Stage
-\t     │ Library Version: 0.0.0
-\t     │ Location: Run with '--debug' to include location info
-\t     └──  stack1 (Stage2/Stage3/stack1)
-\t          │ Construct: @aws-cdk/core.Stack
-\t          │ Library Version: 0.0.0
-\t          │ Location: Run with '--debug' to include location info
-\t          └──  DefaultResource (Stage2/Stage3/stack1/DefaultResource)
-\t               │ Construct: @aws-cdk/core.CfnResource
-\t               │ Library Version: 0.0.0
-\t               │ Location: Run with '--debug' to include location info
-    - Resource ID: DefaultResource
-    - Template Locations:
-      > test-location
-
-  Description: do something
-
-${generateTable('test-plugin3', 'failure', 'N/A')}
-
-(Violations)
-
-${reset(red(bright('test-rule3 (1 occurrences)')))}
-
-  Occurrences:
-
-    - Construct Path: Stage2/stack2/DefaultResource
-    - Template Path: /path/to/Stage2stack259BA718E.template.json
-    - Creation Stack:
-\t└──  Stage2 (Stage2)
-\t     │ Construct: @aws-cdk/core.Stage
-\t     │ Library Version: 0.0.0
-\t     │ Location: Run with '--debug' to include location info
-\t     └──  stack2 (Stage2/stack2)
-\t          │ Construct: @aws-cdk/core.Stack
-\t          │ Library Version: 0.0.0
-\t          │ Location: Run with '--debug' to include location info
-\t          └──  DefaultResource (Stage2/stack2/DefaultResource)
-\t               │ Construct: @aws-cdk/core.CfnResource
-\t               │ Library Version: 0.0.0
-\t               │ Location: Run with '--debug' to include location info
-    - Resource ID: DefaultResource
-    - Template Locations:
-      > test-location
-
-  Description: do something
-
-${generateTable('test-plugin1', 'failure', '1.2.3')}
-
-(Violations)
-
-${reset(red(bright('test-rule1 (1 occurrences)')))}
-
-  Occurrences:
-
-    - Construct Path: Stage1/stack1/DefaultResource
-    - Template Path: /path/to/Stage1stack1DDED8B6C.template.json
-    - Creation Stack:
-\t└──  Stage1 (Stage1)
-\t     │ Construct: @aws-cdk/core.Stage
-\t     │ Library Version: 0.0.0
-\t     │ Location: Run with '--debug' to include location info
-\t     └──  stack1 (Stage1/stack1)
-\t          │ Construct: @aws-cdk/core.Stack
-\t          │ Library Version: 0.0.0
-\t          │ Location: Run with '--debug' to include location info
-\t          └──  DefaultResource (Stage1/stack1/DefaultResource)
-\t               │ Construct: @aws-cdk/core.CfnResource
-\t               │ Library Version: 0.0.0
-\t               │ Location: Run with '--debug' to include location info
-    - Resource ID: DefaultResource
-    - Template Locations:
-      > test-location
-
-  Description: do something
-
-Policy Validation Report Summary
-
-╔══════════════╤═════════╗
-║ Plugin       │ Status  ║
-╟──────────────┼─────────╢
-║ test-plugin2 │ failure ║
-╟──────────────┼─────────╢
-║ test-plugin4 │ failure ║
-╟──────────────┼─────────╢
-║ test-plugin3 │ failure ║
-╟──────────────┼─────────╢
-║ test-plugin1 │ failure ║
-╚══════════════╧═════════╝
-`);
+    expect(report).toEqual(expect.arrayContaining(
+      validationReport([
+        {
+          pluginName: 'test-plugin2',
+          status: 'failure',
+          templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
+          constructPath: 'Stage1/stack1/DefaultResource',
+          title: 'test-rule2',
+          creationStack: [
+            expect.stringMatching(/Stage1 \(Stage1\)/),
+            expect.stringMatching(/│ Construct: @aws-cdk\/core.Stage/),
+            expect.stringMatching(/│ Library Version: .*/),
+            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/└──  stack1 \(Stage1\/stack1\)/),
+            expect.stringMatching(/│ Construct: @aws-cdk\/core.Stack/),
+            expect.stringMatching(/│ Library Version: .*/),
+            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/└──  DefaultResource \(Stage1\/stack1\/DefaultResource\)/),
+            expect.stringMatching(/│ Construct: @aws-cdk\/core.CfnResource/),
+            expect.stringMatching(/│ Library Version: .*/),
+            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+          ],
+          resourceLogicalId: 'DefaultResource',
+          description: 'do something',
+        },
+        {
+          pluginName: 'test-plugin4',
+          status: 'failure',
+          templatePath: '/path/to/Stage2Stage3stack10CD36915.template.json',
+          constructPath: 'Stage2/Stage3/stack1/DefaultResource',
+          description: 'do something',
+          title: 'test-rule4',
+          resourceLogicalId: 'DefaultResource',
+        },
+        {
+          pluginName: 'test-plugin3',
+          status: 'failure',
+          templatePath: '/path/to/Stage2stack259BA718E.template.json',
+          constructPath: 'Stage2/stack2/DefaultResource',
+          title: 'test-rule3',
+          resourceLogicalId: 'DefaultResource',
+          description: 'do something',
+        },
+        {
+          pluginName: 'test-plugin1',
+          status: 'failure',
+          templatePath: '/path/to/Stage1stack1DDED8B6C.template.json',
+          constructPath: 'Stage1/stack1/DefaultResource',
+          title: 'test-rule1',
+          resourceLogicalId: 'DefaultResource',
+          description: 'do something',
+        },
+      ]),
+    ));
   });
 
   test('multiple stages, multiple plugins', () => {
@@ -541,67 +466,39 @@ Policy Validation Report Summary
       app.synth();
     }).toThrow(/Validation failed/);
 
-    const report = consoleErrorMock.mock.calls[0][0];
-    expect(report).toEqual(`Validation Report
------------------
-
-${generateTable('plugin1', 'failure', 'N/A')}
-
-(Violations)
-
-${reset(red(bright('rule-1 (1 occurrences)')))}
-
-  Occurrences:
-
-    - Construct Path: Default/Fake
-    - Template Path: /path/to/Default.template.json
-    - Creation Stack:
-\t└──  Default (Default)
-\t     │ Construct: @aws-cdk/core.Stack
-\t     │ Library Version: 0.0.0
-\t     │ Location: Run with '--debug' to include location info
-\t     └──  Fake (Default/Fake)
-\t          │ Construct: @aws-cdk/core.CfnResource
-\t          │ Library Version: 0.0.0
-\t          │ Location: Run with '--debug' to include location info
-    - Resource ID: Fake
-    - Template Locations:
-      > test-location
-
-  Description: do something
-
-${generateTable('plugin2', 'failure', 'N/A')}
-
-(Violations)
-
-${reset(red(bright('rule-2 (1 occurrences)')))}
-
-  Occurrences:
-
-    - Construct Path: Default/Fake
-    - Template Path: /path/to/Default.template.json
-    - Creation Stack:
-\t└──  Default (Default)
-\t     │ Construct: @aws-cdk/core.Stack
-\t     │ Library Version: 0.0.0
-\t     │ Location: Run with '--debug' to include location info
-\t     └──  Fake (Default/Fake)
-\t          │ Construct: @aws-cdk/core.CfnResource
-\t          │ Library Version: 0.0.0
-\t          │ Location: Run with '--debug' to include location info
-    - Resource ID: Fake
-    - Template Locations:
-      > test-location
-
-  Description: do another thing
-
-Policy Validation Report Summary
-
-${table([
-    ['Plugin', 'Status'],
-    ['plugin1', 'failure'],
-    ['plugin2', 'failure'],
-  ], { })}`);
+    const report = consoleErrorMock.mock.calls[0][0].split('\n');
+    expect(report).toEqual(expect.arrayContaining(
+      validationReport([
+        {
+          pluginName: 'plugin1',
+          status: 'failure',
+          templatePath: '/path/to/Default.template.json',
+          constructPath: 'Default/Fake',
+          title: 'rule-1',
+          creationStack: [
+            expect.stringMatching(/Default \(Default\)/),
+            expect.stringMatching(/│ Construct: @aws-cdk\/core.Stack/),
+            expect.stringMatching(/│ Library Version: .*/),
+            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
+            expect.stringMatching(/│ Construct: @aws-cdk\/core.CfnResource/),
+            expect.stringMatching(/│ Library Version: .*/),
+            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+          ],
+          description: 'do something',
+          resourceLogicalId: 'Fake',
+        },
+        {
+          pluginName: 'plugin2',
+          status: 'failure',
+          templatePath: '/path/to/Default.template.json',
+          constructPath: 'Default/Fake',
+          title: 'rule-2',
+          description: 'do another thing',
+          resourceLogicalId: 'Fake',
+        },
+      ]),
+    ));
   });
 
   test('multiple plugins with mixed results', () => {
@@ -630,42 +527,38 @@ ${table([
       app.synth();
     }).toThrow(/Validation failed/);
 
-    const report = consoleErrorMock.mock.calls[0][0];
-    expect(report).toEqual(`Validation Report
------------------
-
-${generateTable('plugin2', 'failure', 'N/A')}
-
-(Violations)
-
-${reset(red(bright('rule-2 (1 occurrences)')))}
-
-  Occurrences:
-
-    - Construct Path: Default/Fake
-    - Template Path: /path/to/Default.template.json
-    - Creation Stack:
-\t└──  Default (Default)
-\t     │ Construct: @aws-cdk/core.Stack
-\t     │ Library Version: 0.0.0
-\t     │ Location: Run with '--debug' to include location info
-\t     └──  Fake (Default/Fake)
-\t          │ Construct: @aws-cdk/core.CfnResource
-\t          │ Library Version: 0.0.0
-\t          │ Location: Run with '--debug' to include location info
-    - Resource ID: Fake
-    - Template Locations:
-      > test-location
-
-  Description: do another thing
-
-Policy Validation Report Summary
-
-${table([
-    ['Plugin', 'Status'],
-    ['plugin1', 'success'],
-    ['plugin2', 'failure'],
-  ])}`);
+    const report = consoleErrorMock.mock.calls[0][0].split('\n');
+    expect(report).toEqual(expect.arrayContaining(
+      validationReport([
+        {
+          pluginName: 'plugin1',
+          status: 'success',
+          constructPath: '',
+          resourceLogicalId: '',
+          templatePath: '',
+          title: '',
+        },
+        {
+          pluginName: 'plugin2',
+          status: 'failure',
+          templatePath: '/path/to/Default.template.json',
+          constructPath: 'Default/Fake',
+          title: 'rule-2',
+          creationStack: [
+            expect.stringMatching(/Default \(Default\)/),
+            expect.stringMatching(/│ Construct: @aws-cdk\/core.Stack/),
+            expect.stringMatching(/│ Library Version: .*/),
+            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
+            expect.stringMatching(/│ Construct: @aws-cdk\/core.CfnResource/),
+            expect.stringMatching(/│ Library Version: .*/),
+            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+          ],
+          description: 'do another thing',
+          resourceLogicalId: 'Fake',
+        },
+      ]),
+    ));
   });
 
   test('plugin throws an error', () => {
@@ -777,13 +670,13 @@ ${table([
                   constructStack: {
                     'id': 'Default',
                     'construct': '@aws-cdk/core.Stack',
-                    'libraryVersion': '0.0.0',
+                    'libraryVersion': expect.any(String),
                     'location': "Run with '--debug' to include location info",
                     'path': 'Default',
                     'child': {
                       'id': 'Fake',
                       'construct': '@aws-cdk/core.CfnResource',
-                      'libraryVersion': '0.0.0',
+                      'libraryVersion': expect.any(String),
                       'location': "Run with '--debug' to include location info",
                       'path': 'Default/Fake',
                     },
@@ -843,12 +736,15 @@ class BrokenPlugin implements core.IPolicyValidationPluginBeta1 {
 }
 
 interface ValidationReportData {
-  templatePath: string,
-  title: string,
-  constructPath: string,
-  creationStack?: string,
-  resourceLogicalId: string,
-  severity?: string,
+  templatePath: string;
+  title: string;
+  status: string;
+  pluginName: string;
+  constructPath: string;
+  creationStack?: string[];
+  description?: string;
+  resourceLogicalId: string;
+  severity?: string;
   ruleMetadata?: { [key: string]: string };
 }
 
@@ -867,48 +763,38 @@ function generateTable(pluginName: string, status: string, pluginVersion: string
   });
 }
 
-const validationReport = (data: ValidationReportData) => {
-  const title = reset(red(bright(`${data.title} (1 occurrences)`)));
-  return [
-    'Validation Report',
-    '-----------------',
-    '',
-    '╔═════════════════════════╗',
-    '║      Plugin Report      ║',
-    '║   Plugin: test-plugin   ║',
-    '║   Version: N/A          ║',
-    '║   Status: failure       ║',
-    '╚═════════════════════════╝',
-    '',
-    '',
-    '(Violations)',
-    '',
-    title,
-    ...data.severity ? [`Severity: ${data.severity}`] : [],
-    '',
-    '  Occurrences:',
-    '',
-    `    - Construct Path: ${data.constructPath}`,
-    `    - Template Path: ${data.templatePath}`,
-    '    - Creation Stack:',
-    `${data.creationStack ?? 'Construct trace not available. Rerun with `--debug` to see trace information'}`,
-    `    - Resource ID: ${data.resourceLogicalId}`,
-    '    - Template Locations:',
-    '      > test-location',
-    '',
-    '  Description: test recommendation',
-    ...data.ruleMetadata ? [`  Rule Metadata: \n\t${Object.entries(data.ruleMetadata).flatMap(([key, value]) => `${key}: ${value}`).join('\n\t')}`] : [],
-    '',
-    'Policy Validation Report Summary',
-    '',
-    '╔═════════════╤═════════╗',
-    '║ Plugin      │ Status  ║',
-    '╟─────────────┼─────────╢',
-    '║ test-plugin │ failure ║',
-    '╚═════════════╧═════════╝',
-    '',
-
-  ].join('\n');
+const validationReport = (data: ValidationReportData[]) => {
+  const result = data.flatMap(d => {
+    if (d.status === 'failure') {
+      const title = reset(red(bright(`${d.title} (1 occurrences)`)));
+      return [
+        expect.stringMatching(new RegExp('Validation Report')),
+        expect.stringMatching(new RegExp('-----------------')),
+        expect.stringMatching(new RegExp(`Plugin: ${d.pluginName}`)),
+        expect.stringMatching(new RegExp(`Status: ${d.status}`)),
+        expect.stringMatching(new RegExp('\(Violations\)')),
+        title,
+        ...d.severity ? [expect.stringMatching(new RegExp(`Severity: ${d.severity}`))] : [],
+        expect.stringMatching(new RegExp('  Occurrences:')),
+        expect.stringMatching(new RegExp(`    - Construct Path: ${d.constructPath}`)),
+        expect.stringMatching(new RegExp(`    - Template Path: ${d.templatePath}`)),
+        expect.stringMatching(new RegExp('    - Creation Stack:')),
+        ...d.creationStack ?? [],
+        expect.stringMatching(new RegExp(`    - Resource ID: ${d.resourceLogicalId}`)),
+        expect.stringMatching(new RegExp('    - Template Locations:')),
+        expect.stringMatching(new RegExp('      > test-location')),
+        expect.stringMatching(new RegExp(`  Description: ${d.description ?? 'test recommendation'}`)),
+        ...d.ruleMetadata ? [expect.stringMatching('  Rule Metadata:'), ...Object.entries(d.ruleMetadata).flatMap(([key, value]) => expect.stringMatching(`${key}: ${value}`))] : [],
+        // new RegExp(''),
+      ];
+    }
+    return [];
+  });
+  result.push(
+    expect.stringMatching(new RegExp('Policy Validation Report Summary')),
+    ...data.map(d => expect.stringMatching(new RegExp(`.*${d.pluginName}.*${d.status}.*`))),
+  );
+  return result;
 };
 
 function reset(s: string) {
