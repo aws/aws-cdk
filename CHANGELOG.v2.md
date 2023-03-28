@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.71.0](https://github.com/aws/aws-cdk/compare/v2.70.0...v2.71.0) (2023-03-28)
+
+
+### Features
+
+* **core:** template validation after synthesis ([#23951](https://github.com/aws/aws-cdk/issues/23951)) ([d94a48b](https://github.com/aws/aws-cdk/commit/d94a48be6bc294a8bb6a7ffd13ac5f11014106e5))
+
 ## [2.70.0](https://github.com/aws/aws-cdk/compare/v2.69.0...v2.70.0) (2023-03-22)
 
 
