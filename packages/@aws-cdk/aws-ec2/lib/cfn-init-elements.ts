@@ -781,6 +781,16 @@ export interface InitServiceOptions {
    * @default - No files trigger restart
    */
   readonly serviceRestartHandle?: InitServiceRestartHandle;
+
+  /**
+   * What service manager to use
+   *
+   * This needs to match the actual service manager on your Operating System.
+   * For example, Amazon Linux 1 uses SysVinit, but Amazon Linux 2 uses Systemd.
+   *
+   * @default ServiceManager.SYSVINIT for Linux images, ServiceManager.WINDOWS for Windows images
+   */
+  readonly serviceManager?: ServiceManager;
 }
 
 /**
@@ -806,6 +816,39 @@ export class InitService extends InitElement {
     return new InitService(serviceName, { enabled: false, ensureRunning: false });
   }
 
+  /**
+   * Install a systemd-compatible config file for the given service
+   *
+   * This is a helper function to create a simple systemd configuration
+   * file that will allow running a service on the machine using `InitService.enable()`.
+   *
+   * Systemd allows many configuration options; this function does not pretend
+   * to expose all of them. If you need advanced configuration options, you
+   * can use `InitFile` to create exactly the configuration file you need
+   * at `/etc/systemd/system/${serviceName}.service`.
+   */
+  public static systemdConfigFile(serviceName: string, options: SystemdConfigFileOptions): InitFile {
+    if (!options.command.startsWith('/')) {
+      throw new Error(`SystemD executables must use an absolute path, got '${options.command}'`);
+    }
+
+    const lines = [
+      '[Unit]',
+      ...(options.description ? [`Description=${options.description}`] : []),
+      ...(options.afterNetwork ?? true ? ['After=network.target'] : []),
+      '[Service]',
+      `ExecStart=${options.command}`,
+      ...(options.cwd ? [`WorkingDirectory=${options.cwd}`] : []),
+      ...(options.user ? [`User=${options.user}`] : []),
+      ...(options.group ? [`Group=${options.user}`] : []),
+      ...(options.keepRunning ?? true ? ['Restart=always'] : []),
+      '[Install]',
+      'WantedBy=multi-user.target',
+    ];
+
+    return InitFile.fromString(`/etc/systemd/system/${serviceName}.service`, lines.join('\n'));
+  }
+
   public readonly elementType = InitElementType.SERVICE.toString();
 
   private constructor(private readonly serviceName: string, private readonly serviceOptions: InitServiceOptions) {
@@ -814,11 +857,12 @@ export class InitService extends InitElement {
 
   /** @internal */
   public _bind(options: InitBindOptions): InitElementConfig {
-    const serviceManager = options.platform === InitPlatform.LINUX ? 'sysvinit' : 'windows';
+    const serviceManager = this.serviceOptions.serviceManager
+     ?? (options.platform === InitPlatform.LINUX ? ServiceManager.SYSVINIT : ServiceManager.WINDOWS);
 
     return {
       config: {
-        [serviceManager]: {
+        [serviceManagerToString(serviceManager)]: {
           [this.serviceName]: {
             enabled: this.serviceOptions.enabled,
             ensureRunning: this.serviceOptions.ensureRunning,
@@ -969,4 +1013,94 @@ function standardS3Auth(role: iam.IRole, bucketName: string) {
       buckets: [bucketName],
     },
   };
+}
+
+/**
+ * The service manager that will be used by InitServices
+ *
+ * The value needs to match the service manager used by your operating
+ * system.
+ */
+export enum ServiceManager {
+  /**
+   * Use SysVinit
+   *
+   * This is the default for Linux systems.
+   */
+  SYSVINIT,
+
+  /**
+   * Use Windows
+   *
+   * This is the default for Windows systems.
+   */
+  WINDOWS,
+
+  /**
+   * Use systemd
+   */
+  SYSTEMD,
+}
+
+function serviceManagerToString(x: ServiceManager): string {
+  switch (x) {
+    case ServiceManager.SYSTEMD: return 'systemd';
+    case ServiceManager.SYSVINIT: return 'sysvinit';
+    case ServiceManager.WINDOWS: return 'windows';
+  }
+}
+
+/**
+ * Options for creating a SystemD configuration file
+ */
+export interface SystemdConfigFileOptions {
+  /**
+   * The command to run to start this service
+   */
+  readonly command: string;
+
+  /**
+   * The working directory for the command
+   *
+   * @default Root directory or home directory of specified user
+   */
+  readonly cwd?: string;
+
+  /**
+   * A description of this service
+   *
+   * @default - No description
+   */
+  readonly description?: string;
+
+  /**
+   * The user to execute the process under
+   *
+   * @default root
+   */
+  readonly user?: string;
+
+  /**
+   * The group to execute the process under
+   *
+   * @default root
+   */
+  readonly group?: string;
+
+  /**
+   * Keep the process running all the time
+   *
+   * Restarts the process when it exits for any reason other
+   * than the machine shutting down.
+   *
+   * @default true
+   */
+  readonly keepRunning?: boolean;
+
+  /**
+   * Start the service after the networking part of the OS comes up
+   *
+   * @default true
+   */
+  readonly afterNetwork?: boolean;
 }

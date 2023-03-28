@@ -110,7 +110,7 @@ async function isInUse(ssm: SSM, parameterName: string): Promise<Set<string>> {
         tagResults.add(tagParts[2]);
       }
     });
-  } catch (e) {
+  } catch (e: any) {
     // an InvalidResourceId means that the parameter doesn't exist
     // which we should ignore since that means it's not in use
     if (e.code === 'InvalidResourceId') {

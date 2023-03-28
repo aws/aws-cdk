@@ -93,6 +93,14 @@ abstract class AliasBase extends Resource implements IAlias {
   public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
     return this.aliasTargetKey.grantEncryptDecrypt(grantee);
   }
+
+  grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
+    return this.aliasTargetKey.grantGenerateMac(grantee);
+  }
+
+  grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
+    return this.aliasTargetKey.grantVerifyMac(grantee);
+  }
 }
 
 /**
@@ -160,6 +168,8 @@ export class Alias extends AliasBase {
       public grantDecrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
       public grantEncrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
       public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
+      public grantGenerateMac(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
+      public grantVerifyMac(grantee: iam.IGrantable): iam.Grant { return iam.Grant.drop(grantee, ''); }
     }
 
     return new Import(scope, id);
