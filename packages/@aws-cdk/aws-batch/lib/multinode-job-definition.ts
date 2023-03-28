@@ -118,7 +118,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
           produce: () => this.containers.map((container) => ({
             targetNodes: container.startNode + ':' + container.endNode,
             container: {
-              ...container.container.renderContainerDefinition(),
+              ...container.container._renderContainerDefinition(),
               instanceType: this.instanceType.toString(),
             },
           })),

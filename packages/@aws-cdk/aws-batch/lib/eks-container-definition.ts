@@ -6,6 +6,11 @@ import { CfnJobDefinition } from './batch.generated';
 const EMPTY_DIR_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/eks-container-definition.EmptyDirVolume');
 const HOST_PATH_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/eks-container-definition.HostPathVolume');
 const SECRET_PATH_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/eks-container-definition.SecretVolume');
+
+
+/**
+ * A container that can be run with EKS orchestration on EC2 resources
+ */
 export interface IEksContainerDefinition extends IConstruct {
   /**
    * The image that this container will run
@@ -240,7 +245,14 @@ export interface IEksContainerDefinition extends IConstruct {
    */
   readonly volumes: EksVolume[];
 
+  /**
+   * Mount an EmptyDir volume to this container. Automatically added to the Pod.
+   */
   addEmptyDirVolume(options: EmptyDirVolumeOptions): void;
+
+  /**
+   * Mount a HostPath volume to this container. Automatically added to the Pod.
+   */
   addHostPathVolume(options: HostPathVolumeOptions): void;
 }
 
@@ -507,25 +519,28 @@ export interface EksContainerDefinitionProps {
   readonly volumes?: EksVolume[];
 }
 
+/**
+ * A container that can be run with EKS orchestration on EC2 resources
+ */
 export class EksContainerDefinition extends Construct implements IEksContainerDefinition {
-  readonly image: ecs.ContainerImage;
-  readonly args?: string[];
-  readonly command?: string[];
-  readonly env?: { [key:string]: string };
-  readonly imagePullPolicy?: ImagePullPolicy;
-  readonly name?: string;
-  readonly memoryLimitMiB?: number;
-  readonly memoryReservationMiB?: number;
-  readonly cpuLimit?: number;
-  readonly cpuReservation?: number;
-  readonly gpuLimit?: number;
-  readonly gpuReservation?: number;
-  readonly privileged?: boolean;
-  readonly readonlyRootFilesystem?: boolean;
-  readonly runAsGroup?: number;
-  readonly runAsRoot?: boolean;
-  readonly runAsUser?: number;
-  readonly volumes: EksVolume[];
+  public readonly image: ecs.ContainerImage;
+  public readonly args?: string[];
+  public readonly command?: string[];
+  public readonly env?: { [key:string]: string };
+  public readonly imagePullPolicy?: ImagePullPolicy;
+  public readonly name?: string;
+  public readonly memoryLimitMiB?: number;
+  public readonly memoryReservationMiB?: number;
+  public readonly cpuLimit?: number;
+  public readonly cpuReservation?: number;
+  public readonly gpuLimit?: number;
+  public readonly gpuReservation?: number;
+  public readonly privileged?: boolean;
+  public readonly readonlyRootFilesystem?: boolean;
+  public readonly runAsGroup?: number;
+  public readonly runAsRoot?: boolean;
+  public readonly runAsUser?: number;
+  public readonly volumes: EksVolume[];
 
   private readonly imageConfig: ecs.ContainerImageConfig;
 
@@ -561,7 +576,11 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
     this.volumes.push(EksVolume.hostPath(options));
   }
 
-  public renderContainerDefinition(): CfnJobDefinition.EksContainerProperty {
+  /**
+   *
+   * @internal
+   */
+  public _renderContainerDefinition(): CfnJobDefinition.EksContainerProperty {
     return {
       image: this.imageConfig.imageName,
       command: this.command,
@@ -739,6 +758,9 @@ export enum EmptyDirMediumType {
  * @see: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
  */
 export class EmptyDirVolume extends EksVolume {
+  /**
+   * Returns `true` if `x` is an EmptyDirVolume, `false` otherwise
+   */
   public static isEmptyDirVolume(x: any) : x is EmptyDirVolume {
     return x !== null && typeof(x) === 'object' && EMPTY_DIR_VOLUME_SYMBOL in x;
   }

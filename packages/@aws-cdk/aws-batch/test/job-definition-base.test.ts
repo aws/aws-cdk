@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { InstanceClass, InstanceSize, InstanceType } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { /*Aws,*/ Duration, Stack } from '@aws-cdk/core';
+import { /*Aws,*/ Duration, Size, Stack } from '@aws-cdk/core';
 import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
 import { Action, EksContainerDefinition, EcsJobDefinition, Reason, RetryStrategy, EcsEc2ContainerDefinition, EksJobDefinition, EcsJobDefinitionProps, EksJobDefinitionProps, Compatibility, MultiNodeJobDefinitionProps, MultiNodeJobDefinition } from '../lib';
 import { CfnJobDefinitionProps } from '../lib/batch.generated';
@@ -42,7 +42,7 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
     defaultEcsProps = {
       containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsContainer', {
         cpu: 256,
-        memoryMiB: 2048,
+        memory: Size.mebibytes(2048),
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       }),
     };
@@ -55,7 +55,7 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
       containers: [{
         container: new EcsEc2ContainerDefinition(stack, 'MultinodeEcsContainer', {
           cpu: 256,
-          memoryMiB: 2048,
+          memory: Size.mebibytes(2048),
           image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         }),
         startNode: 0,

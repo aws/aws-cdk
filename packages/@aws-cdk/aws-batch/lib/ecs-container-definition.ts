@@ -2,7 +2,7 @@ import * as ecs from '@aws-cdk/aws-ecs';
 import { IFileSystem } from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Lazy, PhysicalName } from '@aws-cdk/core';
+import { Lazy, PhysicalName, Size } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { LinuxParameters } from './linux-parameters';
@@ -140,17 +140,72 @@ export interface EfsVolumeOptions extends EcsVolumeOptions {
   readonly useJobDefinitionRole?: boolean;
 }
 
+/**
+ * A Volume that uses an AWS Elastic File System (EFS); this volume can grow and shrink as needed
+ */
 export class EfsVolume extends EcsVolume {
+  /**
+   * Returns true if x is an EfsVolume, false otherwise
+   */
   public static isEfsVolume(x: any) : x is EfsVolume {
     return x !== null && typeof(x) === 'object' && EFS_VOLUME_SYMBOL in x;
   }
 
-  readonly fileSystem: IFileSystem;
-  readonly rootDirectory?: string;
-  readonly enableTransitEncryption?: boolean;
-  readonly transitEncryptionPort?: number;
-  readonly accessPointId?: string;
-  readonly useJobDefinitionRole?: boolean;
+  /**
+   * The EFS File System that supports this volume
+   */
+  public readonly fileSystem: IFileSystem;
+
+  /**
+   * The directory within the Amazon EFS file system to mount as the root directory inside the host.
+   * If this parameter is omitted, the root of the Amazon EFS volume is used instead.
+   * Specifying `/` has the same effect as omitting this parameter.
+   * The maximum length is 4,096 characters.
+   *
+   * @default - root of the EFS File System
+   */
+  public readonly rootDirectory?: string;
+
+  /**
+   * Enables encryption for Amazon EFS data in transit between the Amazon ECS host and the Amazon EFS server
+   *
+   * @see https://docs.aws.amazon.com/efs/latest/ug/encryption-in-transit.html
+   *
+   * @default false
+   */
+  public readonly enableTransitEncryption?: boolean;
+
+  /**
+   * The port to use when sending encrypted data between the Amazon ECS host and the Amazon EFS server.
+   * The value must be between 0 and 65,535.
+   *
+   * @see https://docs.aws.amazon.com/efs/latest/ug/efs-mount-helper.html
+   *
+   * @default - chosen by the EFS Mount Helper
+   */
+  public readonly transitEncryptionPort?: number;
+
+  /**
+   * The Amazon EFS access point ID to use.
+   * If an access point is specified, `rootDirectory` must either be omitted or set to `/`
+   * which enforces the path set on the EFS access point.
+   * If an access point is used, `enableTransitEncryption` must be `true`.
+   *
+   * @see https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html
+   *
+   * @default - no accessPointId
+   */
+  public readonly accessPointId?: string;
+
+  /**
+   * Whether or not to use the AWS Batch job IAM role defined in a job definition when mounting the Amazon EFS file system.
+   * If specified, `enableTransitEncryption` must be `true`.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/efs-volumes.html#efs-volume-accesspoints
+   *
+   * @default false
+   */
+  public readonly useJobDefinitionRole?: boolean;
 
   constructor(options: EfsVolumeOptions) {
     super(options);
@@ -170,19 +225,26 @@ Object.defineProperty(EfsVolume.prototype, EFS_VOLUME_SYMBOL, {
   writable: false,
 });
 
+/**
+ * Options for configuring an ECS HostVolume
+ */
 export interface HostVolumeOptions extends EcsVolumeOptions {
   /**
    * The path on the host machine this container will have access to
    */
   readonly hostPath?: string;
 }
-
+/**
+ * Creates a Host volume. This volume will persist on the host at the specified `hostPath`.
+ * If the `hostPath` is not specified, Docker will choose the host path. In this case,
+ * the data may not persist after the containers that use it stop running.
+ */
 export class HostVolume extends EcsVolume {
-  public static isHostVolume(x: any) : x is HostVolume {
-    return x !== null && typeof(x) === 'object' && HOST_VOLUME_SYMBOL in x;
+  public static isHostVolume(x: any): x is HostVolume {
+    return x !== null && typeof (x) === 'object' && HOST_VOLUME_SYMBOL in x;
   }
 
-  readonly hostPath?: string;
+  public readonly hostPath?: string;
 
   constructor(options: HostVolumeOptions) {
     super(options);
@@ -196,62 +258,230 @@ Object.defineProperty(HostVolume.prototype, HOST_VOLUME_SYMBOL, {
   writable: false,
 });
 
+/**
+ * A container that can be run with ECS orchestration
+ */
 export interface IEcsContainerDefinition extends IConstruct {
-  readonly image: ecs.ContainerImage;
-  readonly cpu: number;
-  readonly memoryMiB: number;
-  readonly command?: string[];
-  readonly environment?: { [key:string]: string };
-  readonly executionRole?: iam.IRole;
-  readonly jobRole?: iam.IRole;
-  readonly linuxParameters?: LinuxParameters;
-  readonly logDriverConfig?: ecs.LogDriverConfig;
-  readonly readonlyRootFilesystem?: boolean;
-  readonly gpu?: number;
-  readonly secrets?: secretsmanager.ISecret[];
-  readonly user?: string;
-  readonly volumes: EcsVolume[];
-
-  renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty;
-  addEfsVolume(volume: EfsVolumeOptions): void;
-  addHostVolume(volume: HostVolumeOptions): void;
-}
-
-export interface EcsContainerDefinitionProps {
-  readonly command?: string[];
-  readonly memoryMiB: number;
-  readonly environment?: { [key:string]: string };
-  readonly image: ecs.ContainerImage;
-  readonly jobRole?: iam.IRole;
-  readonly executionRole?: iam.IRole;
-  readonly linuxParameters?: LinuxParameters;
-  readonly logging?: ecs.LogDriver;
   /**
+   * The image that this container will run
+   */
+  readonly image: ecs.ContainerImage;
+
+  /**
+   * The number of vCPUs reserved for the container.
+   * Each vCPU is equivalent to 1,024 CPU shares.
+   * For containers running on EC2 resources, you must specify at least one vCPU.
+   */
+  readonly cpu: number;
+
+  /**
+   * The memory hard limit present to the container.
+   * If your container attempts to exceed the memory specified, the container is terminated.
+   * You must specify at least 4 MiB of memory for a job.
+   */
+  readonly memory: Size;
+
+  /**
+   * The command that's passed to the container
+   *
+   * @see https://docs.docker.com/engine/reference/builder/#cmd
+   */
+  readonly command?: string[];
+
+  /**
+   * The environment variables to pass to a container.
+   * Cannot start with `AWS_BATCH`.
+   * We don't recommend using plaintext environment variables for sensitive information, such as credential data.
+   *
+   * @default - no environment variables
+   */
+  readonly environment?: { [key:string]: string };
+
+  /**
+   * The role that the container can assume.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html
+   */
+  readonly jobRole?: iam.IRole;
+
+  /**
+   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
+   *
+   * @default a Role will be created
+   */
+  readonly executionRole?: iam.IRole;
+
+  /**
+   * Linux-specific modifications that are applied to the container, such as details for device mappings.
+   *
+   * @default none
+   */
+  readonly linuxParameters?: LinuxParameters;
+
+  /**
+   * The configuration of the log driver
+   */
+  readonly logDriverConfig?: ecs.LogDriverConfig;
+
+  /**
+   * Gives the container readonly access to its root filesystem.
+   *
    * @default false
    */
   readonly readonlyRootFilesystem?: boolean;
-  readonly cpu: number;
-  readonly gpu?: number;
+
+  /**
+   * The secrets for the container. Can be referenced in your job definition.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
+   */
   readonly secrets?: secretsmanager.ISecret[];
+
+  /**
+   * The user name to use inside the container
+   */
   readonly user?: string;
+
+  /**
+   * The volumes to mount to this container. Automatically added to the job definition.
+   */
+  readonly volumes: EcsVolume[];
+
+  /**
+   * Renders this container to CloudFormation
+   *
+   * @internal
+   */
+  _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty;
+
+  /**
+   * Add an EFS Volume to this container
+   */
+  addEfsVolume(volume: EfsVolumeOptions): void;
+
+  /**
+   * Add a Host Volume to this container
+   */
+  addHostVolume(volume: HostVolumeOptions): void;
+}
+
+/**
+ * Props to configure an EcsContainerDefinition
+ */
+export interface EcsContainerDefinitionProps {
+  /**
+   * The image that this container will run
+   */
+  readonly image: ecs.ContainerImage;
+
+  /**
+   * The number of vCPUs reserved for the container.
+   * Each vCPU is equivalent to 1,024 CPU shares.
+   * For containers running on EC2 resources, you must specify at least one vCPU.
+   */
+  readonly cpu: number;
+
+  /**
+   * The memory hard limit present to the container.
+   * If your container attempts to exceed the memory specified, the container is terminated.
+   * You must specify at least 4 MiB of memory for a job.
+   */
+  readonly memory: Size;
+
+  /**
+   * The command that's passed to the container
+   *
+   * @see https://docs.docker.com/engine/reference/builder/#cmd
+   *
+   * @default - no command
+   */
+  readonly command?: string[];
+
+  /**
+   * The environment variables to pass to a container.
+   * Cannot start with `AWS_BATCH`.
+   * We don't recommend using plaintext environment variables for sensitive information, such as credential data.
+   *
+   * @default - no environment variables
+   */
+  readonly environment?: { [key:string]: string };
+
+  /**
+   * The role that the container can assume.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html
+   *
+   * @default - a role will be created
+   */
+  readonly jobRole?: iam.IRole;
+
+  /**
+   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
+   *
+   * @default - a Role will be created
+   */
+  readonly executionRole?: iam.IRole;
+
+  /**
+   * Linux-specific modifications that are applied to the container, such as details for device mappings.
+   *
+   * @default none
+   */
+  readonly linuxParameters?: LinuxParameters;
+
+  /**
+   * The loging configuration for this Job
+   *
+   * @default the log configuration of the Docker daemon
+   */
+  readonly logging?: ecs.LogDriver;
+
+  /**
+   * Gives the container readonly access to its root filesystem.
+   *
+   * @default false
+   */
+  readonly readonlyRootFilesystem?: boolean;
+
+  /**
+   * The secrets for the container. Can be referenced in your job definition.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
+   */
+  readonly secrets?: secretsmanager.ISecret[];
+
+  /**
+   * The user name to use inside the container
+   */
+  readonly user?: string;
+
+  /**
+   * The volumes to mount to this container. Automatically added to the job definition.
+   */
   readonly volumes?: EcsVolume[];
 }
 
+/**
+ * Abstract base class for ECS Containers
+ */
 abstract class EcsContainerDefinitionBase extends Construct implements IEcsContainerDefinition {
-  readonly image: ecs.ContainerImage;
-  readonly cpu: number;
-  readonly memoryMiB: number;
-  readonly command?: string[];
-  readonly environment?: { [key:string]: string };
-  readonly jobRole?: iam.IRole;
-  readonly executionRole?: iam.IRole;
-  readonly linuxParameters?: LinuxParameters;
-  readonly logDriverConfig?: ecs.LogDriverConfig;
-  readonly readonlyRootFilesystem?: boolean;
-  readonly gpu?: number;
-  readonly secrets?: secretsmanager.ISecret[];
-  readonly user?: string;
-  readonly volumes: EcsVolume[];
+  public readonly image: ecs.ContainerImage;
+  public readonly cpu: number;
+  public readonly memory: Size;
+  public readonly command?: string[];
+  public readonly environment?: { [key:string]: string };
+  public readonly jobRole?: iam.IRole;
+  public readonly executionRole?: iam.IRole;
+  public readonly linuxParameters?: LinuxParameters;
+  public readonly logDriverConfig?: ecs.LogDriverConfig;
+  public readonly readonlyRootFilesystem?: boolean;
+  public readonly secrets?: secretsmanager.ISecret[];
+  public readonly user?: string;
+  public readonly volumes: EcsVolume[];
 
   private readonly imageConfig: ecs.ContainerImageConfig;
 
@@ -270,7 +500,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     });
 
     this.linuxParameters = props.linuxParameters;
-    this.memoryMiB = props.memoryMiB;
+    this.memory = props.memory;
 
     if (props.logging) {
       this.logDriverConfig = props.logging.bind(this, {
@@ -282,7 +512,6 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
       });
     }
     this.readonlyRootFilesystem = props.readonlyRootFilesystem ?? false;
-    this.gpu = props.gpu;
     this.secrets = props.secrets;
     this.user = props.user;
     this.volumes = props.volumes ?? [];
@@ -290,7 +519,10 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.imageConfig = props.image.bind(this, this as any);
   }
 
-  public renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
+  /**
+   * @internal
+   */
+  public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
       image: this.imageConfig.imageName,
       command: this.command,
@@ -303,7 +535,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
       logConfiguration: this.logDriverConfig,
       readonlyRootFilesystem: this.readonlyRootFilesystem,
-      resourceRequirements: this.renderResourceRequirements(),
+      resourceRequirements: this._renderResourceRequirements(),
       secrets: this.secrets?.map((secret) => {
         return {
           name: secret.secretName,
@@ -362,27 +594,29 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     };
   }
 
+  /**
+   * Add an EFS Volume to this container
+   */
   public addEfsVolume(volume: EfsVolumeOptions): void {
     this.volumes.push(EcsVolume.efs(volume));
   }
 
+  /**
+   * Add a Host Volume to this container
+   */
   public addHostVolume(volume: HostVolumeOptions): void {
     this.volumes.push(EcsVolume.host(volume));
   }
 
-  private renderResourceRequirements() {
+  /**
+   * @internal
+   */
+  protected _renderResourceRequirements() {
     const resourceRequirements = [];
-
-    if (this.gpu) {
-      resourceRequirements.push({
-        type: 'GPU',
-        value: this.gpu.toString(),
-      });
-    }
 
     resourceRequirements.push({
       type: 'MEMORY',
-      value: this.memoryMiB.toString(),
+      value: this.memory.toMebibytes().toString(),
     });
 
     resourceRequirements.push({
@@ -394,72 +628,241 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   }
 }
 
+/**
+ * Sets limits for a resource with `ulimit` on linux systems.
+ * Used by the Docker daemon.
+ */
 export interface Ulimit {
+  /**
+   * The hard limit for this resource. The container will
+   * be terminated if it exceeds this limit.
+   */
   readonly hardLimit: number;
+
+  /**
+   * The resource to limit
+   */
   readonly name: UlimitName;
+
+  /**
+   * The reservation for this resource. The container will
+   * not be terminated if it exceeds this limit.
+   */
   readonly softLimit: number;
 }
 
+/**
+ * The resources to be limited
+ */
 export enum UlimitName {
+  /**
+   * max core dump file size
+   */
   CORE = 'core',
+
+  /**
+   * max cpu time (seconds) for a process
+   */
   CPU = 'cpu',
+
+  /**
+   * max data segment size
+   */
   DATA = 'data',
+
+  /**
+   * max file size
+   */
   FSIZE = 'fsize',
+
+  /**
+   * max number of file locks
+   */
   LOCKS = 'locks',
+
+  /**
+   * max locked memory
+   */
   MEMLOCK = 'memlock',
+
+  /**
+   * max POSIX message queue size
+   */
   MSGQUEUE = 'msgqueue',
+
+  /**
+   * max nice value for any process this user is running
+   */
   NICE = 'nice',
+
+  /**
+   * maximum number of open file descriptors
+   */
   NOFILE = 'nofile',
+
+  /**
+   * maximum number of processes
+   */
   NPROC = 'nproc',
+
+  /**
+   * size of the process' resident set (in pages)
+   */
   RSS = 'rss',
+
+  /**
+   * max realtime priority
+   */
   RTPRIO = 'rtprio',
+
+  /**
+   * timeout for realtime tasks
+   */
   RTTIME = 'rttime',
+
+  /**
+   * max number of pending signals
+   */
   SIGPENDING = 'sigpending',
+
+  /**
+   * max stack size (in bytes)
+   */
   STACK = 'stack',
 }
 
+/**
+ * A container orchestrated by ECS that uses EC2 resources
+ */
 export interface IEcsEc2ContainerDefinition extends IEcsContainerDefinition {
-  readonly privileged?: boolean;
-  readonly ulimits: Ulimit[];
-}
-
-export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionProps {
   /**
+   * When this parameter is true, the container is given elevated permissions on the host container instance (similar to the root user).
+   *
    * @default false
    */
   readonly privileged?: boolean;
-  readonly ulimits?: Ulimit[];
+
+  /**
+   * Limits to set for the user this docker container will run as
+   */
+  readonly ulimits: Ulimit[];
+
+  /**
+   * The number of physical GPUs to reserve for the container.
+   * Make sure that the number of GPUs reserved for all containers in a job doesn't exceed
+   * the number of available GPUs on the compute resource that the job is launched on.
+   */
+  readonly gpu?: number;
+
+  /**
+   * Add a ulimit to this container
+   */
+  addUlimit(ulimit: Ulimit): void;
 }
 
+/**
+ * Props to configure an EcsEc2ContainerDefinition
+ */
+export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionProps {
+  /**
+   * When this parameter is true, the container is given elevated permissions on the host container instance (similar to the root user).
+   *
+   * @default false
+   */
+  readonly privileged?: boolean;
+
+  /**
+   * Limits to set for the user this docker container will run as
+   *
+   * @default - no ulimits
+   */
+  readonly ulimits?: Ulimit[];
+
+  /**
+   * The number of physical GPUs to reserve for the container.
+   * Make sure that the number of GPUs reserved for all containers in a job doesn't exceed
+   * the number of available GPUs on the compute resource that the job is launched on.
+   */
+  readonly gpu?: number;
+}
+
+/**
+ * A container orchestrated by ECS that uses EC2 resources
+ */
 export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implements IEcsEc2ContainerDefinition {
   readonly privileged?: boolean;
   readonly ulimits: Ulimit[];
+  readonly gpu?: number;
 
   constructor(scope: Construct, id: string, props: EcsEc2ContainerDefinitionProps) {
     super(scope, id, props);
     this.privileged = props.privileged;
     this.ulimits = props.ulimits ?? [];
+    this.gpu = props.gpu;
   }
 
-  public renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
+  /**
+   * @internal
+   */
+  public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
-      ...super.renderContainerDefinition(),
-      ulimits: this.ulimits.length === 0 ? undefined : this.ulimits.map((ulimit) => ({
-        hardLimit: ulimit.hardLimit,
-        name: ulimit.name,
-        softLimit: ulimit.softLimit,
-      })),
+      ...super._renderContainerDefinition(),
+      ulimits: Lazy.any({
+        produce: () => {
+          if (this.ulimits.length === 0) {
+            return undefined;
+          }
+
+          return this.ulimits.map((ulimit) => ({
+            hardLimit: ulimit.hardLimit,
+            name: ulimit.name,
+            softLimit: ulimit.softLimit,
+          }));
+        },
+      }),
       privileged: this.privileged,
+      resourceRequirements: this._renderResourceRequirements(),
     };
   };
 
+  /**
+   * Add a ulimit to this container
+   */
   addUlimit(ulimit: Ulimit): void {
     this.ulimits.push(ulimit);
   }
+
+  /**
+   * @internal
+   */
+  protected _renderResourceRequirements() {
+    const resourceRequirements = super._renderResourceRequirements();
+    if (this.gpu) {
+      resourceRequirements.push({
+        type: 'GPU',
+        value: this.gpu.toString(),
+      });
+    }
+
+    return resourceRequirements;
+  }
 }
 
+/**
+ * A container orchestrated by ECS that uses Fargate resources and is orchestrated by ECS
+ */
 export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition {
+  /**
+   * Indicates whether the job has a public IP address.
+   * For a job that's running on Fargate resources in a private subnet to send outbound traffic to the internet
+   * (for example, to pull container images), the private subnet requires a NAT gateway be attached to route requests to the internet.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking.html
+   *
+   * @default false
+   */
   readonly assignPublicIp?: boolean;
+
   /**
    * Which version of Fargate to use when running this container
    *
@@ -468,8 +871,21 @@ export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition 
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 }
 
+/**
+ * Props to configure an EcsFargateContainerDefinition
+ */
 export interface EcsFargateContainerDefinitionProps extends EcsContainerDefinitionProps {
+  /**
+   * Indicates whether the job has a public IP address.
+   * For a job that's running on Fargate resources in a private subnet to send outbound traffic to the internet
+   * (for example, to pull container images), the private subnet requires a NAT gateway be attached to route requests to the internet.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-networking.html
+   *
+   * @default false
+   */
   readonly assignPublicIp?: boolean;
+
   /**
    * Which version of Fargate to use when running this container
    *
@@ -478,6 +894,9 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 }
 
+/**
+ * A container orchestrated by ECS that uses Fargate resources
+ */
 export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase implements IEcsFargateContainerDefinition {
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   readonly assignPublicIp?: boolean;
@@ -488,9 +907,12 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
     this.fargatePlatformVersion = props.fargatePlatformVersion;
   }
 
-  public renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
+  /**
+   * @internal
+   */
+  public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
-      ...super.renderContainerDefinition(),
+      ...super._renderContainerDefinition(),
       fargatePlatformConfiguration: {
         platformVersion: this.fargatePlatformVersion?.toString(),
       },

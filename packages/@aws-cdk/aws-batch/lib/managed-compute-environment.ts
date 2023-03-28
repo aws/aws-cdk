@@ -2,7 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as eks from '@aws-cdk/aws-eks';
 import * as iam from '@aws-cdk/aws-iam';
 import { IRole } from '@aws-cdk/aws-iam';
-import { ArnFormat, Duration, Lazy, Stack } from '@aws-cdk/core';
+import { ArnFormat, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
@@ -582,17 +582,17 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     const stack = Stack.of(scope);
     const computeEnvironmentName = stack.splitArn(managedEc2EcsComputeEnvironmentArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
-    class Import extends ManagedComputeEnvironmentBase implements IManagedEc2EcsComputeEnvironment {
+    class Import extends Resource implements IManagedEc2EcsComputeEnvironment {
       public readonly computeEnvironmentArn = managedEc2EcsComputeEnvironmentArn;
       public readonly computeEnvironmentName = computeEnvironmentName;
       public readonly enabled = true;
       public readonly instanceClasses = [];
       public readonly instanceTypes = [];
+      public readonly maxvCpus = 1;
+      public readonly connections = { } as any;
     }
 
-    return new Import(scope, id, {
-      vpc: undefined as any,
-    });
+    return new Import(scope, id);
   }
   readonly images?: EcsMachineImage[];
   readonly allocationStrategy?: AllocationStrategy;

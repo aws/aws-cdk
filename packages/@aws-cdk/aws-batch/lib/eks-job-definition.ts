@@ -116,6 +116,9 @@ export enum DnsPolicy {
  * @resource AWS::Batch::JobDefinition
  */
 export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefinition {
+  /**
+   * Import an EksJobDefinition by its arn
+   */
   public static fromEksJobDefinitionArn(scope: Construct, id: string, eksJobDefinitionArn: string): IEksJobDefinition {
     const stack = Stack.of(scope);
     const jobDefinitionName = stack.splitArn(eksJobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
@@ -151,7 +154,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
       eksProperties: {
         podProperties: {
           containers: [
-            this.containerDefinition.renderContainerDefinition(),
+            this.containerDefinition._renderContainerDefinition(),
           ],
           dnsPolicy: this.dnsPolicy,
           hostNetwork: this.useHostNetwork,

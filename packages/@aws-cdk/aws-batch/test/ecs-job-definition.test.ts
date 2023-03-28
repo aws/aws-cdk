@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { Stack } from '@aws-cdk/core';
+import { Size, Stack } from '@aws-cdk/core';
 import { Compatibility, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition } from '../lib';
 
 
@@ -13,7 +13,7 @@ test('EcsJobDefinition uses Compatibility.EC2 for EC2 containers', () => {
     containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsContainer', {
       cpu: 256,
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryMiB: 2048,
+      memory: Size.mebibytes(2048),
     }),
   });
 
@@ -32,7 +32,7 @@ test('EcsJobDefinition uses Compatibility.FARGATE for Fargate containers', () =>
     containerDefinition: new EcsFargateContainerDefinition(stack, 'EcsContainer', {
       cpu: 256,
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-      memoryMiB: 2048,
+      memory: Size.mebibytes(2048),
     }),
   });
 

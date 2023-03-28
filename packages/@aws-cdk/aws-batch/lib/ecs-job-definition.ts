@@ -38,6 +38,9 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
  * @resource AWS::Batch::JobDefinition
  */
 export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefinition {
+  /**
+   * Import a JobDefinition by its arn.
+   */
   public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
     const stack = Stack.of(scope);
     const jobDefinitionName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
@@ -64,7 +67,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
     const resource = new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,
       type: 'container',
-      containerProperties: this.containerDefinition?.renderContainerDefinition(),
+      containerProperties: this.containerDefinition?._renderContainerDefinition(),
       platformCapabilities: this.renderPlatformCapabilities(),
     });
 

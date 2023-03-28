@@ -1,7 +1,7 @@
 import { Template } from '@aws-cdk/assertions';
 import { InstanceClass, InstanceSize, InstanceType } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
-import { Stack } from '@aws-cdk/core';
+import { Size, Stack } from '@aws-cdk/core';
 import { Compatibility, EcsEc2ContainerDefinition, MultiNodeJobDefinition } from '../lib';
 
 
@@ -14,7 +14,7 @@ test('MultiNodeJobDefinition respects mainNode', () => {
     containers: [{
       container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer', {
         cpu: 256,
-        memoryMiB: 2048,
+        memory: Size.mebibytes(2048),
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       }),
       startNode: 0,
@@ -49,7 +49,7 @@ test('MultiNodeJobDefinition one container', () => {
     containers: [{
       container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer', {
         cpu: 256,
-        memoryMiB: 2048,
+        memory: Size.mebibytes(2048),
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       }),
       startNode: 0,
@@ -85,7 +85,7 @@ test('MultiNodeJobDefinition two containers', () => {
       {
         container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer1', {
           cpu: 256,
-          memoryMiB: 2048,
+          memory: Size.mebibytes(2048),
           image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         }),
         startNode: 0,
@@ -94,7 +94,7 @@ test('MultiNodeJobDefinition two containers', () => {
       {
         container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer2', {
           cpu: 512,
-          memoryMiB: 4096,
+          memory: Size.mebibytes(4096),
           image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         }),
         startNode: 10,

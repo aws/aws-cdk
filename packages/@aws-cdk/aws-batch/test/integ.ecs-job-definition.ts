@@ -1,7 +1,7 @@
 import { Vpc } from '@aws-cdk/aws-ec2';
 import { ContainerImage, FargatePlatformVersion } from '@aws-cdk/aws-ecs';
 import * as efs from '@aws-cdk/aws-efs';
-import { App, Duration, Stack } from '@aws-cdk/core';
+import { App, Duration, Size, Stack } from '@aws-cdk/core';
 import * as integ from '@aws-cdk/integ-tests';
 import * as batch from '../lib';
 
@@ -13,7 +13,7 @@ new batch.EcsJobDefinition(stack, 'ECSJobDefn', {
   containerDefinition: new batch.EcsEc2ContainerDefinition(stack, 'myContainer', {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     cpu: 256,
-    memoryMiB: 2048,
+    memory: Size.mebibytes(2048),
     environment: {
       foo: 'bar',
     },
@@ -44,7 +44,7 @@ new batch.EcsJobDefinition(stack, 'ECSFargateJobDefn', {
   containerDefinition: new batch.EcsFargateContainerDefinition(stack, 'myFargateContainer', {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     cpu: 16,
-    memoryMiB: 32768,
+    memory: Size.mebibytes(32768),
     fargatePlatformVersion: FargatePlatformVersion.LATEST,
   }),
   jobDefinitionName: 'foofoo',

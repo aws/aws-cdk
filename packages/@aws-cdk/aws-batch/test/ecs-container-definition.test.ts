@@ -8,7 +8,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import { Size, Stack } from '@aws-cdk/core';
 import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
-import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsJobDefinition, EcsVolume, LinuxParameters, UlimitName } from '../lib';
+import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, UlimitName } from '../lib';
 import { CfnJobDefinitionProps } from '../lib/batch.generated';
 
 
@@ -16,7 +16,7 @@ import { CfnJobDefinitionProps } from '../lib/batch.generated';
 const defaultContainerProps: EcsContainerDefinitionProps = {
   cpu: 256,
   image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-  memoryMiB: 2048,
+  memory: Size.mebibytes(2048),
 };
 
 const defaultExpectedProps: CfnJobDefinitionProps = {
@@ -164,16 +164,16 @@ describe('ecs container', () => {
         ...pascalCaseExpectedProps.ContainerProperties,
         ResourceRequirements: [
           {
-            Type: 'GPU',
-            Value: '12',
-          },
-          {
             Type: 'MEMORY',
             Value: '2048',
           },
           {
             Type: 'VCPU',
             Value: '256',
+          },
+          {
+            Type: 'GPU',
+            Value: '12',
           },
         ],
       },
@@ -593,6 +593,35 @@ describe('ecs container', () => {
         MountPoints: [{
           ContainerPath: '/container/path/new',
           SourceVolume: 'hostName',
+        }],
+      },
+    });
+  });
+
+  test('respects addUlimit()', () => {
+    // GIVEN
+    const jobDefn = new EcsJobDefinition(stack, 'ECSJobDefn', {
+      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+      }),
+    });
+
+    // WHEN
+    (jobDefn.containerDefinition as IEcsEc2ContainerDefinition).addUlimit({
+      hardLimit: 10,
+      name: UlimitName.SIGPENDING,
+      softLimit: 1,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Ulimits: [{
+          HardLimit: 10,
+          SoftLimit: 1,
+          Name: 'sigpending',
         }],
       },
     });
