@@ -1,5 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import { ArnPrincipal, PolicyStatement } from '@aws-cdk/aws-iam';
+import * as iam from '@aws-cdk/aws-iam';
 import { App, CfnOutput, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { Alias } from '../lib/alias';
@@ -215,3 +216,50 @@ test('fails if alias policy is invalid', () => {
 
   expect(() => app.synth()).toThrow(/A PolicyStatement must specify at least one \'action\' or \'notAction\'/);
 });
+
+test('grants generate mac to the alias target key', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const key = new Key(stack, 'Key');
+  const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
+  const user = new iam.User(stack, 'User');
+
+  alias.grantGenerateMac(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'kms:GenerateMac',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('grants generate mac to the alias target key', () => {
+  const app = new App();
+  const stack = new Stack(app, 'my-stack');
+  const key = new Key(stack, 'Key');
+  const alias = new Alias(stack, 'Alias', { targetKey: key, aliasName: 'alias/foo' });
+  const user = new iam.User(stack, 'User');
+
+  alias.grantVerifyMac(user);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'kms:VerifyMac',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
