@@ -143,6 +143,8 @@ export interface IEcsContainerDefinition {
   readonly volumes: EcsVolume[];
 
   renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty;
+  addEfsVolume(volume: EfsVolumeOptions): void;
+  addHostVolume(volume: HostVolumeOptions): void;
 }
 
 export interface EcsContainerDefinitionProps {
@@ -238,45 +240,64 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
           valueFrom: secret.secretArn,
         };
       }),
-      mountPoints: this.volumes.length === 0 ? undefined : this.volumes.map((volume) => {
-        return {
-          containerPath: volume.containerPath,
-          readOnly: volume.readonly,
-          sourceVolume: volume.name,
-        };
+      mountPoints: Lazy.any({
+        produce: () => {
+          if (this.volumes.length === 0) {
+            return undefined;
+          }
+          return this.volumes.map((volume) => {
+            return {
+              containerPath: volume.containerPath,
+              readOnly: volume.readonly,
+              sourceVolume: volume.name,
+            };
+          });
+        },
       }),
-      volumes: this.volumes.length === 0 ? undefined : this.volumes.map((volume) => {
-        if (EfsVolume.isEfsVolume(volume)) {
-          return {
-            name: volume.name,
-            efsVolumeConfiguration: {
-              fileSystemId: volume.fileSystem.fileSystemId,
-              rootDirectory: volume.rootDirectory,
-              transitEncryption: volume.enableTransitEncryption ? 'ENABLED' : (volume.enableTransitEncryption === false ? 'DISABLED' : undefined),
-              transitEncryptionPort: volume.transitEncryptionPort,
-              authorizationConfig: {
-                accessPointId: volume.accessPointId,
-                iam: volume.useJobDefinitionRole ? 'ENABLED' : (volume.useJobDefinitionRole === false ? 'DISABLED' : undefined),
-              },
-            },
-          };
-        } else if (HostVolume.isHostVolume(volume)) {
-          return {
-            name: volume.name,
-            host: {
-              sourcePath: volume.hostPath,
-            },
-          };
-        }
+      volumes: Lazy.any({
+        produce: () => {
+          if (this.volumes.length === 0) {
+            return undefined;
+          }
 
-        throw new Error('unsupported Volume encountered');
+          return this.volumes.map((volume) => {
+            if (EfsVolume.isEfsVolume(volume)) {
+              return {
+                name: volume.name,
+                efsVolumeConfiguration: {
+                  fileSystemId: volume.fileSystem.fileSystemId,
+                  rootDirectory: volume.rootDirectory,
+                  transitEncryption: volume.enableTransitEncryption ? 'ENABLED' : (volume.enableTransitEncryption === false ? 'DISABLED' : undefined),
+                  transitEncryptionPort: volume.transitEncryptionPort,
+                  authorizationConfig: volume.accessPointId || volume.useJobDefinitionRole ? {
+                    accessPointId: volume.accessPointId,
+                    iam: volume.useJobDefinitionRole ? 'ENABLED' : (volume.useJobDefinitionRole === false ? 'DISABLED' : undefined),
+                  } : undefined,
+                },
+              };
+            } else if (HostVolume.isHostVolume(volume)) {
+              return {
+                name: volume.name,
+                host: {
+                  sourcePath: volume.hostPath,
+                },
+              };
+            }
+
+            throw new Error('unsupported Volume encountered');
+          });
+        },
       }),
       user: this.user,
     };
   }
 
-  addVolume(volume: EcsVolume): void {
-    this.volumes.push(volume);
+  public addEfsVolume(volume: EfsVolumeOptions): void {
+    this.volumes.push(EcsVolume.efs(volume));
+  }
+
+  public addHostVolume(volume: HostVolumeOptions): void {
+    this.volumes.push(EcsVolume.host(volume));
   }
 
   private renderResourceRequirements() {

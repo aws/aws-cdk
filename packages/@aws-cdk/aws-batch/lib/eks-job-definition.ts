@@ -1,3 +1,4 @@
+import { Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 //import { CfnJobDefinition } from './batch.generated';
@@ -132,36 +133,43 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
           dnsPolicy: this.dnsPolicy,
           hostNetwork: this.useHostNetwork,
           serviceAccountName: this.serviceAccount,
-          volumes: this.containerDefinition.volumes?.map((volume) => {
-            if (EmptyDirVolume.isEmptyDirVolume(volume)) {
-              return {
-                name: volume.name,
-                emptyDir: {
-                  medium: volume.medium,
-                  sizeLimit: volume.sizeLimit ? volume.sizeLimit.toMebibytes().toString() + 'Mi' : undefined,
-                },
-              };
-            }
-            if (HostPathVolume.isHostPathVolume(volume)) {
-              return {
-                name: volume.name,
-                hostPath: {
-                  path: volume.path,
-                },
-              };
-            }
-            if (SecretPathVolume.isSecretPathVolume(volume)) {
-              /*return {
-                name: volume.name,
-                secret: {
-                  optional: volume.optional,
-                  secretName: volume.secretName,
-                },
-              };
-              */
-            }
+          volumes: Lazy.any({
+            produce: () => {
+              if (this.containerDefinition.volumes.length === 0) {
+                return undefined;
+              }
+              return this.containerDefinition.volumes.map((volume) => {
+                if (EmptyDirVolume.isEmptyDirVolume(volume)) {
+                  return {
+                    name: volume.name,
+                    emptyDir: {
+                      medium: volume.medium,
+                      sizeLimit: volume.sizeLimit ? volume.sizeLimit.toMebibytes().toString() + 'Mi' : undefined,
+                    },
+                  };
+                }
+                if (HostPathVolume.isHostPathVolume(volume)) {
+                  return {
+                    name: volume.name,
+                    hostPath: {
+                      path: volume.path,
+                    },
+                  };
+                }
+                if (SecretPathVolume.isSecretPathVolume(volume)) {
+                  /*return {
+                    name: volume.name,
+                    secret: {
+                      optional: volume.optional,
+                      secretName: volume.secretName,
+                    },
+                  };
+                  */
+                }
 
-            throw new Error('unknown volume type');
+                throw new Error('unknown volume type');
+              });
+            },
           }),
         },
       },

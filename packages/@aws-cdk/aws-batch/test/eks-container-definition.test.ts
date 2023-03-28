@@ -597,4 +597,88 @@ describe('eks container', () => {
       },
     });
   });
+
+  test('respects addEmptyDirVolume()', () => {
+    // GIVEN
+    const jobDefn = new EksJobDefinition(stack, 'ECSJobDefn', {
+      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+      }),
+    });
+
+    // WHEN
+    jobDefn.containerDefinition.addEmptyDirVolume({
+      name: 'emptyDirName',
+      medium: EmptyDirMediumType.DISK,
+      mountPath: '/mount/path',
+      readonly: false,
+      sizeLimit: Size.mebibytes(2048),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      EksProperties: {
+        PodProperties: {
+          ...pascalCaseExpectedProps.EksProperties.PodProperties,
+          Containers: [{
+            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+            VolumeMounts: [{
+              MountPath: '/mount/path',
+              Name: 'emptyDirName',
+              ReadOnly: false,
+            }],
+          }],
+          Volumes: [{
+            Name: 'emptyDirName',
+            EmptyDir: {
+              Medium: '',
+              SizeLimit: '2048Mi',
+            },
+          }],
+        },
+      },
+    });
+  });
+
+  test('respects addHostPathVolume()', () => {
+    // GIVEN
+    const jobDefn = new EksJobDefinition(stack, 'ECSJobDefn', {
+      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+      }),
+    });
+
+    // WHEN
+    jobDefn.containerDefinition.addHostPathVolume({
+      name: 'hostPathName',
+      path: 'hostPathPath',
+      mountPath: '/mount/path',
+      readonly: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      EksProperties: {
+        PodProperties: {
+          ...pascalCaseExpectedProps.EksProperties.PodProperties,
+          Containers: [{
+            ...pascalCaseExpectedProps.EksProperties.PodProperties.Containers[0],
+            VolumeMounts: [{
+              MountPath: '/mount/path',
+              Name: 'hostPathName',
+              ReadOnly: true,
+            }],
+          }],
+          Volumes: [{
+            Name: 'hostPathName',
+            HostPath: {
+              Path: 'hostPathPath',
+            },
+          }],
+        },
+      },
+    });
+  });
 });

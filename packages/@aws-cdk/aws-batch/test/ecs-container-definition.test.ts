@@ -1,15 +1,15 @@
 
 import { Template } from '@aws-cdk/assertions';
+import { Vpc } from '@aws-cdk/aws-ec2';
 import * as ecs from '@aws-cdk/aws-ecs';
+import * as efs from '@aws-cdk/aws-efs';
 import { ArnPrincipal, Role } from '@aws-cdk/aws-iam';
 import * as logs from '@aws-cdk/aws-logs';
-import * as efs from '@aws-cdk/aws-efs';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import { Size, Stack } from '@aws-cdk/core';
 import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
 import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsJobDefinition, EcsVolume, LinuxParameters, UlimitName } from '../lib';
 import { CfnJobDefinitionProps } from '../lib/batch.generated';
-import { Vpc } from '@aws-cdk/aws-ec2';
 
 
 // GIVEN
@@ -521,6 +521,79 @@ describe('ecs container', () => {
             SourceVolume: 'EcsHostPathVolume',
           },
         ],
+      },
+    });
+  });
+
+  test('respects addEfsVolume()', () => {
+    // GIVEN
+    const jobDefn = new EcsJobDefinition(stack, 'ECSJobDefn', {
+      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+      }),
+    });
+
+    // WHEN
+    jobDefn.containerDefinition.addEfsVolume({
+      containerPath: '/container/path',
+      fileSystem: new efs.FileSystem(stack, 'efs', {
+        vpc: new Vpc(stack, 'vpc'),
+      }),
+      name: 'AddedEfsVolume',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Volumes: [{
+          Name: 'AddedEfsVolume',
+          EfsVolumeConfiguration: {
+            FileSystemId: {
+              Ref: 'efs6C17982A',
+            },
+          },
+        }],
+        MountPoints: [{
+          ContainerPath: '/container/path',
+          SourceVolume: 'AddedEfsVolume',
+        }],
+      },
+    });
+  });
+
+  test('respects addHostVolume()', () => {
+    // GIVEN
+    const jobDefn = new EcsJobDefinition(stack, 'ECSJobDefn', {
+      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+      }),
+    });
+
+    // WHEN
+    jobDefn.containerDefinition.addHostVolume({
+      containerPath: '/container/path/new',
+      name: 'hostName',
+      hostPath: '/host/path',
+      readonly: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Volumes: [{
+          Name: 'hostName',
+          Host: {
+            SourcePath: '/host/path',
+          },
+        }],
+        MountPoints: [{
+          ContainerPath: '/container/path/new',
+          SourceVolume: 'hostName',
+        }],
       },
     });
   });

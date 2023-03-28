@@ -1,5 +1,5 @@
 import * as ecs from '@aws-cdk/aws-ecs';
-import { Size } from '@aws-cdk/core';
+import { Lazy, Size } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 
@@ -10,7 +10,7 @@ export interface IEksContainerDefinition {
   /**
    * The image that this container will run
    */
-  image: ecs.ContainerImage;
+  readonly image: ecs.ContainerImage;
 
   /**
    * An array of arguments to the entrypoint.
@@ -238,7 +238,10 @@ export interface IEksContainerDefinition {
    *
    * @see: https://kubernetes.io/docs/concepts/storage/volumes/
    */
-  readonly volumes?: EksVolume[];
+  readonly volumes: EksVolume[];
+
+  addEmptyDirVolume(options: EmptyDirVolumeOptions): void;
+  addHostPathVolume(options: HostPathVolumeOptions): void;
 }
 
 export enum ImagePullPolicy {
@@ -504,7 +507,7 @@ export interface EksContainerDefinitionProps {
   readonly volumes?: EksVolume[];
 }
 
-export class EksContainerDefinition extends Construct {
+export class EksContainerDefinition extends Construct implements IEksContainerDefinition {
   readonly image: ecs.ContainerImage;
   readonly args?: string[];
   readonly command?: string[];
@@ -522,7 +525,7 @@ export class EksContainerDefinition extends Construct {
   readonly runAsGroup?: number;
   readonly runAsRoot?: boolean;
   readonly runAsUser?: number;
-  readonly volumes?: EksVolume[];
+  readonly volumes: EksVolume[];
 
   private readonly imageConfig: ecs.ContainerImageConfig;
 
@@ -546,11 +549,17 @@ export class EksContainerDefinition extends Construct {
     this.runAsGroup = props.runAsGroup;
     this.runAsRoot = props.runAsRoot;
     this.runAsUser = props.runAsUser;
-    this.volumes = props.volumes;
+    this.volumes = props.volumes ?? [];
     this.imageConfig = props.image.bind(this, this as any);
   }
 
-  //addVolume(...EksVolume[]) {}
+  addEmptyDirVolume(options: EmptyDirVolumeOptions) {
+    this.volumes.push(EksVolume.emptyDir(options));
+  }
+
+  addHostPathVolume(options: HostPathVolumeOptions) {
+    this.volumes.push(EksVolume.hostPath(options));
+  }
 
   public renderContainerDefinition(): CfnJobDefinition.EksContainerProperty {
     return {
@@ -584,12 +593,19 @@ export class EksContainerDefinition extends Construct {
         runAsNonRoot: !this.runAsRoot,
         runAsUser: this.runAsUser,
       },
-      volumeMounts: this.volumes?.map((volume) => {
-        return {
-          name: volume.name,
-          mountPath: volume.containerPath,
-          readOnly: volume.readonly,
-        };
+      volumeMounts: Lazy.any({
+        produce: () => {
+          if (this.volumes.length === 0) {
+            return undefined;
+          }
+          return this.volumes.map((volume) => {
+            return {
+              name: volume.name,
+              mountPath: volume.containerPath,
+              readOnly: volume.readonly,
+            };
+          });
+        },
       }),
     };
   };

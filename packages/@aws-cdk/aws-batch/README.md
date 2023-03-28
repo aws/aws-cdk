@@ -473,6 +473,13 @@ const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
   containerDefinition: new batch.Ec2ContainerDefinition(this, 'containerDefn', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
     memoryLimitMiB: 2048,
+    volumes: [EcsVolume.efsVolume({
+      name: 'myVolume',
+      efsVolumeConfiguration: {
+        fileSystem: myFileSystem
+      },
+      containerPath: '/Volumes/myVolume',
+    })],
   }),
 });
 ```
@@ -481,13 +488,13 @@ For workflows that need persistent storage, batch supports mounting `Volume`s to
 You can both provision the volume and mount it to the container in a single operation:
 
 ```ts
-jobDefn.addVolume({
+jobDefn.containerDefinition.addVolume(EcsVolume.efs({
   name: 'myVolume',
   efsVolumeConfiguration: {
     fileSystem: myFileSystem
   },
   containerPath: '/Volumes/myVolume',
-});
+}));
 ```
 
 ### Running Kubernetes Workflows
@@ -512,16 +519,16 @@ const jobDefn = new batch.EksJobDefinition(this, 'eksf2', {
 You can mount `Volume`s to these containers in a single operation:
 
 ```ts
-jobDefn.addEmptyDirVolume({
+jobDefn.containerDefinition.addEmptyDirVolume({
   name: 'emptyDir',
   mountPath: '/Volumes/emptyDir',
 });
-jobDefn.addHostPathVolume({
+jobDefn.containerDefinition.addHostPathVolume({
   name: 'hostPath',
   hostPath: '/sys',
   mountPath: '/Volumes/hostPath',
 });
-jobDefn.addSecretVolume({
+jobDefn.containerDefinition.addSecretVolume({
   name: 'secret',
   optional: true,
   mountPath: '/Volumes/secret',
@@ -615,4 +622,3 @@ B => 2 vCPU - WAITING
 In this situation, Batch will allocate **Job A** to compute resource #1 because it is the most cost efficient resource that matches the vCPU requirement. However, with this `BEST_FIT` strategy, **Job B** will not be allocated to our other available compute resource even though it is strong enough to handle it. Instead, it will wait until the first job is finished processing or wait a similar `m5.xlarge` resource to be provisioned.
 
 The alternative would be to use the `BEST_FIT_PROGRESSIVE` strategy in order for the remaining job to be handled in larger containers regardless of vCPU requirement and costs.
-

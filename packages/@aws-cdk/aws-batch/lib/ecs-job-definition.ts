@@ -7,7 +7,7 @@ interface IEcsJobDefinition extends IJobDefinition {
   /**
    * The container that this job will run
    */
-  readonly containerDefinition?: IEcsContainerDefinition
+  readonly containerDefinition: IEcsContainerDefinition
 }
 
 /**
@@ -22,18 +22,18 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
   /**
    * The container that this job will run
    */
-  readonly containerDefinition?: IEcsContainerDefinition
+  readonly containerDefinition: IEcsContainerDefinition
 }
 
 export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefinition {
-  readonly containerDefinition?: IEcsContainerDefinition
+  readonly containerDefinition: IEcsContainerDefinition
 
   public readonly jobDefinitionArn: string;
 
-  constructor(scope: Construct, id: string, props?: EcsJobDefinitionProps) {
+  constructor(scope: Construct, id: string, props: EcsJobDefinitionProps) {
     super(scope, id, props);
 
-    this.containerDefinition = props?.containerDefinition;
+    this.containerDefinition = props.containerDefinition;
 
     const resource = new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,
