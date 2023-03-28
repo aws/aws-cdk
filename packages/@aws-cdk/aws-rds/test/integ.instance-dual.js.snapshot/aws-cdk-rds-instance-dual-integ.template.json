@@ -394,7 +394,7 @@
      "Ref": "DualstackInstanceSubnetGroupB16A837F"
     },
     "Engine": "postgres",
-    "EngineVersion": "11.12",
+    "EngineVersion": "15.2",
     "MasterUsername": "postgres",
     "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
     "MultiAZ": false,
@@ -453,7 +453,7 @@
      "Ref": "Ipv4InstanceSubnetGroup6E04EDDC"
     },
     "Engine": "postgres",
-    "EngineVersion": "11.12",
+    "EngineVersion": "15.2",
     "MasterUsername": "postgres",
     "MasterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
     "MultiAZ": false,
