@@ -19,19 +19,11 @@
                   "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
                   "aws:cdk:cloudformation:props": {
                     "name": "TestApplication",
-                    "description": "Test application description"
+                    "description": "My application description"
                   }
                 },
                 "constructInfo": {
                   "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnApplication",
-                  "version": "0.0.0"
-                }
-              },
-              "ApplicationManagerUrl": {
-                "id": "ApplicationManagerUrl",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/ApplicationManagerUrl",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
                   "version": "0.0.0"
                 }
               },
@@ -83,13 +75,79 @@
                   "version": "0.0.0"
                 }
               },
-              "RAMShare3dc6227daec1": {
-                "id": "RAMShare3dc6227daec1",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/RAMShare3dc6227daec1",
+              "myAnotherAttributeGroup": {
+                "id": "myAnotherAttributeGroup",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/myAnotherAttributeGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-servicecatalogappregistry-application/TestApplication/myAnotherAttributeGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "attributes": {
+                          "stage": "alpha",
+                          "teamMembers": [
+                            "markI",
+                            "markII",
+                            "markIII"
+                          ],
+                          "public": false,
+                          "publishYear": 2021,
+                          "plannedRoadMap": {
+                            "alpha": "some time",
+                            "beta": "another time",
+                            "gamma": "penultimate time",
+                            "release": "go time"
+                          }
+                        },
+                        "name": "myAnotherAttributeGroup",
+                        "description": "my another attribute group description"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnAttributeGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalogappregistry.AttributeGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "AttributeGroupAssociationb6f47e836a8c": {
+                "id": "AttributeGroupAssociationb6f47e836a8c",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/AttributeGroupAssociationb6f47e836a8c",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "application": {
+                      "Fn::GetAtt": [
+                        "TestApplication2FBC585F",
+                        "Id"
+                      ]
+                    },
+                    "attributeGroup": {
+                      "Fn::GetAtt": [
+                        "TestApplicationmyAnotherAttributeGroup375F79DB",
+                        "Id"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicecatalogappregistry.CfnAttributeGroupAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "MyShareId": {
+                "id": "MyShareId",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/MyShareId",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
                   "aws:cdk:cloudformation:props": {
-                    "name": "RAMShare3dc6227daec1",
+                    "name": "MyShare",
                     "allowExternalPrincipals": false,
                     "permissionArns": [
                       "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
@@ -249,7 +307,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.209"
+          "version": "10.1.270"
         }
       }
     },

@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.33"
-        }
-      },
       "VariablePipelineStack": {
         "id": "VariablePipelineStack",
         "path": "VariablePipelineStack",
@@ -116,14 +108,14 @@
                     "id": "Default",
                     "path": "VariablePipelineStack/SourceBucket/AutoDeleteObjectsCustomResource/Default",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
@@ -140,30 +132,30 @@
                 "id": "Staging",
                 "path": "VariablePipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.AssetStaging",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               },
               "Role": {
                 "id": "Role",
                 "path": "VariablePipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               },
               "Handler": {
                 "id": "Handler",
                 "path": "VariablePipelineStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.264"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CustomResourceProvider",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
             }
           },
           "Pipeline": {
@@ -281,6 +273,14 @@
                     "id": "Role",
                     "path": "VariablePipelineStack/Pipeline/Pipeline/Role",
                     "children": {
+                      "ImportRole": {
+                        "id": "ImportRole",
+                        "path": "VariablePipelineStack/Pipeline/Pipeline/Role/ImportRole",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.264"
+                        }
+                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "VariablePipelineStack/Pipeline/Pipeline/Role/Resource",
@@ -570,6 +570,14 @@
                             "id": "CodePipelineActionRole",
                             "path": "VariablePipelineStack/Pipeline/Pipeline/Source/S3/CodePipelineActionRole",
                             "children": {
+                              "ImportCodePipelineActionRole": {
+                                "id": "ImportCodePipelineActionRole",
+                                "path": "VariablePipelineStack/Pipeline/Pipeline/Source/S3/CodePipelineActionRole/ImportCodePipelineActionRole",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.1.264"
+                                }
+                              },
                               "Resource": {
                                 "id": "Resource",
                                 "path": "VariablePipelineStack/Pipeline/Pipeline/Source/S3/CodePipelineActionRole/Resource",
@@ -717,13 +725,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.33"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.33"
+                      "version": "10.1.264"
                     }
                   },
                   "Build": {
@@ -742,6 +750,14 @@
                                 "id": "Role",
                                 "path": "VariablePipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role",
                                 "children": {
+                                  "ImportRole": {
+                                    "id": "ImportRole",
+                                    "path": "VariablePipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/ImportRole",
+                                    "constructInfo": {
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.264"
+                                    }
+                                  },
                                   "Resource": {
                                     "id": "Resource",
                                     "path": "VariablePipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/Resource",
@@ -946,7 +962,7 @@
                                     },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:5.0",
+                                      "image": "aws/codebuild/standard:6.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
@@ -982,13 +998,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.33"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.33"
+                      "version": "10.1.264"
                     }
                   },
                   "MyWave": {
@@ -1007,6 +1023,14 @@
                                 "id": "Role",
                                 "path": "VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/Produce/Role",
                                 "children": {
+                                  "ImportRole": {
+                                    "id": "ImportRole",
+                                    "path": "VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/Produce/Role/ImportRole",
+                                    "constructInfo": {
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.264"
+                                    }
+                                  },
                                   "Resource": {
                                     "id": "Resource",
                                     "path": "VariablePipelineStack/Pipeline/Pipeline/MyWave/Produce/Produce/Role/Resource",
@@ -1241,7 +1265,7 @@
                                     },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:5.0",
+                                      "image": "aws/codebuild/standard:6.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
@@ -1290,7 +1314,7 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.33"
+                          "version": "10.1.264"
                         }
                       },
                       "Consume": {
@@ -1305,6 +1329,14 @@
                                 "id": "Role",
                                 "path": "VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/Consume/Role",
                                 "children": {
+                                  "ImportRole": {
+                                    "id": "ImportRole",
+                                    "path": "VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/Consume/Role/ImportRole",
+                                    "constructInfo": {
+                                      "fqn": "constructs.Construct",
+                                      "version": "10.1.264"
+                                    }
+                                  },
                                   "Resource": {
                                     "id": "Resource",
                                     "path": "VariablePipelineStack/Pipeline/Pipeline/MyWave/Consume/Consume/Role/Resource",
@@ -1539,7 +1571,7 @@
                                     },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:5.0",
+                                      "image": "aws/codebuild/standard:6.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
@@ -1588,13 +1620,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.33"
+                          "version": "10.1.264"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.33"
+                      "version": "10.1.264"
                     }
                   }
                 },
@@ -1607,6 +1639,14 @@
                 "id": "CodeBuildActionRole",
                 "path": "VariablePipelineStack/Pipeline/CodeBuildActionRole",
                 "children": {
+                  "ImportCodeBuildActionRole": {
+                    "id": "ImportCodeBuildActionRole",
+                    "path": "VariablePipelineStack/Pipeline/CodeBuildActionRole/ImportCodeBuildActionRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.264"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "VariablePipelineStack/Pipeline/CodeBuildActionRole/Resource",
@@ -1747,17 +1787,41 @@
               "fqn": "@aws-cdk/aws-s3.Bucket",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "VariablePipelineStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "VariablePipelineStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.264"
+            }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.264"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.264"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.264"
     }
   }
 }

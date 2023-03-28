@@ -407,106 +407,176 @@ export class LogFormat {
   /**
    * The VPC Flow Logs version.
    */
-  public static readonly VERSION = new LogFormat('${version}');
+  public static readonly VERSION = LogFormat.field('version');
 
   /**
    * The AWS account ID of the owner of the source network interface for which traffic is recorded.
    */
-  public static readonly ACCOUNT_ID = new LogFormat('${account-id}');
+  public static readonly ACCOUNT_ID = LogFormat.field('account-id');
 
   /**
    * The ID of the network interface for which the traffic is recorded.
    */
-  public static readonly INTERFACE_ID = new LogFormat('${interface-id');
+  public static readonly INTERFACE_ID = LogFormat.field('interface-id');
 
   /**
    * The source address for incoming traffic, or the IPv4 or IPv6 address of the network interface
    * for outgoing traffic on the network interface.
    */
-  public static readonly SRC_ADDR = new LogFormat('${srcaddr}');
+  public static readonly SRC_ADDR = LogFormat.field('srcaddr');
 
   /**
    * The destination address for outgoing traffic, or the IPv4 or IPv6 address of the network interface
    * for incoming traffic on the network interface.
    */
-  public static readonly DST_ADDR = new LogFormat('${dstaddr}');
+  public static readonly DST_ADDR = LogFormat.field('dstaddr');
 
   /**
    * The source port of the traffic.
    */
-  public static readonly SRC_PORT = new LogFormat('${srcport}');
+  public static readonly SRC_PORT = LogFormat.field('srcport');
 
   /**
    * The destination port of the traffic.
    */
-  public static readonly DST_PORT = new LogFormat('${dstport}');
+  public static readonly DST_PORT = LogFormat.field('dstport');
 
   /**
    * The IANA protocol number of the traffic.
    */
-  public static readonly PROTOCOL = new LogFormat('${protocol}');
+  public static readonly PROTOCOL = LogFormat.field('protocol');
 
   /**
    * The number of packets transferred during the flow.
    */
-  public static readonly PACKETS = new LogFormat('${packets}');
+  public static readonly PACKETS = LogFormat.field('packets');
 
   /**
    * The number of bytes transferred during the flow.
    */
-  public static readonly BYTES = new LogFormat('${bytes}');
+  public static readonly BYTES = LogFormat.field('bytes');
+
+  /**
+   * The time, in Unix seconds, when the first packet of the flow was received within
+   * the aggregation interval.
+   *
+   * This might be up to 60 seconds after the packet was transmitted or received on
+   * the network interface.
+   */
+  public static readonly START_TIMESTAMP = LogFormat.field('start');
+
+  /**
+   * The time, in Unix seconds, when the last packet of the flow was received within
+   * the aggregation interval.
+   *
+   * This might be up to 60 seconds after the packet was transmitted or received on
+   * the network interface.
+   */
+  public static readonly END_TIMESTAMP = LogFormat.field('end');
+
+  /**
+   * The action that is associated with the traffic.
+   */
+  public static readonly ACTION = LogFormat.field('action');
+
+  /**
+   * The logging status of the flow log.
+   */
+  public static readonly LOG_STATUS = LogFormat.field('log-status');
+
+  /**
+   * The ID of the VPC that contains the network interface for which the traffic is recorded.
+   */
+  public static readonly VPC_ID = LogFormat.field('vpc-id');
+
+  /**
+   * The ID of the subnet that contains the network interface for which the traffic is recorded.
+   */
+  public static readonly SUBNET_ID = LogFormat.field('subnet-id');
+
+  /**
+   * The ID of the instance that's associated with network interface for which the traffic is
+   * recorded, if the instance is owned by you.
+   *
+   * Returns a '-' symbol for a requester-managed network interface; for example, the
+   * network interface for a NAT gateway
+   */
+  public static readonly INSTANCE_ID = LogFormat.field('instance-id');
+
+  /**
+   * The bitmask value for TCP flags.
+   *
+   * - FIN -- 1
+   * - SYN -- 2
+   * - RST -- 4
+   * - SYN-ACK -- 18
+   *
+   * If no supported flags are recorded, the TCP flag value is 0.
+   *
+   * TCP flags can be OR-ed during the aggregation interval. For short connections,
+   * the flags might be set on the same line in the flow log record, for example,
+   * 19 for SYN-ACK and FIN, and 3 for SYN and FIN.
+   */
+  public static readonly TCP_FLAGS = LogFormat.field('tcp-flags');
+
+  /**
+   * The type of traffic.
+   *
+   * The possible values are IPv4, IPv6, or EFA.
+   */
+  public static readonly TRAFFIC_TYPE = LogFormat.field('type');
 
   /**
    * The packet-level (original) source IP address of the traffic.
    */
-  public static readonly PKT_SRC_ADDR = new LogFormat('${pkt-srcaddr}');
+  public static readonly PKT_SRC_ADDR = LogFormat.field('pkt-srcaddr');
 
   /**
    * The packet-level (original) destination IP address for the traffic.
    */
-  public static readonly PKT_DST_ADDR = new LogFormat('${pkt-dstaddr}');
+  public static readonly PKT_DST_ADDR = LogFormat.field('pkt-dstaddr');
 
   /**
    * The Region that contains the network interface for which traffic is recorded.
    */
-  public static readonly REGION = new LogFormat('${region}');
+  public static readonly REGION = LogFormat.field('region');
 
   /**
    * The ID of the Availability Zone that contains the network interface for which traffic is recorded.
    */
-  public static readonly AZ_ID = new LogFormat('${az-id}');
+  public static readonly AZ_ID = LogFormat.field('az-id');
 
   /**
    * The type of sublocation that's returned in the sublocation-id field.
    */
-  public static readonly SUBLOCATION_TYPE = new LogFormat('${sublocation-type}');
+  public static readonly SUBLOCATION_TYPE = LogFormat.field('sublocation-type');
 
   /**
    * The ID of the sublocation that contains the network interface for which traffic is recorded.
    */
-  public static readonly SUBLOCATION_ID = new LogFormat('${sublocation-id}');
+  public static readonly SUBLOCATION_ID = LogFormat.field('sublocation-id');
 
   /**
    * The name of the subset of IP address ranges for the pkt-srcaddr field,
    * if the source IP address is for an AWS service.
    */
-  public static readonly PKT_SRC_AWS_SERVICE = new LogFormat('${pkt-src-aws-service}');
+  public static readonly PKT_SRC_AWS_SERVICE = LogFormat.field('pkt-src-aws-service');
 
   /**
    * The name of the subset of IP address ranges for the pkt-dstaddr field,
    * if the destination IP address is for an AWS service.
    */
-  public static readonly PKT_DST_AWS_SERVICE = new LogFormat('${pkt-dst-aws-service}');
+  public static readonly PKT_DST_AWS_SERVICE = LogFormat.field('pkt-dst-aws-service');
 
   /**
    * The direction of the flow with respect to the interface where traffic is captured.
    */
-  public static readonly FLOW_DIRECTION = new LogFormat('${flow-direction}');
+  public static readonly FLOW_DIRECTION = LogFormat.field('flow-direction');
 
   /**
    * The path that egress traffic takes to the destination.
    */
-  public static readonly TRAFFIC_PATH = new LogFormat('${traffic-path}');
+  public static readonly TRAFFIC_PATH = LogFormat.field('traffic-path');
 
   /**
    * The default format.
