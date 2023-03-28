@@ -16,7 +16,7 @@ class TestStack extends Stack {
         sourceMapMode: lambda.SourceMapMode.BOTH,
         preCompilation: true,
       },
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
     });
 
     new lambda.NodejsFunction(this, 'ts-decorator-handler-tsconfig', {
@@ -28,7 +28,7 @@ class TestStack extends Stack {
         tsconfig: path.join(__dirname, '..', 'tsconfig.json'),
         preCompilation: true,
       },
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
     });
   }
 }
