@@ -42,6 +42,22 @@ export enum NodegroupAmiType {
    * Bottlerocket(x86-64)
    */
   BOTTLEROCKET_X86_64 = 'BOTTLEROCKET_x86_64',
+  /**
+   * Windows Core 2019 (x86-64)
+   */
+  WINDOWS_CORE_2019_X86_64 = 'WINDOWS_CORE_2019_x86_64',
+  /**
+   * Windows Core 2022 (x86-64)
+   */
+  WINDOWS_CORE_2022_X86_64 = 'WINDOWS_CORE_2022_x86_64',
+  /**
+   * Windows Full 2019 (x86-64)
+   */
+  WINDOWS_FULL_2019_X86_64 = 'WINDOWS_FULL_2019_x86_64',
+  /**
+   * Windows Full 2022 (x86-64)
+   */
+  WINDOWS_FULL_2022_X86_64 = 'WINDOWS_FULL_2022_x86_64',
 }
 
 /**
@@ -362,7 +378,7 @@ export class Nodegroup extends Resource implements INodegroup {
     if (instanceTypes && instanceTypes.length > 0) {
       /**
        * if the user explicitly configured instance types, we can't caculate the expected ami type as we support
-       * Amazon Linux 2 and Bottlerocket now. However we can check:
+       * Amazon Linux 2, Bottlerocket, and Windows now. However we can check:
        *
        * 1. instance types of different CPU architectures are not mixed(e.g. X86 with ARM).
        * 2. user-specified amiType should be included in `possibleAmiTypes`.
@@ -372,6 +388,14 @@ export class Nodegroup extends Resource implements INodegroup {
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
         throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes} or don't specify any`);
+      }
+
+      //if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
+      if (props.amiType && windowsAmiTypes.includes(props.amiType) &&
+      instanceTypes.filter(isWindowsSupportedInstanceType).length < instanceTypes.length) {
+        throw new Error('The specified instanceType does not support Windows workloads. '
+        + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
+        + 'R3 instances aren\'t supported for Windows workloads.');
       }
     }
 
@@ -461,7 +485,12 @@ export class Nodegroup extends Resource implements INodegroup {
  * AmiType if amiType and launchTemplateSpec are both undefined.
  */
 const arm64AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_ARM_64, NodegroupAmiType.BOTTLEROCKET_ARM_64];
-const x8664AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64, NodegroupAmiType.BOTTLEROCKET_X86_64];
+const x8664AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64, NodegroupAmiType.BOTTLEROCKET_X86_64,
+  NodegroupAmiType.WINDOWS_CORE_2019_X86_64, NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2019_X86_64, NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
+const windowsAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+  NodegroupAmiType.WINDOWS_CORE_2022_X86_64, NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
 const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
 
 
@@ -477,6 +506,21 @@ function isGpuInstanceType(instanceType: InstanceType): boolean {
   }
   const family = instanceTypeComponents[1];
   return ['p', 'g', 'inf'].includes(family);
+}
+
+/**
+ * This function check if the instanceType is supported by Windows AMI.
+ * https://docs.aws.amazon.com/eks/latest/userguide/windows-support.html
+ * @param instanceType The EC2 instance type
+ */
+function isWindowsSupportedInstanceType(instanceType: InstanceType): boolean {
+  // capture the family, generation, capabilities, and size portions of the instance type id
+  const instanceTypeFormat = instanceType.toString().match(/^[a-z]+\d{1,2}[a-z]*\.[a-z0-9]+$/);
+  if (instanceTypeFormat == null) {
+    throw new Error('Malformed instance type identifier');
+  }
+  const forbiddenInstanceTypes:RegExp = /^(?:c3|c4|d2|i2|m4|m6a|r3)\.[a-z0-9]+$/;
+  return instanceType.toString() === 'm4.16xlarge' || !instanceType.toString().match(forbiddenInstanceTypes);
 }
 
 type AmiArchitecture = InstanceArchitecture | 'GPU';
