@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from 'util';
 import * as SDK from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import * as nock from 'nock';
@@ -47,7 +48,7 @@ describe('CustomResourceHandler', () => {
       const nocked = nockUp((body) => {
         return body.Status === 'SUCCESS'
         && body.Reason === 'OK'
-        && body.Data === {}
+        && isDeepStrictEqual(body.Data, {})
         && body.StackId === 'MyStackId'
         && body.RequestId === 'MyRequestId'
         && body.NoEcho === false;

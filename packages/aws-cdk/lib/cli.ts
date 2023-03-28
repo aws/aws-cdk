@@ -77,8 +77,8 @@ async function parseCommandLineArguments(args: string[]) {
     .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified', requiresArg: true })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
-    .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
-    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
+    .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: undefined })
+    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: undefined })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable the copy of assets which allows local debugging via the SAM CLI to reference the original source files)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
@@ -381,7 +381,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     function tryResolve(plugin: string): string {
       try {
         return require.resolve(plugin);
-      } catch (e) {
+      } catch (e: any) {
         error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
         throw new Error(`Unable to resolve plug-in: ${plugin}`);
       }
