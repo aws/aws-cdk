@@ -89,7 +89,7 @@ export class ResourcePool<A extends string=string> {
     let disposed = false;
     return {
       value,
-      dispose: () => {
+      dispose: async () => {
         if (disposed) {
           throw new Error('Calling dispose() on an already-disposed lease.');
         }

@@ -56,7 +56,7 @@ export function mockedApiFailure(code: string, message: string) {
  */
 export function mockUpload(expectContent?: string) {
   return jest.fn().mockImplementation(request => ({
-    promise: () => new Promise((ok, ko) => {
+    promise: () => new Promise<void>((ok, ko) => {
       const didRead = new Array<string>();
 
       const bodyStream: NodeJS.ReadableStream = request.Body;

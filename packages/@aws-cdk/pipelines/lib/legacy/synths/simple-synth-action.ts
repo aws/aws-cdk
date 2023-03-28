@@ -10,6 +10,7 @@ import { Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { copyEnvironmentVariables, filterEmpty } from './_util';
 import { dockerCredentialsInstallCommands, DockerCredential, DockerCredentialUsage } from '../../docker-credentials';
+import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../private/default-codebuild-image';
 import { toPosixPath } from '../../private/fs';
 
 const DEFAULT_OUTPUT_DIR = 'cdk.out';
@@ -68,7 +69,7 @@ export interface SimpleSynthOptions {
   /**
    * Build environment to use for CodeBuild job
    *
-   * @default BuildEnvironment.LinuxBuildImage.STANDARD_5_0
+   * @default BuildEnvironment.LinuxBuildImage.STANDARD_6_0
    */
   readonly environment?: codebuild.BuildEnvironment;
 
@@ -340,7 +341,7 @@ export class SimpleSynthAction implements codepipeline.IAction, iam.IGrantable {
     const testCommands = this.props.testCommands ?? [];
     const synthCommand = this.props.synthCommand;
 
-    const environment = { buildImage: codebuild.LinuxBuildImage.STANDARD_5_0, ...this.props.environment };
+    const environment = { buildImage: CDKP_DEFAULT_CODEBUILD_IMAGE, ...this.props.environment };
     const osType = (environment.buildImage instanceof codebuild.WindowsBuildImage)
       ? ec2.OperatingSystemType.WINDOWS
       : ec2.OperatingSystemType.LINUX;

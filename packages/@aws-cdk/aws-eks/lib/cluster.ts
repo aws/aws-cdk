@@ -799,6 +799,7 @@ export interface ClusterProps extends ClusterOptions {
 
 /**
  * Kubernetes cluster version
+ * @see https://docs.aws.amazon.com/eks/latest/userguide/kubernetes-versions.html#kubernetes-release-calendar
  */
 export class KubernetesVersion {
   /**
@@ -874,6 +875,15 @@ export class KubernetesVersion {
    * `@aws-cdk/lambda-layer-kubectl-v24`.
    */
   public static readonly V1_24 = KubernetesVersion.of('1.24');
+
+  /**
+   * Kubernetes version 1.25
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV25Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v25`.
+   */
+  public static readonly V1_25 = KubernetesVersion.of('1.25');
 
   /**
    * Custom cluster version
