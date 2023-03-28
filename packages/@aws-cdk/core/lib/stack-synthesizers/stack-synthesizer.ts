@@ -49,7 +49,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    *
    * The synthesizer must rely on some out-of-band mechanism to make sure the given files
    * are actually placed in the returned location before the deployment happens. This can
-   * be by writing the intructions to the asset manifest (for use by the `cdk-assets` tool),
+   * be by writing the instructions to the asset manifest (for use by the `cdk-assets` tool),
    * by relying on the CLI to upload files (legacy behavior), or some other operator controlled
    * mechanism.
    */
@@ -62,7 +62,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    *
    * The synthesizer must rely on some out-of-band mechanism to make sure the given files
    * are actually placed in the returned location before the deployment happens. This can
-   * be by writing the intructions to the asset manifest (for use by the `cdk-assets` tool),
+   * be by writing the instructions to the asset manifest (for use by the `cdk-assets` tool),
    * by relying on the CLI to upload files (legacy behavior), or some other operator controlled
    * mechanism.
    */
