@@ -52,7 +52,7 @@
      }
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "tsdecoratorhandlerServiceRole61E9E52C"
@@ -110,7 +110,7 @@
      }
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs14.x"
+    "Runtime": "nodejs16.x"
    },
    "DependsOn": [
     "tsdecoratorhandlertsconfigServiceRoleC4AE481E"

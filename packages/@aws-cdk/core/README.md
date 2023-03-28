@@ -1302,4 +1302,118 @@ permissions boundary attached.
 
 For more details see the [Permissions Boundary](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam-readme.html#permissions-boundaries) section in the IAM guide.
 
+## Policy Validation
+
+If you or your organization use (or would like to use) any policy validation tool, such as
+[CloudFormation
+Guard](https://docs.aws.amazon.com/cfn-guard/latest/ug/what-is-guard.html) or
+[OPA](https://www.openpolicyagent.org/), to define constraints on your
+CloudFormation template, you can incorporate them into the CDK application.
+By using the appropriate plugin, you can make the CDK application check the
+generated CloudFormation templates against your policies immediately after
+synthesis. If there are any violations, the synthesis will fail and a report
+will be printed to the console or to a file (see below).
+
+> **Note**
+> This feature is considered experimental, and both the plugin API and the
+> format of the validation report are subject to change in the future.
+
+### For application developers
+
+To use one or more validation plugins in your application, use the
+`policyValidationBeta1` property of `Stage`:
+
+```ts
+// globally for the entire app (an app is a stage)
+const app = new App({
+  policyValidationBeta1: [
+    // These hypothetical classes implement IValidationPlugin:
+    new ThirdPartyPluginX(), 
+    new ThirdPartyPluginY(),
+  ],
+});
+
+// only apply to a particular stage
+const prodStage = new Stage(app, 'ProdStage', {
+  policyValidationBeta1: [...],
+});
+```
+
+Immediately after synthesis, all plugins registered this way will be invoked to
+validate all the templates generated in the scope you defined. In particular, if
+you register the templates in the `App` object, all templates will be subject to
+validation.
+
+> **Warning**
+> Other than modifying the cloud assembly, plugins can do anything that your CDK
+> application can. They can read data from the filesystem, access the network
+> etc. It's your responsibility as the consumer of a plugin to verify that it is
+> secure to use.
+
+By default, the report will be printed in a human readable format. If you want a
+report in JSON format, enable it using the `@aws-cdk/core:validationReportJson` 
+context passing it directly to the application:
+
+```ts
+const app = new App({ 
+  context: { '@aws-cdk/core:validationReportJson': true }, 
+});
+```
+
+Alternatively, you can set this context key-value pair using the `cdk.json` or
+`cdk.context.json` files in your project directory (see
+[Runtime context](https://docs.aws.amazon.com/cdk/v2/guide/context.html)).
+
+If you choose the JSON format, the CDK will print the policy validation report
+to a file called `policy-validation-report.json` in the cloud assembly
+directory. For the default, human-readable format, the report will be printed to
+the standard output.
+
+### For plugin authors
+
+The communication protocol between the CDK core module and your policy tool is
+defined by the `IValidationPluginBeta1` interface. To create a new plugin you must
+write a class that implements this interface. There are two things you need to
+implement: the plugin name (by overriding the `name` property), and the
+`validate()` method.
+
+The framework will call `validate()`, passing an `IValidationContextBeta1` object.
+The location of the templates to be validated is given by `templatePaths`. The
+plugin should return an instance of `ValidationPluginReportBeta1`. This object
+represents the report that the user wil receive at the end of the synthesis.
+
+```ts
+validate(context: ValidationContextBeta1): ValidationReportBeta1 {
+  // First read the templates using context.templatePaths...
+
+  // ...then perform the validation, and then compose and return the report.
+  // Using hard-coded values here for better clarity:
+  return {
+    success: false,
+    violations: [{
+      ruleName: 'CKV_AWS_117',
+      recommendation: 'Ensure that AWS Lambda function is configured inside a VPC',
+      fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
+      violatingResources: [{
+        resourceName: 'MyFunction3BAA72D1',
+        templatePath: '/home/johndoe/myapp/cdk.out/MyService.template.json',
+        locations: 'Properties/VpcConfig',
+      }],
+    }],
+  };
+}
+```
+
+Note that plugins are not allowed to modify anything in the cloud assembly. Any
+attempt to do so will result in synthesis failure.
+
+If your plugin depends on an external tool, keep in mind that some developers may
+not have that tool installed in their workstations yet. To minimize friction, we
+highly recommend that you provide some installation script along with your
+plugin package, to automate the whole process. Better yet, run that script as
+part of the installation of your package. With `npm`, for example, you can run
+add it to the `postinstall`
+[script](https://docs.npmjs.com/cli/v9/using-npm/scripts) in the `package.json`
+file.
+
 <!--END CORE DOCUMENTATION-->

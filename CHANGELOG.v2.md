@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.71.0](https://github.com/aws/aws-cdk/compare/v2.70.0...v2.71.0) (2023-03-28)
+
+
+### Features
+
+* **core:** template validation after synthesis ([#23951](https://github.com/aws/aws-cdk/issues/23951)) ([91d6509](https://github.com/aws/aws-cdk/commit/91d6509ce43285a20aca85d45e4017b7dcfbe49f))
+
+
+### Bug Fixes
+
+* **lambda-nodejs:** pnpm no longer supports nodejs14.x ([#24821](https://github.com/aws/aws-cdk/issues/24821)) ([a8e9370](https://github.com/aws/aws-cdk/commit/a8e9370012798a339f6d66f5d441723dd9984c86))
+
 ## [2.70.0](https://github.com/aws/aws-cdk/compare/v2.69.0...v2.70.0) (2023-03-22)
 
 
