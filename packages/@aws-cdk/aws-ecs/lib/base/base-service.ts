@@ -15,6 +15,7 @@ import {
   Stack,
   ArnFormat,
   FeatureFlags,
+  Names,
 } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 
@@ -66,6 +67,197 @@ export interface DeploymentCircuitBreaker {
    * @default false
    */
   readonly rollback?: boolean;
+}
+
+/**
+ * The ECS metric enum props
+ */
+export interface EcsMetricEnumProps {
+  /**
+   * Whether it is a service connect metric
+   * @default false
+   */
+  readonly isServiceConnectMetric?: boolean;
+}
+
+/**
+ * The ecs metric class
+ */
+export class EcsMetric {
+  /**
+   * CpuReservation Metric
+   * This metric is expressed in percent of total CPU reserved.
+   */
+  public static readonly CPU_RESERVATION = new EcsMetric('CPUReservation');
+  /**
+   * CpuUtilization Metric
+   * This metric is expressed in percent of total CPU utlized.
+   */
+  public static readonly CPU_UTILIZATION = new EcsMetric('CPUUtilization');
+  /**
+   * MemoryReservation Metric
+   * This metric is expressed in percent of total Memory reserved.
+   */
+  public static readonly MEMORY_RESERVATION = new EcsMetric('MemoryReservation');
+  /**
+   * MemoryUtilization Metric
+   * This metric is expressed in percent of total Memory utilized.
+   */
+  public static readonly MEMORY_UTILIZATION = new EcsMetric('MemoryUtilization');
+  /**
+   * GPUReservation Metric
+   * This metric is expressed in percent of total GPU reserved.
+   */
+  public static readonly GPU_RESERVATION = new EcsMetric('GPUReservation');
+  /**
+   * ActiveConnectionCount Metric
+   * This metric is only available if you have configured Amazon ECS Service Connect
+   * Units of this metric is Count
+   */
+  public static readonly ACTIVE_CONNECTION_COUNT = new EcsMetric('ActiveConnectionCount', { isServiceConnectMetric: true });
+  /**
+   * NewConnectionCount Metric
+   * This metric is only available if you have configured Amazon ECS Service Connect
+   * Units of this metric is Count
+   */
+  public static readonly NEW_CONNECTION_COUNT = new EcsMetric('NewConnectionCount', { isServiceConnectMetric: true });
+  /**
+   * ProcessedBytes Metric
+   * This metric is only available if you have configured Amazon ECS Service Connect
+   * Units of this metric is Bytes
+   */
+  public static readonly PROCESSED_BYTES = new EcsMetric('ProcessedBytes', { isServiceConnectMetric: true });
+  /**
+   * RequestCount Metric
+   * This metric is only available if you have configured Amazon ECS Service Connect
+   * Units of this metric is Count
+   */
+  public static readonly REQUEST_COUNT = new EcsMetric('RequestCount', { isServiceConnectMetric: true });
+  /**
+   * GrpcRequestCount Metric
+   * This metric is only available if you have configured Amazon ECS Service Connect and
+   * the appProtocol is GRPC in the port mapping in the task definition.
+   * Units of this metric is Count
+   */
+  public static readonly GRPC_REQUEST_COUNT = new EcsMetric('GrpcRequestCount', { isServiceConnectMetric: true });
+  /**
+   * HTTPCode_Target_2XX_Count Metric
+   * This metric is only available if you have configured Amazon ECS Service Connect and
+   * the appProtocol is HTTP or HTTP2 in the port mapping in the task definition.
+   * Units of this metric is Count
+   */
+  public static readonly HTTP_CODE_TARGET_2XX_COUNT = new EcsMetric('HTTPCode_Target_2XX_Count', { isServiceConnectMetric: true });
+  /**
+   * HTTPCode_Target_3XX_Count Metric
+   * This metric is only available if you have configured Amazon ECS Service Connect and
+   * the appProtocol is HTTP or HTTP2 in the port mapping in the task definition.
+   * Units of this metric is Count
+   */
+  public static readonly HTTP_CODE_TARGET_3XX_COUNT = new EcsMetric('HTTPCode_Target_3XX_Count', { isServiceConnectMetric: true });
+  /**
+   * HTTPCode_Target_4XX_Count Metric
+   * This metric is only available if you have configured Amazon ECS Service Connect and
+   * the appProtocol is HTTP or HTTP2 in the port mapping in the task definition.
+   * Units of this metric is Count
+   */
+  public static readonly HTTP_CODE_TARGET_4XX_COUNT = new EcsMetric('HTTPCode_Target_4XX_Count', { isServiceConnectMetric: true });
+  /**
+   * HTTPCode_Target_5XX_Count Metric
+   * This metric is only available if you have configured Amazon ECS Service Connect and
+   * the appProtocol is HTTP or HTTP2 in the port mapping in the task definition.
+   * Units of this metric is Count
+   */
+  public static readonly HTTP_CODE_TARGET_5XX_COUNT = new EcsMetric('HTTPCode_Target_5XX_Count', { isServiceConnectMetric: true });
+  /**
+   * RequestCountPerTarget Metric
+   * This metric is only available if you have configured Amazon ECS Service Connect.
+   * Units of this metric is Count
+   */
+  public static readonly REQUEST_COUNT_PER_TARGET = new EcsMetric('RequestCountPerTarget', { isServiceConnectMetric: true });
+  /**
+   * TargetProcessedBytes Metric
+   * This metric is only available if you have configured Amazon ECS Service Connect.
+   * Units of this metric is Count
+   */
+  public static readonly TARGET_PROCESSED_BYTES = new EcsMetric('TargetProcessedBytes', { isServiceConnectMetric: true });
+  /**
+   * TargetResponseTime Metric
+   * This metric is only available if you have configured Amazon ECS Service Connect.
+   * Units of this metric is Milliseconds
+   */
+  public static readonly TARGET_RESPONSE_TIME = new EcsMetric('TargetResponseTime', { isServiceConnectMetric: true });
+
+  public constructor(
+    /**
+     * customValue refers to metric name
+     */
+    public readonly customValue: string,
+    /**
+     * Ecs Metric props
+     */
+    public readonly ecsMetricProps?: EcsMetricEnumProps,
+  ) { }
+
+  /**
+   * Determine if it's a service connect metric
+   */
+  public isServiceConnectMetric(): boolean {
+    return !!this.ecsMetricProps?.isServiceConnectMetric;
+  }
+}
+
+/**
+ * The ecs metric alarm props
+ */
+export interface EcsMetricAlarmProps {
+  /**
+   * Alarm props
+   * @default - Alarm props to be used for Ecs metric alarm
+   */
+  readonly alarmProps?: cloudwatch.AlarmProps;
+  /**
+   * Metric props
+   * @default - Metric props to be used for Ecs metric alarm
+   */
+  readonly metricProps?: cloudwatch.MetricProps;
+  /**
+   * Whether to use as deployment alarm
+   * @default false
+   */
+  readonly useAsDeploymentAlarm: boolean;
+}
+
+/**
+ * Deployment behavior when an ECS Service Deployment Alarm is triggered
+ */
+export enum AlarmBehavior {
+  /**
+   * ROLLBACK_ON_ALARM causes the service to roll back to the previous deployment
+   * when any configured alarm is in the 'Alarm' state. The Cloudformation stack
+   * will be rolled back and enter state "UPDATE_ROLLBACK_COMPLETE".
+   */
+  ROLLBACK_ON_ALARM = 0,
+  /**
+   * FAIL_ON_ALARM causes the deployment to fail immediately. In order to restore
+   * functionality, you must roll the stack forward by pushing a new version of the
+   * ECS service.
+   */
+  FAIL_ON_ALARM = 1,
+}
+
+/**
+ * The deployment alarms to use for the service
+ */
+export interface DeploymentAlarmConfig {
+  /**
+   * Default rollback on alarm
+   * @default AlarmBehavior.ROLLBACK_ON_ALARM
+   */
+  readonly behavior?: AlarmBehavior;
+  /**
+   * List of alarms
+   */
+  readonly alarms: cloudwatch.IAlarm[];
 }
 
 export interface EcsTarget {
@@ -272,6 +464,13 @@ export interface BaseServiceOptions {
    * @default - disabled
    */
   readonly circuitBreaker?: DeploymentCircuitBreaker;
+
+  /**
+   * Whether to enable the deployment alarms. If this property is defined, alarms will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly deploymentAlarms?: DeploymentAlarmConfig;
 
   /**
    * A list of Capacity Provider strategies used to place a service.
@@ -494,6 +693,11 @@ export abstract class BaseService extends Resource
   protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
 
   /**
+   * Deployment alarms config
+   */
+  protected deploymentAlarms?: CfnService.DeploymentAlarmsProperty;
+
+  /**
    * The details of the service discovery registries to assign to this service.
    * For more information, see Service Discovery.
    */
@@ -534,7 +738,11 @@ export abstract class BaseService extends Resource
 
     const propagateTagsFromSource = props.propagateTaskTagsFrom ?? props.propagateTags ?? PropagatedTagSource.NONE;
     const deploymentController = this.getDeploymentController(props);
-
+    if (props.deploymentAlarms) {
+      this.enableDeploymentAlarms(props.deploymentAlarms);
+    } else {
+      this.disableDeploymentAlarms();
+    }
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
@@ -546,6 +754,7 @@ export abstract class BaseService extends Resource
           enable: true,
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
+        alarms: Lazy.any({ produce: () => this.deploymentAlarms }),
       },
       propagateTags: propagateTagsFromSource === PropagatedTagSource.NONE ? undefined : props.propagateTags,
       enableEcsManagedTags: props.enableECSManagedTags ?? false,
@@ -569,6 +778,12 @@ export abstract class BaseService extends Resource
         && deploymentController
         && deploymentController.type !== DeploymentControllerType.ECS) {
       Annotations.of(this).addError('Deployment circuit breaker requires the ECS deployment controller.');
+    }
+
+    if (props.deploymentAlarms
+      && deploymentController
+      && deploymentController.type !== DeploymentControllerType.ECS) {
+      throw new Error('Deployment alarms requires the ECS deployment controller.');
     }
     if (props.deploymentController?.type === DeploymentControllerType.CODE_DEPLOY) {
       // Strip the revision ID from the service's task definition property to
@@ -610,6 +825,66 @@ export abstract class BaseService extends Resource
     this.node.defaultChild = this.resource;
   }
 
+  /**
+   *   Enable Deployment Alarms which take advantage of arbitrary alarms and configure them after service initialization
+  */
+  public enableDeploymentAlarms(alarmConfig: DeploymentAlarmConfig) {
+    // Throw an error if alarms array is empty
+    if (alarmConfig.alarms.length === 0) {
+      throw new Error('Specify at least one deployment alarm');
+    }
+    this.deploymentAlarms = {
+      alarmNames: alarmConfig.alarms.map(alarm => alarm.alarmName),
+      enable: true,
+      rollback: alarmConfig.behavior !== AlarmBehavior.FAIL_ON_ALARM,
+    };
+  }
+
+  /**
+   *   Disassociate existing deployment alarms
+  */
+  public disableDeploymentAlarms() {
+    if (this.deploymentAlarms) {
+      this.deploymentAlarms = {
+        alarmNames: [],
+        rollback: false,
+        enable: false,
+      };
+    }
+  }
+
+  /**
+   *   Add an alarm based on ECS metric which appended to the list of deployment alarms at synthesis time
+   *   Customize the alarm threshold and evaluationPeriods using 2nd argument ecsMetricAlarmProps.
+   *   `threshold  value 85`
+   *   `evaluationPeriods value 3`
+  */
+  public createEcsMetricAlarm(metric: EcsMetric, ecsMetricAlarmProps?: EcsMetricAlarmProps): cloudwatch.Alarm {
+    // Throw an error if service connect is not configured
+    if (metric.isServiceConnectMetric() && !this._serviceConnectConfig) {
+      throw new Error('Service connect must be enabled to set service connect metric alarms.');
+    }
+    const ecsMetric = this.metric(metric.customValue, ecsMetricAlarmProps?.metricProps);
+    const alarmName = Names.uniqueId(this);
+    const metricAlarm = new cloudwatch.Alarm(this, alarmName,
+      ecsMetricAlarmProps?.alarmProps ? ecsMetricAlarmProps.alarmProps : {
+        metric: ecsMetric,
+        threshold: ecsMetricAlarmProps?.alarmProps?.threshold || 85,
+        evaluationPeriods: ecsMetricAlarmProps?.alarmProps?.evaluationPeriods || 3,
+        alarmName,
+      });
+    if (ecsMetricAlarmProps?.useAsDeploymentAlarm) {
+      if (!this.deploymentAlarms) {
+        this.deploymentAlarms = {
+          enable: true,
+          rollback: true,
+          alarmNames: [],
+        };
+      }
+      this.deploymentAlarms.alarmNames.push(metricAlarm.node.id);
+    }
+    return metricAlarm;
+  }
   /**   * Enable Service Connect
    */
   public enableServiceConnect(config?: ServiceConnectProps) {

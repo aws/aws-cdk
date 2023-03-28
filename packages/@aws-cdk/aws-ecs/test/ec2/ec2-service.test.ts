@@ -1,5 +1,6 @@
 import { Annotations, Match, Template } from '@aws-cdk/assertions';
 import * as autoscaling from '@aws-cdk/aws-autoscaling';
+import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as elb from '@aws-cdk/aws-elasticloadbalancing';
 import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
@@ -12,7 +13,7 @@ import * as cdk from '@aws-cdk/core';
 import { App } from '@aws-cdk/core';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '@aws-cdk/cx-api';
 import * as ecs from '../../lib';
-import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
+import { AlarmBehavior, DeploymentControllerType, EcsMetric, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { PlacementConstraint, PlacementStrategy } from '../../lib/placement';
 import { addDefaultCapacityProvider } from '../util';
 
@@ -1262,7 +1263,673 @@ describe('ec2 service', () => {
       // THEN
       expect(service.node.metadata[0].data).toEqual('taskDefinition and launchType are blanked out when using external deployment controller.');
       expect(service.node.metadata[1].data).toEqual('Deployment circuit breaker requires the ECS deployment controller.');
+    });
 
+    test('add warning to annotations if deploymentAlarms is specified with a non-ECS DeploymentControllerType', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      // THEN
+      expect(() => {
+        new ecs.Ec2Service(stack, 'Ec2Service', {
+          cluster,
+          taskDefinition,
+          deploymentController: {
+            type: DeploymentControllerType.EXTERNAL,
+          },
+          deploymentAlarms: {
+            alarms: [myAlarm],
+          },
+        });
+      }).toThrow('Deployment alarms requires the ECS deployment controller.');
+    });
+
+    test('add alarm config while service is constructed if deploymentAlarms config is specified with no behavior', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+        deploymentAlarms: {
+          alarms: [myAlarm],
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: true,
+            AlarmNames: [myAlarm.alarmName],
+          },
+        },
+      });
+    });
+
+    test('add alarm config while service is constructed if deploymentAlarms config is specified with rollback behavior', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+        deploymentAlarms: {
+          alarms: [myAlarm],
+          behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
+        },
+      });
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: true,
+            AlarmNames: [myAlarm.alarmName],
+          },
+        },
+      });
+    });
+
+    test('add alarm config while service is constructed if deploymentAlarms config is specified with failed behavior', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+        deploymentAlarms: {
+          alarms: [myAlarm],
+          behavior: AlarmBehavior.FAIL_ON_ALARM,
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: false,
+            AlarmNames: [myAlarm.alarmName],
+          },
+        },
+      });
+    });
+
+    test('enableDeploymentAlarms should throw an error if alarmConfig alarms array is empty', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        service.enableDeploymentAlarms({
+          alarms: [],
+        });
+      }).toThrow('Specify at least one deployment alarm');
+    });
+
+    test('alarm behavior defaults to "ROLLBACK"', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+      service.enableDeploymentAlarms({
+        alarms: [myAlarm],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: true,
+            AlarmNames: [myAlarm.alarmName],
+          },
+        },
+      });
+    });
+
+    test('alarm with rollback behavior', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+      service.enableDeploymentAlarms({
+        alarms: [myAlarm],
+        behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: true,
+            AlarmNames: [myAlarm.alarmName],
+          },
+        },
+      });
+    });
+
+    test('alarm with failed behavior', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+      service.enableDeploymentAlarms({
+        alarms: [myAlarm],
+        behavior: AlarmBehavior.FAIL_ON_ALARM,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: false,
+            AlarmNames: [myAlarm.alarmName],
+          },
+        },
+      });
+    });
+
+    test('custom alarm with ECS metric alarm', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+      service.enableDeploymentAlarms({
+        alarms: [myAlarm],
+        behavior: AlarmBehavior.FAIL_ON_ALARM,
+      });
+      const alarm = service.createEcsMetricAlarm(EcsMetric.MEMORY_RESERVATION, { useAsDeploymentAlarm: true });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: false,
+            AlarmNames: [myAlarm.alarmName, alarm.node.id],
+          },
+        },
+      });
+    });
+
+    test('ECS metric alarm', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+      const alarm = service.createEcsMetricAlarm(EcsMetric.MEMORY_RESERVATION, { useAsDeploymentAlarm: true });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: true,
+            AlarmNames: [alarm.node.id],
+          },
+        },
+      });
+    });
+
+    test('ECS metric alarm not used as deployment alarm', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+      service.enableDeploymentAlarms({
+        alarms: [myAlarm],
+        behavior: AlarmBehavior.FAIL_ON_ALARM,
+      });
+      service.createEcsMetricAlarm(EcsMetric.MEMORY_RESERVATION);
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: false,
+            AlarmNames: [myAlarm.alarmName],
+          },
+        },
+      });
+    });
+
+    test('service connect metric alarm w/o service connect enabled', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        service.createEcsMetricAlarm(EcsMetric.ACTIVE_CONNECTION_COUNT);
+      }).toThrow('Service connect must be enabled to set service connect metric alarms.');
+    });
+
+    test('service connect metric alarm with service connect enabled', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+        portMappings: [
+          {
+            containerPort: 80,
+            name: 'api',
+          },
+        ],
+      });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'cool',
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+      service.enableServiceConnect({
+        services: [
+          {
+            portMappingName: 'api',
+          },
+        ],
+      });
+      const alarm = service.createEcsMetricAlarm(EcsMetric.ACTIVE_CONNECTION_COUNT, { useAsDeploymentAlarm: true });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: true,
+            AlarmNames: [alarm.node.id],
+          },
+        },
+      });
+    });
+
+    test('service connect metric alarm with service connect enabled and useAsDeploymentAlarm disabled', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+        portMappings: [
+          {
+            containerPort: 80,
+            name: 'api',
+          },
+        ],
+      });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'cool',
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+      service.enableServiceConnect({
+        services: [
+          {
+            portMappingName: 'api',
+          },
+        ],
+      });
+
+      service.enableDeploymentAlarms({
+        alarms: [myAlarm],
+        behavior: AlarmBehavior.FAIL_ON_ALARM,
+      });
+      service.createEcsMetricAlarm(EcsMetric.ACTIVE_CONNECTION_COUNT);
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: false,
+            AlarmNames: [myAlarm.alarmName],
+          },
+        },
+      });
+    });
+
+    test('custom service connect metric alarm w/o service connect enabled', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+
+      // THEN
+      expect(() => {
+        const customSCMetric = new EcsMetric('MetricConnectionCount', { isServiceConnectMetric: true });
+        service.createEcsMetricAlarm(customSCMetric);
+      }).toThrow('Service connect must be enabled to set service connect metric alarms.');
+    });
+
+    test('custom service connect metric alarm with service connect enabled', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      const customSCMetric = new EcsMetric('MetricConnectionCount', { isServiceConnectMetric: true });
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+        portMappings: [
+          {
+            containerPort: 80,
+            name: 'api',
+          },
+        ],
+      });
+      cluster.addDefaultCloudMapNamespace({
+        name: 'cool',
+      });
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+      });
+      service.enableServiceConnect({
+        services: [
+          {
+            portMappingName: 'api',
+          },
+        ],
+      });
+      const alarm = service.createEcsMetricAlarm(customSCMetric, { useAsDeploymentAlarm: true });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: true,
+            Rollback: true,
+            AlarmNames: [alarm.node.id],
+          },
+        },
+      });
+    });
+
+    test('disassociate alarm config', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      const myAlarm = cloudwatch.Alarm.fromAlarmArn(stack, 'myAlarm', 'arn:aws:cloudwatch:us-east-1:1234567890:alarm:alarm1');
+
+      const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        deploymentController: {
+          type: DeploymentControllerType.ECS,
+        },
+        deploymentAlarms: {
+          alarms: [myAlarm],
+          behavior: AlarmBehavior.ROLLBACK_ON_ALARM,
+        },
+      });
+      service.disableDeploymentAlarms();
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::Service', {
+        DeploymentConfiguration: {
+          Alarms: {
+            Enable: false,
+            Rollback: false,
+            AlarmNames: [],
+          },
+        },
+      });
     });
 
     test('errors if daemon and desiredCount both specified', () => {

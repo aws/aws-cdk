@@ -620,6 +620,24 @@ const service = new ecs.FargateService(this, 'Service', {
 });
 ```
 
+### Deployment alarms
+
+Amazon ECS [deployment alarms]
+(https://aws.amazon.com/blogs/containers/automate-rollbacks-for-amazon-ecs-rolling-deployments-with-cloudwatch-alarms/) Given a list of alarms, ECS will conduct the deployment as normal. Then, it will monitor the alarms for a “bake time” determined by the alarm’s sampling and thresholds. If any alarm enters the “ALARM” state during the bake time, the deployment will either be fail (requiring roll-forward) or be rolled back. 
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+declare const alarm: cloudwatch.Alarm;
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  deploymentAlarms: {
+    alarms: [alarm]
+  },
+});
+```
+
 > Note: ECS Anywhere doesn't support deployment circuit breakers and rollback.
 
 ### Include an application/network load balancer
