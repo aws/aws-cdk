@@ -299,6 +299,20 @@ export enum InstanceClass {
   R6GD = 'r6gd',
 
   /**
+   * Memory optimized instances, 7th generation with Graviton3 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  MEMORY7_GRAVITON = 'memory7-graviton',
+
+  /**
+   * Memory optimized instances, 7th generation with Graviton3 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  R7G = 'r7g',
+
+  /**
    * Compute optimized instances, 3rd generation
    */
   COMPUTE3 = 'compute3',
@@ -837,6 +851,20 @@ export enum InstanceClass {
   M6GD = 'm6gd',
 
   /**
+   * Standard instances, 7th generation with Graviton3 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  STANDARD7_GRAVITON = 'standard7-graviton',
+
+  /**
+   * Standard instances, 7th generation with Graviton3 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
+   */
+  M7G = 'm7g',
+
+  /**
    * High memory and compute capacity instances, 1st generation
    */
   HIGH_COMPUTE_MEMORY1 = 'high-compute-memory1',
@@ -1103,6 +1131,8 @@ export class InstanceType {
       [InstanceClass.R6G]: 'r6g',
       [InstanceClass.MEMORY6_GRAVITON2_NVME_DRIVE]: 'r6gd',
       [InstanceClass.R6GD]: 'r6gd',
+      [InstanceClass.MEMORY7_GRAVITON]: 'r7g',
+      [InstanceClass.R7G]: 'r7g',
       [InstanceClass.COMPUTE3]: 'c3',
       [InstanceClass.C3]: 'c3',
       [InstanceClass.COMPUTE4]: 'c4',
@@ -1201,6 +1231,8 @@ export class InstanceType {
       [InstanceClass.M6A]: 'm6a',
       [InstanceClass.STANDARD6_GRAVITON2_NVME_DRIVE]: 'm6gd',
       [InstanceClass.M6GD]: 'm6gd',
+      [InstanceClass.STANDARD7_GRAVITON]: 'm7g',
+      [InstanceClass.M7G]: 'm7g',
       [InstanceClass.HIGH_COMPUTE_MEMORY1]: 'z1d',
       [InstanceClass.Z1D]: 'z1d',
       [InstanceClass.INFERENCE1]: 'inf1',
