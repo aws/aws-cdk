@@ -391,7 +391,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
       vpc,
-      name: 'NamedCE',
+      computeEnvironmentName: 'NamedCE',
     });
 
     // THEN

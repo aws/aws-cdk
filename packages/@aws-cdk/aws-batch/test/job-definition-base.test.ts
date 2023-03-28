@@ -84,7 +84,7 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
     // WHEN
     new JobDefinition(stack, 'ECSJobDefn', {
       ...defaultProps,
-      name: 'myEcsJob',
+      jobDefinitionName: 'myEcsJob',
     });
 
     // THEN

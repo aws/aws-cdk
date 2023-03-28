@@ -47,7 +47,7 @@ new batch.EcsJobDefinition(stack, 'ECSFargateJobDefn', {
     memoryMiB: 32768,
     fargatePlatformVersion: FargatePlatformVersion.LATEST,
   }),
-  name: 'foofoo',
+  jobDefinitionName: 'foofoo',
   parameters: {
     foo: 'bar',
   },

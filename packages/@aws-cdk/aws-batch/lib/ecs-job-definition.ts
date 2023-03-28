@@ -1,3 +1,4 @@
+import { ArnFormat, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-container-definition';
@@ -37,6 +38,19 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
  * @resource AWS::Batch::JobDefinition
  */
 export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefinition {
+  public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
+    const stack = Stack.of(scope);
+    const jobDefinitionName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+
+    class Import extends JobDefinitionBase implements IJobDefinition {
+      public readonly jobDefinitionArn = jobDefinitionArn;
+      public readonly jobDefinitionName = jobDefinitionName;
+      public readonly enabled = true;
+    }
+
+    return new Import(scope, id);
+  }
+
   readonly containerDefinition: IEcsContainerDefinition
 
   public readonly jobDefinitionArn: string;

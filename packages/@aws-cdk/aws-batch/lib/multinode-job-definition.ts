@@ -1,5 +1,5 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
-import { Lazy } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { IEcsContainerDefinition } from './ecs-container-definition';
@@ -83,6 +83,19 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
  * @resource AWS::Batch::JobDefinition
  */
 export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiNodeJobDefinition {
+  public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
+    const stack = Stack.of(scope);
+    const jobDefinitionName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+
+    class Import extends JobDefinitionBase implements IJobDefinition {
+      public readonly jobDefinitionArn = jobDefinitionArn;
+      public readonly jobDefinitionName = jobDefinitionName;
+      public readonly enabled = true;
+    }
+
+    return new Import(scope, id);
+  }
+
   readonly containers: MultiNodeContainer[];
   readonly instanceType: ec2.InstanceType;
   readonly mainNode?: number;

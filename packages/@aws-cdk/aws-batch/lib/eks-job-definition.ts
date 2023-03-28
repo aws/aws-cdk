@@ -1,4 +1,4 @@
-import { Lazy } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
@@ -116,6 +116,19 @@ export enum DnsPolicy {
  * @resource AWS::Batch::JobDefinition
  */
 export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefinition {
+  public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
+    const stack = Stack.of(scope);
+    const jobDefinitionName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+
+    class Import extends JobDefinitionBase implements IJobDefinition {
+      public readonly jobDefinitionArn = jobDefinitionArn;
+      public readonly jobDefinitionName = jobDefinitionName;
+      public readonly enabled = true;
+    }
+
+    return new Import(scope, id);
+  }
+
   readonly containerDefinition: EksContainerDefinition;
   readonly dnsPolicy?: DnsPolicy;
   readonly useHostNetwork?: boolean;
@@ -130,7 +143,6 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
     this.dnsPolicy = props.dnsPolicy;
     this.useHostNetwork = props.useHostNetwork;
     this.serviceAccount = props.serviceAccount;
-
 
     const resource = new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,

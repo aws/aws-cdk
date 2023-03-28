@@ -42,7 +42,7 @@ test('fairshare policy respects name', () => {
 
   // WHEN
   new FairshareSchedulingPolicy(stack, 'schedulingPolicy', {
-    name: 'FairsharePolicyName',
+    schedulingPolicyName: 'FairsharePolicyName',
   });
 
   // THEN

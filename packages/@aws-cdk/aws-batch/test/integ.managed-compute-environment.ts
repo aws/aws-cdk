@@ -17,7 +17,7 @@ new FargateComputeEnvironment(stack, 'minimalPropsFargate', {
 new FargateComputeEnvironment(stack, 'maximalPropsFargate', {
   vpc,
   maxvCpus: 512,
-  name: 'maxPropsFargateCE',
+  computeEnvironmentName: 'maxPropsFargateCE',
   replaceComputeEnvironment: true,
   spot: true,
   terminateOnUpdate: true,

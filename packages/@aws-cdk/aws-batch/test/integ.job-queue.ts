@@ -11,7 +11,7 @@ const vpc = new Vpc(stack, 'vpc');
 
 const fairsharePolicy = new batch.FairshareSchedulingPolicy(stack, 'fairshare', {
   computeReservation: 75,
-  name: 'joBBQFairsharePolicy',
+  schedulingPolicyName: 'joBBQFairsharePolicy',
   shareDecay: Duration.hours(1),
   shares: [{
     shareIdentifier: 'shareA',

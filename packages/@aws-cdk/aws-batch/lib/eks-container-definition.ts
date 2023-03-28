@@ -1,12 +1,12 @@
 import * as ecs from '@aws-cdk/aws-ecs';
 import { Lazy, Size } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 
 const EMPTY_DIR_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/eks-container-definition.EmptyDirVolume');
 const HOST_PATH_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/eks-container-definition.HostPathVolume');
 const SECRET_PATH_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/eks-container-definition.SecretVolume');
-export interface IEksContainerDefinition {
+export interface IEksContainerDefinition extends IConstruct {
   /**
    * The image that this container will run
    */

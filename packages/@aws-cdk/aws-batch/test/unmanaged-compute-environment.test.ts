@@ -56,7 +56,7 @@ test('respects name', () => {
 
   // WHEN
   new UnmanagedComputeEnvironment(stack, 'MyCE', {
-    name: 'magic',
+    computeEnvironmentName: 'magic',
   });
 
   // THEN

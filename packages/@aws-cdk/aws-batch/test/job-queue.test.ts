@@ -72,7 +72,7 @@ test('JobQueue respects name', () => {
       order: 1,
     }],
     priority: 10,
-    name: 'JoBBQ',
+    jobQueueName: 'JoBBQ',
   });
 
   // THEN

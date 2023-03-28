@@ -5,29 +5,10 @@ import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Lazy, PhysicalName } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
+import { LinuxParameters } from './linux-parameters';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/container-definition.HostVolume');
-
-/**
- * Linux-specific options that are applied to the container.
- */
-export class LinuxParameters extends ecs.LinuxParameters {
-  /**
-   * Renders the Linux parameters to the Batch version of this resource,
-   * which does not have 'capabilities' and requires tmpfs.containerPath to be defined.
-   */
-  public renderBatchLinuxParameters(): CfnJobDefinition.LinuxParametersProperty {
-    return {
-      initProcessEnabled: this.initProcessEnabled,
-      sharedMemorySize: this.sharedMemorySize,
-      maxSwap: this.maxSwap?.toMebibytes(),
-      swappiness: this.swappiness,
-      devices: Lazy.any({ produce: () => this.devices.map(this.renderDevice) }, { omitEmptyArray: true }),
-      tmpfs: Lazy.any({ produce: () => this.tmpfs.map(this.renderTmpfs) }, { omitEmptyArray: true }),
-    };
-  }
-}
 
 export interface EcsVolumeOptions {
   readonly name: string;
@@ -37,7 +18,6 @@ export interface EcsVolumeOptions {
   readonly containerPath: string;
   readonly readonly?: boolean;
 }
-
 
 export abstract class EcsVolume {
   static efs(options: EfsVolumeOptions) {
@@ -138,7 +118,7 @@ export interface IEcsContainerDefinition extends IConstruct {
   readonly logDriverConfig?: ecs.LogDriverConfig;
   readonly readonlyRootFilesystem?: boolean;
   readonly gpu?: number;
-  readonly secrets?: secretsmanager.Secret[];
+  readonly secrets?: secretsmanager.ISecret[];
   readonly user?: string;
   readonly volumes: EcsVolume[];
 
@@ -162,7 +142,7 @@ export interface EcsContainerDefinitionProps {
   readonly readonlyRootFilesystem?: boolean;
   readonly cpu: number;
   readonly gpu?: number;
-  readonly secrets?: secretsmanager.Secret[];
+  readonly secrets?: secretsmanager.ISecret[];
   readonly user?: string;
   readonly volumes?: EcsVolume[];
 }
@@ -179,7 +159,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   readonly logDriverConfig?: ecs.LogDriverConfig;
   readonly readonlyRootFilesystem?: boolean;
   readonly gpu?: number;
-  readonly secrets?: secretsmanager.Secret[];
+  readonly secrets?: secretsmanager.ISecret[];
   readonly user?: string;
   readonly volumes: EcsVolume[];
 
@@ -230,7 +210,7 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
       })),
       jobRoleArn: this.jobRole?.roleArn,
       executionRoleArn: this.executionRole?.roleArn,
-      linuxParameters: this.linuxParameters && this.linuxParameters.renderBatchLinuxParameters(),
+      linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
       logConfiguration: this.logDriverConfig,
       readonlyRootFilesystem: this.readonlyRootFilesystem,
       resourceRequirements: this.renderResourceRequirements(),

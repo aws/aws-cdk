@@ -32,7 +32,7 @@ export interface IJobQueue extends IResource {
    *
    * @default - no name
    */
-  readonly name?: string
+  readonly jobQueueName?: string
 
   /**
    * If the job queue is enabled, it is able to accept jobs.
@@ -83,7 +83,7 @@ export interface JobQueueProps {
    *
    * @default - no name
    */
-  readonly name?: string
+  readonly jobQueueName?: string
 
   /**
    * If the job queue is enabled, it is able to accept jobs.
@@ -117,7 +117,7 @@ export class JobQueue extends Resource implements IJobQueue {
 
   readonly computeEnvironments: OrderedComputeEnvironment[]
   readonly priority: number
-  readonly name?: string
+  readonly jobQueueName?: string
   readonly enabled?: boolean
   readonly schedulingPolicy?: ISchedulingPolicy
 
@@ -125,12 +125,12 @@ export class JobQueue extends Resource implements IJobQueue {
 
   constructor(scope: Construct, id: string, props: JobQueueProps) {
     super(scope, id, {
-      physicalName: props.name,
+      physicalName: props.jobQueueName,
     });
 
     this.computeEnvironments = props.computeEnvironments;
     this.priority = props.priority;
-    this.name = props.name;
+    this.jobQueueName = props.jobQueueName;
     this.enabled = props.enabled;
     this.schedulingPolicy = props.schedulingPolicy;
 
@@ -144,7 +144,7 @@ export class JobQueue extends Resource implements IJobQueue {
         }),
       }),
       priority: this.priority,
-      jobQueueName: this.name,
+      jobQueueName: this.jobQueueName,
       state: this.enabled === undefined ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       schedulingPolicyArn: this.schedulingPolicy?.schedulingPolicyArn,
     });
