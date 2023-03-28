@@ -572,6 +572,8 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
 
 /**
  * A ManagedComputeEnvironment that uses ECS orchestration on EC2 instances.
+ *
+ * @resource AWS::Batch::ComputeEnvironment
  */
 export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EcsComputeEnvironment {
   readonly images?: EcsMachineImage[];
@@ -892,6 +894,8 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
 
 /**
  * A ManagedComputeEnvironment that uses ECS orchestration on EC2 instances.
+ *
+ * @resource AWS::Batch::ComputeEnvironment
  */
 export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EksComputeEnvironment {
   readonly kubernetesNamespace?: string;
@@ -997,6 +1001,8 @@ export interface FargateComputeEnvironmentProps extends ManagedComputeEnvironmen
 
 /**
  * A ManagedComputeEnvironment that uses ECS orchestration on Fargate instances.
+ *
+ * @resource AWS::Batch::ComputeEnvironment
  */
 export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase implements IFargateComputeEnvironment {
   public readonly computeEnvironmentArn: string;

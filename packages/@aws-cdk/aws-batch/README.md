@@ -93,7 +93,7 @@ new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
 
 Batch allows you to specify only the instance class and to let it choose the size, which you can do like this:
 
-```
+```ts
 computeEnv.addInstanceClass(ec2.InstanceClass.M5AD);
 // Or, specify it on the constructor:
 new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
@@ -229,21 +229,21 @@ For example, if there are two shares defined as follows:
 
 The weight factors share the following relationship:
 
-```
+```math
 BvCpus / 1 = AvCpus / 1
 ```
 
 where `BvCpus` is the number of vCPUs allocated to jobs with share identifier `'B'`.
 We need to find `B_vCpus` and `A_vCpus`. We can multiply both sides of the above equation by `1` to get:
 
-```
+```math
 BvCpus = AvCpus
 ```
 
 We don't know what `BvCpus` is, but we know that each `'B'` job needs 64 vCpus. We also know that each `'A'` job needs 32 vCpus.
 So let's define a two new values, `AJobRequirement` and `BJobRequirement`, set to 32 and 64, respectively. Now we have:
 
-```
+```math
 BvCpus = BJobRequirement * numBJobs
 AvCpus = AJobRequirement * numAJobs
 ```
@@ -253,7 +253,7 @@ where `numBJobs` is the number of jobs with share identifier `'B'` that will be 
 
 With these new definitions we can write our equality as:
 
-```
+```math
 BvCpus = AvCpus =>
 BJobRequirement * numBJobs = AJobRequirement * numAJobs
 64 * numBJobs = 32 * numAJobs =>
@@ -274,14 +274,14 @@ This example illustrates the impact this has on scheduling:
 
 The weight factors share the following relationship:
 
-```
+```math
 BvCpus / 1 = AvCpus / 0.5 =>
 2 * BvCpus = AvCpus
 ```
 
 Following similar algebra as above:
 
-```
+```math
 2 * BvCpus = AvCpus =>
 2 * BJobRequirement * numBJobs = AJobRequirement * numAJobs =>
 2 * 64 * numBJobs = 32 * numAJobs =>
@@ -301,14 +301,14 @@ If the `weightFactor`s were reversed instead:
 
 The weight factors share the following relationship:
 
-```
+```math
 BvCpus / 0.5 = AvCpus / 1 =>
 BvCpus = 2 * AvCpus
 ```
 
 Following similar algebra as above:
 
-```
+```math
 BvCpus = 2 * AvCpus =>
 BJobRequirement * numBJobs = 2 * AJobRequirement * numAJobs =>
 64 * numBJobs = 2 * 32 * numAJobs =>
@@ -358,7 +358,7 @@ you can define a `computeReservation` to specify the percentage of the
 maximum vCPU capacity that should be reserved for shares that are *not in the queue*.
 The actual reserved percentage is defined by Batch as:
 
-```
+```math
  (computeReservation/100)^ActiveFairShares
 ```
 
@@ -582,7 +582,7 @@ const multiNodeJob = new batch.MultiNodeJobDefinition(this, 'JobDefinition', {
 
 Batch allows you define parameters in your `JobDefinition`, which can be referenced in the container command. For example:
 
-```
+```ts
 new batch.EcsJobDefinition(this, 'JobDefn', {
   parameters: { echoParam: 'foobar' },
   containerDefinition: new batch.ContainerDefinition(this, 'containerDefn', {

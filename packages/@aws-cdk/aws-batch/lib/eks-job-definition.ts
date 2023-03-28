@@ -1,10 +1,12 @@
 import { Lazy } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
-//import { CfnJobDefinition } from './batch.generated';
 import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
 import { IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 
+/**
+ * A JobDefinition that uses Eks orchestration
+ */
 export interface IEksJobDefinition extends IJobDefinition {
   /**
    * The container this Job Definition will run
@@ -43,6 +45,9 @@ export interface IEksJobDefinition extends IJobDefinition {
   readonly serviceAccount?: string;
 }
 
+/**
+ * Props for EksJobDefinition
+ */
 export interface EksJobDefinitionProps extends JobDefinitionProps {
   /**
    * The container this Job Definition will run
@@ -105,6 +110,11 @@ export enum DnsPolicy {
   CLUSTER_FIRST_WITH_HOST_NET = 'ClusterFirstWithHostNet',
 }
 
+/**
+ * A JobDefinition that uses Eks orchestration
+ *
+ * @resource AWS::Batch::JobDefinition
+ */
 export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefinition {
   readonly containerDefinition: EksContainerDefinition;
   readonly dnsPolicy?: DnsPolicy;

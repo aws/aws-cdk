@@ -636,13 +636,31 @@ export interface EksVolumeOptions {
   readonly readonly?: boolean;
 }
 
+/**
+ * A Volume that can be mounted to a container supported by EKS
+ */
 export abstract class EksVolume {
+  /**
+   * Creates a Kubernetes EmptyDir volume
+   *
+   * @see: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
+   */
   static emptyDir(options: EmptyDirVolumeOptions) {
     return new EmptyDirVolume(options);
   }
+  /**
+   * Creates a Kubernetes HostPath volume
+   *
+   * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+   */
   static hostPath(options: HostPathVolumeOptions) {
     return new HostPathVolume(options);
   }
+  /**
+   * Creates a Kubernetes Secret volume
+   *
+   * @see: https://kubernetes.io/docs/concepts/storage/volumes/#secret
+   */
   static secret(options: SecretPathVolumeOptions) {
     return new SecretPathVolume(options);
   }
@@ -677,6 +695,11 @@ export abstract class EksVolume {
   }
 }
 
+/**
+ * Options for a Kubernetes EmptyDir volume
+ *
+ * @see: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
+ */
 export interface EmptyDirVolumeOptions extends EksVolumeOptions {
   /**
    * The storage type to use for this Volume.
@@ -693,6 +716,9 @@ export interface EmptyDirVolumeOptions extends EksVolumeOptions {
   readonly sizeLimit?: Size
 }
 
+/**
+ * What medium the volume will live in
+ */
 export enum EmptyDirMediumType {
   /**
    * Use the disk storage of the node.
@@ -708,6 +734,8 @@ export enum EmptyDirMediumType {
 }
 
 /**
+ * A Kubernetes EmptyDir volume
+ *
  * @see: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
  */
 export class EmptyDirVolume extends EksVolume {
@@ -742,6 +770,11 @@ Object.defineProperty(EmptyDirVolume.prototype, EMPTY_DIR_VOLUME_SYMBOL, {
   writable: false,
 });
 
+/**
+ * Options for a kubernetes HostPath volume
+ *
+ * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+ */
 export interface HostPathVolumeOptions extends EksVolumeOptions {
   /**
    * The path of the file or directory on the host to mount into containers on the pod.
@@ -754,6 +787,8 @@ export interface HostPathVolumeOptions extends EksVolumeOptions {
 }
 
 /**
+ * A Kubernetes HostPath volume
+ *
  * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
  */
 export class HostPathVolume extends EksVolume {
@@ -782,6 +817,11 @@ Object.defineProperty(HostPathVolume.prototype, HOST_PATH_VOLUME_SYMBOL, {
   writable: false,
 });
 
+/**
+ * Options for a Kubernetes SecretPath Volume
+ *
+ * @see: https://kubernetes.io/docs/concepts/storage/volumes/#secret
+ */
 export interface SecretPathVolumeOptions extends EksVolumeOptions {
   /**
    * The name of the secret.

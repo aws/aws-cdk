@@ -77,6 +77,11 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
   readonly instanceType: ec2.InstanceType;
 }
 
+/**
+ * A JobDefinition that uses Ecs orchestration to run multiple containers
+ *
+ * @resource AWS::Batch::JobDefinition
+ */
 export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiNodeJobDefinition {
   readonly containers: MultiNodeContainer[];
   readonly instanceType: ec2.InstanceType;

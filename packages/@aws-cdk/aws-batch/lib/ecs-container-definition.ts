@@ -3,7 +3,7 @@ import { IFileSystem } from '@aws-cdk/aws-efs';
 import * as iam from '@aws-cdk/aws-iam';
 import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
 import { Lazy, PhysicalName } from '@aws-cdk/core';
-import { Construct } from 'constructs';
+import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 
 const EFS_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/container-definition.EfsVolume');
@@ -126,7 +126,7 @@ Object.defineProperty(HostVolume.prototype, HOST_VOLUME_SYMBOL, {
   writable: false,
 });
 
-export interface IEcsContainerDefinition {
+export interface IEcsContainerDefinition extends IConstruct {
   readonly image: ecs.ContainerImage;
   readonly cpu: number;
   readonly memoryMiB: number;
@@ -350,7 +350,7 @@ export enum UlimitName {
 
 export interface IEcsEc2ContainerDefinition extends IEcsContainerDefinition {
   readonly privileged?: boolean;
-  readonly ulimits?: Ulimit[];
+  readonly ulimits: Ulimit[];
 }
 
 export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionProps {
@@ -361,7 +361,7 @@ export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionPr
   readonly ulimits?: Ulimit[];
 }
 
-export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase {
+export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implements IEcsEc2ContainerDefinition {
   readonly privileged?: boolean;
   readonly ulimits: Ulimit[];
 

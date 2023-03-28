@@ -188,6 +188,8 @@ export interface FairshareSchedulingPolicyProps extends SchedulingPolicyProps {
  * each share are currently being executed by the ComputeEnvironment*. The weight factors associated with
  * each share determine the ratio of vCPUs allocated; see the readme for a more in-depth discussion of
  * fairshare policies.
+ *
+ * @resource AWS::Batch::SchedulingPolicy
  */
 export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements IFairshareSchedulingPolicy {
   public readonly computeReservation?: number;

@@ -3,6 +3,9 @@ import { CfnJobDefinition } from './batch.generated';
 import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-container-definition';
 import { IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 
+/**
+ * A JobDefinition that uses ECS orchestration
+ */
 interface IEcsJobDefinition extends IJobDefinition {
   /**
    * The container that this job will run
@@ -18,6 +21,9 @@ export enum Compatibility {
   FARGATE = 'FARGATE',
 }
 
+/**
+ * Props for EcsJobDefinition
+ */
 export interface EcsJobDefinitionProps extends JobDefinitionProps {
   /**
    * The container that this job will run
@@ -25,6 +31,11 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
   readonly containerDefinition: IEcsContainerDefinition
 }
 
+/**
+ * A JobDefinition that uses ECS orchestration
+ *
+ * @resource AWS::Batch::JobDefinition
+ */
 export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefinition {
   readonly containerDefinition: IEcsContainerDefinition
 
