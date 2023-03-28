@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.198.1](https://github.com/aws/aws-cdk/compare/v1.198.0...v1.198.1) (2023-03-28)
+
+
+### Bug Fixes
+
+* **lambda-nodejs:** pnpm no longer supports nodejs14.x (backport [#24821](https://github.com/aws/aws-cdk/issues/24821)) ([#24829](https://github.com/aws/aws-cdk/issues/24829)) ([7c40f42](https://github.com/aws/aws-cdk/commit/7c40f42a63d6c3efe50ae79513d20276cac4e3d5))
+
 ## [1.198.0](https://github.com/aws/aws-cdk/compare/v1.197.0...v1.198.0) (2023-03-22)
 
 
