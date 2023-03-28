@@ -1,10 +1,10 @@
+import { CfnUtils } from './cfn-utils-provider';
+import { INTRINSIC_KEY_PREFIX, resolvedTypeHint } from './resolve';
 import { Lazy } from '../lazy';
 import { DefaultTokenResolver, IFragmentConcatenator, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
-import { CfnUtils } from './cfn-utils-provider';
-import { INTRINSIC_KEY_PREFIX, resolvedTypeHint } from './resolve';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -55,7 +55,7 @@ export class CloudFormationLang {
 }
 
 /**
- * Return a CFN intrinsic mass concatting any number of CloudFormation expressions
+ * Return a CFN intrinsic mass concatenating any number of CloudFormation expressions
  */
 function fnJoinConcat(parts: any[]) {
   return { 'Fn::Join': ['', minimalCloudFormationJoin('', parts)] };
@@ -110,7 +110,7 @@ function fnJoinConcat(parts: any[]) {
  *   values is lost).
  *
  *   To fix this, "type hints" have been added to the `resolve()` function,
- *   giving an idea of the type of the source value for compplex result values.
+ *   giving an idea of the type of the source value for complex result values.
  *   This only works for objects (not strings and numbers) but fortunately
  *   we only care about the types of intrinsics, which are always complex values.
  *
@@ -163,7 +163,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
     if (obj === undefined) { return; }
 
     if (Token.isUnresolved(obj)) {
-      throw new Error('This shouldnt happen anymore');
+      throw new Error("This shouldn't happen anymore");
     }
     if (Array.isArray(obj)) {
       return renderCollection('[', ']', obj, recurse);

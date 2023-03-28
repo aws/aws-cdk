@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/no-require-imports */
+import mocks = require('./mocks');
 import cfnResponse = require('../../lib/provider-framework/runtime/cfn-response');
 import framework = require('../../lib/provider-framework/runtime/framework');
 import outbound = require('../../lib/provider-framework/runtime/outbound');
-import mocks = require('./mocks');
 
 console.log = jest.fn();
 
@@ -418,7 +418,7 @@ async function simulateEvent(req: Partial<AWSLambda.CloudFormationCustomResource
       try {
         await framework.isComplete(event);
         retry = false;
-      } catch (e) {
+      } catch (e: any) {
         if (e instanceof cfnResponse.Retry) {
           if (count-- === 0) {
             await framework.onTimeout({ Cause: JSON.stringify({ errorMessage: e.message }) });

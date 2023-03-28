@@ -40,19 +40,19 @@
     "jest-junit": "^13",
     "json-schema": "^0.4.0",
     "npm-check-updates": "^12",
-    "projen": "^0.67.57",
+    "projen": "^0.67.75",
     "standard-version": "^9",
     "ts-jest": "^27",
     "typescript": "^4.5.5"
   },
   "dependencies": {
-    "cdk-generate-synthetic-examples": "^0.1.155",
-    "esbuild": "^0.17.8",
+    "cdk-generate-synthetic-examples": "^0.1.173",
+    "esbuild": "^0.17.11",
     "fs-extra": "^10.1.0",
     "license-checker": "^25.0.1",
     "madge": "^5.0.2",
     "shlex": "^2.1.2",
-    "yargs": "^17.7.0"
+    "yargs": "^17.7.1"
   },
   "main": "lib/index.js",
   "license": "Apache-2.0",

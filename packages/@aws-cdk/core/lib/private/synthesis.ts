@@ -1,14 +1,24 @@
+import { createHash } from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
+import { CloudAssembly } from '@aws-cdk/cx-api';
 import { IConstruct } from 'constructs';
+import { MetadataResource } from './metadata-resource';
+import { prepareApp } from './prepare-app';
+import { TreeMetadata } from './tree-metadata';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { Aspects, IAspect } from '../aspect';
 import { Stack } from '../stack';
 import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
-import { MetadataResource } from './metadata-resource';
-import { prepareApp } from './prepare-app';
-import { TreeMetadata } from './tree-metadata';
+import { IPolicyValidationPluginBeta1 } from '../validation';
+import { ConstructTree } from '../validation/private/construct-tree';
+import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
+
+const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
+const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
 
 /**
  * Options for `synthesize()`
@@ -49,7 +59,115 @@ export function synthesize(root: IConstruct, options: SynthesisOptions = { }): c
   // stacks to add themselves to the synthesized cloud assembly.
   synthesizeTree(root, builder, options.validateOnSynthesis);
 
-  return builder.buildAssembly();
+  const assembly = builder.buildAssembly();
+
+  invokeValidationPlugins(root, builder.outdir, assembly);
+
+  return assembly;
+}
+
+/**
+ * Find all the assemblies in the app, including all levels of nested assemblies
+ * and return a map where the assemblyId is the key
+ */
+function getAssemblies(root: App, rootAssembly: CloudAssembly): Map<string, CloudAssembly> {
+  const assemblies = new Map<string, CloudAssembly>();
+  assemblies.set(root.artifactId, rootAssembly);
+  visitAssemblies(root, 'pre', construct => {
+    const stage = construct as Stage;
+    if (stage.parentStage && assemblies.has(stage.parentStage.artifactId)) {
+      assemblies.set(
+        stage.artifactId,
+        assemblies.get(stage.parentStage.artifactId)!.getNestedAssembly(stage.artifactId),
+      );
+    }
+  });
+  return assemblies;
+}
+
+/**
+ * Invoke validation plugins for all stages in an App.
+ */
+function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: CloudAssembly) {
+  if (!App.isApp(root)) return;
+  const hash = computeChecksumOfFolder(outdir);
+  const assemblies = getAssemblies(root, assembly);
+  const templatePathsByPlugin: Map<IPolicyValidationPluginBeta1, string[]> = new Map();
+  visitAssemblies(root, 'post', construct => {
+    if (Stage.isStage(construct)) {
+      for (const plugin of construct.policyValidationBeta1) {
+        if (!templatePathsByPlugin.has(plugin)) {
+          templatePathsByPlugin.set(plugin, []);
+        }
+        let assemblyToUse = assemblies.get(construct.artifactId);
+        if (!assemblyToUse) throw new Error(`Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
+        templatePathsByPlugin.get(plugin)!.push(...assemblyToUse.stacksRecursively.map(stack => stack.templateFullPath));
+      }
+    }
+  });
+
+  const reports: NamedValidationPluginReport[] = [];
+  if (templatePathsByPlugin.size > 0) {
+    // eslint-disable-next-line no-console
+    console.log('Performing Policy Validations\n');
+  }
+  for (const [plugin, paths] of templatePathsByPlugin.entries()) {
+    try {
+      const report = plugin.validate({ templatePaths: paths });
+      reports.push({ ...report, pluginName: plugin.name });
+    } catch (e: any) {
+      reports.push({
+        success: false,
+        pluginName: plugin.name,
+        pluginVersion: plugin.version,
+        violations: [],
+        metadata: {
+          error: `Validation plugin '${plugin.name}' failed: ${e.message}`,
+        },
+      });
+    }
+    if (computeChecksumOfFolder(outdir) !== hash) {
+      throw new Error(`Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+    }
+  }
+
+  if (reports.length > 0) {
+    const tree = new ConstructTree(root);
+    const formatter = new PolicyValidationReportFormatter(tree);
+    const formatJson = root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? false;
+    const output = formatJson
+      ? formatter.formatJson(reports)
+      : formatter.formatPrettyPrinted(reports);
+
+    if (formatJson) {
+      fs.writeFileSync(path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH), JSON.stringify(output, undefined, 2));
+    } else {
+      // eslint-disable-next-line no-console
+      console.error(output);
+    }
+    const failed = reports.some(r => !r.success);
+    if (failed) {
+      throw new Error('Validation failed. See the validation report above for details');
+    } else {
+      // eslint-disable-next-line no-console
+      console.log('Policy Validation Successful!');
+    }
+  }
+}
+
+function computeChecksumOfFolder(folder: string): string {
+  const hash = createHash('sha256');
+  const files = fs.readdirSync(folder, { withFileTypes: true });
+
+  for (const file of files) {
+    const fullPath = path.join(folder, file.name);
+    if (file.isDirectory()) {
+      hash.update(computeChecksumOfFolder(fullPath));
+    } else if (file.isFile()) {
+      hash.update(fs.readFileSync(fullPath));
+    }
+  }
+  return hash.digest().toString('hex');
 }
 
 const CUSTOM_SYNTHESIS_SYM = Symbol.for('@aws-cdk/core:customSynthesis');
@@ -229,6 +347,24 @@ function validateTree(root: IConstruct) {
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
     throw new Error(`Validation failed with the following errors:\n  ${errorList}`);
+  }
+}
+
+/**
+ * Visit the given construct tree in either pre or post order, only looking at Assemblies
+ */
+function visitAssemblies(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => void) {
+  if (order === 'pre') {
+    cb(root);
+  }
+
+  for (const child of root.node.children) {
+    if (!Stage.isStage(child)) { continue; }
+    visitAssemblies(child, order, cb);
+  }
+
+  if (order === 'post') {
+    cb(root);
   }
 }
 

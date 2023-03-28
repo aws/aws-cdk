@@ -1,8 +1,8 @@
 /**
  * A library for nested graphs
  */
-import { addAll, extract, flatMap, isDefined } from '../private/javascript';
 import { topoSort } from './toposort';
+import { addAll, extract, flatMap, isDefined } from '../private/javascript';
 
 export interface GraphNodeProps<A> {
   readonly data?: A;
@@ -208,7 +208,7 @@ export interface GraphProps<A> extends GraphNodeProps<A> {
 }
 
 export class Graph<A> extends GraphNode<A> {
-  public static of<A, B>(id: string, data: A, nodes?: GraphNode<B>[]) {
+  public static override of<A, B>(id: string, data: A, nodes?: GraphNode<B>[]) {
     return new Graph<A | B>(id, { data, nodes });
   }
 

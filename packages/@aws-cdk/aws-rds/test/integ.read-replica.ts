@@ -22,7 +22,7 @@ class TestStack extends Stack {
     const vpcSubnets: SubnetSelection = { subnetType: SubnetType.PRIVATE_ISOLATED };
 
     const postgresSource = new rds.DatabaseInstance(this, 'PostgresSource', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
       backupRetention: Duration.days(5),
       instanceType,
       vpc,

@@ -1,8 +1,8 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+import { ENABLE_EMR_SERVICE_POLICY_V2 } from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
-import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 import {
   ApplicationConfigPropertyToJson,
   BootstrapActionConfigToJson,
@@ -10,6 +10,7 @@ import {
   InstancesConfigPropertyToJson,
   KerberosAttributesPropertyToJson,
 } from './private/cluster-utils';
+import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
  * Properties for EmrCreateCluster
@@ -340,6 +341,16 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
    * Generate the Role used by the EMR Service
    */
   private createServiceRole(): iam.IRole {
+    if (cdk.FeatureFlags.of(this).isEnabled(ENABLE_EMR_SERVICE_POLICY_V2)) {
+      return new iam.Role(this, 'ServiceRole', {
+        assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com', {
+          conditions: {
+            StringEquals: { 'aws:RequestTag/for-use-with-amazon-emr-managed-policies': 'true' },
+          },
+        }),
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonEMRServicePolicy_v2')],
+      });
+    }
     return new iam.Role(this, 'ServiceRole', {
       assumedBy: new iam.ServicePrincipal('elasticmapreduce.amazonaws.com'),
       managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonElasticMapReduceRole')],

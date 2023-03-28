@@ -235,6 +235,16 @@ export interface VpcContextQuery {
    * @default 'aws-cdk:subnet-name'
    */
   readonly subnetGroupNameTag?: string;
+
+  /**
+   * Whether to populate the `vpnGatewayId` field of the `VpcContextResponse`,
+   * which contains the VPN Gateway ID, if one exists. You can explicitly
+   * disable this in order to avoid the lookup if you know the VPC does not have
+   * a VPN Gatway attached.
+   *
+   * @default true
+   */
+  readonly returnVpnGateways?: boolean;
 }
 
 /**
@@ -481,7 +491,11 @@ export interface PluginContextQuery {
   readonly pluginName: string;
 
   /**
-   * Arbitrary other arguments for the plugin
+   * Arbitrary other arguments for the plugin.
+   *
+   * This index signature is not usable in non-TypeScript/JavaScript languages.
+   *
+   * @jsii ignore
    */
   [key: string]: any;
 }

@@ -1244,7 +1244,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * - If the path only contains a single component (i.e. it's a top-level
    *   resource), we won't add the hash to it. The hash is not needed for
-   *   disamiguation and also, it allows for a more straightforward migration an
+   *   disambiguation and also, it allows for a more straightforward migration an
    *   existing CloudFormation template to a CDK stack without logical ID changes
    *   (or renames).
    * - For aesthetic reasons, if the last components of the path are the same
@@ -1702,6 +1702,7 @@ function count(xs: string[]): Record<string, number> {
 }
 
 // These imports have to be at the end to prevent circular imports
+/* eslint-disable import/order */
 import { CfnOutput } from './cfn-output';
 import { addDependency, Element } from './deps';
 import { FileSystem } from './fs';
@@ -1717,5 +1718,4 @@ import { getExportable } from './private/refs';
 import { Fact, RegionInfo } from '@aws-cdk/region-info';
 import { deployTimeLookup } from './private/region-lookup';
 import { makeUniqueResourceName } from './private/unique-resource-name';import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
-
-
+/* eslint-enable import/order */

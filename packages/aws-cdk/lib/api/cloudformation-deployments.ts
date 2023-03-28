@@ -1,8 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import { AssetManifest } from 'cdk-assets';
-import { Tag } from '../cdk-toolkit';
-import { debug, warning } from '../logging';
-import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions } from '../util/asset-publishing';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { SdkProvider } from './aws-auth/sdk-provider';
@@ -13,6 +10,9 @@ import { ToolkitInfo } from './toolkit-info';
 import { CloudFormationStack, Template, ResourcesToImport, ResourceIdentifierSummaries } from './util/cloudformation';
 import { StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { replaceEnvPlaceholders } from './util/placeholders';
+import { Tag } from '../cdk-toolkit';
+import { debug, warning } from '../logging';
+import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions } from '../util/asset-publishing';
 
 /**
  * SDK obtained by assuming the lookup role
@@ -89,7 +89,7 @@ export async function prepareSdkWithLookupRoleFor(
       warning(upgradeMessage);
     }
     return { ...stackSdk, resolvedEnvironment };
-  } catch (e) {
+  } catch (e: any) {
     debug(e);
     // only print out the warnings if the lookupRole exists AND there is a required
     // bootstrap version, otherwise the warnings will print `undefined`
@@ -590,7 +590,7 @@ export class CloudFormationDeployments {
 
     try {
       await toolkitInfo.validateVersion(requiresBootstrapStackVersion, bootstrapStackVersionSsmParameter);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`${stackName}: ${e.message}`);
     }
   }

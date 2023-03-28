@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { Architecture, Code, Runtime, RuntimeFamily } from '@aws-cdk/aws-lambda';
@@ -641,7 +642,7 @@ test('esbuild bundling with pre compilations', () => {
     architecture: Architecture.X86_64,
   });
 
-  const compilerOptions = util.getTsconfigCompilerOptions(path.join(__dirname, '..', 'tsconfig.json'));
+  const compilerOptions = util.getTsconfigCompilerOptions(findParentTsConfigPath(__dirname));
 
   // Correctly bundles with esbuild
   expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(packageLock), {
@@ -845,3 +846,14 @@ test('Custom bundling file copy variant', () => {
     }),
   });
 });
+
+function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 5): string {
+  const target = path.join(dir, 'tsconfig.json');
+  if (fs.existsSync(target)) {
+    return target;
+  } else if (depth < limit) {
+    return findParentTsConfigPath(path.join(dir, '..'), depth + 1, limit);
+  }
+
+  throw new Error(`No \`package.json\` file found within ${depth} parent directories`);
+}

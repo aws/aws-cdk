@@ -1,12 +1,15 @@
 import { spawnSync } from 'child_process';
 import * as path from 'path';
 
+const docker = process.env.CDK_DOCKER ?? 'docker';
 beforeAll(() => {
-  spawnSync('docker', ['build', '-t', 'esbuild', path.join(__dirname, '../lib')]);
+  const process = spawnSync(docker, ['build', '-t', 'esbuild', path.join(__dirname, '../lib')], { stdio: 'inherit' });
+  expect(process.error).toBeUndefined();
+  expect(process.status).toBe(0);
 });
 
 test('esbuild is available', () => {
-  const proc = spawnSync('docker', [
+  const proc = spawnSync(docker, [
     'run', 'esbuild',
     'esbuild', '--version',
   ]);
@@ -14,7 +17,7 @@ test('esbuild is available', () => {
 });
 
 test('can npm install with non root user', () => {
-  const proc = spawnSync('docker', [
+  const proc = spawnSync(docker, [
     'run', '-u', '1000:1000',
     'esbuild',
     'bash', '-c', [
@@ -27,7 +30,7 @@ test('can npm install with non root user', () => {
 });
 
 test('can yarn install with non root user', () => {
-  const proc = spawnSync('docker', [
+  const proc = spawnSync(docker, [
     'run', '-u', '500:500',
     'esbuild',
     'bash', '-c', [
@@ -40,7 +43,7 @@ test('can yarn install with non root user', () => {
 });
 
 test('can pnpm install with non root user', () => {
-  const proc = spawnSync('docker', [
+  const proc = spawnSync(docker, [
     'run', '-u', '500:500',
     'esbuild',
     'bash', '-c', [
@@ -53,7 +56,7 @@ test('can pnpm install with non root user', () => {
 });
 
 test('cache folders have the right permissions', () => {
-  const proc = spawnSync('docker', [
+  const proc = spawnSync(docker, [
     'run', 'esbuild',
     'bash', '-c', [
       'stat -c \'%a\' /tmp/npm-cache',

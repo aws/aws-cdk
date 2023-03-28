@@ -1,5 +1,5 @@
 {
-  "version": "21.0.0",
+  "version": "30.1.0",
   "artifacts": {
     "aws-cdk-eks-cluster-test.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/ccffdf419c28e71546c4fae7556468336020e4e73f26bbae07f559ed80dbb626.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/fa91c42247dc7e7ad1ecea9e8017595a5e51a6892c8585202a74b115bd521a16.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -174,10 +174,7 @@
         "/aws-cdk-eks-cluster-test/KubectlLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "KubectlLayer600207B5",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "KubectlLayer600207B5"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Role/Resource": [
@@ -310,26 +307,6 @@
           {
             "type": "aws:cdk:warning",
             "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Nodes/InstanceSecurityGroup/Resource": [
@@ -383,10 +360,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/Nodes/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesLaunchConfig7C420A27",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodesLaunchConfig7C420A27"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/Nodes/ASG": [
@@ -396,26 +370,6 @@
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/NodesArm/InstanceSecurityGroup": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
           {
             "type": "aws:cdk:warning",
             "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
@@ -472,10 +426,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/NodesArm/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodesArmLaunchConfigAAF61344",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterNodesArmLaunchConfigAAF61344"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/NodesArm/ASG": [
@@ -485,26 +436,6 @@
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/InstanceSecurityGroup": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
           {
             "type": "aws:cdk:warning",
             "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
@@ -561,10 +492,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterBottlerocketNodesLaunchConfig76D7BEBE",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterBottlerocketNodesLaunchConfig76D7BEBE"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/BottlerocketNodes/ASG": [
@@ -574,26 +502,6 @@
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/spot/InstanceSecurityGroup": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
-          },
           {
             "type": "aws:cdk:warning",
             "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup"
@@ -650,10 +558,7 @@
         "/aws-cdk-eks-cluster-test/Cluster/spot/LaunchConfig": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterspotLaunchConfigCC19F2E6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterspotLaunchConfigCC19F2E6"
           }
         ],
         "/aws-cdk-eks-cluster-test/Cluster/spot/ASG": [
@@ -1040,10 +945,10 @@
             "data": "SsmParameterValueawsservicebottlerocketawsk8s124x8664latestimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
-        "/aws-cdk-eks-cluster-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.21--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-eks-cluster-test/SsmParameterValue:--aws--service--eks--optimized-ami--1.25--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceeksoptimizedami121amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceeksoptimizedami125amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/aws-cdk-eks-cluster-test/LaunchTemplate": [

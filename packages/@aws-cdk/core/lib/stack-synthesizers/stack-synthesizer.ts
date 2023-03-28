@@ -2,13 +2,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
+import { addStackArtifactToAssembly, contentHash, resolvedOr } from './_shared';
+import { IStackSynthesizer, ISynthesisSession } from './types';
 import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource, FileAssetPackaging } from '../assets';
 import { Fn } from '../cfn-fn';
 import { CfnParameter } from '../cfn-parameter';
 import { CfnRule } from '../cfn-rule';
 import { Stack } from '../stack';
-import { addStackArtifactToAssembly, contentHash, resolvedOr } from './_shared';
-import { IStackSynthesizer, ISynthesisSession } from './types';
 
 /**
  * Base class for implementing an IStackSynthesizer
@@ -49,7 +49,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    *
    * The synthesizer must rely on some out-of-band mechanism to make sure the given files
    * are actually placed in the returned location before the deployment happens. This can
-   * be by writing the intructions to the asset manifest (for use by the `cdk-assets` tool),
+   * be by writing the instructions to the asset manifest (for use by the `cdk-assets` tool),
    * by relying on the CLI to upload files (legacy behavior), or some other operator controlled
    * mechanism.
    */
@@ -62,7 +62,7 @@ export abstract class StackSynthesizer implements IStackSynthesizer {
    *
    * The synthesizer must rely on some out-of-band mechanism to make sure the given files
    * are actually placed in the returned location before the deployment happens. This can
-   * be by writing the intructions to the asset manifest (for use by the `cdk-assets` tool),
+   * be by writing the instructions to the asset manifest (for use by the `cdk-assets` tool),
    * by relying on the CLI to upload files (legacy behavior), or some other operator controlled
    * mechanism.
    */
