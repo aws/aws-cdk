@@ -165,7 +165,7 @@ export abstract class Resource extends Construct implements IResource {
     this.stack = Stack.of(this);
 
     const parsedArn = props.environmentFromArn ?
-      // Since we only want the region and account, NO_RESOURE_NAME is good enough
+      // Since we only want the region and account, NO_RESOURCE_NAME is good enough
       this.stack.splitArn(props.environmentFromArn, ArnFormat.NO_RESOURCE_NAME)
       : undefined;
     this.env = {
@@ -201,7 +201,7 @@ export abstract class Resource extends Construct implements IResource {
    * Called when this resource is referenced across environments
    * (account/region) to order to request that a physical name will be generated
    * for this resource during synthesis, so the resource can be referenced
-   * through it's absolute name/arn.
+   * through its absolute name/arn.
    *
    * @internal
    */
@@ -321,7 +321,7 @@ function mimicReference(refSource: any, producer: IStringProducer): string {
   }
 
   return Token.asString(new class extends Reference {
-    resolve(context: IResolveContext) {
+    public resolve(context: IResolveContext) {
       return producer.produce(context);
     }
   }(reference, reference.target, reference.displayName));

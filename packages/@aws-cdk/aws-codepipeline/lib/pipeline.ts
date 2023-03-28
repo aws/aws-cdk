@@ -764,7 +764,7 @@ export class Pipeline extends PipelineBase {
         // because the role might be from a different environment),
         // but _only_ if it's a new Role -
         // an imported Role should not add the dependency
-        if (action.actionProperties.role instanceof iam.Role) {
+        if (iam.Role.isRole(action.actionProperties.role)) {
           const roleStack = Stack.of(action.actionProperties.role);
           pipelineStack.addDependency(roleStack);
         }

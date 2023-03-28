@@ -843,7 +843,7 @@
                       "Ref": "dbInstanceSubnetGroupD062EC9E"
                     },
                     "engine": "postgres",
-                    "engineVersion": "11.15",
+                    "engineVersion": "15.2",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -1618,7 +1618,7 @@
                 "path": "database-proxy-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -1664,7 +1664,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.1.270"
         }
       }
     },
