@@ -31,8 +31,17 @@ export interface IJobQueue extends IResource {
    * It can contain uppercase and lowercase letters, numbers, hyphens (-), and underscores (_)
    *
    * @default - no name
+   *
+   * @attribute
    */
   readonly jobQueueName?: string
+
+  /**
+   * The ARN of this job queue
+   *
+   * @attribute
+   */
+  readonly jobQueueArn: string;
 
   /**
    * If the job queue is enabled, it is able to accept jobs.
@@ -46,13 +55,6 @@ export interface IJobQueue extends IResource {
    * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
    */
   readonly schedulingPolicy?: ISchedulingPolicy
-
-  /**
-   * The ARN of this job queue
-   *
-   * @attribute
-   */
-  readonly jobQueueArn: string;
 }
 
 export interface JobQueueProps {

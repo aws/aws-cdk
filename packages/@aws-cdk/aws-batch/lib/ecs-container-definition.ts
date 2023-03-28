@@ -10,26 +10,67 @@ import { LinuxParameters } from './linux-parameters';
 const EFS_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/container-definition.EfsVolume');
 const HOST_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/container-definition.HostVolume');
 
+/**
+ * Options to configure an EcsVolume
+ */
 export interface EcsVolumeOptions {
-  readonly name: string;
   /**
-   * The path on the container where this volume is mounted
+   * the name of this volume
+   */
+  readonly name: string;
+
+  /**
+   * the path on the container where this volume is mounted
    */
   readonly containerPath: string;
+
+
+  /**
+   * if set, the container will have readonly access to the volume
+   *
+   * @default false
+   */
   readonly readonly?: boolean;
 }
 
+/**
+ * Represents a Volume that can be mounted to a container that uses ECS
+ */
 export abstract class EcsVolume {
+  /**
+   * Creates a Volume that uses an AWS Elastic File System (EFS); this volume can grow and shrink as needed
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/efs-volumes.html
+   */
   static efs(options: EfsVolumeOptions) {
     return new EfsVolume(options);
   }
+
+  /**
+   * Creates a Host volume. This volume will persist on the host at the specified `hostPath`.
+   * If the `hostPath` is not specified, Docker will choose the host path. In this case,
+   * the data may not persist after the containers that use it stop running.
+   */
   static host(options: HostVolumeOptions) {
     return new HostVolume(options);
   }
 
-  readonly name: string;
-  readonly containerPath: string;
-  readonly readonly?: boolean;
+  /**
+   * The name of this volume
+   */
+  public readonly name: string;
+
+  /**
+   * The path on the container that this volume will be mounted to
+   */
+  public readonly containerPath: string;
+
+  /**
+   * Whether or not the container has readonly access to this volume
+   *
+   * @default false
+   */
+  public readonly readonly?: boolean;
 
   constructor(options: EcsVolumeOptions) {
     this.name = options.name;
@@ -38,15 +79,64 @@ export abstract class EcsVolume {
   }
 }
 
+/**
+ * Options for configuring an EfsVolume
+ */
 export interface EfsVolumeOptions extends EcsVolumeOptions {
-  readonly fileSystem: IFileSystem;
-  readonly rootDirectory?: string;
   /**
+   * The EFS File System that supports this volume
+   */
+  readonly fileSystem: IFileSystem;
+
+  /**
+   * The directory within the Amazon EFS file system to mount as the root directory inside the host.
+   * If this parameter is omitted, the root of the Amazon EFS volume is used instead.
+   * Specifying `/` has the same effect as omitting this parameter.
+   * The maximum length is 4,096 characters.
+   *
+   * @default - root of the EFS File System
+   */
+  readonly rootDirectory?: string;
+
+  /**
+   * Enables encryption for Amazon EFS data in transit between the Amazon ECS host and the Amazon EFS server
+   *
+   * @see https://docs.aws.amazon.com/efs/latest/ug/encryption-in-transit.html
+   *
    * @default false
    */
   readonly enableTransitEncryption?: boolean;
+
+  /**
+   * The port to use when sending encrypted data between the Amazon ECS host and the Amazon EFS server.
+   * The value must be between 0 and 65,535.
+   *
+   * @see https://docs.aws.amazon.com/efs/latest/ug/efs-mount-helper.html
+   *
+   * @default - chosen by the EFS Mount Helper
+   */
   readonly transitEncryptionPort?: number;
+
+  /**
+   * The Amazon EFS access point ID to use.
+   * If an access point is specified, `rootDirectory` must either be omitted or set to `/`
+   * which enforces the path set on the EFS access point.
+   * If an access point is used, `enableTransitEncryption` must be `true`.
+   *
+   * @see https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html
+   *
+   * @default - no accessPointId
+   */
   readonly accessPointId?: string;
+
+  /**
+   * Whether or not to use the AWS Batch job IAM role defined in a job definition when mounting the Amazon EFS file system.
+   * If specified, `enableTransitEncryption` must be `true`.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/efs-volumes.html#efs-volume-accesspoints
+   *
+   * @default false
+   */
   readonly useJobDefinitionRole?: boolean;
 }
 
@@ -388,7 +478,7 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
 }
 
-export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase {
+export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase implements IEcsFargateContainerDefinition {
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   readonly assignPublicIp?: boolean;
 

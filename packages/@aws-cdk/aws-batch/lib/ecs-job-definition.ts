@@ -42,10 +42,11 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
     const stack = Stack.of(scope);
     const jobDefinitionName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
-    class Import extends JobDefinitionBase implements IJobDefinition {
+    class Import extends JobDefinitionBase implements IEcsJobDefinition {
       public readonly jobDefinitionArn = jobDefinitionArn;
       public readonly jobDefinitionName = jobDefinitionName;
       public readonly enabled = true;
+      containerDefinition = {} as any;
     }
 
     return new Import(scope, id);

@@ -2,7 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as eks from '@aws-cdk/aws-eks';
 import * as iam from '@aws-cdk/aws-iam';
 import { IRole } from '@aws-cdk/aws-iam';
-import { Duration, Lazy } from '@aws-cdk/core';
+import { ArnFormat, Duration, Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
@@ -576,6 +576,24 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
  * @resource AWS::Batch::ComputeEnvironment
  */
 export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EcsComputeEnvironment {
+  public static fromManagedEc2EcsComputeEnvironmentArn(
+    scope: Construct, id: string, managedEc2EcsComputeEnvironmentArn: string,
+  ): IManagedEc2EcsComputeEnvironment {
+    const stack = Stack.of(scope);
+    const computeEnvironmentName = stack.splitArn(managedEc2EcsComputeEnvironmentArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+
+    class Import extends ManagedComputeEnvironmentBase implements IManagedEc2EcsComputeEnvironment {
+      public readonly computeEnvironmentArn = managedEc2EcsComputeEnvironmentArn;
+      public readonly computeEnvironmentName = computeEnvironmentName;
+      public readonly enabled = true;
+      public readonly instanceClasses = [];
+      public readonly instanceTypes = [];
+    }
+
+    return new Import(scope, id, {
+      vpc: undefined as any,
+    });
+  }
   readonly images?: EcsMachineImage[];
   readonly allocationStrategy?: AllocationStrategy;
   readonly spotBidPercentage?: number;
@@ -1005,6 +1023,21 @@ export interface FargateComputeEnvironmentProps extends ManagedComputeEnvironmen
  * @resource AWS::Batch::ComputeEnvironment
  */
 export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase implements IFargateComputeEnvironment {
+  public static fromFargateComputeEnvironmentArn(scope: Construct, id: string, fargateComputeEnvironmentArn: string): IFargateComputeEnvironment {
+    const stack = Stack.of(scope);
+    const computeEnvironmentName = stack.splitArn(fargateComputeEnvironmentArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+
+    class Import extends ManagedComputeEnvironmentBase implements IFargateComputeEnvironment {
+      public readonly computeEnvironmentArn = fargateComputeEnvironmentArn;
+      public readonly computeEnvironmentName = computeEnvironmentName;
+      public readonly enabled = true;
+    }
+
+    return new Import(scope, id, {
+      vpc: undefined as any,
+    });
+  }
+
   public readonly computeEnvironmentArn: string;
 
   constructor(scope: Construct, id: string, props: FargateComputeEnvironmentProps) {

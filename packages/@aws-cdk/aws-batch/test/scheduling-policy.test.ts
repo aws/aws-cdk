@@ -145,7 +145,7 @@ test('can be imported from ARN', () => {
   const stack = new Stack();
 
   // WHEN
-  const policy = FairshareSchedulingPolicy.fromSchedulingPolicyArn(stack, 'policyImport',
+  const policy = FairshareSchedulingPolicy.fromFairshareSchedulingPolicyArn(stack, 'policyImport',
     'arn:aws:batch:us-east-1:123456789012:scheduling-policy/policyImport');
 
   // THEN

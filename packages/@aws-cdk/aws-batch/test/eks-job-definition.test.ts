@@ -69,3 +69,16 @@ test('EcsJobDefinition respects serviceAccount', () => {
     },
   });
 });
+
+test('can be imported from ARN', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const importedJob = EksJobDefinition.fromEksJobDefinitionArn(stack, 'importedJobDefinition',
+    'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
+
+  // THEN
+  expect(importedJob.jobDefinitionArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
+});
+

@@ -116,14 +116,15 @@ export enum DnsPolicy {
  * @resource AWS::Batch::JobDefinition
  */
 export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefinition {
-  public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
+  public static fromEksJobDefinitionArn(scope: Construct, id: string, eksJobDefinitionArn: string): IEksJobDefinition {
     const stack = Stack.of(scope);
-    const jobDefinitionName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    const jobDefinitionName = stack.splitArn(eksJobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
     class Import extends JobDefinitionBase implements IJobDefinition {
-      public readonly jobDefinitionArn = jobDefinitionArn;
+      public readonly jobDefinitionArn = eksJobDefinitionArn;
       public readonly jobDefinitionName = jobDefinitionName;
       public readonly enabled = true;
+      public readonly containerDefinition = {} as any;
     }
 
     return new Import(scope, id);

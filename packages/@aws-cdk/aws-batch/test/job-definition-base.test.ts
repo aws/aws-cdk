@@ -216,15 +216,6 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
     });
   });
 
-  test('can be imported from ARN', () => {
-    // WHEN
-    const importedJob = JobDefinition.fromJobDefinitionArn(stack, 'importedJobDefinition',
-      'arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
-
-    // THEN
-    expect(importedJob.jobDefinitionArn).toEqual('arn:aws:batch:us-east-1:123456789012:job-definition/job-def-name:1');
-  });
-
   /*
   test('can be imported from name', () => {
     // WHEN
