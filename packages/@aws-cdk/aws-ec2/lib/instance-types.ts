@@ -300,11 +300,15 @@ export enum InstanceClass {
 
   /**
    * Memory optimized instances, 7th generation with Graviton3 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
    */
   MEMORY7_GRAVITON = 'memory7-graviton',
 
   /**
    * Memory optimized instances, 7th generation with Graviton3 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
    */
   R7G = 'r7g',
 
@@ -848,11 +852,15 @@ export enum InstanceClass {
 
   /**
    * Standard instances, 7th generation with Graviton3 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
    */
   STANDARD7_GRAVITON = 'standard7-graviton',
 
   /**
    * Standard instances, 7th generation with Graviton3 processors
+   *
+   * This instance class is currently only available in US East (Ohio), US East (N. Virginia), US West (Oregon), and Europe (Ireland).
    */
   M7G = 'm7g',
 
