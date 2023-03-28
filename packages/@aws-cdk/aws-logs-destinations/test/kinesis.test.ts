@@ -187,4 +187,9 @@ test('creates a new IAM Role if not passed on new destination instance', ()=> {
       ],
     },
   });
+
+  // THEN: SubscriptionFilter depends on the default Role's Policy
+  template.hasResource('AWS::Logs::SubscriptionFilter', {
+    DependsOn: ['LogGroupMySubscriptionFilterCloudWatchLogsCanPutRecordsDefaultPolicyEC6729D5'],
+  });
 });
