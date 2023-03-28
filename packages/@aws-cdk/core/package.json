@@ -5,6 +5,13 @@
   "description": "AWS Cloud Development Kit Core Library",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "typesVersions": {
+    "<=3.9": {
+      "*": [
+        ".types-compat/ts3.9/*"
+      ]
+    }
+  },
   "jsii": {
     "outdir": "dist",
     "targets": {
@@ -191,7 +198,7 @@
     "@types/jest": "^27.5.2",
     "@types/lodash": "^4.14.191",
     "@types/minimatch": "^3.0.5",
-    "aws-sdk": "^2.1325.0",
+    "aws-sdk": "^2.1329.0",
     "@types/sinon": "^9.0.11",
     "fast-check": "^2.25.0",
     "jest": "^27.5.1",
@@ -207,13 +214,15 @@
     "constructs": "^10.0.0",
     "fs-extra": "^9.1.0",
     "ignore": "^5.2.4",
-    "minimatch": "^3.1.2"
+    "minimatch": "^3.1.2",
+    "table": "^6.8.1"
   },
   "bundledDependencies": [
     "fs-extra",
     "minimatch",
     "@balena/dockerignore",
-    "ignore"
+    "ignore",
+    "table"
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {

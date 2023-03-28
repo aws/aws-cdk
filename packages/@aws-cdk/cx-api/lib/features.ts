@@ -84,6 +84,7 @@ export const APIGATEWAY_AUTHORIZER_CHANGE_DEPLOYMENT_LOGICAL_ID = '@aws-cdk/aws-
 export const EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA = '@aws-cdk/aws-ec2:launchTemplateDefaultUserData';
 export const SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY = '@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments';
 export const REDSHIFT_COLUMN_ID = '@aws-cdk/aws-redshift:columnId';
+export const ENABLE_EMR_SERVICE_POLICY_V2 = '@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -727,6 +728,23 @@ export const FLAGS: Record<string, FlagInfo> = {
       **however** do not change the \`names\`s of the columns. If the \`name\`s of the columns are changed during
       initial deployment, the columns will be dropped and recreated, causing data loss. After the initial deployment
       of the \`id\`s, the \`name\`s of the columns can be changed without data loss.
+      `,
+    introducedIn: { v2: '2.68.0' },
+    recommendedValue: true,
+  },
+
+  [ENABLE_EMR_SERVICE_POLICY_V2]: {
+    type: FlagType.BugFix,
+    summary: 'Enable AmazonEMRServicePolicy_v2 managed policies',
+    detailsMd: `
+      If this flag is not set, the default behavior for \`EmrCreateCluster\` is
+      to use \`AmazonElasticMapReduceRole\` managed policies.
+
+      If this flag is set, the default behavior is to use the new \`AmazonEMRServicePolicy_v2\`
+      managed policies.
+
+      This is a feature flag as the old behavior will be deprecated, but some resources may require manual
+      intervention since they might not have the appropriate tags propagated automatically.
       `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,

@@ -147,5 +147,10 @@
   },
   "publishConfig": {
     "tag": "next"
+  },
+  "awslint": {
+    "exclude": [
+      "no-unused-type:@aws-cdk/aws-s3-deployment.UserDefinedObjectMetadata"
+    ]
   }
 }

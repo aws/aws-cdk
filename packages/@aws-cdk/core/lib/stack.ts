@@ -1244,7 +1244,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * - If the path only contains a single component (i.e. it's a top-level
    *   resource), we won't add the hash to it. The hash is not needed for
-   *   disamiguation and also, it allows for a more straightforward migration an
+   *   disambiguation and also, it allows for a more straightforward migration an
    *   existing CloudFormation template to a CDK stack without logical ID changes
    *   (or renames).
    * - For aesthetic reasons, if the last components of the path are the same

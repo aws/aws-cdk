@@ -7,6 +7,7 @@ import { CfnAuthorizer, CfnAuthorizerProps } from '../apigateway.generated';
 import { Authorizer, IAuthorizer } from '../authorizer';
 import { IRestApi } from '../restapi';
 
+
 /**
  * Base properties for all lambda authorizers
  */
@@ -51,7 +52,7 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    * The id of the authorizer.
    * @attribute
    */
-  public abstract readonly authorizerId: string;
+  public abstract override readonly authorizerId: string;
 
   /**
    * The ARN of the authorizer to be used in permission policies, such as IAM and resource-based grants.
@@ -122,20 +123,34 @@ abstract class LambdaAuthorizer extends Authorizer implements IAuthorizer {
    */
   protected setupPermissions() {
     if (!this.role) {
-      this.handler.addPermission(`${Names.uniqueId(this)}:Permissions`, {
-        principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
-        sourceArn: this.authorizerArn,
-      });
-    } else if (this.role instanceof iam.Role) { // i.e. not imported
-      this.role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
-        statements: [
-          new iam.PolicyStatement({
-            resources: this.handler.resourceArnsForGrantInvoke,
-            actions: ['lambda:InvokeFunction'],
-          }),
-        ],
-      }));
+      this.addDefaultPermisionRole();
+    } else if (iam.Role.isRole(this.role)) {
+      this.addLambdaInvokePermission(this.role);
     }
+  }
+
+  /**
+   * Add Default Permission Role for handler
+   */
+  private addDefaultPermisionRole() :void {
+    this.handler.addPermission(`${Names.uniqueId(this)}:Permissions`, {
+      principal: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+      sourceArn: this.authorizerArn,
+    });
+  }
+
+  /**
+   * Add Lambda Invoke Permission for LambdaAurhorizer's role
+   */
+  private addLambdaInvokePermission(role: iam.Role) :void {
+    role.attachInlinePolicy(new iam.Policy(this, 'authorizerInvokePolicy', {
+      statements: [
+        new iam.PolicyStatement({
+          resources: this.handler.resourceArnsForGrantInvoke,
+          actions: ['lambda:InvokeFunction'],
+        }),
+      ],
+    }));
   }
 
   /**

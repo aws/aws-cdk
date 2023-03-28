@@ -13,6 +13,8 @@ import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
 import { ECSMetrics } from './ecs-canned-metrics.generated';
 import { CfnCluster, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from './ecs.generated';
 
+const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
+
 /**
  * The properties used to define an ECS cluster.
  */
@@ -94,6 +96,14 @@ export enum MachineImageType {
  * A regional grouping of one or more container instances on which you can run tasks and services.
  */
 export class Cluster extends Resource implements ICluster {
+
+  /**
+    * Return whether the given object is a Cluster
+   */
+  public static isCluster(x: any) : x is Cluster {
+    return x !== null && typeof(x) === 'object' && CLUSTER_SYMBOL in x;
+  }
+
   /**
    * Import an existing cluster to the stack from its attributes.
    */
@@ -410,7 +420,7 @@ export class Cluster extends Resource implements ICluster {
       }) : new EcsOptimizedAmi());
 
     const machineImageType = options.machineImageType ??
-      (isBottleRocketImage(machineImage) ? MachineImageType.BOTTLEROCKET : MachineImageType.AMAZON_LINUX_2);
+      (BottleRocketImage.isBottleRocketImage(machineImage) ? MachineImageType.BOTTLEROCKET : MachineImageType.AMAZON_LINUX_2);
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       vpc: this.vpc,
@@ -678,6 +688,12 @@ export class Cluster extends Resource implements ICluster {
     }).attachTo(this);
   }
 }
+
+Object.defineProperty(Cluster.prototype, CLUSTER_SYMBOL, {
+  value: true,
+  enumerable: false,
+  writable: false,
+});
 
 /**
  * A regional grouping of one or more container instances on which you can run tasks and services.
@@ -1259,7 +1275,7 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
   }
 
   public visit(node: IConstruct): void {
-    if (node instanceof Cluster) {
+    if (Cluster.isCluster(node)) {
       if ((this.scope.defaultCapacityProviderStrategy.length > 0 || this.scope.capacityProviderNames.length > 0 && !this.resource)) {
         this.resource = new CfnClusterCapacityProviderAssociations(this.scope, this.id, {
           cluster: node.clusterName,
@@ -1269,9 +1285,4 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
       }
     }
   }
-}
-
-
-function isBottleRocketImage(image: ec2.IMachineImage) {
-  return image instanceof BottleRocketImage;
 }

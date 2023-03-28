@@ -5,6 +5,7 @@ import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-con
 import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
 import { IReusableStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
+import { IPolicyValidationPluginBeta1 } from './validation/validation';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 
@@ -118,6 +119,13 @@ export interface AppProps {
    * @default - A `DefaultStackSynthesizer` with default settings
    */
   readonly defaultStackSynthesizer?: IReusableStackSynthesizer;
+
+  /**
+   * Validation plugins to run after synthesis
+   *
+   * @default - no validation plugins
+   */
+  readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
 }
 
 /**
@@ -159,6 +167,7 @@ export class App extends Stage {
   constructor(props: AppProps = {}) {
     super(undefined as any, '', {
       outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
+      policyValidationBeta1: props.policyValidationBeta1,
     });
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });
@@ -181,7 +190,7 @@ export class App extends Stage {
 
     const autoSynth = props.autoSynth ?? cxapi.OUTDIR_ENV in process.env;
     if (autoSynth) {
-      // synth() guarantuees it will only execute once, so a default of 'true'
+      // synth() guarantees it will only execute once, so a default of 'true'
       // doesn't bite manual calling of the function.
       process.once('beforeExit', () => this.synth());
     }

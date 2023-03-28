@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "integ-apprunner": {
         "id": "integ-apprunner",
         "path": "integ-apprunner",
@@ -24,8 +16,8 @@
                 "id": "Staging",
                 "path": "integ-apprunner/ImageAssets/Staging",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "@aws-cdk/core.AssetStaging",
+                  "version": "0.0.0"
                 }
               },
               "Repository": {
@@ -50,6 +42,14 @@
                 "id": "AccessRole",
                 "path": "integ-apprunner/Service3/AccessRole",
                 "children": {
+                  "ImportAccessRole": {
+                    "id": "ImportAccessRole",
+                    "path": "integ-apprunner/Service3/AccessRole/ImportAccessRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-apprunner/Service3/AccessRole/Resource",
@@ -166,6 +166,7 @@
                           ]
                         }
                       },
+                      "autoDeploymentsEnabled": true,
                       "imageRepository": {
                         "imageConfiguration": {
                           "port": "8000"
@@ -199,8 +200,8 @@
             "id": "URL3",
             "path": "integ-apprunner/URL3",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
             }
           },
           "Service2": {
@@ -211,6 +212,14 @@
                 "id": "AccessRole",
                 "path": "integ-apprunner/Service2/AccessRole",
                 "children": {
+                  "ImportAccessRole": {
+                    "id": "ImportAccessRole",
+                    "path": "integ-apprunner/Service2/AccessRole/ImportAccessRole",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "integ-apprunner/Service2/AccessRole/Resource",
@@ -380,20 +389,44 @@
             "id": "URL2",
             "path": "integ-apprunner/URL2",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-apprunner/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-apprunner/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.252"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }
