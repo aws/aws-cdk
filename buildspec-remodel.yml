@@ -3,6 +3,8 @@ version: 0.2
 env:
   secrets-manager:
     TOKEN: $TOKEN_SECRET_ARN
+  variables:
+    NODE_OPTIONS: --max-old-size=8192
 
 phases:
   install:
@@ -19,10 +21,10 @@ phases:
       # Install yarn if it wasn't already present in the image
       - yarn --version || npm -g install yarn
       - yarn install --frozen-lockfile
+      - /sbin/sysctl -w vm.max_map_count=2251954
   build:
     commands:
       - cd ${HOME}/aws-cdk
-      - export NODE_OPTIONS=--max-old-size=8192
       - npx lerna run build --scope @aws-cdk/remodel --include-dependencies
       - npx remodel ${PWD} --tmp-dir ${HOME}/remodel --no-clean --dry-run
   post_build:
