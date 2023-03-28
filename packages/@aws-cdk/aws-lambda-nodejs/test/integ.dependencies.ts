@@ -12,7 +12,7 @@ class TestStack extends Stack {
     // This function uses aws-sdk but it will not be included
     new lambda.NodejsFunction(this, 'external', {
       entry: path.join(__dirname, 'integ-handlers/dependencies.ts'),
-      runtime: Runtime.NODEJS_14_X,
+      runtime: Runtime.NODEJS_16_X,
       bundling: {
         minify: true,
         // Will be installed, not bundled
@@ -26,5 +26,27 @@ class TestStack extends Stack {
 }
 
 const app = new App();
+<<<<<<< HEAD
 new TestStack(app, 'cdk-integ-lambda-nodejs-dependencies');
+=======
+const sdkV2testCase = new SdkV2TestStack(app, 'cdk-integ-lambda-nodejs-dependencies');
+const sdkV3testCase = new SdkV3TestStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3');
+
+const integ = new IntegTest(app, 'LambdaDependencies', {
+  testCases: [sdkV2testCase, sdkV3testCase],
+});
+
+for (const testCase of [sdkV2testCase, sdkV3testCase]) {
+  const response = integ.assertions.invokeFunction({
+    functionName: testCase.lambdaFunction.functionName,
+  });
+  response.expect(ExpectedResult.objectLike({
+    // expect invoking without error
+    StatusCode: 200,
+    ExecutedVersion: '$LATEST',
+    Payload: 'null',
+  }));
+}
+
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821))
 app.synth();

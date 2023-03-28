@@ -4,6 +4,7 @@
     "id": "App",
     "path": "",
     "children": {
+<<<<<<< HEAD:packages/@aws-cdk/aws-lambda-nodejs/test/compilations.integ.snapshot/tree.json
       "Tree": {
         "id": "Tree",
         "path": "Tree",
@@ -12,6 +13,8 @@
           "version": "0.0.0"
         }
       },
+=======
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.compilations.js.snapshot/tree.json
       "cdk-integ-compilations-lambda-nodejs": {
         "id": "cdk-integ-compilations-lambda-nodejs",
         "path": "cdk-integ-compilations-lambda-nodejs",
@@ -24,6 +27,14 @@
                 "id": "ServiceRole",
                 "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/ServiceRole/Resource",
@@ -77,8 +88,13 @@
                     "id": "Stage",
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/Code/Stage",
                     "constructInfo": {
+<<<<<<< HEAD:packages/@aws-cdk/aws-lambda-nodejs/test/compilations.integ.snapshot/tree.json
                       "fqn": "@aws-cdk/core.AssetStaging",
                       "version": "0.0.0"
+=======
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.compilations.js.snapshot/tree.json
                     }
                   },
                   "AssetBucket": {
@@ -151,7 +167,7 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs16.x"
                   }
                 },
                 "constructInfo": {
@@ -217,6 +233,14 @@
                 "id": "ServiceRole",
                 "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/ServiceRole/Resource",
@@ -270,8 +294,13 @@
                     "id": "Stage",
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/Code/Stage",
                     "constructInfo": {
+<<<<<<< HEAD:packages/@aws-cdk/aws-lambda-nodejs/test/compilations.integ.snapshot/tree.json
                       "fqn": "@aws-cdk/core.AssetStaging",
                       "version": "0.0.0"
+=======
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.compilations.js.snapshot/tree.json
                     }
                   },
                   "AssetBucket": {
@@ -344,7 +373,7 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs16.x"
                   }
                 },
                 "constructInfo": {
@@ -357,17 +386,51 @@
               "fqn": "@aws-cdk/aws-lambda-nodejs.NodejsFunction",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-compilations-lambda-nodejs/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-compilations-lambda-nodejs/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
           }
         },
         "constructInfo": {
+<<<<<<< HEAD:packages/@aws-cdk/aws-lambda-nodejs/test/compilations.integ.snapshot/tree.json
           "fqn": "@aws-cdk/core.Stack",
           "version": "0.0.0"
+=======
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.compilations.js.snapshot/tree.json
         }
       }
     },
     "constructInfo": {
+<<<<<<< HEAD:packages/@aws-cdk/aws-lambda-nodejs/test/compilations.integ.snapshot/tree.json
       "fqn": "@aws-cdk/core.App",
       "version": "0.0.0"
+=======
+      "fqn": "constructs.Construct",
+      "version": "10.1.270"
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.compilations.js.snapshot/tree.json
     }
   }
 }

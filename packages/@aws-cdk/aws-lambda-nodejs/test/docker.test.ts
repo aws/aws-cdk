@@ -2,7 +2,13 @@ import { spawnSync } from 'child_process';
 import * as path from 'path';
 
 beforeAll(() => {
+<<<<<<< HEAD
   spawnSync('docker', ['build', '-t', 'esbuild', path.join(__dirname, '../lib')]);
+=======
+  const process = spawnSync(docker, ['build', '-t', 'esbuild', path.join(__dirname, '../lib')], { stdio: 'inherit' });
+  expect(process.error).toBeUndefined();
+  expect(process.status).toBe(0);
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821))
 });
 
 test('esbuild is available', () => {

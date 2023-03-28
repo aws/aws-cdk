@@ -17,7 +17,11 @@
      }
     },
     "flattenResponse": "false",
+<<<<<<< HEAD:packages/@aws-cdk/aws-lambda/test/bundling.integ.snapshot/BundlingDefaultTestDeployAssertAACA0CAF.template.json
     "salt": "1651691789905"
+=======
+    "salt": "1680010885937"
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.dependencies-pnpm.js.snapshot/PnpmTestDefaultTestDeployAssert397EDF83.template.json
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -138,6 +142,7 @@
      "S3Bucket": {
       "Ref": "AssetParameters1bc7cf3a01a7153f942391263b3bac937812996cc28f9abaf83ffebbbe03e38bS3BucketF7210344"
      },
+<<<<<<< HEAD:packages/@aws-cdk/aws-lambda/test/bundling.integ.snapshot/BundlingDefaultTestDeployAssertAACA0CAF.template.json
      "S3Key": {
       "Fn::Join": [
        "",
@@ -171,6 +176,9 @@
        ]
       ]
      }
+=======
+     "S3Key": "92ec9d050245fd270cf2b0df478b31f140ba820c3407e964246946bcea933a19.zip"
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.dependencies-pnpm.js.snapshot/PnpmTestDefaultTestDeployAssert397EDF83.template.json
     },
     "Timeout": 120,
     "Handler": "index.handler",

@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD:packages/@aws-cdk/aws-lambda-nodejs/test/compilations.integ.snapshot/integ.json
   "version": "18.0.0",
+=======
+  "version": "31.0.0",
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.compilations.js.snapshot/integ.json
   "testCases": {
     "aws-lambda-nodejs/test/integ.compilations": {
       "stacks": [

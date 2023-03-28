@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "31.0.0",
   "files": {
     "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26": {
       "source": {
@@ -14,7 +14,11 @@
         }
       }
     },
+<<<<<<< HEAD:packages/@aws-cdk/pipelines/test/pipeline-with-assets-single-upload.integ.snapshot/PipelineStack.assets.json
     "7194cb5242dc74e57ff29ee5b89a472fe06f40936ec2e2bca16e3bf76ae3fd8a": {
+=======
+    "f609c920399d40798220bd4c7c34ec9576637e069628e9d575aa4a2feff868a7": {
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.compilations.js.snapshot/cdk-integ-compilations-lambda-nodejs.assets.json
       "source": {
         "path": "PipelineStack.template.json",
         "packaging": "file"
@@ -22,7 +26,11 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD:packages/@aws-cdk/pipelines/test/pipeline-with-assets-single-upload.integ.snapshot/PipelineStack.assets.json
           "objectKey": "7194cb5242dc74e57ff29ee5b89a472fe06f40936ec2e2bca16e3bf76ae3fd8a.json",
+=======
+          "objectKey": "f609c920399d40798220bd4c7c34ec9576637e069628e9d575aa4a2feff868a7.json",
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.compilations.js.snapshot/cdk-integ-compilations-lambda-nodejs.assets.json
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

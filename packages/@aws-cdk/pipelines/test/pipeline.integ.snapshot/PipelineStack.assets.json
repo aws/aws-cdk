@@ -1,20 +1,36 @@
 {
+<<<<<<< HEAD:packages/@aws-cdk/pipelines/test/pipeline.integ.snapshot/PipelineStack.assets.json
   "version": "20.0.0",
   "files": {
     "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26": {
       "source": {
         "path": "asset.60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26",
+=======
+  "version": "31.0.0",
+  "files": {
+    "92ec9d050245fd270cf2b0df478b31f140ba820c3407e964246946bcea933a19": {
+      "source": {
+        "path": "asset.92ec9d050245fd270cf2b0df478b31f140ba820c3407e964246946bcea933a19.bundle",
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.dependencies-pnpm.js.snapshot/PnpmTestDefaultTestDeployAssert397EDF83.assets.json
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD:packages/@aws-cdk/pipelines/test/pipeline.integ.snapshot/PipelineStack.assets.json
           "objectKey": "60767da3831353fede3cfe92efef10580a600592dec8ccbb06c051e95b9c1b26.zip",
+=======
+          "objectKey": "92ec9d050245fd270cf2b0df478b31f140ba820c3407e964246946bcea933a19.zip",
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.dependencies-pnpm.js.snapshot/PnpmTestDefaultTestDeployAssert397EDF83.assets.json
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
+<<<<<<< HEAD:packages/@aws-cdk/pipelines/test/pipeline.integ.snapshot/PipelineStack.assets.json
     "2cc04f6563340ecf5529214a606172fd8d1bd84655b0cc832f52ef53cf131d23": {
+=======
+    "e111cb956f29a2b7cd7d36c451cdc4ae7b2064621161ae1c7ed320f9588c32c3": {
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.dependencies-pnpm.js.snapshot/PnpmTestDefaultTestDeployAssert397EDF83.assets.json
       "source": {
         "path": "PipelineStack.template.json",
         "packaging": "file"
@@ -22,7 +38,11 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD:packages/@aws-cdk/pipelines/test/pipeline.integ.snapshot/PipelineStack.assets.json
           "objectKey": "2cc04f6563340ecf5529214a606172fd8d1bd84655b0cc832f52ef53cf131d23.json",
+=======
+          "objectKey": "e111cb956f29a2b7cd7d36c451cdc4ae7b2064621161ae1c7ed320f9588c32c3.json",
+>>>>>>> b1c9ab2348 (fix(lambda-nodejs): pnpm no longer supports nodejs14.x (#24821)):packages/@aws-cdk/aws-lambda-nodejs/test/integ.dependencies-pnpm.js.snapshot/PnpmTestDefaultTestDeployAssert397EDF83.assets.json
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
