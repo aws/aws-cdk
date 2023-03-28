@@ -334,7 +334,7 @@ describe('bucket', () => {
     }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3_MANAGED)");
     expect(() => {
       new s3.Bucket(stack, 'MyBucket3', { bucketKeyEnabled: true });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: S3_MANAGED)");
+    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS (value: UNENCRYPTED)");
 
   });
 
