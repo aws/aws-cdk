@@ -127,6 +127,8 @@ async function copyTemplateFiles(src: string, target: string) {
   console.log(`Source: ${src}`);
   console.log(`Destination: ${target}`);
   await fs.copy(src, target, { overwrite: true });
+  // Make new scripts executable
+  await exec('chmod +x ./scripts/align-version.js', { cwd: target });
 }
 
 async function makeAwsCdkLib(target: string) {

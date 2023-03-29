@@ -18,8 +18,6 @@ const packageVersionMap = files.reduce((accum, file) => {
   };
 }, {});
 
-console.log(packageVersionMap);
-
 for (const file of files) {
   const pkg = JSON.parse(fs.readFileSync(file).toString());
 
