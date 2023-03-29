@@ -246,14 +246,9 @@ export interface IEksContainerDefinition extends IConstruct {
   readonly volumes: EksVolume[];
 
   /**
-   * Mount an EmptyDir volume to this container. Automatically added to the Pod.
+   * Mount a Volume to this container. Automatically added to the Pod.
    */
-  addEmptyDirVolume(options: EmptyDirVolumeOptions): void;
-
-  /**
-   * Mount a HostPath volume to this container. Automatically added to the Pod.
-   */
-  addHostPathVolume(options: HostPathVolumeOptions): void;
+  addVolume(volume: EksVolume): void;
 }
 
 /**
@@ -582,12 +577,8 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
     this.imageConfig = props.image.bind(this, this as any);
   }
 
-  addEmptyDirVolume(options: EmptyDirVolumeOptions) {
-    this.volumes.push(EksVolume.emptyDir(options));
-  }
-
-  addHostPathVolume(options: HostPathVolumeOptions) {
-    this.volumes.push(EksVolume.hostPath(options));
+  addVolume(volume: EksVolume) {
+    this.volumes.push(volume);
   }
 
   /**

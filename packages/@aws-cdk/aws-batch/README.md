@@ -101,19 +101,20 @@ new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
 });
 ```
 
-If you specify no instance types or classes then it will default to `InstanceType.OPTIMAL`,
+Unless you explicitly specify `useOptimalInstanceClasses: false`, this compute environment will use `'optimal'` instances,
 which tells Batch to pick an instance from the C4, M4, and R4 instance families.
 *Note*: Batch does not allow specifying instance types or classes with different architectures.
-For example, `InstanceClass.A1` cannot be specified alongside `InstanceClass.OPTIMAL`,
-because `A1` uses ARM and `OPTIMAL` uses x86_64.
-You can specify both `InstanceType.OPTIMAL` alongside several different instance types in the same compute environment:
+For example, `InstanceClass.A1` cannot be specified alongside `'optimal'`,
+because `A1` uses ARM and `'optimal'` uses x86_64.
+You can specify both `'optimal'` alongside several different instance types in the same compute environment:
 
 ```ts
 const computeEnv = new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
-  instanceTypes: [batch.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE)],
+  instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE)],
+  useOptimalInstanceTypes: true, // default
 });
-computeEnv.addInstanceType(batch.InstanceType.OPTIMAL);
 // Note: this is equivalent to specifying
+computeEnv.addInstanceType(ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE));
 computeEnv.addInstanceClass(ec2.InstanceClass.C4);
 computeEnv.addInstanceClass(ec2.InstanceClass.M4);
 computeEnv.addInstanceClass(ec2.InstanceClass.R4);
@@ -135,8 +136,8 @@ the most spot capacity available to minimize the chance of interruption.
 To get the most benefit from your spot instances,
 you should allow Batch to choose from as many different instance types as possible.
 
-If your workflow does not tolerate interruptions and you want to minimize your costs,
-use `AllocationStrategy.BEST_FIT`.
+If your workflow does not tolerate interruptions and you want to minimize your costs at the expense
+of potentially longer waiting times, use `AllocationStrategy.BEST_FIT`.
 This will choose the lowest-cost instance type that fits all the jobs in the queue.
 If instances of that type are not available,
 the queue will not choose a new type; instead, it will wait for the instance to become available.
@@ -153,16 +154,15 @@ it will choose a new next-best instance type to run any jobs that couldn’t fit
 To make the most use of this allocation strategy,
 it is recommended to use as many instance classes as is feasible for your workload.
 This example shows a `ComputeEnvironment` that uses `BEST_FIT_PROGRESSIVE`
-with `InstanceType.OPTIMAL` and `InstanceClass.M5` instance types:
+with `'optimal'` and `InstanceClass.M5` instance types:
 
 ```ts
 const computeEnv = new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
-  instanceTypes: [batch.InstanceType.OPTIMAL],
   instanceClasses: [ec2.InstanceClass.M5],
 });
 ```
 
-This example shows a `ComputeEnvironment` that uses `BEST_FIT` with `InstanceType.OPTIMAL` instances:
+This example shows a `ComputeEnvironment` that uses `BEST_FIT` with `'optimal'` instances:
 
 ```ts
 const computeEnv = new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
@@ -174,9 +174,12 @@ const computeEnv = new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv
 
 ### Controlling vCPU allocation
 
-With a managed `ComputeEnvironment`, you can specify the maximum and minimum vCPUs it can have at any given time.
-You cannot do this with an unmanaged `ComputeEnvironment`, because you must provision and manage the instances yourself;
-that is, Batch will not scale them up and down as needed. This example shows how to configure these properties:
+You can specify the maximum and minimum vCPUs a managed `ComputeEnvironment` can have at any given time.
+Batch will *always* maintain `minvCpus` worth of instances in your ComputeEnvironment, even if it is not executing any jobs,
+and even if it is disabled. Batch will scale the instances up to `maxvCpus` worth of instances as
+jobs exit the JobQueue and enter the ComputeEnvironment. If you use `AllocationStrategy.BEST_FIT_PROGRESSIVE` or `AllocationStrategy.SPOT_CAPACITY_OPTIMIZED`,
+batch may exceed `maxvCpus`; it will never exceed `maxvCpus` by more than a single instance type. This example configures a
+`minvCpus` of 10 and a `maxvCpus` of 100:
 
 ```ts
 new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
@@ -186,8 +189,8 @@ new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
 });
 ```
 
-This means that the `ComputeEnvironment` will always maintain 10 vCPUs worth of instances,
-even if there are no Jobs in the queues that link to this `ComputeEnvironment`.
+Unmanaged `ComputeEnvironment`s do not support `maxvCpus` or `minvCpus` because you must provision and manage the instances yourself;
+that is, Batch will not scale them up and down as needed.
 
 ### Sharing a ComputeEnvironment between multiple JobQueues
 
@@ -217,7 +220,7 @@ FIFO queuing can cause short-running jobs to be starved while long-running jobs 
 To solve this, Jobs can be associated with a share.
 
 Shares consist of a `shareIdentifier` and a `weightFactor`, which is inversely correlated with the vCPU allocated to that share identifier.
-When submitting a Job, you can specify it's `shareIdentifier` to associate that particular job with that share.
+When submitting a Job, you can specify its `shareIdentifier` to associate that particular job with that share.
 Let's see how the scheduler uses this information to schedule jobs.
 
 For example, if there are two shares defined as follows:
@@ -230,95 +233,35 @@ For example, if there are two shares defined as follows:
 The weight factors share the following relationship:
 
 ```math
-BvCpus / 1 = AvCpus / 1
+AvCpus / A_weight = BvCpus / B_weight
 ```
 
-where `BvCpus` is the number of vCPUs allocated to jobs with share identifier `'B'`.
-We need to find `B_vCpus` and `A_vCpus`. We can multiply both sides of the above equation by `1` to get:
+where `BvCpus` is the number of vCPUs allocated to jobs with share identifier `'B'`, and `B_weight` is the weight factor of `B`.
+
+The total number of vCpus allocated to a share is equal to the amount of jobs in that share times the number of vCpus necessary for every job.
+Let's say that each A job needs 32 VCpus (`A_requirement` = 32) and each B job needs 64 vCpus (`B_requirement` = 64):
 
 ```math
-BvCpus = AvCpus
+A_vCpus = A_jobs * A_requirement
+B_vCpus = B_jobs * B_requirement
 ```
 
-We don't know what `BvCpus` is, but we know that each `'B'` job needs 64 vCpus. We also know that each `'A'` job needs 32 vCpus.
-So let's define a two new values, `AJobRequirement` and `BJobRequirement`, set to 32 and 64, respectively. Now we have:
+We have:
 
 ```math
-BvCpus = BJobRequirement * numBJobs
-AvCpus = AJobRequirement * numAJobs
-```
-
-where `numBJobs` is the number of jobs with share identifier `'B'` that will be scheduled and
-`numAJobs` is the number of jobs with share identifier `'A'` that will be scheduled.
-
-With these new definitions we can write our equality as:
-
-```math
-BvCpus = AvCpus =>
-BJobRequirement * numBJobs = AJobRequirement * numAJobs
-64 * numBJobs = 32 * numAJobs =>
-2 * numBJobs = numAJobs =>
-numAJobs = 2 * numBJobs
+A_vCpus / A_weight = B_vCpus / B_weight
+A_jobs * A_requirement / A_weight = B_jobs * B_requirement / B_weight
+A_jobs * 32 / 1 = B_jobs * 64 / 1
+A_jobs * 32 = B_jobs * 64 
+A_jobs = B_jobs * 2
 ```
 
 Thus the scheduler will schedule two `'A'` jobs for each `'B'` job.
 
 You can control the weight factors to change these ratios, but note that
 weight factors are inversely correlated with the vCpus allocated to the corresponding share.
-This example illustrates the impact this has on scheduling:
 
-| Share Identifier | Weight Factor |
-| ---------------- | ------------- |
-| A                | 0.5           |
-| B                | 1             |
-
-The weight factors share the following relationship:
-
-```math
-BvCpus / 1 = AvCpus / 0.5 =>
-2 * BvCpus = AvCpus
-```
-
-Following similar algebra as above:
-
-```math
-2 * BvCpus = AvCpus =>
-2 * BJobRequirement * numBJobs = AJobRequirement * numAJobs =>
-2 * 64 * numBJobs = 32 * numAJobs =>
-128 * numBJobs = 32 * numAJobs =>
-4 * numBJobs = numAJobs =>
-numAJobs = 4 * numBJobs
-```
-
-Thus for each `'B'` job, the scheduler will schedule four (4) `'A'` jobs.
-
-If the `weightFactor`s were reversed instead:
-
-| Share Identifier | Weight Factor |
-| ---------------- | ------------- |
-| A                | 1             |
-| B                | 0.5           |
-
-The weight factors share the following relationship:
-
-```math
-BvCpus / 0.5 = AvCpus / 1 =>
-BvCpus = 2 * AvCpus
-```
-
-Following similar algebra as above:
-
-```math
-BvCpus = 2 * AvCpus =>
-BJobRequirement * numBJobs = 2 * AJobRequirement * numAJobs =>
-64 * numBJobs = 2 * 32 * numAJobs =>
-64 * numBJobs = 64 * numAJobs =>
-numBJobs = numAJobs
-```
-
-Thus for each `'B'` job, the scheduler will schedule one (1) `'A'` job.
-
-The second example would be configured like this:
+This example would be configured like this:
 
 ```ts
 const fairsharePolicy = new FairshareSchedulingPolicy(this, 'myFairsharePolicy');
@@ -328,10 +271,9 @@ fairsharePolicy.addShare({
 });
 fairsharePolicy.addShare({
   shareIdentifier: 'B',
-  weightFactor: 0.5,
+  weightFactor: 1,
 });
 new batch.JobQueue(this, 'JobQueue', {
-  priority: 1,
   fairsharePolicy,
 });
 ```
@@ -519,20 +461,20 @@ const jobDefn = new batch.EksJobDefinition(this, 'eksf2', {
 You can mount `Volume`s to these containers in a single operation:
 
 ```ts
-jobDefn.containerDefinition.addEmptyDirVolume({
+jobDefn.containerDefinition.addVolume(EksVolume.EmptyDir({
   name: 'emptyDir',
   mountPath: '/Volumes/emptyDir',
-});
-jobDefn.containerDefinition.addHostPathVolume({
+}));
+jobDefn.containerDefinition.addVolume(EksVolume.HostPathVolume({
   name: 'hostPath',
   hostPath: '/sys',
   mountPath: '/Volumes/hostPath',
-});
-jobDefn.containerDefinition.addSecretVolume({
+}));
+jobDefn.containerDefinition.addVolume(EksVolume.SecretVolume({
   name: 'secret',
   optional: true,
   mountPath: '/Volumes/secret',
-});
+}));
 ```
 
 ### Running Distributed Workflows

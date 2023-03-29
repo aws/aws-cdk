@@ -10,5 +10,7 @@ export * from './eks-container-definition';
 export * from './job-definition-base';
 export * from './job-queue';
 export * from './linux-parameters';
+export * from './managed-compute-environment';
 export * from './multinode-job-definition';
 export * from './scheduling-policy';
+export * from './unmanaged-compute-environment';

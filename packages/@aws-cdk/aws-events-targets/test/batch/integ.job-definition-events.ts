@@ -3,6 +3,7 @@ import { ContainerImage } from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as cdk from '@aws-cdk/core';
+import { Size } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 const app = new cdk.App();
@@ -12,17 +13,17 @@ const stack = new cdk.Stack(app, 'batch-events');
 const queue = new batch.JobQueue(stack, 'MyQueue', {
   computeEnvironments: [
     {
-      computeEnvironment: new batch.ComputeEnvironment(stack, 'ComputeEnvironment', {
-        managed: false,
-      }),
+      computeEnvironment: new batch.UnmanagedComputeEnvironment(stack, 'ComputeEnvironment'),
       order: 1,
     },
   ],
 });
-const job = new batch.JobDefinition(stack, 'MyJob', {
-  container: {
+const job = new batch.EcsJobDefinition(stack, 'MyJob', {
+  containerDefinition: new batch.EcsEc2ContainerDefinition(stack, 'container', {
     image: ContainerImage.fromRegistry('test-repo'),
-  },
+    cpu: 256,
+    memory: Size.mebibytes(2048),
+  }),
 });
 
 const timer = new events.Rule(stack, 'Timer', {

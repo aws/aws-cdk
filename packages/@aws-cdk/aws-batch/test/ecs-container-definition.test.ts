@@ -525,7 +525,7 @@ describe('ecs container', () => {
     });
   });
 
-  test('respects addEfsVolume()', () => {
+  test('respects addVolume() with an EfsVolume', () => {
     // GIVEN
     const jobDefn = new EcsJobDefinition(stack, 'ECSJobDefn', {
       containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
@@ -534,13 +534,13 @@ describe('ecs container', () => {
     });
 
     // WHEN
-    jobDefn.containerDefinition.addEfsVolume({
+    jobDefn.containerDefinition.addVolume(EcsVolume.efs({
       containerPath: '/container/path',
       fileSystem: new efs.FileSystem(stack, 'efs', {
         vpc: new Vpc(stack, 'vpc'),
       }),
       name: 'AddedEfsVolume',
-    });
+    }));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
@@ -563,7 +563,7 @@ describe('ecs container', () => {
     });
   });
 
-  test('respects addHostVolume()', () => {
+  test('respects addVolume() with a host volume', () => {
     // GIVEN
     const jobDefn = new EcsJobDefinition(stack, 'ECSJobDefn', {
       containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
@@ -572,12 +572,12 @@ describe('ecs container', () => {
     });
 
     // WHEN
-    jobDefn.containerDefinition.addHostVolume({
+    jobDefn.containerDefinition.addVolume(EcsVolume.host({
       containerPath: '/container/path/new',
       name: 'hostName',
       hostPath: '/host/path',
       readonly: false,
-    });
+    }));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {

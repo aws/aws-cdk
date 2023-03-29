@@ -3,13 +3,13 @@ import * as batch from '@aws-cdk/aws-batch';
 import { ContainerImage } from '@aws-cdk/aws-ecs';
 import * as events from '@aws-cdk/aws-events';
 import * as sqs from '@aws-cdk/aws-sqs';
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, Size, Stack } from '@aws-cdk/core';
 import * as targets from '../../lib';
 
 describe('Batch job event target', () => {
   let stack: Stack;
-  let jobQueue: batch.JobQueue;
-  let jobDefinition: batch.JobDefinition;
+  let jobQueue: batch.IJobQueue;
+  let jobDefinition: batch.IJobDefinition;
 
 
   beforeEach(() => {
@@ -17,17 +17,17 @@ describe('Batch job event target', () => {
     jobQueue = new batch.JobQueue(stack, 'MyQueue', {
       computeEnvironments: [
         {
-          computeEnvironment: new batch.ComputeEnvironment(stack, 'ComputeEnvironment', {
-            managed: false,
-          }),
+          computeEnvironment: new batch.UnmanagedComputeEnvironment(stack, 'ComputeEnvironment'),
           order: 1,
         },
       ],
     });
-    jobDefinition = new batch.JobDefinition(stack, 'MyJob', {
-      container: {
+    jobDefinition = new batch.EcsJobDefinition(stack, 'MyJob', {
+      containerDefinition: new batch.EcsEc2ContainerDefinition(stack, 'container', {
         image: ContainerImage.fromRegistry('test-repo'),
-      },
+        cpu: 256,
+        memory: Size.mebibytes(2048),
+      }),
     });
   });
 

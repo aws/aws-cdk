@@ -777,7 +777,6 @@
                   "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
                   "aws:cdk:cloudformation:props": {
                     "type": "managed",
-                    "computeEnvironmentName": "maxPropsFargateCE",
                     "computeResources": {
                       "maxvCpus": 512,
                       "type": "FARGATE_SPOT",
@@ -1013,7 +1012,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/core.Resource",
+              "fqn": "@aws-cdk/aws-ec2.PlacementGroup",
               "version": "0.0.0"
             }
           },

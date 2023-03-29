@@ -106,11 +106,12 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     return new Import(scope, id);
   }
 
-  readonly containers: MultiNodeContainer[];
-  readonly instanceType: ec2.InstanceType;
-  readonly mainNode?: number;
+  public readonly containers: MultiNodeContainer[];
+  public readonly instanceType: ec2.InstanceType;
+  public readonly mainNode?: number;
 
   public readonly jobDefinitionArn: string;
+  public readonly jobDefinitionName: string;
 
   constructor(scope: Construct, id: string, props: MultiNodeJobDefinitionProps) {
     super(scope, id, props);
@@ -122,6 +123,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     const resource = new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,
       type: 'multinode',
+      jobDefinitionName: props.jobDefinitionName,
       nodeProperties: {
         mainNode: this.mainNode ?? 0,
         nodeRangeProperties: Lazy.any({
@@ -144,6 +146,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
       resource: 'job-definition',
       resourceName: this.physicalName,
     });
+    this.jobDefinitionName = this.getResourceNameAttribute(resource.ref);
   }
 
   public addContainer(container: MultiNodeContainer) {

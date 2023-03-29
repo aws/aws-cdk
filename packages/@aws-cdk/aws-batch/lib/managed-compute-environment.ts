@@ -624,18 +624,19 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
 
     return new Import(scope, id);
   }
-  readonly images?: EcsMachineImage[];
-  readonly allocationStrategy?: AllocationStrategy;
-  readonly spotBidPercentage?: number;
-  readonly spotFleetRole?: iam.IRole;
-  readonly instanceTypes: ec2.InstanceType[];
-  readonly instanceClasses: ec2.InstanceClass[];
-  readonly instanceRole?: iam.IRole;
-  readonly launchTemplate?: ec2.ILaunchTemplate;
-  readonly minvCpus?: number;
-  readonly placementGroup?: ec2.IPlacementGroup;
-
   public readonly computeEnvironmentArn: string;
+  public readonly computeEnvironmentName: string;
+
+  public readonly images?: EcsMachineImage[];
+  public readonly allocationStrategy?: AllocationStrategy;
+  public readonly spotBidPercentage?: number;
+  public readonly spotFleetRole?: iam.IRole;
+  public readonly instanceTypes: ec2.InstanceType[];
+  public readonly instanceClasses: ec2.InstanceClass[];
+  public readonly instanceRole?: iam.IRole;
+  public readonly launchTemplate?: ec2.ILaunchTemplate;
+  public readonly minvCpus?: number;
+  public readonly placementGroup?: ec2.IPlacementGroup;
 
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
@@ -662,6 +663,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
 
     const resource = new CfnComputeEnvironment(this, 'Resource', {
       ...this.resourceProps,
+      computeEnvironmentName: props.computeEnvironmentName,
       computeResources: {
         ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         minvCpus: this.minvCpus,
@@ -686,6 +688,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       },
     });
 
+    this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
     this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
       service: 'batch',
       resource: 'compute-environment',
@@ -979,6 +982,9 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly kubernetesNamespace?: string;
   public readonly eksCluster: eks.ICluster;
 
+  public readonly computeEnvironmentName: string;
+  public readonly computeEnvironmentArn: string;
+
   public readonly images?: EksMachineImage[];
   public readonly allocationStrategy?: AllocationStrategy;
   public readonly spotBidPercentage?: number;
@@ -989,8 +995,6 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly launchTemplate?: ec2.ILaunchTemplate;
   public readonly minvCpus?: number;
   public readonly placementGroup?: ec2.IPlacementGroup;
-
-  public readonly computeEnvironmentArn: string;
 
   private readonly instanceProfile: iam.CfnInstanceProfile;
 
@@ -1023,6 +1027,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
 
     const resource = new CfnComputeEnvironment(this, 'Resource', {
       ...this.resourceProps,
+      computeEnvironmentName: props.computeEnvironmentName,
       eksConfiguration: {
         eksClusterArn: this.eksCluster.clusterArn,
         kubernetesNamespace: this.kubernetesNamespace,
@@ -1049,6 +1054,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
       },
     });
 
+    this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
     this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
       service: 'batch',
       resource: 'compute-environment',
@@ -1101,6 +1107,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
     });
   }
 
+  public readonly computeEnvironmentName: string;
   public readonly computeEnvironmentArn: string;
 
   constructor(scope: Construct, id: string, props: FargateComputeEnvironmentProps) {
@@ -1113,6 +1120,7 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
         type: this.spot ? 'FARGATE_SPOT' : 'FARGATE',
       },
     });
+    this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
     this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {
       service: 'batch',
       resource: 'compute-environment',

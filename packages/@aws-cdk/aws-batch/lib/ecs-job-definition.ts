@@ -58,6 +58,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
   readonly containerDefinition: IEcsContainerDefinition
 
   public readonly jobDefinitionArn: string;
+  public readonly jobDefinitionName: string;
 
   constructor(scope: Construct, id: string, props: EcsJobDefinitionProps) {
     super(scope, id, props);
@@ -67,6 +68,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
     const resource = new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,
       type: 'container',
+      jobDefinitionName: props.jobDefinitionName,
       containerProperties: this.containerDefinition?._renderContainerDefinition(),
       platformCapabilities: this.renderPlatformCapabilities(),
     });
@@ -76,6 +78,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
       resource: 'job-definition',
       resourceName: this.physicalName,
     });
+    this.jobDefinitionName = this.getResourceNameAttribute(resource.ref);
   }
 
   private renderPlatformCapabilities() {

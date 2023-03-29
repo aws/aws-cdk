@@ -598,7 +598,7 @@ describe('eks container', () => {
     });
   });
 
-  test('respects addEmptyDirVolume()', () => {
+  test('respects addVolume() with emptyDir volume', () => {
     // GIVEN
     const jobDefn = new EksJobDefinition(stack, 'ECSJobDefn', {
       containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
@@ -607,13 +607,13 @@ describe('eks container', () => {
     });
 
     // WHEN
-    jobDefn.containerDefinition.addEmptyDirVolume({
+    jobDefn.containerDefinition.addVolume(EksVolume.emptyDir({
       name: 'emptyDirName',
       medium: EmptyDirMediumType.DISK,
       mountPath: '/mount/path',
       readonly: false,
       sizeLimit: Size.mebibytes(2048),
-    });
+    }));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
@@ -641,7 +641,7 @@ describe('eks container', () => {
     });
   });
 
-  test('respects addHostPathVolume()', () => {
+  test('respects addVolume() with hostPath volume', () => {
     // GIVEN
     const jobDefn = new EksJobDefinition(stack, 'ECSJobDefn', {
       containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
@@ -650,12 +650,12 @@ describe('eks container', () => {
     });
 
     // WHEN
-    jobDefn.containerDefinition.addHostPathVolume({
+    jobDefn.containerDefinition.addVolume(EksVolume.hostPath({
       name: 'hostPathName',
       path: 'hostPathPath',
       mountPath: '/mount/path',
       readonly: true,
-    });
+    }));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {

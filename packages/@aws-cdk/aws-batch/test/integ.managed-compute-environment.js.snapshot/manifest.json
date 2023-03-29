@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9edc695bcf99b9665e27b91d2c39d3819718e24703d3d23554a29e1c3e0dd0f3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/284f376fd79a8c8d496295880a141ca2b6b0ced7d679ef8b58273a0320bfbd15.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -192,7 +192,10 @@
         "/batch-stack/maximalPropsFargate/maximalPropsFargate": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "maximalPropsFargateA2E688D8"
+            "data": "maximalPropsFargateA2E688D8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/batch-stack/minimalPropsEc2/SecurityGroup/Resource": [

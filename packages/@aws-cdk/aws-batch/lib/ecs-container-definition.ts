@@ -372,14 +372,9 @@ export interface IEcsContainerDefinition extends IConstruct {
   _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty;
 
   /**
-   * Add an EFS Volume to this container
+   * Add a Volume to this container
    */
-  addEfsVolume(volume: EfsVolumeOptions): void;
-
-  /**
-   * Add a Host Volume to this container
-   */
-  addHostVolume(volume: HostVolumeOptions): void;
+  addVolume(volume: EcsVolume): void;
 }
 
 /**
@@ -615,18 +610,8 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     };
   }
 
-  /**
-   * Add an EFS Volume to this container
-   */
-  public addEfsVolume(volume: EfsVolumeOptions): void {
-    this.volumes.push(EcsVolume.efs(volume));
-  }
-
-  /**
-   * Add a Host Volume to this container
-   */
-  public addHostVolume(volume: HostVolumeOptions): void {
-    this.volumes.push(EcsVolume.host(volume));
+  public addVolume(volume: EcsVolume): void {
+    this.volumes.push(volume);
   }
 
   /**

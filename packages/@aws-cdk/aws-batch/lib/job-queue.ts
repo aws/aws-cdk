@@ -1,4 +1,4 @@
-import { IResource, Lazy, Resource } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobQueue } from './batch.generated';
 import { IComputeEnvironment } from './compute-environment-base';
@@ -8,6 +8,21 @@ import { ISchedulingPolicy } from './scheduling-policy';
  * Represents a JobQueue
  */
 export interface IJobQueue extends IResource {
+  /**
+   * The name of the job queue. It can be up to 128 letters long.
+   * It can contain uppercase and lowercase letters, numbers, hyphens (-), and underscores (_)
+   *
+   * @attribute
+   */
+  readonly jobQueueName: string
+
+  /**
+   * The ARN of this job queue
+   *
+   * @attribute
+   */
+  readonly jobQueueArn: string;
+
   /**
    * The set of compute environments mapped to a job queue and their order relative to each other.
    * The job scheduler uses this parameter to determine which compute environment runs a specific job.
@@ -28,23 +43,6 @@ export interface IJobQueue extends IResource {
    * For example, a job queue with a priority value of 10 is given scheduling preference over a job queue with a priority value of 1.
    */
   readonly priority: number
-
-  /**
-   * The name of the job queue. It can be up to 128 letters long.
-   * It can contain uppercase and lowercase letters, numbers, hyphens (-), and underscores (_)
-   *
-   * @default - no name
-   *
-   * @attribute
-   */
-  readonly jobQueueName?: string
-
-  /**
-   * The ARN of this job queue
-   *
-   * @attribute
-   */
-  readonly jobQueueArn: string;
 
   /**
    * If the job queue is enabled, it is able to accept jobs.
@@ -89,9 +87,11 @@ export interface JobQueueProps {
    * The priority of the job queue.
    * Job queues with a higher priority are evaluated first when associated with the same compute environment.
    * Priority is determined in descending order.
-   * For example, a job queue with a priority value of 10 is given scheduling preference over a job queue with a priority value of 1.
+   * For example, a job queue with a priority of 10 is given scheduling preference over a job queue with a priority of 1.
+   *
+   * @default 1
    */
-  readonly priority: number
+  readonly priority?: number
 
   /**
    * The name of the job queue. It can be up to 128 letters long.
@@ -143,10 +143,12 @@ export class JobQueue extends Resource implements IJobQueue {
    * refer to an existing JobQueue by its arn
    */
   public static fromJobQueueArn(scope: Construct, id: string, jobQueueArn: string): IJobQueue {
+    const stack = Stack.of(scope);
     class Import extends Resource implements IJobQueue {
       public readonly computeEnvironments = [];
-      public readonly priority = 0;
+      public readonly priority = 1;
       public readonly jobQueueArn = jobQueueArn;
+      public readonly jobQueueName = stack.splitArn(jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 
       public addComputeEnvironment(_computeEnvironment: IComputeEnvironment, _order: number): void {
         throw new Error(`cannot add ComputeEnvironments to imported JobQueue '${id}'`);
@@ -158,11 +160,11 @@ export class JobQueue extends Resource implements IJobQueue {
 
   public readonly computeEnvironments: OrderedComputeEnvironment[]
   public readonly priority: number
-  public readonly jobQueueName?: string
   public readonly enabled?: boolean
   public readonly schedulingPolicy?: ISchedulingPolicy
 
   public readonly jobQueueArn: string;
+  public readonly jobQueueName: string;
 
   constructor(scope: Construct, id: string, props: JobQueueProps) {
     super(scope, id, {
@@ -170,8 +172,7 @@ export class JobQueue extends Resource implements IJobQueue {
     });
 
     this.computeEnvironments = props.computeEnvironments;
-    this.priority = props.priority;
-    this.jobQueueName = props.jobQueueName;
+    this.priority = props.priority ?? 1;
     this.enabled = props.enabled;
     this.schedulingPolicy = props.schedulingPolicy;
 
@@ -185,7 +186,7 @@ export class JobQueue extends Resource implements IJobQueue {
         }),
       }),
       priority: this.priority,
-      jobQueueName: this.jobQueueName,
+      jobQueueName: props.jobQueueName,
       state: this.enabled === undefined ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       schedulingPolicyArn: this.schedulingPolicy?.schedulingPolicyArn,
     });
@@ -195,6 +196,7 @@ export class JobQueue extends Resource implements IJobQueue {
       resource: 'job-queue',
       resourceName: this.physicalName,
     });
+    this.jobQueueName = this.getResourceNameAttribute(resource.ref);
 
     this.node.addValidation({ validate: () => validateOrderedComputeEnvironments(this.computeEnvironments) });
   }

@@ -141,12 +141,13 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
     return new Import(scope, id);
   }
 
-  readonly containerDefinition: EksContainerDefinition;
-  readonly dnsPolicy?: DnsPolicy;
-  readonly useHostNetwork?: boolean;
-  readonly serviceAccount?: string;
+  public readonly containerDefinition: EksContainerDefinition;
+  public readonly dnsPolicy?: DnsPolicy;
+  public readonly useHostNetwork?: boolean;
+  public readonly serviceAccount?: string;
 
   public readonly jobDefinitionArn: string;
+  public readonly jobDefinitionName: string;
 
   constructor(scope: Construct, id: string, props: EksJobDefinitionProps) {
     super(scope, id, props);
@@ -159,6 +160,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
     const resource = new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,
       type: 'container',
+      jobDefinitionName: props.jobDefinitionName,
       eksProperties: {
         podProperties: {
           containers: [
@@ -213,5 +215,6 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
       resource: 'job-definition',
       resourceName: this.physicalName,
     });
+    this.jobDefinitionName = this.getResourceNameAttribute(resource.ref);
   }
 }
