@@ -100,12 +100,14 @@ export class PrefixList extends PrefixListBase {
   /**
    * The Name of the Prefix List
    *
+   * @attribute
    */
   public readonly prefixListName: string;
 
   /**
    * The ARN of the Prefix List
    *
+   * @attribute
    */
   public readonly prefixListArn: string;
 
