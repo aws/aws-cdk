@@ -106,7 +106,7 @@ export function pathToTopLevelStack(s: Stack): Stack[] {
 
 /**
  * Given two arrays, returns the last common element or `undefined` if there
- * isn't (arrays are foriegn).
+ * isn't (arrays are foreign).
  */
 export function findLastCommonElement<T>(path1: T[], path2: T[]): T | undefined {
   let i = 0;

@@ -30,6 +30,18 @@ const fileSystem = new FileSystem(stack, 'FileSystem', {
   vpc,
   fileSystemPolicy: myFileSystemPolicy,
 });
+fileSystem.addToResourcePolicy(new PolicyStatement({
+  actions: [
+    'elasticfilesystem:ClientRootAccess',
+  ],
+  principals: [new AccountRootPrincipal()],
+  resources: ['*'],
+  conditions: {
+    Bool: {
+      'elasticfilesystem:AccessedViaMountTarget': 'true',
+    },
+  },
+}));
 
 const accessPoint = new AccessPoint(stack, 'AccessPoint', {
   fileSystem,

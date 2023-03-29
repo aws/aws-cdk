@@ -36,7 +36,7 @@ while [[ "${1:-}" != "" ]]; do
 done
 
 export PATH=$(npm bin):$PATH
-export NODE_OPTIONS="--max-old-space-size=4096 --experimental-worker ${NODE_OPTIONS:-}"
+export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
 if ! [ -x "$(command -v yarn)" ]; then
   echo "yarn is not installed. Install it from here- https://yarnpkg.com/en/docs/install."
@@ -78,9 +78,12 @@ if [ "$run_tests" == "true" ]; then
     runtarget="$runtarget+test"
 fi
 
+# Limit top-level concurrency to available CPUs - 1 to limit CPU load.
+concurrency=$(node -p 'Math.max(1, require("os").cpus().length - 1)')
+
 echo "============================================================================================="
 echo "building..."
-time lerna run $bail --stream $runtarget || fail
+time lerna run $bail --stream --concurrency=$concurrency $runtarget || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh

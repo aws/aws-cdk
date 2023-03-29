@@ -275,10 +275,6 @@ function transformPackageJsonDependencies(packageJson: any, pkg: any, alphaPacka
       case '@aws-cdk/core':
         devDependencies['aws-cdk-lib'] = pkg.version;
         break;
-      case '@aws-cdk/assert-internal':
-      case '@aws-cdk/assert':
-        devDependencies['@aws-cdk/assert'] = packageJson.devDependencies[v1DevDependency];
-        break;
       default:
         if (alphaPackages[v1DevDependency]) {
           alphaDevDependencies[alphaPackages[v1DevDependency]] = packageJson.version;
@@ -340,7 +336,7 @@ function packageIsAlpha(pkg: any): boolean {
     return false;
   }
   // we're only interested in '@aws-cdk/' packages,
-  // and those that are JSII-enabled (so no @aws-cdk/assert)
+  // and those that are JSII-enabled
   // Also, don't re-transform already alpha-ed packages
   return pkg.name.startsWith('@aws-cdk/') && !!pkg.get('jsii') && !pkg.name.endsWith('-alpha');
 }

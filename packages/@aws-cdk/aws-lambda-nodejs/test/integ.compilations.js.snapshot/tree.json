@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "cdk-integ-compilations-lambda-nodejs": {
         "id": "cdk-integ-compilations-lambda-nodejs",
         "path": "cdk-integ-compilations-lambda-nodejs",
@@ -24,6 +16,14 @@
                 "id": "ServiceRole",
                 "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/ServiceRole/Resource",
@@ -78,7 +78,7 @@
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/Code/Stage",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.1.270"
                     }
                   },
                   "AssetBucket": {
@@ -119,7 +119,7 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs16.x"
                   }
                 },
                 "constructInfo": {
@@ -141,6 +141,14 @@
                 "id": "ServiceRole",
                 "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/ServiceRole",
                 "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/ServiceRole/Resource",
@@ -195,7 +203,7 @@
                     "path": "cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/Code/Stage",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.85"
+                      "version": "10.1.270"
                     }
                   },
                   "AssetBucket": {
@@ -236,7 +244,7 @@
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs14.x"
+                    "runtime": "nodejs16.x"
                   }
                 },
                 "constructInfo": {
@@ -249,17 +257,41 @@
               "fqn": "@aws-cdk/aws-lambda-nodejs.NodejsFunction",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-compilations-lambda-nodejs/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-compilations-lambda-nodejs/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
           }
         },
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.270"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
       "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "version": "10.1.270"
     }
   }
 }
