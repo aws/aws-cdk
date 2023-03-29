@@ -10,10 +10,16 @@ All notable changes to this project will be documented in this file. See [standa
 * **cfnspec:** cloudformation spec v117.0.0 ([#24778](https://github.com/aws/aws-cdk/issues/24778)) ([9e1dc5a](https://github.com/aws/aws-cdk/commit/9e1dc5ad3b7a1bb040346d77c435c29457a98a75))
 * **cfnspec:** cloudformation spec v117.0.0 ([#24818](https://github.com/aws/aws-cdk/issues/24818)) ([225f8c0](https://github.com/aws/aws-cdk/commit/225f8c073f88d0250e23e29ee1ee4a41ebc0757e))
 
+## [1.198.1](https://github.com/aws/aws-cdk/compare/v1.198.0...v1.198.1) (2023-03-28)
+
 
 ### Bug Fixes
 
+<<<<<<< HEAD
 * **lambda-nodejs:** pnpm no longer supports nodejs14.x (backport [#24821](https://github.com/aws/aws-cdk/issues/24821)) ([#24829](https://github.com/aws/aws-cdk/issues/24829)) ([e8e4d83](https://github.com/aws/aws-cdk/commit/e8e4d838f820ee50d3fcf6ae17fb38d8648e9faa))
+=======
+* **lambda-nodejs:** pnpm no longer supports nodejs14.x (backport [#24821](https://github.com/aws/aws-cdk/issues/24821)) ([#24829](https://github.com/aws/aws-cdk/issues/24829)) ([7c40f42](https://github.com/aws/aws-cdk/commit/7c40f42a63d6c3efe50ae79513d20276cac4e3d5))
+>>>>>>> origin/v1-release
 
 ## [1.198.0](https://github.com/aws/aws-cdk/compare/v1.197.0...v1.198.0) (2023-03-22)
 
