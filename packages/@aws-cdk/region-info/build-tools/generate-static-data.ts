@@ -56,7 +56,7 @@ async function main(): Promise<void> {
     registerFact(region, 'DOMAIN_SUFFIX', domainSuffix);
 
     registerFact(region, 'CDK_METADATA_RESOURCE_AVAILABLE', AWS_CDK_METADATA.has(region) ? 'YES' : 'NO');
-    registerFact(region, 'ECR_PUBLIC_AVAILABLE', partition === 'aws-cn' ? 'NO' : 'YES');
+    registerFact(region, 'ECR_PUBLIC_AVAILABLE', partition === 'aws' ? 'YES' : 'NO');
 
     registerFact(region, 'IS_OPT_IN_REGION', partition === 'aws' && after(region, RULE_CLASSIC_PARTITION_BECOMES_OPT_IN) ? 'YES' : 'NO');
 

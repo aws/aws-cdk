@@ -10,7 +10,7 @@ describe('EcrPublicAvailable', () => {
   });
 
   it('should return false for regions with no ecr public', () => {
-    ['cn-north-1', 'cn-northwest-1'].forEach( r => {
+    ['cn-north-1', 'cn-northwest-1', 'us-gov-west-1', 'us-gov-east-1'].forEach( r => {
       expect(EcrPublicAvailable(r)).toBe(false);
     });
   });
