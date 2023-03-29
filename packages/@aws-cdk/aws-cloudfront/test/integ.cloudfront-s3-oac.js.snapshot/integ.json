@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "S3OriginAccessControl/DefaultTest": {
+      "stacks": [
+        "integ-cloudfront-s3-oac"
+      ],
+      "assertionStack": "S3OriginAccessControl/DefaultTest/DeployAssert",
+      "assertionStackName": "S3OriginAccessControlDefaultTestDeployAssertFF6C26DC"
+    }
+  }
+}

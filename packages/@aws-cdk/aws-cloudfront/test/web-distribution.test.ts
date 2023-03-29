@@ -14,6 +14,8 @@ import {
   GeoRestriction,
   KeyGroup,
   LambdaEdgeEventType,
+  OriginAccessControl,
+  OriginAccessControlOriginType,
   OriginAccessIdentity,
   PublicKey,
   SecurityPolicyProtocol,
@@ -406,10 +408,58 @@ added the ellipsis so a user would know there was more to r...`,
         }],
       },
     });
-
-
   });
 
+  test('distribution with bucket and explicit OAC', () => {
+    const stack = new cdk.Stack();
+    const s3BucketSource = new s3.Bucket(stack, 'Bucket');
+    const oac = new OriginAccessControl(stack, 'OAC', {
+      originType: OriginAccessControlOriginType.S3,
+    });
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [{
+        s3OriginSource: { s3BucketSource, originAccessControl: oac },
+        behaviors: [{ isDefaultBehavior: true }],
+      }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: [
+          {
+            Id: 'origin1',
+            OriginAccessControlId: Match.anyValue(),
+            S3OriginConfig: { OriginAccessIdentity: Match.absent() },
+          },
+        ],
+      },
+    });
+  });
+
+  test('distribution with bucket and default OAC', () => {
+    const stack = new cdk.Stack();
+    const s3BucketSource = new s3.Bucket(stack, 'Bucket');
+
+    new CloudFrontWebDistribution(stack, 'AnAmazingWebsiteProbably', {
+      originConfigs: [{
+        s3OriginSource: { s3BucketSource, originAccessControl: true },
+        behaviors: [{ isDefaultBehavior: true }],
+      }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: [
+          {
+            Id: 'origin1',
+            OriginAccessControlId: Match.anyValue(),
+            S3OriginConfig: { OriginAccessIdentity: Match.absent() },
+          },
+        ],
+      },
+    });
+  });
 
   testDeprecated('distribution with trusted signers on default distribution', () => {
     const stack = new cdk.Stack();

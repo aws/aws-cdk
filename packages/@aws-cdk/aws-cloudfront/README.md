@@ -33,26 +33,64 @@ Additional behaviors may be specified for an origin with a given URL path patter
 controlling which HTTP methods to support, whether to require users to use HTTPS, and what query strings or cookies to forward to your origin,
 among other settings.
 
-#### From an S3 Bucket
+#### From any generic HTTP endpoint
 
-An S3 bucket can be added as an origin. If the bucket is configured as a website endpoint, the distribution can use S3 redirects and S3 custom error
-documents.
+Any public HTTP or HTTPS endpoint can be used as an origin, as long as it has a static domain name.
 
 ```ts
-// Creates a distribution from an S3 bucket.
-const myBucket = new s3.Bucket(this, 'myBucket');
+// Creates a distribution from an HTTP endpoint
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new origins.S3Origin(myBucket) },
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
 });
 ```
 
-The above will treat the bucket differently based on if `IBucket.isWebsite` is set or not. If the bucket is configured as a website, the bucket is
-treated as an HTTP origin, and the built-in S3 redirects and error pages can be used. Otherwise, the bucket is handled as a bucket origin and
-CloudFront's redirect and error handling will be used. In the latter case, the Origin will create an origin access identity and grant it access to the
-underlying bucket. This can be used in conjunction with a bucket that is not public to require that your users access your content using CloudFront
-URLs and not S3 URLs directly.
+#### From an S3 Bucket with IAM access controls
 
-#### ELBv2 Load Balancer
+Any S3 bucket can be used as an origin. If the bucket is not configured for public website hosting, the distribution
+will access bucket contents through the standard S3 `GetObject` API.
+
+CloudFront supports two methods of authenticating with S3: origin access control (OAC) and origin access identity (OAI). OAI
+is a legacy authentication method which will not be supported in new regions. It is strongly recommended to use OAC for all
+new deployments.
+
+You can enable OAC by setting the `originAccessControl` property to `true`, or by explicitly supplying an `OriginAccessControl`
+resource. If you leave OAC disabled, the legacy OAI method will be used by default for backwards-compatibility reasons.
+
+```ts
+// Creates a distribution from a private S3 bucket using Origin Access Control
+const myBucket = new s3.Bucket(this, 'myBucket');
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.S3Origin(myBucket, { originAccessControl: true }) },
+});
+```
+
+The `S3Origin` construct will automatically adjust the bucket resource policy to grant necessary `s3:GetObject` permissions.
+When using OAC, any failure when adjusting permissions will result in an error message. If you cannot resolve the error, you
+can set `autoResourcePolicy: false` to allow deployment and then manually adjust resource policies after deployment.
+
+When using OAI, some types of failures when adjusting permissions will be silently ignored. You should verify that your
+distribution is properly serving origin content after deployment, and then adjust resource policies if necessary.
+
+See [Restricting access to an Amazon S3 origin](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html) for more details about OAC, OAI, and resource policies.
+
+#### From a website-enabled S3 Bucket with public read access
+
+A website-enabled S3 bucket can also be used as an origin. The distribution will access the bucket through
+the public website endpoint and honor any existing S3 configuration for index documents, error documents,
+and redirections.
+
+```ts
+// Creates a distribution from a public website-enabled S3 bucket
+const publicWebBucket = new s3.Bucket(this, 'myWebsiteBucket', {
+  publicReadAccess: true,
+  websiteIndexDocument: 'index.html',
+});
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.S3Origin(publicWebBucket) },
+});
+```
+
+#### From an ELBv2 Load Balancer
 
 An Elastic Load Balancing (ELB) v2 load balancer may be used as an origin. In order for a load balancer to serve as an origin, it must be publicly
 accessible (`internetFacing` is true). Both Application and Network load balancers are supported.
@@ -68,17 +106,6 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 });
 new cloudfront.Distribution(this, 'myDist', {
   defaultBehavior: { origin: new origins.LoadBalancerV2Origin(lb) },
-});
-```
-
-#### From an HTTP endpoint
-
-Origins can also be created from any other HTTP endpoint, given the domain name, and optionally, other origin properties.
-
-```ts
-// Creates a distribution from an HTTP endpoint
-new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
 });
 ```
 
@@ -1024,7 +1051,7 @@ new cloudfront.KeyGroup(this, 'MyKeyGroup', {
     }),
   ],
   // comment: 'Key group containing public keys ...',
-});
+});:
 ```
 
 See:

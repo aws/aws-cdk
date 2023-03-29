@@ -2,7 +2,7 @@ import { Match, Template } from '@aws-cdk/assertions';
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
 import * as s3 from '@aws-cdk/aws-s3';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { S3Origin } from '../lib';
+import { S3Origin, S3OriginAutoResourcePolicy } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -149,6 +149,138 @@ describe('With bucket', () => {
             CanonicalUser: { 'Fn::GetAtt': ['StackDistOrigin15754CE84S3Origin25582A25', 'S3CanonicalUserId'] },
           },
         })],
+      },
+    });
+  });
+
+  test('can use OriginAccessControl with automatic permissions', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const origin = new S3Origin(bucket, { originAccessControl: true });
+    new cloudfront.Distribution(stack, 'Dist', { defaultBehavior: { origin } });
+
+    const oacSingletonRef = 'OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28';
+
+    const tmpl = Template.fromStack(stack);
+    tmpl.hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        OriginAccessControlOriginType: 's3',
+        SigningBehavior: 'always',
+        SigningProtocol: 'sigv4',
+      },
+    });
+    tmpl.hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: [{
+          DomainName: Match.exact({ 'Fn::GetAtt': ['Bucket83908E77', 'RegionalDomainName'] }),
+          OriginAccessControlId: Match.exact({ Ref: oacSingletonRef }),
+          S3OriginConfig: Match.exact({}),
+        }],
+      },
+    });
+    tmpl.hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: 's3:GetObject',
+          Principal: Match.exact({ Service: 'cloudfront.amazonaws.com' }),
+          Resource: Match.exact({ 'Fn::Join': ['', [Match.anyValue(), '/*']] }),
+          Condition: Match.exact({ StringEquals: { 'aws:SourceArn': Match.anyValue() } }),
+        }],
+      },
+    });
+  });
+
+  test('can use OriginAccessControl with read-write permissions', () => {
+    const bucket = new s3.Bucket(stack, 'Bucket');
+    const origin = new S3Origin(bucket, {
+      originAccessControl: true,
+      autoResourcePolicy: S3OriginAutoResourcePolicy.READ_WRITE,
+    });
+    new cloudfront.Distribution(stack, 'Dist', { defaultBehavior: { origin } });
+
+    const oacSingletonRef = 'OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28';
+
+    const tmpl = Template.fromStack(stack);
+    tmpl.hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        OriginAccessControlOriginType: 's3',
+        SigningBehavior: 'always',
+        SigningProtocol: 'sigv4',
+      },
+    });
+    tmpl.hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: [{
+          DomainName: Match.exact({ 'Fn::GetAtt': ['Bucket83908E77', 'RegionalDomainName'] }),
+          OriginAccessControlId: Match.exact({ Ref: oacSingletonRef }),
+          S3OriginConfig: Match.exact({}),
+        }],
+      },
+    });
+    tmpl.hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: [{
+          Effect: 'Allow',
+          Action: Match.exact(['s3:GetObject', 's3:PutObject']),
+          Principal: Match.exact({ Service: 'cloudfront.amazonaws.com' }),
+          Resource: Match.exact({ 'Fn::Join': ['', [Match.anyValue(), '/*']] }),
+          Condition: Match.exact({ StringEquals: { 'aws:SourceArn': Match.anyValue() } }),
+        }],
+      },
+    });
+  });
+
+  false && test('can use OriginAccessCotrol with KMS and automatic permissions', () => {
+
+    // XXX circular dependency! Distribution requires Bucket, Bucket requires Key,
+    // Key requires Distribution (because key policy can't be set after creation).
+    // We can crack this by forcing the Distribution to create with enabled=false,
+    // then use Lambda to adjust Key policy and optionally enable the Distribution.
+    // Distribution doesn't allow the explicit specification of a distribution ID.
+
+    const bucket = new s3.Bucket(stack, 'Bucket', { encryption: s3.BucketEncryption.KMS });
+    const origin = new S3Origin(bucket, { originAccessControl: true });
+    new cloudfront.Distribution(stack, 'Dist', { defaultBehavior: { origin } });
+
+    const oacSingletonRef = 'OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28';
+
+    const tmpl = Template.fromStack(stack);
+    tmpl.hasResourceProperties('AWS::CloudFront::OriginAccessControl', {
+      OriginAccessControlConfig: {
+        OriginAccessControlOriginType: 's3',
+        SigningBehavior: 'always',
+        SigningProtocol: 'sigv4',
+      },
+    });
+    tmpl.hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: [{
+          DomainName: Match.exact({ 'Fn::GetAtt': ['Bucket83908E77', 'RegionalDomainName'] }),
+          OriginAccessControlId: Match.exact({ Ref: oacSingletonRef }),
+          S3OriginConfig: Match.exact({}),
+        }],
+      },
+    });
+    tmpl.hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 's3:GetObject',
+          Effect: 'Allow',
+          Principal: Match.exact({ Service: 'cloudfront.amazonaws.com' }),
+          Resource: Match.exact({ 'Fn::Join': ['', [Match.anyValue(), '/*']] }),
+          Condition: Match.exact({ StringEquals: { 'aws:SourceArn': Match.anyValue() } }),
+        }],
+      },
+    });
+    tmpl.hasResourceProperties('AWS::KMS::KeyPolicy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 'kms:Decrypt',
+          Effect: 'Allow',
+          Principal: Match.exact({ Service: 'cloudfront.amazonaws.com' }),
+          Resource: '*',
+          Condition: Match.exact({ StringEquals: { 'aws:SourceArn': Match.anyValue() } }),
+        }],
       },
     });
   });

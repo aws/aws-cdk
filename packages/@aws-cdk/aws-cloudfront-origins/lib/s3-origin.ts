@@ -1,4 +1,5 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
+import { OriginAccessControl } from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -6,13 +7,69 @@ import { Construct } from 'constructs';
 import { HttpOrigin } from './http-origin';
 
 /**
+ * Resource policy modification settings for S3 origins.
+ */
+export enum S3OriginAutoResourcePolicy {
+  /**
+   * No modifications are made to resource policies
+   */
+  NONE = 'none',
+  /**
+   * Read (but not write) permissions are added to resource policies
+   */
+  READ_ONLY = 'readonly',
+  /**
+   * Read and write permissions are added to resource policies.
+   * This setting cannot be used with origin access identity (OAI).
+   */
+  READ_WRITE = 'readwrite',
+};
+
+/**
  * Properties to use to customize an S3 Origin.
  */
 export interface S3OriginProps extends cloudfront.OriginProps {
   /**
-   * An optional Origin Access Identity of the origin identity cloudfront will use when calling your s3 bucket.
+   * Controls how the resource policies of origin buckets and keys should be automatically modified.
+   * The behavior is slightly different for "origin access control" (OAC) and "origin access identity"
+   * (OAI) origin configurations.
    *
-   * @default - An Origin Access Identity will be created.
+   * If this property is NONE, then no modifications are made to any resource policies. S3 bucket
+   * policy must be configured manually to grant necessary permissions to the CloudFront distribution.
+   *
+   * If this property is READ_ONLY, then s3:GetObject and kms:Decrypt permissions are granted to the
+   * CloudFront distribution on the bucket and its associated KMS key, if any.
+   *
+   * If this property is READ_WRITE, then s3:PutObject, kms:Encrypt, and kms:GenerateDataKey* permissions
+   * are granted to the CloudFront distrubution on the bucket and its associated KMS key, if any.
+   *
+   * When used in combination with OAC, the described behavior is mandatory. If any resource policies
+   * cannot be set due to imported or cross-stack resources, an error will be raised.
+   *
+   * When used in a stack with a legacy OAI configuration, only a best-effort attempt will be made to set
+   * resource policies. Any failures due to imported or cross-stack resources will be ignored.
+   *
+   * @default S3OriginAutoResourcePolicyConfig.READ_ONLY
+   */
+  readonly autoResourcePolicy?: S3OriginAutoResourcePolicy;
+  /**
+   * An optional "origin access control" (OAC) resource which describes how the distribution should
+   * sign its requests for the S3 bucket origin. Can also be set to `true` to apply a default OAC.
+   * OAC is the preferred way to authenticate S3 requests and should be enabled whenever possible.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+   *
+   * @default - OAC is disabled by default, `originAccessIdentity` settings will be used insead
+   */
+  readonly originAccessControl?: cloudfront.IOriginAccessControl | true;
+  /**
+   * An optional "origin access identity" (OAI) that CloudFront will use to access the S3 bucket.
+   * OAI is a legacy feature which remains enabled by default for backwards-compatibility reasons.
+   * New origin configurations should use OAC instead, via the `originAccessControl` property.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+   *
+   * @default - OAI is enabled with default settings, unless `originAccessControl` is set
    */
   readonly originAccessIdentity?: cloudfront.IOriginAccessIdentity;
 }
@@ -47,16 +104,56 @@ export class S3Origin implements cloudfront.IOrigin {
  * Contains additional logic around bucket permissions and origin access identities.
  */
 class S3BucketOrigin extends cloudfront.OriginBase {
-  private originAccessIdentity!: cloudfront.IOriginAccessIdentity;
 
-  constructor(private readonly bucket: s3.IBucket, { originAccessIdentity, ...props }: S3OriginProps) {
+  private originAccessControl?: cloudfront.IOriginAccessControl | true;
+  private originAccessIdentity?: cloudfront.IOriginAccessIdentity;
+  private autoResourcePolicy: S3OriginAutoResourcePolicy;
+
+  constructor(private readonly bucket: s3.IBucket, props: S3OriginProps) {
     super(bucket.bucketRegionalDomainName, props);
-    if (originAccessIdentity) {
-      this.originAccessIdentity = originAccessIdentity;
+    if (props.originAccessControl && props.originAccessIdentity) {
+      throw new Error('The same origin cannot specify both originAccessControl and originAccessIdentity');
     }
+    this.originAccessControl = props.originAccessControl;
+    this.originAccessIdentity = props.originAccessIdentity;
+    this.autoResourcePolicy = props.autoResourcePolicy ?? S3OriginAutoResourcePolicy.READ_ONLY;
   }
 
   public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+    if (this.originAccessControl) {
+      if (this.autoResourcePolicy != S3OriginAutoResourcePolicy.NONE) {
+        const readonly = this.autoResourcePolicy == S3OriginAutoResourcePolicy.READ_ONLY;
+        const dist = scope.node.scope as cloudfront.Distribution;
+        const lazyDistArn = cdk.Lazy.string({ produce: () => dist.distributionArn });
+        const added = this.bucket.addToResourcePolicy(new iam.PolicyStatement({
+          principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
+          actions: readonly ? ['s3:GetObject'] : ['s3:GetObject', 's3:PutObject'],
+          resources: [this.bucket.arnForObjects('*')],
+          conditions: { StringEquals: { 'aws:SourceArn': lazyDistArn } },
+        }));
+        if (!added.statementAdded) {
+          throw new Error('S3Origin cannot edit imported buckets, try autoResourcePolicy=NONE');
+        }
+        // Buckets work because the bucket policies are only installed after the bucket
+        // is created, so the bucket policy can have a dependency on the distribution
+        // which depends on the bucket. But KMS keys need their policy at creation time,
+        // and there is no way to break the circular dependency with the distribution...
+        // unless we write a custom resource Lambda that modifies the key policy "later"?
+        if (this.bucket.encryptionKey) {
+          throw new Error('S3Origin cannot edit KMS keys at this time, try autoResourcePolicy=NONE');
+        }
+      }
+      let oac = this.originAccessControl;
+      if (oac === true) {
+        oac = OriginAccessControl.fromS3Defaults(scope);
+      }
+      const newBindConfig = { ...super.bind(scope, options) };
+      const newOriginProp = { ...newBindConfig.originProperty! };
+      newOriginProp.originAccessControlId = oac.originAccessControlId;
+      newBindConfig.originProperty = newOriginProp;
+      return newBindConfig;
+    }
+
     if (!this.originAccessIdentity) {
       // Using a bucket from another stack creates a cyclic reference with
       // the bucket taking a dependency on the generated S3CanonicalUserId for the grant principal,
@@ -71,19 +168,27 @@ class S3BucketOrigin extends cloudfront.OriginBase {
         comment: `Identity for ${options.originId}`,
       });
     }
-    // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
-    // Only GetObject is needed to retrieve objects for the distribution.
-    // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
-    // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
-    this.bucket.addToResourcePolicy(new iam.PolicyStatement({
-      resources: [this.bucket.arnForObjects('*')],
-      actions: ['s3:GetObject'],
-      principals: [this.originAccessIdentity.grantPrincipal],
-    }));
+    if (this.autoResourcePolicy == S3OriginAutoResourcePolicy.READ_WRITE) {
+      throw new Error('S3OriginAutoResourcePolicy.READ_WRITE is not supported with Origin Access Identity');
+    }
+    if (this.autoResourcePolicy == S3OriginAutoResourcePolicy.READ_ONLY) {
+      // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
+      // Only GetObject is needed to retrieve objects for the distribution.
+      // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.
+      // Source: https://aws.amazon.com/blogs/networking-and-content-delivery/serving-sse-kms-encrypted-content-from-s3-using-cloudfront/
+      this.bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: [this.bucket.arnForObjects('*')],
+        actions: ['s3:GetObject'],
+        principals: [this.originAccessIdentity.grantPrincipal],
+      }));
+    }
     return super.bind(scope, options);
   }
 
   protected renderS3OriginConfig(): cloudfront.CfnDistribution.S3OriginConfigProperty | undefined {
-    return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity.originAccessIdentityId}` };
+    if (this.originAccessControl) {
+      return { };
+    }
+    return { originAccessIdentity: `origin-access-identity/cloudfront/${this.originAccessIdentity!.originAccessIdentityId}` };
   }
 }

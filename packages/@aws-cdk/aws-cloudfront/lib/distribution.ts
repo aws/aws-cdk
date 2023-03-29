@@ -43,6 +43,15 @@ export interface IDistribution extends IResource {
   readonly distributionId: string;
 
   /**
+   * The ARN which uniquely identifies this distribution. When Origin Access Control
+   * is configured, this is the `aws:SourceArn` condition value used when evaluating
+   * IAM policy checks for origin resources.
+   *
+   * @attribute
+   */
+  readonly distributionArn: string;
+
+  /**
    * Adds an IAM policy statement associated with this distribution to an IAM
    * principal's policy.
    *
@@ -268,12 +277,14 @@ export class Distribution extends Resource implements IDistribution {
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
+      public readonly distributionArn: string;
 
       constructor() {
         super(scope, id);
         this.domainName = attrs.domainName;
         this.distributionDomainName = attrs.domainName;
         this.distributionId = attrs.distributionId;
+        this.distributionArn = formatDistributionArn(this);
       }
 
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -288,6 +299,7 @@ export class Distribution extends Resource implements IDistribution {
   public readonly domainName: string;
   public readonly distributionDomainName: string;
   public readonly distributionId: string;
+  public readonly distributionArn: string;
 
   private readonly defaultBehavior: CacheBehavior;
   private readonly additionalBehaviors: CacheBehavior[] = [];
@@ -353,6 +365,7 @@ export class Distribution extends Resource implements IDistribution {
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
+    this.distributionArn = formatDistributionArn(this);
   }
 
   /**

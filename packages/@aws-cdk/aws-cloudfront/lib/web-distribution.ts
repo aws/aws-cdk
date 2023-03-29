@@ -9,6 +9,7 @@ import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, 
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
+import { IOriginAccessControl, OriginAccessControl } from './origin-access-control';
 import { IOriginAccessIdentity } from './origin-access-identity';
 import { formatDistributionArn } from './private/utils';
 
@@ -305,9 +306,25 @@ export interface S3OriginConfig {
   readonly s3BucketSource: s3.IBucket;
 
   /**
-   * The optional Origin Access Identity of the origin identity cloudfront will use when calling your s3 bucket.
+   * An optional "origin access control" (OAC) that this CloudFront distrubion will use to sign S3 requests.
+   * This replaces the legacy "origin access identity" authentication method. You cannot specify both this
+   * property and also `originAccessIdentity`.
    *
-   * @default No Origin Access Identity which requires the S3 bucket to be public accessible
+   * If this property is set to `true`, a default OAC resource will be added to the stack.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+   *
+   * @default - No origin access control, falling back to origin access identity configuration
+   */
+  readonly originAccessControl?: IOriginAccessControl | true;
+
+  /**
+   * The optional Origin Access Identity of the origin identity cloudfront will use when calling your s3 bucket.
+   * You should prefer `originAccessControl` for all new use cases, this exists for backwards compatibility.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+   *
+   * @default - No Origin Access Identity which requires the S3 bucket to be public accessible
    */
   readonly originAccessIdentity?: IOriginAccessIdentity;
 
@@ -752,12 +769,14 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       public readonly domainName: string;
       public readonly distributionDomainName: string;
       public readonly distributionId: string;
+      public readonly distributionArn: string;
 
       constructor() {
         super(scope, id);
         this.domainName = attrs.domainName;
         this.distributionDomainName = attrs.domainName;
         this.distributionId = attrs.distributionId;
+        this.distributionArn = formatDistributionArn(this);
       }
 
       public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
@@ -795,6 +814,11 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
    * The distribution ID for this distribution.
    */
   public readonly distributionId: string;
+
+  /**
+   * The distribution ARN for this distribution.
+   */
+  public readonly distributionArn: string;
 
   /**
    * Maps our methods to the string arrays they are
@@ -989,6 +1013,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     this.domainName = distribution.attrDomainName;
     this.distributionDomainName = distribution.attrDomainName;
     this.distributionId = distribution.ref;
+    this.distributionArn = formatDistributionArn(this);
   }
 
   /**
@@ -1120,6 +1145,12 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
     if (originConfig.s3OriginSource) {
       // first case for backwards compatibility
       if (originConfig.s3OriginSource.originAccessIdentity) {
+        if (originConfig.s3OriginSource.originAccessControl) {
+          throw new Error(
+            'The same origin cannot specify both originAccessControl and originAccessIdentity',
+          );
+        }
+
         // grant CloudFront OriginAccessIdentity read access to S3 bucket
         // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
         // Only GetObject is needed to retrieve objects for the distribution.
@@ -1149,6 +1180,11 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       throw new Error('connectionTimeout: You can specify a number of seconds between 1 and 10 (inclusive).');
     }
 
+    let originAccessControl = originConfig.s3OriginSource?.originAccessControl;
+    if (originAccessControl === true) {
+      originAccessControl = OriginAccessControl.fromS3Defaults(this);
+    }
+
     const originProperty: CfnDistribution.OriginProperty = {
       id: originId,
       domainName: originConfig.s3OriginSource
@@ -1158,6 +1194,7 @@ export class CloudFrontWebDistribution extends cdk.Resource implements IDistribu
       originCustomHeaders:
         originHeaders.length > 0 ? originHeaders : undefined,
       s3OriginConfig,
+      originAccessControlId: originAccessControl?.originAccessControlId,
       originShield: this.toOriginShieldProperty(originConfig),
       customOriginConfig: originConfig.customOriginSource
         ? {
