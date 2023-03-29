@@ -23,12 +23,12 @@ describe('Scope based Associations with Application within Same Account', () => 
     });
 
     const anotherStack = new AppRegistrySampleStack(app, 'SampleStack');
-    Template.fromStack(appAssociator.appRegistryApplication().stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::Application', 1);
-    Template.fromStack(appAssociator.appRegistryApplication().stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
+    Template.fromStack(appAssociator.appRegistryApplication.stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::Application', 1);
+    Template.fromStack(appAssociator.appRegistryApplication.stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
       Name: 'MyAssociatedApplication',
       Tags: { managedBy: 'CDK_Application_Associator' },
     });
-    Template.fromStack(appAssociator.appRegistryApplication().stack).hasOutput('DefaultCdkApplicationApplicationManagerUrl27C138EF', {});
+    Template.fromStack(appAssociator.appRegistryApplication.stack).hasOutput('DefaultCdkApplicationApplicationManagerUrl27C138EF', {});
     Template.fromStack(anotherStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     Template.fromStack(anotherStack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::ResourceAssociation', {
       Application: 'MyAssociatedApplication',
@@ -46,14 +46,14 @@ describe('Scope based Associations with Application within Same Account', () => 
     });
 
     const anotherStack = new AppRegistrySampleStack(app, 'SampleStack');
-    Template.fromStack(appAssociator.appRegistryApplication().stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::Application', 1);
-    Template.fromStack(appAssociator.appRegistryApplication().stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
+    Template.fromStack(appAssociator.appRegistryApplication.stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::Application', 1);
+    Template.fromStack(appAssociator.appRegistryApplication.stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
       Name: 'MyAssociatedApplication',
       Tags: { managedBy: 'CDK_Application_Associator' },
     });
 
     expect(
-      Template.fromStack(appAssociator.appRegistryApplication().stack)
+      Template.fromStack(appAssociator.appRegistryApplication.stack)
         .findOutputs('*', {}),
     ).toEqual({});
     Template.fromStack(anotherStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
@@ -85,7 +85,7 @@ describe('Associate attribute group with Application', () => {
       })],
     });
 
-    customAttributeGroup.attributeGroup.associateWith(appAssociator.appRegistryApplication());
+    customAttributeGroup.attributeGroup.associateWith(appAssociator.appRegistryApplication);
     Template.fromStack(customAttributeGroup.attributeGroup.stack).resourceCountIs('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', 1);
     Template.fromStack(customAttributeGroup.attributeGroup.stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
       Application: 'TestAssociatedApplication',
@@ -137,7 +137,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
     });
 
     expect(
-      Template.fromStack(appAssociator.appRegistryApplication().stack).findOutputs('*', {}),
+      Template.fromStack(appAssociator.appRegistryApplication.stack).findOutputs('*', {}),
     ).toEqual({});
     Template.fromStack(firstStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
     Template.fromStack(nestedStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
@@ -268,7 +268,7 @@ describe('Scope based Associations with Application with Cross Region/Account', 
       associateStage: true,
     });
     app.synth();
-    Template.fromStack(application.appRegistryApplication().stack).hasOutput('DefaultCdkApplicationApplicationManagerUrl27C138EF', {});
+    Template.fromStack(application.appRegistryApplication.stack).hasOutput('DefaultCdkApplicationApplicationManagerUrl27C138EF', {});
     Template.fromStack(pipelineStack).resourceCountIs('AWS::ServiceCatalogAppRegistry::ResourceAssociation', 1);
   });
 });
