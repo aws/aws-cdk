@@ -1,13 +1,13 @@
 # The correct AWS SAM build image based on the runtime of the function will be
 # passed as build arg. The default allows to do `docker build .` when testing.
-ARG IMAGE=public.ecr.aws/sam/build-nodejs14.x
+ARG IMAGE=public.ecr.aws/sam/build-nodejs18.x
 FROM $IMAGE
 
 # Install yarn
 RUN npm install --global yarn@1.22.5
 
 # Install pnpm
-RUN npm install --global pnpm
+RUN npm install --global pnpm@7.30.5
 
 # Install typescript
 RUN npm install --global typescript
