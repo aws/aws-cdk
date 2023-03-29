@@ -450,6 +450,11 @@ export class ContainerDefinition extends Construct {
   public readonly imageName: string;
 
   /**
+   * The number of cpu units reserved for the container.
+   */
+  public readonly cpu?: number;
+
+  /**
    * The inference accelerators referenced by this container.
    */
   private readonly inferenceAcceleratorResources: string[] = [];
@@ -515,6 +520,10 @@ export class ContainerDefinition extends Construct {
       for (const environmentFile of props.environmentFiles) {
         this.environmentFiles.push(environmentFile.bind(this));
       }
+    }
+
+    if (props.cpu) {
+      this.cpu = props.cpu;
     }
 
     props.taskDefinition._linkContainer(this);
