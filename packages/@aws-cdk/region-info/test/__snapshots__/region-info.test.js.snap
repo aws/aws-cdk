@@ -941,7 +941,7 @@ Object {
   "us-gov-east-1": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
-    "ecrPublicAvailable": true,
+    "ecrPublicAvailable": false,
     "lambdaInsightsArmVersions": Object {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
@@ -977,7 +977,7 @@ Object {
   "us-gov-west-1": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "amazonaws.com",
-    "ecrPublicAvailable": true,
+    "ecrPublicAvailable": false,
     "lambdaInsightsArmVersions": Object {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
@@ -1013,7 +1013,7 @@ Object {
   "us-iso-east-1": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "c2s.ic.gov",
-    "ecrPublicAvailable": true,
+    "ecrPublicAvailable": false,
     "lambdaInsightsArmVersions": Object {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
@@ -1049,7 +1049,7 @@ Object {
   "us-iso-west-1": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "c2s.ic.gov",
-    "ecrPublicAvailable": true,
+    "ecrPublicAvailable": false,
     "lambdaInsightsArmVersions": Object {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
@@ -1085,7 +1085,7 @@ Object {
   "us-isob-east-1": Object {
     "cdkMetadataResourceAvailable": false,
     "domainSuffix": "sc2s.sgov.gov",
-    "ecrPublicAvailable": true,
+    "ecrPublicAvailable": false,
     "lambdaInsightsArmVersions": Object {
       "1.0.119.0": undefined,
       "1.0.135.0": undefined,
