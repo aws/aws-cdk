@@ -105,7 +105,7 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 ```
 
-### Import existing application associate all the stacks in the cdk.App scope
+### Import existing application to associate all the stacks in the cdk.App scope
 
 If you want to re-use an existing Application with ARN: `arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId`
 and want to associate all stacks in the `App` scope to your imported application, then use as shown in the example below:
