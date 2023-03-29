@@ -145,7 +145,7 @@ function patch(target: any, fragment: any, log: (x: string) => void) {
 
     try {
       fastJsonPatch.applyPatch(target, p.operations);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`error applying patch: ${JSON.stringify(p, undefined, 2)}: ${e.message}`);
     }
   }

@@ -113,3 +113,38 @@ test('Correctly renders the origin, with custom originId', () => {
     },
   });
 });
+
+test('Correctly renders the origin, with custom originPath', () => {
+  const api = new apigateway.RestApi(stack, 'RestApi');
+  api.root.addMethod('GET');
+
+  const origin = new RestApiOrigin(api, { originPath: '/my/custom/path' });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
+
+  expect(stack.resolve(originBindConfig.originProperty)).toEqual({
+    id: 'StackOrigin029E19582',
+    domainName: {
+      'Fn::Select': [2, {
+        'Fn::Split': ['/', {
+          'Fn::Join': ['', [
+            'https://', { Ref: 'RestApi0C43BF4B' },
+            '.execute-api.',
+            { Ref: 'AWS::Region' },
+            '.',
+            { Ref: 'AWS::URLSuffix' },
+            '/',
+            { Ref: 'RestApiDeploymentStageprod3855DE66' },
+            '/',
+          ]],
+        }],
+      }],
+    },
+    originPath: '/my/custom/path',
+    customOriginConfig: {
+      originProtocolPolicy: 'https-only',
+      originSslProtocols: [
+        'TLSv1.2',
+      ],
+    },
+  });
+});

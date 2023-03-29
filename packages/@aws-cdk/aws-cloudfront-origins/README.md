@@ -122,7 +122,7 @@ new cloudfront.Distribution(this, 'myDist', {
 ## From an API Gateway REST API
 
 Origins can be created from an API Gateway REST API. It is recommended to use a
-[regional API](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html) in this case.
+[regional API](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-endpoint-types.html) in this case. The origin path will automatically be set as the stage name.
 
 ```ts
 declare const api: apigateway.RestApi;
@@ -131,4 +131,11 @@ new cloudfront.Distribution(this, 'Distribution', {
 });
 ```
 
-The origin path will automatically be set as the stage name.
+If you want to use a different origin path, you can specify it in the `originPath` property.
+
+```ts
+declare const api: apigateway.RestApi;
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.RestApiOrigin(api, { originPath: '/custom-origin-path' }) },
+});
+```

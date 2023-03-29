@@ -54,7 +54,7 @@ export interface RemovalPolicyOptions {
   /**
    * The default policy to apply in case the removal policy is not defined.
    *
-   * @default - Default value is resource specific. To determine the default value for a resoure,
+   * @default - Default value is resource specific. To determine the default value for a resource,
    * please consult that specific resource's documentation.
    */
   readonly default?: RemovalPolicy;

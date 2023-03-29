@@ -33,7 +33,7 @@ export interface IntegRunnerOptions {
    *
    * @default - no additional environment variables
    */
-  readonly env?: { [name: string]: string | undefined },
+  readonly env?: { [name: string]: string },
 
   /**
    * tmp cdk.out directory
@@ -216,7 +216,7 @@ export abstract class IntegRunner {
     try {
       const testSuite = IntegTestSuite.fromPath(dir ?? this.snapshotDir);
       return testSuite;
-    } catch (e) {
+    } catch {
       const testCases = LegacyIntegTestSuite.fromLegacy({
         cdk: this.cdk,
         testName: this.test.normalizedTestName,

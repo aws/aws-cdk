@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "31.0.0",
   "artifacts": {
     "FlowLogsTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8161ff5519d2aef653bfa7866cd056f5a3feaccfbd55708667998493d1311898.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d289d02a41d6ea697b6520d38ded075934080a28bff3b0faa0e1c69c9a8ad817.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -199,6 +199,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "FlowLogsCWFlowLog9CED86DA"
+          }
+        ],
+        "/FlowLogsTestStack/FlowLogsAllFormatCW/IAMRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FlowLogsAllFormatCWIAMRoleAF92546B"
+          }
+        ],
+        "/FlowLogsTestStack/FlowLogsAllFormatCW/IAMRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FlowLogsAllFormatCWIAMRoleDefaultPolicyBE4C71ED"
+          }
+        ],
+        "/FlowLogsTestStack/FlowLogsAllFormatCW/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FlowLogsAllFormatCWLogGroup3DAB6837"
+          }
+        ],
+        "/FlowLogsTestStack/FlowLogsAllFormatCW/FlowLog": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FlowLogsAllFormatCWFlowLogB1D6C85A"
           }
         ],
         "/FlowLogsTestStack/Bucket/Resource": [

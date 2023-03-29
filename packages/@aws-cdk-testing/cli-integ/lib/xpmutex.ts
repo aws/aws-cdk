@@ -95,7 +95,7 @@ export class XpMutex {
       // Acquire lock by being the one to create the file
       try {
         return await this.writePidFile('wx'); // Fails if the file already exists
-      } catch (e) {
+      } catch (e: any) {
         if (e.code !== 'EEXIST') { throw e; }
       }
 
@@ -159,7 +159,7 @@ export class XpMutex {
       let contents;
       try {
         contents = await fs.readFile(this.fileName, { encoding: 'utf-8' });
-      } catch (e) {
+      } catch (e: any) {
         if (e.code === 'ENOENT') { return undefined; }
         throw e;
       }
@@ -194,7 +194,7 @@ async function fileExists(fileName: string) {
   try {
     await fs.stat(fileName);
     return true;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') { return false; }
     throw e;
   }
@@ -204,7 +204,7 @@ function processExists(pid: number) {
   try {
     process.kill(pid, 0);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

@@ -3,6 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '@aws-cdk/core';
 import * as kms from '../lib';
+import { KeySpec, KeyUsage } from '../lib';
 
 const ADMIN_ACTIONS: string[] = [
   'kms:Create*',
@@ -966,16 +967,17 @@ describe('key specs and key usages', () => {
     });
   });
 
-  test('invalid combinations of key specs and key usages', () => {
+  test.each(generateInvalidKeySpecKeyUsageCombinations())('invalid combinations of key specs and key usages (%s)', ({ keySpec, keyUsage }) => {
     const stack = new cdk.Stack();
 
-    expect(() => new kms.Key(stack, 'Key1', { keySpec: kms.KeySpec.ECC_NIST_P256 }))
-      .toThrow('key spec \'ECC_NIST_P256\' is not valid with usage \'ENCRYPT_DECRYPT\'');
-    expect(() => new kms.Key(stack, 'Key2', { keySpec: kms.KeySpec.ECC_SECG_P256K1, keyUsage: kms.KeyUsage.ENCRYPT_DECRYPT }))
-      .toThrow('key spec \'ECC_SECG_P256K1\' is not valid with usage \'ENCRYPT_DECRYPT\'');
-    expect(() => new kms.Key(stack, 'Key3', { keySpec: kms.KeySpec.SYMMETRIC_DEFAULT, keyUsage: kms.KeyUsage.SIGN_VERIFY }))
-      .toThrow('key spec \'SYMMETRIC_DEFAULT\' is not valid with usage \'SIGN_VERIFY\'');
-    expect(() => new kms.Key(stack, 'Key4', { keyUsage: kms.KeyUsage.SIGN_VERIFY }))
+    expect(() => new kms.Key(stack, 'Key1', { keySpec, keyUsage }))
+      .toThrow(`key spec \'${keySpec}\' is not valid with usage \'${keyUsage.toString()}\'`);
+  });
+
+  test('invalid combinations of default key spec and key usage SIGN_VERIFY', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new kms.Key(stack, 'Key1', { keyUsage: KeyUsage.SIGN_VERIFY }))
       .toThrow('key spec \'SYMMETRIC_DEFAULT\' is not valid with usage \'SIGN_VERIFY\'');
   });
 
@@ -1017,3 +1019,242 @@ describe('Key.fromKeyArn()', () => {
     });
   });
 });
+
+describe('HMAC', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
+  test.each([
+    [KeySpec.HMAC_224, 'HMAC_224'],
+    [KeySpec.HMAC_256, 'HMAC_256'],
+    [KeySpec.HMAC_384, 'HMAC_384'],
+    [KeySpec.HMAC_512, 'HMAC_512'],
+  ])('%s is not valid for default usage', (keySpec: KeySpec) => {
+    expect(() => new kms.Key(stack, 'Key1', { keySpec }))
+      .toThrow(`key spec \'${keySpec}\' is not valid with usage \'ENCRYPT_DECRYPT\'`);
+  });
+
+  test.each([
+    [KeySpec.HMAC_224, 'HMAC_224'],
+    [KeySpec.HMAC_256, 'HMAC_256'],
+    [KeySpec.HMAC_384, 'HMAC_384'],
+    [KeySpec.HMAC_512, 'HMAC_512'],
+  ])('%s can not be used with key rotation', (keySpec: KeySpec) => {
+    expect(() => new kms.Key(stack, 'Key', {
+      keySpec,
+      keyUsage: KeyUsage.GENERATE_VERIFY_MAC,
+      enableKeyRotation: true,
+    })).toThrow('key rotation cannot be enabled on HMAC keys');
+  });
+
+  test.each([
+    [KeySpec.HMAC_224, 'HMAC_224'],
+    [KeySpec.HMAC_256, 'HMAC_256'],
+    [KeySpec.HMAC_384, 'HMAC_384'],
+    [KeySpec.HMAC_512, 'HMAC_512'],
+  ])('%s can be used for KMS key creation', (keySpec: KeySpec, expected: string) => {
+    new kms.Key(stack, 'Key', {
+      keySpec,
+      keyUsage: KeyUsage.GENERATE_VERIFY_MAC,
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeySpec: expected,
+      KeyUsage: 'GENERATE_VERIFY_MAC',
+    });
+  });
+
+  test('grant generate mac policy', () => {
+    const key = new kms.Key(stack, 'Key', {
+      keySpec: KeySpec.HMAC_256,
+      keyUsage: KeyUsage.GENERATE_VERIFY_MAC,
+    });
+    const user = new iam.User(stack, 'User');
+
+    key.grantGenerateMac(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:GenerateMac',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grant verify mac policy', () => {
+    const key = new kms.Key(stack, 'Key', {
+      keySpec: KeySpec.HMAC_256,
+      keyUsage: KeyUsage.GENERATE_VERIFY_MAC,
+    });
+    const user = new iam.User(stack, 'User');
+
+    key.grantVerifyMac(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':root']] } },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:VerifyMac',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['Key961B73FD', 'Arn'] },
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grant generate mac policy for imported key', () => {
+    const keyArn = 'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012';
+    const key = kms.Key.fromKeyArn(
+      stack,
+      'Key',
+      keyArn,
+    );
+    const user = new iam.User(stack, 'User');
+
+    key.grantGenerateMac(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:GenerateMac',
+            Effect: 'Allow',
+            Resource: keyArn,
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('grant verify mac policy for imported key', () => {
+    const keyArn = 'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012';
+    const key = kms.Key.fromKeyArn(
+      stack,
+      'Key',
+      keyArn,
+    );
+    const user = new iam.User(stack, 'User');
+
+    key.grantVerifyMac(user);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'kms:VerifyMac',
+            Effect: 'Allow',
+            Resource: keyArn,
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+});
+
+describe('SM2', () => {
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
+  test('can be used for KMS key creation', () => {
+    new kms.Key(stack, 'Key1', {
+      keySpec: KeySpec.SM2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeySpec: 'SM2',
+    });
+  });
+});
+
+
+function generateInvalidKeySpecKeyUsageCombinations() {
+  // Copied from Key class
+  const denyLists = {
+    [KeyUsage.ENCRYPT_DECRYPT]: [
+      KeySpec.ECC_NIST_P256,
+      KeySpec.ECC_NIST_P384,
+      KeySpec.ECC_NIST_P521,
+      KeySpec.ECC_SECG_P256K1,
+      KeySpec.HMAC_224,
+      KeySpec.HMAC_256,
+      KeySpec.HMAC_384,
+      KeySpec.HMAC_512,
+    ],
+    [KeyUsage.SIGN_VERIFY]: [
+      KeySpec.SYMMETRIC_DEFAULT,
+      KeySpec.HMAC_224,
+      KeySpec.HMAC_256,
+      KeySpec.HMAC_384,
+      KeySpec.HMAC_512,
+    ],
+    [KeyUsage.GENERATE_VERIFY_MAC]: [
+      KeySpec.RSA_2048,
+      KeySpec.RSA_3072,
+      KeySpec.RSA_4096,
+      KeySpec.ECC_NIST_P256,
+      KeySpec.ECC_NIST_P384,
+      KeySpec.ECC_NIST_P521,
+      KeySpec.ECC_SECG_P256K1,
+      KeySpec.SYMMETRIC_DEFAULT,
+      KeySpec.SM2,
+    ],
+  };
+  const testCases: { keySpec: KeySpec, keyUsage: KeyUsage, toString: () => string }[] = [];
+  for (const keySpec in KeySpec) {
+    for (const keyUsage in KeyUsage) {
+      if (denyLists[keyUsage as KeyUsage].includes(keySpec as KeySpec)) {
+        testCases.push({
+          keySpec: keySpec as KeySpec,
+          keyUsage: keyUsage as KeyUsage,
+          toString: () => `${keySpec} can not be used for ${keyUsage}`,
+        });
+      }
+    }
+  }
+  // Sorting for debugging purposes to see if test cases match deny list
+  testCases.sort((a, b) => a.keyUsage.localeCompare(b.keyUsage));
+  return testCases;
+}

@@ -162,7 +162,7 @@
                 "path": "integ-distribution-policies/Dist/Origin1",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.189"
+                  "version": "10.1.270"
                 }
               },
               "Resource": {
@@ -213,6 +213,64 @@
               "version": "0.0.0"
             }
           },
+          "Dist-2": {
+            "id": "Dist-2",
+            "path": "integ-distribution-policies/Dist-2",
+            "children": {
+              "Origin1": {
+                "id": "Origin1",
+                "path": "integ-distribution-policies/Dist-2/Origin1",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-distribution-policies/Dist-2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudFront::Distribution",
+                  "aws:cdk:cloudformation:props": {
+                    "distributionConfig": {
+                      "enabled": true,
+                      "origins": [
+                        {
+                          "domainName": "www.example-2.com",
+                          "id": "integdistributionpoliciesDist2Origin16AFA66C6",
+                          "customOriginConfig": {
+                            "originProtocolPolicy": "https-only"
+                          }
+                        }
+                      ],
+                      "defaultCacheBehavior": {
+                        "pathPattern": "*",
+                        "targetOriginId": "integdistributionpoliciesDist2Origin16AFA66C6",
+                        "cachePolicyId": {
+                          "Ref": "CachePolicy26D8A535"
+                        },
+                        "compress": true,
+                        "originRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
+                        "responseHeadersPolicyId": {
+                          "Ref": "ResponseHeadersPolicy13DBF9E0"
+                        },
+                        "viewerProtocolPolicy": "allow-all"
+                      },
+                      "httpVersion": "http2",
+                      "ipv6Enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cloudfront.CfnDistribution",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cloudfront.Distribution",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "integ-distribution-policies/BootstrapVersion",
@@ -240,7 +298,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.1.270"
         }
       }
     },

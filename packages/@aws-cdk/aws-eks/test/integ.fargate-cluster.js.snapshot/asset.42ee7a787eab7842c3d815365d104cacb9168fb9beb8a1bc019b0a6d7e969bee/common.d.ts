@@ -8,7 +8,7 @@ export interface EksUpdateId {
      */
     EksUpdateId?: string;
 }
-export declare type ResourceEvent = AWSLambda.CloudFormationCustomResourceEvent & EksUpdateId;
+export type ResourceEvent = AWSLambda.CloudFormationCustomResourceEvent & EksUpdateId;
 export declare abstract class ResourceHandler {
     protected readonly eks: EksClient;
     protected readonly requestId: string;

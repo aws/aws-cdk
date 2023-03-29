@@ -559,7 +559,7 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
         });
       }
       await fixture.aws.iam('deleteRole', { RoleName: roleName });
-    } catch (e) {
+    } catch (e: any) {
       if (e.message.indexOf('cannot be found') > -1) { return; }
       throw e;
     }

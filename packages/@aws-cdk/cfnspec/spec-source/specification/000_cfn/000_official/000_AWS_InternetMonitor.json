@@ -1,5 +1,5 @@
 {
-  "$version": "116.0.0",
+  "$version": "117.0.0",
   "PropertyTypes": {},
   "ResourceTypes": {
     "AWS::InternetMonitor::Monitor": {
@@ -31,7 +31,7 @@
         "MonitorName": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-internetmonitor-monitor.html#cfn-internetmonitor-monitor-monitorname",
           "PrimitiveType": "String",
-          "Required": false,
+          "Required": true,
           "UpdateType": "Immutable"
         },
         "Resources": {

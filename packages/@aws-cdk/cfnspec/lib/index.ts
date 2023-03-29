@@ -67,7 +67,7 @@ export function resourceAugmentation(typeName: string): schema.ResourceAugmentat
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     return require(`./augmentations/${fileName}.json`);
-  } catch (e) {
+  } catch {
     return {};
   }
 }

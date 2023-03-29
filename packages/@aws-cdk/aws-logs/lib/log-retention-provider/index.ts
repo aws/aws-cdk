@@ -31,7 +31,7 @@ async function createLogGroupSafe(logGroupName: string, region?: string, options
       const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
       await cloudwatchlogs.createLogGroup({ logGroupName }).promise();
       return;
-    } catch (error) {
+    } catch (error: any) {
       if (error.code === 'ResourceAlreadyExistsException') {
         // The log group is already created by the lambda execution
         return;
@@ -60,7 +60,7 @@ async function deleteLogGroup(logGroupName: string, region?: string, options?: S
       const cloudwatchlogs = new AWS.CloudWatchLogs({ apiVersion: '2014-03-28', region, ...options });
       await cloudwatchlogs.deleteLogGroup({ logGroupName }).promise();
       return;
-    } catch (error) {
+    } catch (error: any) {
       if (error.code === 'ResourceNotFoundException') {
         // The log group doesn't exist
         return;
@@ -105,7 +105,7 @@ async function setRetentionPolicy(logGroupName: string, region?: string, options
       }
       return;
 
-    } catch (error) {
+    } catch (error: any) {
       if (error.code === 'OperationAbortedException') {
         if (retryCount > 0) {
           retryCount--;
@@ -160,7 +160,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     }
 
     await respond('SUCCESS', 'OK', logGroupName);
-  } catch (e) {
+  } catch (e: any) {
     console.log(e);
 
     await respond('FAILED', e.message, event.ResourceProperties.LogGroupName);

@@ -91,7 +91,7 @@ export class RuleSetContent implements IRuleSetContent {
       return new RuleSetContent({
         content: JSON.parse(body),
       });
-    } catch (err) {
+    } catch {
       throw new Error('RuleSet body has an invalid Json format');
     }
   }

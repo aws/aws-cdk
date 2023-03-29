@@ -57,7 +57,7 @@ export class Docker {
     try {
       await this.execute(['inspect', tag], { quiet: true });
       return true;
-    } catch (e) {
+    } catch (e: any) {
       const error: ProcessFailedError = e;
 
       /**
@@ -181,7 +181,7 @@ export class Docker {
           PATH: `${pathToCdkAssets}${path.delimiter}${options.env?.PATH ?? process.env.PATH}`,
         },
       });
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ENOENT') {
         throw new Error('Unable to execute \'docker\' in order to build a container asset. Please install \'docker\' and try again.');
       }

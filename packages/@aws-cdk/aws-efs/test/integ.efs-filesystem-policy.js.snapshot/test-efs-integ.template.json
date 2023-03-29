@@ -391,6 +391,34 @@
         }
        },
        "Resource": "*"
+      },
+      {
+       "Action": "elasticfilesystem:ClientRootAccess",
+       "Condition": {
+        "Bool": {
+         "elasticfilesystem:AccessedViaMountTarget": "true"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"

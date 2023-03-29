@@ -63,7 +63,7 @@ export class CfnJson extends Construct implements IResolvable {
   }
 
   /**
-   * This is required in case someone JSON.stringifys an object which refrences
+   * This is required in case someone JSON.stringifys an object which references
    * this object. Otherwise, we'll get a cyclic JSON reference.
    */
   public toJSON() {

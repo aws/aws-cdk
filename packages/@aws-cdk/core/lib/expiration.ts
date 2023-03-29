@@ -40,13 +40,13 @@ export class Expiration {
   }
 
   /**
-   * Exipration Value in a formatted Unix Epoch Time in seconds
+   * Expiration Value in a formatted Unix Epoch Time in seconds
    */
   public toEpoch(): number {
     return Math.round(this.date.getTime() / 1000);
   }
   /**
-   * Check if Exipiration expires before input
+   * Check if Expiration expires before input
    * @param t the duration to check against
    */
   public isBefore(t: Duration): boolean {
@@ -54,7 +54,7 @@ export class Expiration {
   }
 
   /**
-   * Check if Exipiration expires after input
+   * Check if Expiration expires after input
    * @param t the duration to check against
    */
   public isAfter( t: Duration ): boolean {

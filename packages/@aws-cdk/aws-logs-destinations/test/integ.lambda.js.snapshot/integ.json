@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "LambdaInteg/DefaultTest": {
+      "stacks": [
+        "lambda-logssubscription-integ"
+      ],
+      "assertionStack": "LambdaInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaIntegDefaultTestDeployAssert7BC530B7"
+    }
+  }
+}

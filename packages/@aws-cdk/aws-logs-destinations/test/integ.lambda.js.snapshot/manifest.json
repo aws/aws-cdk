@@ -1,0 +1,226 @@
+{
+  "version": "31.0.0",
+  "artifacts": {
+    "lambda-logssubscription-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "lambda-logssubscription-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "lambda-logssubscription-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "lambda-logssubscription-integ.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/af2200a28553a430916799cb8371ac8eca5b2a74ee47aa3e3c74be1898298366.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "lambda-logssubscription-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-logssubscription-integ.assets"
+      ],
+      "metadata": {
+        "/lambda-logssubscription-integ/Queue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Queue4A7E3555"
+          }
+        ],
+        "/lambda-logssubscription-integ/MyFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionServiceRole3C357FF2"
+          }
+        ],
+        "/lambda-logssubscription-integ/MyFunction/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionServiceRoleDefaultPolicyB705ABD4"
+          }
+        ],
+        "/lambda-logssubscription-integ/MyFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction3BAA72D1"
+          }
+        ],
+        "/lambda-logssubscription-integ/MyFunction/EventInvokeConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionEventInvokeConfig18F9BD7D"
+          }
+        ],
+        "/lambda-logssubscription-integ/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogGroupF5B46931"
+          }
+        ],
+        "/lambda-logssubscription-integ/Subscription/CanInvokeLambda": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubscriptionCanInvokeLambdaD31DEAD2"
+          }
+        ],
+        "/lambda-logssubscription-integ/Subscription/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Subscription391C9821"
+          }
+        ],
+        "/lambda-logssubscription-integ/CustomRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomRuleB1CBBADE"
+          }
+        ],
+        "/lambda-logssubscription-integ/EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
+          }
+        ],
+        "/lambda-logssubscription-integ/EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7ACDF582E"
+          }
+        ],
+        "/lambda-logssubscription-integ/EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7/CustomResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EventsLogGroupPolicylambdalogssubscriptionintegCustomRuleBA3E2AD7CustomResourcePolicy0DA87EF1"
+          }
+        ],
+        "/lambda-logssubscription-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+          }
+        ],
+        "/lambda-logssubscription-integ/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+          }
+        ],
+        "/lambda-logssubscription-integ/Exports/Output{\"Ref\":\"Queue4A7E3555\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefQueue4A7E3555425E8BD3"
+          }
+        ],
+        "/lambda-logssubscription-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/lambda-logssubscription-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "lambda-logssubscription-integ"
+    },
+    "LambdaIntegDefaultTestDeployAssert7BC530B7.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "LambdaIntegDefaultTestDeployAssert7BC530B7.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "LambdaIntegDefaultTestDeployAssert7BC530B7": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LambdaIntegDefaultTestDeployAssert7BC530B7.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c8724f7396e55c5282f174d8ce47850ce496ad92024bf7cb532b4885c9ce593a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "LambdaIntegDefaultTestDeployAssert7BC530B7.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "lambda-logssubscription-integ",
+        "LambdaIntegDefaultTestDeployAssert7BC530B7.assets"
+      ],
+      "metadata": {
+        "/LambdaInteg/DefaultTest/DeployAssert/AwsApiCallEventBridgeputEvents/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallEventBridgeputEvents"
+          }
+        ],
+        "/LambdaInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/LambdaInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSreceiveMessage"
+          }
+        ],
+        "/LambdaInteg/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSQSreceiveMessage"
+          }
+        ],
+        "/LambdaInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/LambdaInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "LambdaInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
