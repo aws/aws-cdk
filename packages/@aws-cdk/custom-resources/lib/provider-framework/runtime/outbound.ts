@@ -55,7 +55,7 @@ async function defaultInvokeFunction(req: AWS.Lambda.InvocationRequest): Promise
      * it just runs `getFunction` and checks the state.
      */
     return await lambda.invoke(req).promise();
-  } catch (error) {
+  } catch {
 
     /**
      * The status of the Lambda function is checked every second for up to 300 seconds.

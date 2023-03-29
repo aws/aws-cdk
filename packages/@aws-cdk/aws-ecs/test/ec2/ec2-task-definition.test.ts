@@ -264,6 +264,7 @@ describe('ec2 task definition', () => {
         logging: new ecs.AwsLogDriver({ streamPrefix: 'prefix' }),
         memoryReservationMiB: 1024,
         privileged: true,
+        pseudoTerminal: true,
         readonlyRootFilesystem: true,
         secrets: {
           SECRET: ecs.Secret.fromSecretsManager(secret),
@@ -389,6 +390,7 @@ describe('ec2 task definition', () => {
             MemoryReservation: 1024,
             Name: 'web',
             Privileged: true,
+            PseudoTerminal: true,
             ReadonlyRootFilesystem: true,
             Secrets: [
               {

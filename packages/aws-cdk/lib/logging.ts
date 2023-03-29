@@ -7,7 +7,7 @@ const { stdout, stderr } = process;
 
 type WritableFactory = () => Writable;
 
-const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestamp?: boolean) => (fmt: string, ...args: any[]) => {
+const logger = (stream: Writable | WritableFactory, styles?: StyleFn[], timestamp?: boolean) => (fmt: string, ...args: unknown[]) => {
   const ts = timestamp ? `[${formatTime(new Date())}] ` : '';
 
   let str = ts + util.format(fmt, ...args);
@@ -57,8 +57,8 @@ export function increaseVerbosity() {
 const stream = () => CI ? stdout : stderr;
 const _debug = logger(stream, [chalk.gray], true);
 
-export const trace = (fmt: string, ...args: any) => logLevel >= LogLevel.TRACE && _debug(fmt, ...args);
-export const debug = (fmt: string, ...args: any[]) => logLevel >= LogLevel.DEBUG && _debug(fmt, ...args);
+export const trace = (fmt: string, ...args: unknown[]) => logLevel >= LogLevel.TRACE && _debug(fmt, ...args);
+export const debug = (fmt: string, ...args: unknown[]) => logLevel >= LogLevel.DEBUG && _debug(fmt, ...args);
 export const error = logger(stderr, [chalk.red]);
 export const warning = logger(stream, [chalk.yellow]);
 export const success = logger(stream, [chalk.green]);
@@ -66,7 +66,7 @@ export const highlight = logger(stream, [chalk.bold]);
 export const print = logger(stream);
 export const data = logger(stdout);
 
-export type LoggerFunction = (fmt: string, ...args: any[]) => void;
+export type LoggerFunction = (fmt: string, ...args: unknown[]) => void;
 
 /**
  * Create a logger output that features a constant prefix string.

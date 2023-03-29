@@ -11,7 +11,7 @@ const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 2 });
 
 const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
   engine: rds.DatabaseInstanceEngine.postgres({
-    version: rds.PostgresEngineVersion.VER_11_15,
+    version: rds.PostgresEngineVersion.VER_15_2,
   }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   credentials: rds.Credentials.fromUsername('master', {

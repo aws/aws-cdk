@@ -55,7 +55,7 @@ export class Token {
    * - `obj` is either an encoded number or list
    *
    * This does NOT recurse into lists or objects to see if they
-   * containing resolvables.
+   * contain resolvables.
    *
    * @param obj The object to test.
    */
