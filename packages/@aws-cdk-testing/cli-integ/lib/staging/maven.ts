@@ -52,6 +52,10 @@ export async function uploadJavaPackages(packages: string[], login: LoginInforma
       console.log(`❌ ${pkg}: already exists. Skipped.`);
       return 'skip';
     }
+    if (output.toString().includes('Too Many Requests')) {
+      console.log(`♻️ ${pkg}: Too many requests. Retrying.`);
+      return 'retry';
+    }
     return 'fail';
   });
 }

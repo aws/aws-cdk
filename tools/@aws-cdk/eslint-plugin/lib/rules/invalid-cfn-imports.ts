@@ -155,7 +155,7 @@ function isAlphaPackage(packageDir: string): boolean {
     return false;
   }
   // we're only interested in '@aws-cdk/' packages,
-  // and those that are JSII-enabled (so no @aws-cdk/assert)
+  // and those that are JSII-enabled
   return pkg.name.startsWith('@aws-cdk/') && !!pkg['jsii'];
 }
 

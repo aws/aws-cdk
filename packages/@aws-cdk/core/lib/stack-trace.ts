@@ -5,7 +5,7 @@ import { debugModeEnabled } from './debug';
  *
  * Stack traces are often invaluable tools to help diagnose problems, however
  * their capture is a rather expensive operation, and the stack traces can be
- * large. Consequently, users are stronly advised to condition capturing stack
+ * large. Consequently, users are strongly advised to condition capturing stack
  * traces to specific user opt-in.
  *
  * Stack traces will only be captured if the `CDK_DEBUG` environment variable

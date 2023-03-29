@@ -44,7 +44,7 @@ describe('bundling', () => {
       '-w', '/working-directory',
       'alpine',
       'cool', 'command',
-    ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
   test('bundling with image from asset', () => {
@@ -188,7 +188,7 @@ describe('bundling', () => {
     });
 
     const image = DockerImage.fromRegistry('alpine');
-    expect(() => image.run()).toThrow(/\[Status -1\]/);
+    expect(() => image.run()).toThrow(/exited with status -1/);
   });
 
   test('BundlerDockerImage json is the bundler image name by default', () => {
@@ -294,7 +294,7 @@ describe('bundling', () => {
       'alpine',
       '--cool-entrypoint-arg',
       'cool', 'command',
-    ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
   test('cp utility copies from an image', () => {
@@ -404,7 +404,7 @@ describe('bundling', () => {
       '-w', '/working-directory',
       'alpine',
       'cool', 'command',
-    ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
   test('adding user provided network options', () => {
@@ -437,7 +437,7 @@ describe('bundling', () => {
       '-w', '/working-directory',
       'alpine',
       'cool', 'command',
-    ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
   test('adding user provided docker volume options', () => {
@@ -461,7 +461,7 @@ describe('bundling', () => {
         workingDirectory: '/working-directory',
         user: 'user:group',
       });
-    } catch (e) {
+    } catch {
       // We expect this to fail as the test environment will not have the required docker setup for the command to exit successfully
       // nevertheless what we want to check here is that the command was built correctly and triggered
     };
@@ -475,7 +475,7 @@ describe('bundling', () => {
       '-w', '/working-directory',
       'alpine',
       'cool', 'command',
-    ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
   test('ensure selinux docker mount', () => {
@@ -516,7 +516,7 @@ describe('bundling', () => {
       '-w', '/working-directory',
       'alpine',
       'cool', 'command',
-    ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
   test('ensure selinux docker mount on linux with selinux disabled', () => {
@@ -557,7 +557,7 @@ describe('bundling', () => {
       '-w', '/working-directory',
       'alpine',
       'cool', 'command',
-    ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
   test('ensure no selinux docker mount if selinuxenabled isn\'t an available command', () => {
@@ -598,7 +598,7 @@ describe('bundling', () => {
       '-w', '/working-directory',
       'alpine',
       'cool', 'command',
-    ], { stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+    ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
 
   test('ensure correct Docker CLI arguments are returned', () => {

@@ -176,6 +176,30 @@ describe('Attribute Group', () => {
     });
   });
 
+  describe('Associate application to an attribute group', () => {
+    let attributeGroup: appreg.AttributeGroup;
+
+    beforeEach(() => {
+      attributeGroup = new appreg.AttributeGroup(stack, 'MyAttributeGroupForAssociation', {
+        attributeGroupName: 'MyAttributeGroupForAssociation',
+        attributes: {},
+      });
+    });
+
+    test('Associate an application to an attribute group', () => {
+      const application = new appreg.Application(stack, 'MyApplication', {
+        applicationName: 'MyTestApplication',
+      });
+      attributeGroup.associateWith(application);
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
+        Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
+        AttributeGroup: { 'Fn::GetAtt': ['MyAttributeGroupForAssociation6B3E1329', 'Id'] },
+      });
+
+    });
+
+  });
+
   describe('Resource sharing of an attribute group', () => {
     let attributeGroup: appreg.AttributeGroup;
 
@@ -188,18 +212,21 @@ describe('Attribute Group', () => {
 
     test('fails for sharing attribute group without principals', () => {
       expect(() => {
-        attributeGroup.shareAttributeGroup({});
+        attributeGroup.shareAttributeGroup('MyShareId', {
+          name: 'MyShare',
+        });
       }).toThrow(/An entity must be provided for the share/);
     });
 
     test('share attribute group with an organization', () => {
-      attributeGroup.shareAttributeGroup({
+      attributeGroup.shareAttributeGroup('MyShareId', {
+        name: 'MyShare',
         organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare76d2681489c0',
+        Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
@@ -207,13 +234,14 @@ describe('Attribute Group', () => {
     });
 
     test('share attribute group with an account', () => {
-      attributeGroup.shareAttributeGroup({
+      attributeGroup.shareAttributeGroup('MyShareId', {
+        name: 'MyShare',
         accounts: ['123456789012'],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare76d2681489c0',
+        Name: 'MyShare',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
@@ -223,13 +251,14 @@ describe('Attribute Group', () => {
     test('share attribute group with an IAM role', () => {
       const myRole = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/myRole');
 
-      attributeGroup.shareAttributeGroup({
+      attributeGroup.shareAttributeGroup('MyShareId', {
+        name: 'MyShare',
         roles: [myRole],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare76d2681489c0',
+        Name: 'MyShare',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
@@ -239,13 +268,14 @@ describe('Attribute Group', () => {
     test('share attribute group with an IAM user', () => {
       const myUser = iam.User.fromUserArn(stack, 'MyUser', 'arn:aws:iam::123456789012:user/myUser');
 
-      attributeGroup.shareAttributeGroup({
+      attributeGroup.shareAttributeGroup('MyShareId', {
+        name: 'MyShare',
         users: [myUser],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare76d2681489c0',
+        Name: 'MyShare',
         Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
@@ -253,14 +283,15 @@ describe('Attribute Group', () => {
     });
 
     test('share attribute group with organization, give explicit read only access to the attribute group', () => {
-      attributeGroup.shareAttributeGroup({
+      attributeGroup.shareAttributeGroup('MyShareId', {
+        name: 'MyShare',
         organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         sharePermission: appreg.SharePermission.READ_ONLY,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare76d2681489c0',
+        Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly'],
@@ -268,14 +299,15 @@ describe('Attribute Group', () => {
     });
 
     test('share attribute group with organization, give access to mutate attribute groups', () => {
-      attributeGroup.shareAttributeGroup({
+      attributeGroup.shareAttributeGroup('MyShareId', {
+        name: 'MyShare',
         organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         sharePermission: appreg.SharePermission.ALLOW_ACCESS,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare76d2681489c0',
+        Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyAttributeGroup99099500', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupAllowAssociation'],

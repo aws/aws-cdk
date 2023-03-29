@@ -9,7 +9,7 @@ import { Stack } from '../stack';
 /**
  * Build an asset manifest from assets added to a stack
  *
- * This class does not need to be used by app builders; it is only nessary for building Stack Synthesizers.
+ * This class does not need to be used by app builders; it is only necessary for building Stack Synthesizers.
  */
 export class AssetManifestBuilder {
   private readonly files: NonNullable<cxschema.AssetManifest['files']> = {};
@@ -71,6 +71,8 @@ export class AssetManifestBuilder {
       networkMode: asset.networkMode,
       platform: asset.platform,
       dockerOutputs: asset.dockerOutputs,
+      cacheFrom: asset.dockerCacheFrom,
+      cacheTo: asset.dockerCacheTo,
     }, {
       repositoryName: target.repositoryName,
       imageTag,

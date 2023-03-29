@@ -15,7 +15,7 @@
      "Name": "/My/Secret/Parameter"
     },
     "flattenResponse": "false",
-    "salt": "1666616854742"
+    "salt": "1677705111898"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -69,7 +69,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b54b99043c35bd080b9d9d1afce31e3541cf15b679799ba980ed40c837dcb03b.zip"
+     "S3Key": "1f3c2cfb18e102edc713fe4c4b4d87572f4297ee4a5e80a5960adf526ee9ea28.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

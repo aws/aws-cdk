@@ -1,17 +1,11 @@
 {
-  "version": "21.0.0",
+  "version": "30.1.0",
   "artifacts": {
     "assembly-PreparelessPipelineStack-MyStage": {
       "type": "cdk:cloud-assembly",
       "properties": {
         "directoryName": "assembly-PreparelessPipelineStack-MyStage",
         "displayName": "PreparelessPipelineStack/MyStage"
-      }
-    },
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
       }
     },
     "PreparelessPipelineStack.assets": {
@@ -30,7 +24,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d48998cffedf7ada707ce9f74130f229eb47e4c549355b1031589d0c4d78d9ad.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c7f8d2442908a0907394c3d8e250020363bb731d400c6742269a0d1013f1e895.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -209,6 +203,12 @@
         ]
       },
       "displayName": "PreparelessPipelineTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

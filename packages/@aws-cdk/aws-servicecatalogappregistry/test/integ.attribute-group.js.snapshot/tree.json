@@ -30,8 +30,8 @@
                         "beta": "time2"
                       }
                     },
-                    "name": "myAttributeGroupTest",
-                    "description": "my attribute group description"
+                    "name": "myFirstAttributeGroup",
+                    "description": "test attribute group description"
                   }
                 },
                 "constructInfo": {
@@ -39,13 +39,13 @@
                   "version": "0.0.0"
                 }
               },
-              "RAMSharec67f7d80e5ba": {
-                "id": "RAMSharec67f7d80e5ba",
-                "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/RAMSharec67f7d80e5ba",
+              "MyShareId": {
+                "id": "MyShareId",
+                "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/MyShareId",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
                   "aws:cdk:cloudformation:props": {
-                    "name": "RAMSharec67f7d80e5ba",
+                    "name": "MyShare",
                     "allowExternalPrincipals": false,
                     "permissionArns": [
                       "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly"
@@ -228,7 +228,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.189"
+          "version": "10.1.270"
         }
       }
     },
