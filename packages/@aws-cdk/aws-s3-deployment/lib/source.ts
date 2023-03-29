@@ -58,7 +58,8 @@ export interface ISource {
  *     Source.asset('/local/path/to/directory')
  *     Source.asset('/local/path/to/a/file.zip')
  *     Source.data('hello/world/file.txt', 'Hello, world!')
- *     Source.data('config.json', { baz: topic.topicArn })
+ *     Source.dataJson('config.json', { baz: topic.topicArn })
+ *     Source.dataYaml('config.yaml', { baz: topic.topicArn })
  *
  */
 export class Source {
@@ -125,6 +126,7 @@ export class Source {
    * will get resolved only during deployment.
    *
    * To store a JSON object use `Source.jsonData()`.
+   * To store YAML content use `Source.yamlData()`.
    *
    * @param objectKey The destination S3 object key (relative to the root of the
    * S3 deployment).
@@ -161,6 +163,23 @@ export class Source {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         return Source.data(objectKey, Stack.of(scope).toJsonString(obj)).bind(scope, context);
+      },
+    };
+  }
+
+  /**
+   * Deploys an object with the specified JSON object formatted as YAML into the bucket.
+   * The object can include deploy-time values (such as `snsTopic.topicArn`) that
+   * will get resolved only during deployment.
+   *
+   * @param objectKey The destination S3 object key (relative to the root of the
+   * S3 deployment).
+   * @param obj A JSON object.
+   */
+  public static yamlData(objectKey: string, obj: any): ISource {
+    return {
+      bind: (scope: Construct, context?: DeploymentSourceContext) => {
+        return Source.data(objectKey, Stack.of(scope).toYamlString(obj)).bind(scope, context);
       },
     };
   }

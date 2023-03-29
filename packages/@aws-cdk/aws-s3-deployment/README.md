@@ -86,6 +86,8 @@ The following source types are supported for bucket deployments:
   (supports [deploy-time values](#data-with-deploy-time-values))
 - JSON data: `s3deploy.Source.jsonData('object-key.json', { json: 'object' })`
   (supports [deploy-time values](#data-with-deploy-time-values))
+- YAML data: `s3deploy.Source.yamlData('object-key.yaml', { yaml: 'object' })`
+  (supports [deploy-time values](#data-with-deploy-time-values))
 
 To create a source from a single file, you can pass `AssetOptions` to exclude
 all but a single file:
@@ -313,7 +315,7 @@ new s3deploy.BucketDeployment(this, 'DeployMeWithEfsStorage', {
 
 ## Data with deploy-time values
 
-The content passed to `Source.data()` or `Source.jsonData()` can include
+The content passed to `Source.data()`, `Source.jsonData()`, or `Source.yamlData()` can include
 references that will get resolved only during deployment.
 
 For example:
