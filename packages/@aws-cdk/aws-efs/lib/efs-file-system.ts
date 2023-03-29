@@ -1,7 +1,7 @@
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import * as kms from '@aws-cdk/aws-kms';
-import { ArnFormat, FeatureFlags, IResource, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
+import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags } from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
@@ -106,7 +106,7 @@ export enum ThroughputMode {
 /**
  * Represents an Amazon EFS file system
  */
-export interface IFileSystem extends ec2.IConnectable, IResource {
+export interface IFileSystem extends ec2.IConnectable, iam.IResourceWithPolicy {
   /**
    * The ID of the file system, assigned by Amazon EFS.
    *
@@ -285,6 +285,15 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
   public abstract readonly mountTargetsAvailable: IDependable;
 
   /**
+   * @internal
+   */
+  protected _resource?: CfnFileSystem;
+  /**
+   * @internal
+   */
+  protected _fileSystemPolicy?: iam.PolicyDocument;
+
+  /**
    * Grant the actions defined in actions to the given grantee
    * on this File System resource.
    *
@@ -297,6 +306,28 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
       actions: actions,
       resourceArns: [this.fileSystemArn],
     });
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this file system.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported file systems.
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(
+    statement: iam.PolicyStatement,
+  ): iam.AddToResourcePolicyResult {
+    if (!this._resource) {
+      return { statementAdded: false };
+    }
+    this._fileSystemPolicy = this._fileSystemPolicy ?? new iam.PolicyDocument({ statements: [] });
+    this._fileSystemPolicy.addStatements(statement);
+    return {
+      statementAdded: true,
+      policyDependable: this,
+    };
   }
 }
 
@@ -370,7 +401,7 @@ export class FileSystem extends FileSystemBase {
       lifecyclePolicies.push({ transitionToPrimaryStorageClass: props.outOfInfrequentAccessPolicy });
     }
 
-    const filesystem = new CfnFileSystem(this, 'Resource', {
+    this._resource = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
       kmsKeyId: props.kmsKey?.keyArn,
       lifecyclePolicies: lifecyclePolicies.length > 0 ? lifecyclePolicies : undefined,
@@ -378,12 +409,13 @@ export class FileSystem extends FileSystemBase {
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
       backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
-      fileSystemPolicy: props.fileSystemPolicy,
+      fileSystemPolicy: Lazy.any({ produce: () => this._fileSystemPolicy }),
     });
-    filesystem.applyRemovalPolicy(props.removalPolicy);
+    this._resource.applyRemovalPolicy(props.removalPolicy);
 
-    this.fileSystemId = filesystem.ref;
-    this.fileSystemArn = filesystem.attrArn;
+    this.fileSystemId = this._resource.ref;
+    this.fileSystemArn = this._resource.attrArn;
+    this._fileSystemPolicy = props.fileSystemPolicy;
 
     Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 

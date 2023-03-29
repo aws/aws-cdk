@@ -65,12 +65,12 @@ export abstract class ResourceHandler {
     console.log(JSON.stringify(x, undefined, 2));
   }
 
-  protected abstract async onCreate(): Promise<OnEventResponse>;
-  protected abstract async onDelete(): Promise<OnEventResponse | void>;
-  protected abstract async onUpdate(): Promise<(OnEventResponse & EksUpdateId) | void>;
-  protected abstract async isCreateComplete(): Promise<IsCompleteResponse>;
-  protected abstract async isDeleteComplete(): Promise<IsCompleteResponse>;
-  protected abstract async isUpdateComplete(): Promise<IsCompleteResponse>;
+  protected abstract onCreate(): Promise<OnEventResponse>;
+  protected abstract onDelete(): Promise<OnEventResponse | void>;
+  protected abstract onUpdate(): Promise<(OnEventResponse & EksUpdateId) | void>;
+  protected abstract isCreateComplete(): Promise<IsCompleteResponse>;
+  protected abstract isDeleteComplete(): Promise<IsCompleteResponse>;
+  protected abstract isUpdateComplete(): Promise<IsCompleteResponse>;
 }
 
 export interface EksClient {

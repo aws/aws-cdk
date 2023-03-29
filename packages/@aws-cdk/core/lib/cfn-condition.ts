@@ -89,7 +89,7 @@ export class CfnCondition extends CfnElement implements ICfnConditionExpression,
 export interface ICfnConditionExpression extends IResolvable {}
 
 /**
- * Interface to specify certain functions as Service Catalog rule-specifc.
+ * Interface to specify certain functions as Service Catalog rule-specific.
  * These functions can only be used in ``Rules`` section of template.
  */
 export interface ICfnRuleConditionExpression extends ICfnConditionExpression {
