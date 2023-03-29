@@ -717,6 +717,17 @@ integTest('synthing a stage with errors can be suppressed', withDefaultFixture(a
   });
 }));
 
+integTest('synth --quiet can be specified in cdk.json', withDefaultFixture(async (fixture) => {
+  let cdkJson = JSON.parse(await fs.readFile(path.join(fixture.integTestDir, 'cdk.json'), 'utf8'));
+  cdkJson = {
+    ...cdkJson,
+    quiet: true,
+  };
+  await fs.writeFile(path.join(fixture.integTestDir, 'cdk.json'), JSON.stringify(cdkJson));
+  const synthOutput = await fixture.cdk(['synth', fixture.fullStackName('test-2')]);
+  expect(synthOutput).not.toContain('topic152D84A37');
+}));
+
 integTest('deploy stack without resource', withDefaultFixture(async (fixture) => {
   // Deploy the stack without resources
   await fixture.cdkDeploy('conditional-resource', { modEnv: { NO_RESOURCE: 'TRUE' } });
