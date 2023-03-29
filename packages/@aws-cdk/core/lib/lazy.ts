@@ -336,7 +336,7 @@ abstract class LazyBase<A> implements IResolvable {
   private _cached?: A;
 
   constructor(private readonly producer: ILazyProducer<A>, private readonly cache: boolean) {
-    // Stack trace capture is conditionned to `debugModeEnabled()`, because
+    // Stack trace capture is conditioned to `debugModeEnabled()`, because
     // lazies can be created in a fairly thrashy way, and the stack traces are
     // large and slow to obtain; but are mostly useful only when debugging a
     // resolution issue.

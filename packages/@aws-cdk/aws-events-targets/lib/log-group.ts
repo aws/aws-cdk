@@ -154,7 +154,7 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
             (!inputTemplateKeys.includes('timestamp') || !inputTemplateKeys.includes('message'))) {
             return ['CloudWatchLogGroup targets only support input templates in the format {timestamp: <timestamp>, message: <message>}'];
           }
-        } catch (e) {
+        } catch (e: any) {
           return ['Could not parse input template as JSON.\n' +
             'CloudWatchLogGroup targets only support input templates in the format {timestamp: <timestamp>, message: <message>}', e];
         }

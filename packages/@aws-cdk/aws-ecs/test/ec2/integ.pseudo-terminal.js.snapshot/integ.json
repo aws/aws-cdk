@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "PseudoTerminal/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-pseudo-terminal"
+      ],
+      "assertionStack": "PseudoTerminal/DefaultTest/DeployAssert",
+      "assertionStackName": "PseudoTerminalDefaultTestDeployAssert1B88B826"
+    }
+  }
+}

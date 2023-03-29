@@ -7,7 +7,7 @@ const ALLOWED_FQN_PREFIXES = [
   // SCOPES
   '@aws-cdk/', '@aws-cdk-containers/', '@aws-solutions-konstruk/', '@aws-solutions-constructs/', '@amzn/', '@cdklabs/',
   // PACKAGES
-  'aws-rfdk.', 'aws-cdk-lib.',
+  'aws-rfdk.', 'aws-cdk-lib.', 'cdk8s.',
 ];
 
 /**

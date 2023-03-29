@@ -2020,7 +2020,7 @@ function parseVersion(version: ElasticsearchVersion): number {
     } else {
       return parseFloat(versionStr.substring(0, secondDot));
     }
-  } catch (error) {
+  } catch {
     throw new Error(`Invalid Elasticsearch version: ${versionStr}. Version string needs to start with major and minor version (x.y).`);
   }
 }

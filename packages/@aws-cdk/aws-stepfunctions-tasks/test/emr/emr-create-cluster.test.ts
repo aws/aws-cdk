@@ -2,6 +2,8 @@ import { Template } from '@aws-cdk/assertions';
 import * as iam from '@aws-cdk/aws-iam';
 import * as sfn from '@aws-cdk/aws-stepfunctions';
 import * as cdk from '@aws-cdk/core';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { ENABLE_EMR_SERVICE_POLICY_V2 } from '@aws-cdk/cx-api';
 import { EmrCreateCluster } from '../../lib';
 
 let stack: cdk.Stack;
@@ -681,7 +683,92 @@ test('Create Cluster without Roles', () => {
       ],
     },
   });
+});
 
+test('Create Cluster with AmazonElasticMapReduceRole managed policies', () => {
+  // WHEN
+  const app = new cdk.App({ context: { [ENABLE_EMR_SERVICE_POLICY_V2]: false } });
+  const newStack = new cdk.Stack(app, 'NewStack');
+
+  new EmrCreateCluster(newStack, 'Task', {
+    instances: {},
+    name: 'Cluster',
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  });
+
+  // THEN
+  Template.fromStack(newStack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Principal: { Service: 'elasticmapreduce.amazonaws.com' },
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+        },
+      ],
+    },
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/service-role/AmazonElasticMapReduceRole',
+          ],
+        ],
+      },
+    ],
+  });
+});
+
+
+test('Create Cluster with AmazonEMRServicePolicy_v2 managed policies', () => {
+  // WHEN
+  const app = new cdk.App({ context: { [ENABLE_EMR_SERVICE_POLICY_V2]: true } });
+  const newStack = new cdk.Stack(app, 'NewStack');
+
+  new EmrCreateCluster(newStack, 'Task', {
+    instances: {},
+    name: 'Cluster',
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  });
+
+  // THEN
+  Template.fromStack(newStack).hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Principal: { Service: 'elasticmapreduce.amazonaws.com' },
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Condition: {
+            StringEquals: {
+              'aws:RequestTag/for-use-with-amazon-emr-managed-policies': 'true',
+            },
+          },
+        },
+      ],
+    },
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/service-role/AmazonEMRServicePolicy_v2',
+          ],
+        ],
+      },
+    ],
+  });
 });
 
 test('Create Cluster with Instances configuration', () => {

@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "BucketGrantWriteTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3"
+      ],
+      "assertionStack": "BucketGrantWriteTest/DefaultTest/DeployAssert",
+      "assertionStackName": "BucketGrantWriteTestDefaultTestDeployAssertF3318F24"
+    }
+  }
+}

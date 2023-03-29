@@ -286,9 +286,14 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/48f5067abd509ff93057e62d487a2626ead42b38c415f6b6144c24eefbd10fdc.json"
+       "/cf4730b0be0dfb553e6b9c37bedbba20746a488e34196097845d91bacf8c5782.json"
       ]
      ]
+    },
+    "Parameters": {
+     "referencetoawscdkdynamodbglobalreplicasprovisionedTable12280A12Ref": {
+      "Ref": "TableCD117FA1"
+     }
     }
    },
    "UpdateReplacePolicy": "Delete",

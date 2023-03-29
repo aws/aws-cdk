@@ -19,10 +19,10 @@
     "Description": "test attribute group description"
    }
   },
-  "TestAttributeGroupRAMSharec67f7d80e5baA10EFB4E": {
+  "TestAttributeGroupMyShareIdBAA9E628": {
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
-    "Name": "RAMSharec67f7d80e5ba",
+    "Name": "MyShare",
     "AllowExternalPrincipals": false,
     "PermissionArns": [
      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly"

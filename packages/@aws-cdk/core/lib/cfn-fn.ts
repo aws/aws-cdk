@@ -16,7 +16,7 @@ import { Token } from './token';
 export class Fn {
   /**
    * The ``Ref`` intrinsic function returns the value of the specified parameter or resource.
-   * Note that it doesn't validate the logicalName, it mainly serves paremeter/resource reference defined in a ``CfnInclude`` template.
+   * Note that it doesn't validate the logicalName, it mainly serves parameter/resource reference defined in a ``CfnInclude`` template.
    * @param logicalName The logical name of a parameter/resource for which you want to retrieve its value.
    */
   public static ref(logicalName: string): string {
@@ -99,7 +99,7 @@ export class Fn {
    * @returns a token represented as a string array
    */
   public static split(delimiter: string, source: string, assumedLength?: number): string[] {
-    // short-circut if source is not a token
+    // short-circuit if source is not a token
     if (!Token.isUnresolved(source)) {
       return source.split(delimiter);
     }
@@ -420,7 +420,7 @@ export class Fn {
    * @param object The object or array to stringify
    */
   public static toJsonString(object: any): string {
-    // short-circut if object is not a token
+    // short-circuit if object is not a token
     if (!Token.isUnresolved(object)) {
       return JSON.stringify(object);
     }
@@ -434,7 +434,7 @@ export class Fn {
    * @param array The array you want to return the number of elements from
    */
   public static len(array: any): number {
-    // short-circut if array is not a token
+    // short-circuit if array is not a token
     if (!Token.isUnresolved(array)) {
       if (!Array.isArray(array)) {
         throw new Error('Fn.length() needs an array');
@@ -630,7 +630,7 @@ class FnCidr extends FnBase {
    */
   constructor(ipBlock: any, count: any, sizeMask?: any) {
     if (count < 1 || count > 256) {
-      throw new Error(`Fn::Cidr's count attribute must be betwen 1 and 256, ${count} was provided.`);
+      throw new Error(`Fn::Cidr's count attribute must be between 1 and 256, ${count} was provided.`);
     }
     super('Fn::Cidr', [ipBlock, count, sizeMask]);
   }
@@ -851,7 +851,7 @@ class FnJoin implements IResolvable {
   }
 
   /**
-   * Optimization: if an Fn::Join is nested in another one and they share the same delimiter, then flatten it up. Also,
+   * Optimization: if a Fn::Join is nested in another one and they share the same delimiter, then flatten it up. Also,
    * if two concatenated elements are literal strings (not tokens), then pre-concatenate them with the delimiter, to
    * generate shorter output.
    */

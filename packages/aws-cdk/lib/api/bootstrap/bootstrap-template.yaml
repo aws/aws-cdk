@@ -235,6 +235,24 @@ Resources:
     Type: AWS::ECR::Repository
     Properties:
       ImageTagMutability: IMMUTABLE
+      # Untagged images should never exist but Security Hub wants this rule to exist
+      LifecyclePolicy:
+        LifecyclePolicyText: |
+          {
+            "rules": [
+              {
+                "rulePriority": 1,
+                "description": "Untagged images should not exist, but expire any older than one year",
+                "selection": {
+                  "tagStatus": "untagged",
+                  "countType": "sinceImagePushed",
+                  "countUnit": "days",
+                  "countNumber": 365
+                },
+                "action": { "type": "expire" }
+              }
+            ]
+          }
       RepositoryName:
         Fn::If:
           - HasCustomContainerAssetsRepositoryName
@@ -615,7 +633,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '16'
+      Value: '17'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

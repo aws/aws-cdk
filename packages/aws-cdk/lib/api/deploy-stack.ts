@@ -508,7 +508,7 @@ class FullCloudFormationDeployment {
       // This shouldn't really happen, but catch it anyway. You never know.
       if (!successStack) { throw new Error('Stack deploy failed (the stack disappeared while we were deploying it)'); }
       finalState = successStack;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(suffixWithErrors(e.message, monitor?.errors));
     } finally {
       await monitor?.stop();
@@ -672,7 +672,7 @@ export async function destroyStack(options: DestroyStackOptions) {
     if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
       throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
     }
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(suffixWithErrors(e.message, monitor?.errors));
   } finally {
     if (monitor) { await monitor.stop(); }

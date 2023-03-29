@@ -55,7 +55,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
 // https://github.com/aws/aws-sdk-js/issues/3411
 // https://github.com/aws/aws-sdk-js/issues/3506
-function removeUndefinedAndEmpty<T>(obj: T): T {
+function removeUndefinedAndEmpty<T extends { [key: string]: unknown }>(obj: T): T {
   const ret: { [key: string]: any } = {};
 
   for (const [k, v] of Object.entries(obj)) {

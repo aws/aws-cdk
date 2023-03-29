@@ -71,7 +71,7 @@ async function moveIntoPlace(source: string, target: string, logger: Logger) {
       }
       await fs.rename(source, target);
       return;
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'EPERM' || attempts-- <= 0) {
         throw e;
       }
@@ -90,7 +90,7 @@ async function pathExists(x: string) {
   try {
     await fs.stat(x);
     return true;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') {
       return false;
     }

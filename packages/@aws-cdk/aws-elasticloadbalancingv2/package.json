@@ -5,6 +5,13 @@
   "description": "The CDK Construct Library for AWS::ElasticLoadBalancingV2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "typesVersions": {
+    "<=3.9": {
+      "*": [
+        ".types-compat/ts3.9/*"
+      ]
+    }
+  },
   "jsii": {
     "outdir": "dist",
     "targets": {

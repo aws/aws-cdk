@@ -89,7 +89,7 @@ export abstract class ToolkitInfo {
 
       ssmCache?.set(parameterName, asNumber);
       return asNumber;
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ParameterNotFound') {
         throw new Error(`SSM parameter ${parameterName} not found. Has the environment been bootstrapped? Please run \'cdk bootstrap\' (see https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html)`);
       }
@@ -160,7 +160,7 @@ class ExistingToolkitInfo extends ToolkitInfo {
     if (ssmParameterName !== undefined) {
       try {
         version = await ToolkitInfo.versionFromSsmParameter(this.sdk, ssmParameterName, this.ssmCache);
-      } catch (e) {
+      } catch (e: any) {
         if (e.code !== 'AccessDeniedException') { throw e; }
 
         // This is a fallback! The bootstrap template that goes along with this change introduces
@@ -202,7 +202,7 @@ class ExistingToolkitInfo extends ToolkitInfo {
       if (existingRepositoryUri) {
         return { repositoryUri: existingRepositoryUri };
       }
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'RepositoryNotFoundException') { throw e; }
     }
 
@@ -275,7 +275,7 @@ class BootstrapStackNotFoundInfo extends ToolkitInfo {
     let version: number;
     try {
       version = await ToolkitInfo.versionFromSsmParameter(this.sdk, ssmParameterName, this.ssmCache);
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'AccessDeniedException') { throw e; }
 
       // This is a fallback! The bootstrap template that goes along with this change introduces

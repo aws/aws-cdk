@@ -54,7 +54,7 @@ async function tryGetClusterSnapshotStatus(identifier: string): Promise<string |
       DBClusterSnapshotIdentifier: identifier,
     }).promise();
     return data.DBClusterSnapshots?.[0].Status;
-  } catch (err) {
+  } catch (err: any) {
     if (err.code === 'DBClusterSnapshotNotFoundFault') {
       return undefined;
     }

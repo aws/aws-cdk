@@ -52,7 +52,7 @@ export class LogicalIDs {
   /**
    * Throw an error if not all renames have been used
    *
-   * This is to assure that users didn't make typoes when registering renames.
+   * This is to assure that users didn't make typos when registering renames.
    */
   public assertAllRenamesApplied() {
     const keys = new Set<string>();

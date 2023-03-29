@@ -16,7 +16,7 @@ export function rimraf(fsPath: string) {
     } else {
       fs.unlinkSync(fsPath);
     }
-  } catch (e) {
+  } catch (e: any) {
     // We will survive ENOENT
     if (e.code !== 'ENOENT') { throw e; }
   }

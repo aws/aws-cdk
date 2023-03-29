@@ -305,6 +305,7 @@ describe('container definition', () => {
         gpuCount: 256,
         hostname: 'host.example.com',
         privileged: true,
+        pseudoTerminal: true,
         readonlyRootFilesystem: true,
         startTimeout: cdk.Duration.millis(2000),
         stopTimeout: cdk.Duration.millis(5000),
@@ -441,6 +442,7 @@ describe('container definition', () => {
             MemoryReservation: 512,
             Name: 'Example Container',
             Privileged: true,
+            PseudoTerminal: true,
             ReadonlyRootFilesystem: true,
             ResourceRequirements: [
               {

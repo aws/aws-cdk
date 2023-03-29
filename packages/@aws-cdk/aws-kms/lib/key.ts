@@ -1,6 +1,19 @@
 import * as iam from '@aws-cdk/aws-iam';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { FeatureFlags, IResource, Lazy, RemovalPolicy, Resource, ResourceProps, Stack, Duration, Token, ContextProvider, Arn, ArnFormat } from '@aws-cdk/core';
+import {
+  Arn,
+  ArnFormat,
+  ContextProvider,
+  Duration,
+  FeatureFlags,
+  IResource,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  ResourceProps,
+  Stack,
+  Token,
+} from '@aws-cdk/core';
 import * as cxapi from '@aws-cdk/cx-api';
 import { Construct } from 'constructs';
 import { Alias } from './alias';
@@ -60,6 +73,16 @@ export interface IKey extends IResource {
    * Grant encryption and decryption permissions using this key to the given principal
    */
   grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant permissions to generating MACs to the given principal
+   */
+  grantGenerateMac(grantee: iam.IGrantable): iam.Grant
+
+  /**
+   * Grant permissions to verifying MACs to the given principal
+   */
+  grantVerifyMac(grantee: iam.IGrantable): iam.Grant
 }
 
 abstract class KeyBase extends Resource implements IKey {
@@ -194,6 +217,20 @@ abstract class KeyBase extends Resource implements IKey {
   }
 
   /**
+   * Grant permissions to generating MACs to the given principal
+   */
+  public grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.GENERATE_HMAC_ACTIONS);
+  }
+
+  /**
+   * Grant permissions to verifying MACs to the given principal
+   */
+  public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
+  }
+
+  /**
    * Checks whether the grantee belongs to a stack that will be deployed
    * after the stack containing this key.
    *
@@ -300,6 +337,41 @@ export enum KeySpec {
    * Valid usage: SIGN_VERIFY
    */
   ECC_SECG_P256K1 = 'ECC_SECG_P256K1',
+
+  /**
+   * Hash-Based Message Authentication Code as defined in RFC 2104 using the message digest function SHA224.
+   *
+   * Valid usage: GENERATE_VERIFY_MAC
+   */
+  HMAC_224 = 'HMAC_224',
+
+  /**
+   * Hash-Based Message Authentication Code as defined in RFC 2104 using the message digest function SHA256.
+   *
+   * Valid usage: GENERATE_VERIFY_MAC
+   */
+  HMAC_256 = 'HMAC_256',
+
+  /**
+   * Hash-Based Message Authentication Code as defined in RFC 2104 using the message digest function SHA384.
+   *
+   * Valid usage: GENERATE_VERIFY_MAC
+   */
+  HMAC_384 = 'HMAC_384',
+
+  /**
+   * Hash-Based Message Authentication Code as defined in RFC 2104 using the message digest function SHA512.
+   *
+   * Valid usage: GENERATE_VERIFY_MAC
+   */
+  HMAC_512 = 'HMAC_512',
+
+  /**
+   * Elliptic curve key spec available only in China Regions.
+   *
+   * Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY
+   */
+  SM2 = 'SM2',
 }
 
 /**
@@ -315,6 +387,11 @@ export enum KeyUsage {
    * Signing and verification
    */
   SIGN_VERIFY = 'SIGN_VERIFY',
+
+  /**
+   * Generating and verifying MACs
+   */
+  GENERATE_VERIFY_MAC = 'GENERATE_VERIFY_MAC',
 }
 
 /**
@@ -504,7 +581,7 @@ export class Key extends KeyBase {
     let keyPolicy: iam.PolicyDocument;
     try {
       keyPolicy = iam.PolicyDocument.fromJson(cfnKey.keyPolicy);
-    } catch (e) {
+    } catch {
       // If the KeyPolicy contains any CloudFormation functions,
       // PolicyDocument.fromJson() throws an exception.
       // In that case, because we would have to effectively make the returned IKey immutable,
@@ -595,15 +672,38 @@ export class Key extends KeyBase {
         KeySpec.ECC_NIST_P384,
         KeySpec.ECC_NIST_P521,
         KeySpec.ECC_SECG_P256K1,
+        KeySpec.HMAC_224,
+        KeySpec.HMAC_256,
+        KeySpec.HMAC_384,
+        KeySpec.HMAC_512,
       ],
       [KeyUsage.SIGN_VERIFY]: [
         KeySpec.SYMMETRIC_DEFAULT,
+        KeySpec.HMAC_224,
+        KeySpec.HMAC_256,
+        KeySpec.HMAC_384,
+        KeySpec.HMAC_512,
+      ],
+      [KeyUsage.GENERATE_VERIFY_MAC]: [
+        KeySpec.RSA_2048,
+        KeySpec.RSA_3072,
+        KeySpec.RSA_4096,
+        KeySpec.ECC_NIST_P256,
+        KeySpec.ECC_NIST_P384,
+        KeySpec.ECC_NIST_P521,
+        KeySpec.ECC_SECG_P256K1,
+        KeySpec.SYMMETRIC_DEFAULT,
+        KeySpec.SM2,
       ],
     };
     const keySpec = props.keySpec ?? KeySpec.SYMMETRIC_DEFAULT;
     const keyUsage = props.keyUsage ?? KeyUsage.ENCRYPT_DECRYPT;
     if (denyLists[keyUsage].includes(keySpec)) {
       throw new Error(`key spec '${keySpec}' is not valid with usage '${keyUsage}'`);
+    }
+
+    if (keySpec.startsWith('HMAC') && props.enableKeyRotation) {
+      throw new Error('key rotation cannot be enabled on HMAC keys');
     }
 
     if (keySpec !== KeySpec.SYMMETRIC_DEFAULT && props.enableKeyRotation) {

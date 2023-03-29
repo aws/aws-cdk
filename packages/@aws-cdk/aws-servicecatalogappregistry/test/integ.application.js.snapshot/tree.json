@@ -141,13 +141,13 @@
                   "version": "0.0.0"
                 }
               },
-              "RAMShare004736f08f8e": {
-                "id": "RAMShare004736f08f8e",
-                "path": "integ-servicecatalogappregistry-application/TestApplication/RAMShare004736f08f8e",
+              "MyShareId": {
+                "id": "MyShareId",
+                "path": "integ-servicecatalogappregistry-application/TestApplication/MyShareId",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
                   "aws:cdk:cloudformation:props": {
-                    "name": "RAMShare004736f08f8e",
+                    "name": "MyShare",
                     "allowExternalPrincipals": false,
                     "permissionArns": [
                       "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"

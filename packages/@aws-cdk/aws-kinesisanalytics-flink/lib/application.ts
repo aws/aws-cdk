@@ -9,7 +9,7 @@ import { ApplicationCode } from './application-code';
 import { environmentProperties } from './private/environment-properties';
 import { flinkApplicationConfiguration } from './private/flink-application-configuration';
 import { validateFlinkApplicationProps as validateApplicationProps } from './private/validation';
-import { LogLevel, MetricsLevel, PropertyGroups, Runtime } from './types';
+import { LogLevel, MetricsLevel, Runtime } from './types';
 
 /**
  * An interface expressing the public properties on both an imported and
@@ -851,7 +851,7 @@ export interface ApplicationProps {
    *
    * @default - No property group configuration provided to the Flink app
    */
-  readonly propertyGroups?: PropertyGroups;
+  readonly propertyGroups?: { readonly [propertyId: string]: { [mapKey: string]: string } };
 
   /**
    * A role to use to grant permissions to your application. Prefer omitting

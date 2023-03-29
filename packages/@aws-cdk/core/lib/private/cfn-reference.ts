@@ -71,7 +71,7 @@ export class CfnReference extends Reference {
   }
 
   /**
-   * Return a CfnReference that references a pseudo referencd
+   * Return a CfnReference that references a pseudo referenced
    */
   public static forPseudo(pseudoName: string, scope: Construct) {
     return CfnReference.singletonReference(scope, `Pseudo:${pseudoName}`, undefined, () => {

@@ -1,0 +1,313 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "kinesis-logsubscription-integ": {
+        "id": "kinesis-logsubscription-integ",
+        "path": "kinesis-logsubscription-integ",
+        "children": {
+          "MyStream": {
+            "id": "MyStream",
+            "path": "kinesis-logsubscription-integ/MyStream",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "kinesis-logsubscription-integ/MyStream/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Kinesis::Stream",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionPeriodHours": 24,
+                    "shardCount": 1,
+                    "streamEncryption": {
+                      "Fn::If": [
+                        "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+                        {
+                          "Ref": "AWS::NoValue"
+                        },
+                        {
+                          "EncryptionType": "KMS",
+                          "KeyId": "alias/aws/kinesis"
+                        }
+                      ]
+                    },
+                    "streamModeDetails": {
+                      "streamMode": "PROVISIONED"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-kinesis.CfnStream",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-kinesis.Stream",
+              "version": "0.0.0"
+            }
+          },
+          "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+            "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "path": "kinesis-logsubscription-integ/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          },
+          "LogGroup": {
+            "id": "LogGroup",
+            "path": "kinesis-logsubscription-integ/LogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "kinesis-logsubscription-integ/LogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
+          "Subscription": {
+            "id": "Subscription",
+            "path": "kinesis-logsubscription-integ/Subscription",
+            "children": {
+              "CloudWatchLogsCanPutRecords": {
+                "id": "CloudWatchLogsCanPutRecords",
+                "path": "kinesis-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords",
+                "children": {
+                  "ImportCloudWatchLogsCanPutRecords": {
+                    "id": "ImportCloudWatchLogsCanPutRecords",
+                    "path": "kinesis-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/ImportCloudWatchLogsCanPutRecords",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "kinesis-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "logs.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "kinesis-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "kinesis-logsubscription-integ/Subscription/CloudWatchLogsCanPutRecords/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "kinesis:ListShards",
+                                    "kinesis:PutRecord",
+                                    "kinesis:PutRecords"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyStream5C050E93",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "iam:PassRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "SubscriptionCloudWatchLogsCanPutRecords9C1223EC",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "SubscriptionCloudWatchLogsCanPutRecordsDefaultPolicy50D4970F",
+                            "roles": [
+                              {
+                                "Ref": "SubscriptionCloudWatchLogsCanPutRecords9C1223EC"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "kinesis-logsubscription-integ/Subscription/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::SubscriptionFilter",
+                  "aws:cdk:cloudformation:props": {
+                    "destinationArn": {
+                      "Fn::GetAtt": [
+                        "MyStream5C050E93",
+                        "Arn"
+                      ]
+                    },
+                    "filterPattern": "",
+                    "logGroupName": {
+                      "Ref": "LogGroupF5B46931"
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "SubscriptionCloudWatchLogsCanPutRecords9C1223EC",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-logs.CfnSubscriptionFilter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-logs.SubscriptionFilter",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "kinesis-logsubscription-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "kinesis-logsubscription-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
+        }
+      },
+      "KinesisInteg": {
+        "id": "KinesisInteg",
+        "path": "KinesisInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "KinesisInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "KinesisInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "KinesisInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "KinesisInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "KinesisInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.270"
+    }
+  }
+}

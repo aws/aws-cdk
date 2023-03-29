@@ -218,7 +218,7 @@ export class CfnSpecValidator {
         block(new JsonValue(x.value, x.path));
       }
       return true;
-    } catch (e) {
+    } catch (e: any) {
       this.report(x, e.message);
       return false;
     }
@@ -279,9 +279,9 @@ class JsonValue<A> implements JsonValue<A> {
     }
     const ret = this.value[k];
     if (ret === undefined) {
-      return new ErrorValue(`missing required key '${k}'`, this.path, this.value);
+      return new ErrorValue(`missing required key '${String(k)}'`, this.path, this.value);
     }
-    return new JsonValue(ret, [...this.path, `${k}`]);
+    return new JsonValue(ret, [...this.path, `${String(k)}`]);
   }
 }
 

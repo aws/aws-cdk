@@ -595,6 +595,23 @@ class TestHandler(unittest.TestCase):
 
         self.assertEqual(update_resp['Reason'], "invalid request: request type is 'Delete' but 'PhysicalResourceId' is not defined")
 
+    def test_physical_id_on_cloud_front_error(self):
+        def mock_make_api_call(self, operation_name, kwarg):
+            if operation_name == 'CreateInvalidation':
+                raise ClientError({'Error': {'Code': '500', 'Message': 'Invalidation error'}}, operation_name)
+
+        with patch('botocore.client.BaseClient._make_api_call', new=mock_make_api_call):
+            resp = invoke_handler("Update", {
+                "SourceBucketNames": ["<source-bucket>"],
+                "SourceObjectKeys": ["<source-object-key>"],
+                "DestinationBucketName": "<dest-bucket-name>",
+                "DistributionId": "<cf-dist-id>",
+            }, old_resource_props={
+                "DestinationBucketName": "<dest-bucket-name>",
+            }, physical_id="<physical-id>", expected_status="FAILED")
+
+        self.assertEqual(resp["PhysicalResourceId"], "<physical-id>")
+
     # no bucket tags removes content
     def test_no_tags_on_bucket(self):
         def mock_make_api_call(self, operation_name, kwarg):

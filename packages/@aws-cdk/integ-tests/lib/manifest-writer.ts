@@ -16,7 +16,7 @@ function getFinalLocation(filePath: string): string {
     return st.isDirectory()
       ? path.join(filePath, IntegManifestWriter.DEFAULT_FILENAME)
       : filePath;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') {
       return filePath;
     }

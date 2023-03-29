@@ -248,7 +248,7 @@ export interface IHttpRouteAuthorizer {
   bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig;
 }
 
-function undefinedIfNoKeys<A>(obj: A): A | undefined {
+function undefinedIfNoKeys<A extends { [key: string]: unknown }>(obj: A): A | undefined {
   const allUndefined = Object.values(obj).every(val => val === undefined);
   return allUndefined ? undefined : obj;
 }
