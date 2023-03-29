@@ -1,0 +1,32 @@
+{
+    "patch": {
+          "description": "Reverting property type names from FooAction to Foo, which were introduced as part of this PR: https://github.com/aws/aws-cdk/pull/23984",
+          "operations": [
+              {
+                  "op": "move",
+                  "from": "/PropertyTypes/AWS::WAFv2::RuleGroup.AllowAction",
+                  "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.Allow"
+              },
+              {
+                  "op": "move",
+                  "from": "/PropertyTypes/AWS::WAFv2::RuleGroup.BlockAction",
+                  "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.Block"
+              },
+              {
+                  "op": "move",
+                  "from": "/PropertyTypes/AWS::WAFv2::RuleGroup.CaptchaAction",
+                  "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.Captcha"
+              },
+              {
+                  "op": "move",
+                  "from": "/PropertyTypes/AWS::WAFv2::RuleGroup.ChallengeAction",
+                  "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.Challenge"
+              },
+              {
+                  "op": "move",
+                  "from": "/PropertyTypes/AWS::WAFv2::RuleGroup.CountAction",
+                  "path": "/PropertyTypes/AWS::WAFv2::RuleGroup.Count"
+              }
+          ]
+      }
+  }

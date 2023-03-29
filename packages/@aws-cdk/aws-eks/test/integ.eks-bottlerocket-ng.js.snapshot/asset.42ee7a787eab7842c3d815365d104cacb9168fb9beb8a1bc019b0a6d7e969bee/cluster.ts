@@ -65,7 +65,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     console.log(`onDelete: deleting cluster ${this.clusterName}`);
     try {
       await this.eks.deleteCluster({ name: this.clusterName });
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'ResourceNotFoundException') {
         throw e;
       } else {
@@ -83,7 +83,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     try {
       const resp = await this.eks.describeCluster({ name: this.clusterName });
       console.log('describeCluster returned:', JSON.stringify(resp, undefined, 2));
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ResourceNotFoundException') {
         console.log('received ResourceNotFoundException, this means the cluster has been deleted (or never existed)');
         return { IsComplete: true };
