@@ -6,4 +6,10 @@ module.exports = {
     "<rootDir>/**/test/**/?(*.)+(test).js",
   ],
   testEnvironment: 'node',
+  coverageThreshold: {
+    global: {
+      branches: 40,
+      statements: 55,
+    },
+  },
 };
