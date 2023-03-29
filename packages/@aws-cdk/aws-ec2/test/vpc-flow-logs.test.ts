@@ -547,9 +547,57 @@ test('with custom log format set, it successfully creates with cloudwatch log de
       Ref: 'FlowLogsLogGroup9853A85F',
     },
   });
-
 });
 
+test('log format for built-in types is correct', () => {
+  const stack = getTestStack();
+
+  const vpc = new Vpc(stack, 'TestVpc');
+  new FlowLog(stack, 'FlowLogs1', {
+    resourceType: FlowLogResourceType.fromVpc(vpc),
+    logFormat: [
+      LogFormat.VERSION,
+      LogFormat.ACCOUNT_ID,
+      LogFormat.INTERFACE_ID,
+      LogFormat.SRC_ADDR,
+      LogFormat.DST_ADDR,
+      LogFormat.SRC_PORT,
+      LogFormat.DST_PORT,
+      LogFormat.PROTOCOL,
+      LogFormat.PACKETS,
+      LogFormat.BYTES,
+      LogFormat.START_TIMESTAMP,
+      LogFormat.END_TIMESTAMP,
+      LogFormat.ACTION,
+      LogFormat.LOG_STATUS,
+      LogFormat.VPC_ID,
+      LogFormat.SUBNET_ID,
+      LogFormat.INSTANCE_ID,
+      LogFormat.TCP_FLAGS,
+      LogFormat.TRAFFIC_TYPE,
+      LogFormat.PKT_SRC_ADDR,
+      LogFormat.PKT_DST_ADDR,
+      LogFormat.REGION,
+      LogFormat.AZ_ID,
+      LogFormat.SUBLOCATION_TYPE,
+      LogFormat.SUBLOCATION_ID,
+      LogFormat.PKT_SRC_AWS_SERVICE,
+      LogFormat.PKT_DST_AWS_SERVICE,
+      LogFormat.FLOW_DIRECTION,
+      LogFormat.TRAFFIC_PATH,
+    ],
+  });
+
+  const template = Template.fromStack(stack);
+
+  template.hasResourceProperties('AWS::EC2::FlowLog', {
+    LogFormat: ('${version} ${account-id} ${interface-id} ${srcaddr} ${dstaddr} ${srcport} '
+                + '${dstport} ${protocol} ${packets} ${bytes} ${start} ${end} ${action} ${log-status} '
+                + '${vpc-id} ${subnet-id} ${instance-id} ${tcp-flags} ${type} ${pkt-srcaddr} '
+                + '${pkt-dstaddr} ${region} ${az-id} ${sublocation-type} ${sublocation-id} '
+                + '${pkt-src-aws-service} ${pkt-dst-aws-service} ${flow-direction} ${traffic-path}'),
+  });
+});
 
 test('with custom log format set empty, it not creates with cloudwatch log destination', () => {
   const stack = getTestStack();

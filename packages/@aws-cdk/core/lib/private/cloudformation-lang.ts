@@ -1,10 +1,11 @@
+import { CfnUtils } from './cfn-utils-provider';
+import { INTRINSIC_KEY_PREFIX, resolvedTypeHint } from './resolve';
+import * as yaml_cfn from './yaml-cfn';
 import { Lazy } from '../lazy';
 import { DefaultTokenResolver, IFragmentConcatenator, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
-import { CfnUtils } from './cfn-utils-provider';
-import { INTRINSIC_KEY_PREFIX, resolvedTypeHint } from './resolve';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -33,6 +34,24 @@ export class CloudFormationLang {
   }
 
   /**
+   * Turn an arbitrary structure potentially containing Tokens into a YAML string.
+   *
+   * Returns a Token which will evaluate to CloudFormation expression that
+   * will be evaluated by CloudFormation to the YAML representation of the
+   * input structure.
+   *
+   * All Tokens substituted in this way must return strings, or the evaluation
+   * in CloudFormation will fail.
+   *
+   * @param obj The object to stringify
+   */
+  public static toYAML(obj: any): string {
+    return Lazy.uncachedString({
+      produce: () => yaml_cfn.serialize(obj),
+    });
+  }
+
+  /**
    * Produce a CloudFormation expression to concat two arbitrary expressions when resolving
    */
   public static concat(left: any | undefined, right: any | undefined): any {
@@ -55,7 +74,7 @@ export class CloudFormationLang {
 }
 
 /**
- * Return a CFN intrinsic mass concatting any number of CloudFormation expressions
+ * Return a CFN intrinsic mass concatenating any number of CloudFormation expressions
  */
 function fnJoinConcat(parts: any[]) {
   return { 'Fn::Join': ['', minimalCloudFormationJoin('', parts)] };
@@ -110,7 +129,7 @@ function fnJoinConcat(parts: any[]) {
  *   values is lost).
  *
  *   To fix this, "type hints" have been added to the `resolve()` function,
- *   giving an idea of the type of the source value for compplex result values.
+ *   giving an idea of the type of the source value for complex result values.
  *   This only works for objects (not strings and numbers) but fortunately
  *   we only care about the types of intrinsics, which are always complex values.
  *
@@ -163,7 +182,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
     if (obj === undefined) { return; }
 
     if (Token.isUnresolved(obj)) {
-      throw new Error('This shouldnt happen anymore');
+      throw new Error("This shouldn't happen anymore");
     }
     if (Array.isArray(obj)) {
       return renderCollection('[', ']', obj, recurse);

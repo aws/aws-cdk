@@ -1,8 +1,8 @@
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import { StackStatus } from './cloudformation/stack-status';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
-import { StackStatus } from './cloudformation/stack-status';
 
 export type Template = {
   Parameters?: Record<string, TemplateParameter>;
@@ -33,7 +33,7 @@ export class CloudFormationStack {
     try {
       const response = await cfn.describeStacks({ StackName: stackName }).promise();
       return new CloudFormationStack(cfn, stackName, response.Stacks && response.Stacks[0], retrieveProcessedTemplate);
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
         return new CloudFormationStack(cfn, stackName, undefined);
       }

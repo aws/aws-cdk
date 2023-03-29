@@ -391,6 +391,34 @@
         }
        },
        "Resource": "*"
+      },
+      {
+       "Action": "elasticfilesystem:ClientRootAccess",
+       "Condition": {
+        "Bool": {
+         "elasticfilesystem:AccessedViaMountTarget": "true"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -463,6 +491,21 @@
     "SubnetId": {
      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
     }
+   }
+  },
+  "AccessPointE936DE82": {
+   "Type": "AWS::EFS::AccessPoint",
+   "Properties": {
+    "FileSystemId": {
+     "Ref": "FileSystem8A8E25C0"
+    },
+    "AccessPointTags": [
+     {
+      "Key": "Name",
+      "Value": "MyAccessPoint"
+     }
+    ],
+    "RootDirectory": {}
    }
   }
  },

@@ -1,8 +1,8 @@
 import { ConstructOrder, Dependable, IConstruct } from 'constructs';
+import { resolveReferences } from './refs';
 import { CfnResource } from '../cfn-resource';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
-import { resolveReferences } from './refs';
 
 /**
  * Prepares the app for synthesis. This function is called by the root `prepare`
@@ -44,7 +44,7 @@ export function prepareApp(root: IConstruct) {
 
     // ▷[ Given the legacy synthesizer and a 3-or-deeper nesting of nested stacks ]
     //
-    // Adding nested stack assets may haved added CfnParameters to the top-level
+    // Adding nested stack assets may have added CfnParameters to the top-level
     // stack which are referenced in a deeper-level stack. The values of these
     // parameters need to be carried through to the right location via Nested
     // Stack parameters, which `resolveReferences()` will do.

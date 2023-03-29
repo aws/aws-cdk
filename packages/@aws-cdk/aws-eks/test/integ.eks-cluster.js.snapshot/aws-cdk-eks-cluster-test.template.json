@@ -795,16 +795,16 @@
      "resourcesVpcConfig": {
       "subnetIds": [
        {
-        "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-       },
-       {
-        "Ref": "VpcPublicSubnet2Subnet691E08A3"
-       },
-       {
         "Ref": "VpcPrivateSubnet1Subnet536B997A"
        },
        {
         "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+       },
+       {
+        "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+       },
+       {
+        "Ref": "VpcPublicSubnet2Subnet691E08A3"
        }
       ],
       "securityGroupIds": [
@@ -3019,11 +3019,11 @@
      "Fn::Join": [
       "",
       [
-       "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"data\":{\"clusterName\":\"",
+       "[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"metadata\":{\"name\":\"chart-config-map-c820e51c\",\"labels\":{\"aws.cdk.eks/prune-c89c99db0e333353528b2e912b1fb988b6870edc75\":\"\"}},\"data\":{\"clusterName\":\"",
        {
         "Ref": "Cluster9EE0221C"
        },
-       "\"},\"immutable\":false,\"metadata\":{\"name\":\"chart-config-map-c820e51c\",\"labels\":{\"aws.cdk.eks/prune-c89c99db0e333353528b2e912b1fb988b6870edc75\":\"\"}}}]"
+       "\"},\"immutable\":false}]"
       ]
      ]
     },
@@ -3375,7 +3375,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/69f164dd4dec7ac272dc31108c91cbd3f9192d3155d0b805cb41723b2e127ed1.json"
+       "/5ad32d3779c377d583b69cdb21780913d0d71329afefdcb5b5f22f12c9397c6e.json"
       ]
      ]
     },
@@ -3406,7 +3406,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/3a4ff35d302b1defe4c8e7d48af9ceac8a25f20ecf3decc0422fcdc8bd8cdea2.json"
+       "/82bc7202ab93521f556ffe91199b3e2d55a9b03ae8334a40d6a5dd07ed7cbaeb.json"
       ]
      ]
     },
@@ -3454,7 +3454,7 @@
    "Properties": {
     "LaunchTemplateData": {
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceeksoptimizedami121amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceeksoptimizedami125amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "t3.small",
      "UserData": {
@@ -3715,9 +3715,9 @@
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/aws/service/bottlerocket/aws-k8s-1.24/x86_64/latest/image_id"
   },
-  "SsmParameterValueawsserviceeksoptimizedami121amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceeksoptimizedami125amazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/aws/service/eks/optimized-ami/1.21/amazon-linux-2/recommended/image_id"
+   "Default": "/aws/service/eks/optimized-ami/1.25/amazon-linux-2/recommended/image_id"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

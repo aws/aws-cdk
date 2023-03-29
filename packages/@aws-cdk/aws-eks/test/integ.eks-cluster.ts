@@ -9,9 +9,9 @@ import * as integ from '@aws-cdk/integ-tests';
 import * as cdk8s from 'cdk8s';
 import * as kplus from 'cdk8s-plus-24';
 import * as constructs from 'constructs';
-import * as eks from '../lib';
 import * as hello from './hello-k8s';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
+import * as eks from '../lib';
 
 
 class EksClusterStack extends Stack {
@@ -32,9 +32,16 @@ class EksClusterStack extends Stack {
     // just need one nat gateway to simplify the test
     this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3, natGateways: 1 });
 
+    // Changing the subnets order should be supported
+    const vpcSubnets: ec2.SubnetSelection[] = [
+      { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+      { subnetType: ec2.SubnetType.PUBLIC },
+    ];
+
     // create the cluster with a default nodegroup capacity
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
+      vpcSubnets,
       mastersRole,
       defaultCapacity: 2,
       ...getClusterVersionConfig(this),
@@ -221,7 +228,7 @@ class EksClusterStack extends Stack {
     const lt = new ec2.CfnLaunchTemplate(this, 'LaunchTemplate', {
       launchTemplateData: {
         imageId: new eks.EksOptimizedImage({
-          kubernetesVersion: eks.KubernetesVersion.V1_21.version,
+          kubernetesVersion: eks.KubernetesVersion.V1_25.version,
         }).getImage(this).imageId,
         instanceType: new ec2.InstanceType('t3.small').toString(),
         userData: Fn.base64(userData.render()),

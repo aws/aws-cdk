@@ -5,6 +5,8 @@ import { IsCompleteResponse, OnEventResponse } from '@aws-cdk/custom-resources/l
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as aws from 'aws-sdk';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';
+import { compareLoggingProps } from './compareLogging';
+
 
 const MAX_CLUSTER_NAME_LEN = 100;
 
@@ -25,6 +27,9 @@ export class ClusterResourceHandler extends ResourceHandler {
 
     this.newProps = parseProps(this.event.ResourceProperties);
     this.oldProps = event.RequestType === 'Update' ? parseProps(event.OldResourceProperties) : {};
+    // compare newProps and oldProps and update the newProps by appending disabled LogSetup if any
+    const compared: Partial<aws.EKS.CreateClusterRequest> = compareLoggingProps(this.oldProps, this.newProps);
+    this.newProps.logging = compared.logging;
   }
 
   // ------
@@ -65,7 +70,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     console.log(`onDelete: deleting cluster ${this.clusterName}`);
     try {
       await this.eks.deleteCluster({ name: this.clusterName });
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'ResourceNotFoundException') {
         throw e;
       } else {
@@ -83,7 +88,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     try {
       const resp = await this.eks.describeCluster({ name: this.clusterName });
       console.log('describeCluster returned:', JSON.stringify(resp, undefined, 2));
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ResourceNotFoundException') {
         console.log('received ResourceNotFoundException, this means the cluster has been deleted (or never existed)');
         return { IsComplete: true };
@@ -326,8 +331,8 @@ function analyzeUpdate(oldProps: Partial<aws.EKS.CreateClusterRequest>, newProps
   return {
     replaceName: newProps.name !== oldProps.name,
     replaceVpc:
-      JSON.stringify(newVpcProps.subnetIds) !== JSON.stringify(oldVpcProps.subnetIds) ||
-      JSON.stringify(newVpcProps.securityGroupIds) !== JSON.stringify(oldVpcProps.securityGroupIds),
+      JSON.stringify(newVpcProps.subnetIds?.sort()) !== JSON.stringify(oldVpcProps.subnetIds?.sort()) ||
+      JSON.stringify(newVpcProps.securityGroupIds?.sort()) !== JSON.stringify(oldVpcProps.securityGroupIds?.sort()),
     updateAccess:
       newVpcProps.endpointPrivateAccess !== oldVpcProps.endpointPrivateAccess ||
       newVpcProps.endpointPublicAccess !== oldVpcProps.endpointPublicAccess ||

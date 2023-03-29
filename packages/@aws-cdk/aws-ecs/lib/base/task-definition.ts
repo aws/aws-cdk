@@ -2,6 +2,7 @@ import * as ec2 from '@aws-cdk/aws-ec2';
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Lazy, Names, PhysicalName, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
+import { ImportedTaskDefinition } from './_imported-task-definition';
 import { ContainerDefinition, ContainerDefinitionOptions, PortMapping, Protocol } from '../container-definition';
 import { CfnTaskDefinition } from '../ecs.generated';
 import { FirelensLogRouter, FirelensLogRouterDefinitionOptions, FirelensLogRouterType, obtainDefaultFluentBitECRImage } from '../firelens-log-router';
@@ -9,7 +10,6 @@ import { AwsLogDriver } from '../log-drivers/aws-log-driver';
 import { PlacementConstraint } from '../placement';
 import { ProxyConfiguration } from '../proxy-configuration/proxy-configuration';
 import { RuntimePlatform } from '../runtime-platform';
-import { ImportedTaskDefinition } from './_imported-task-definition';
 
 /**
  * The interface for all task definitions.
@@ -389,6 +389,8 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private runtimePlatform?: RuntimePlatform;
 
+  private readonly _cpu?: string;
+
   /**
    * Constructs a new instance of the TaskDefinition class.
    */
@@ -449,6 +451,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.runtimePlatform = props.runtimePlatform;
+    this._cpu = props.cpu;
 
     const taskDef = new CfnTaskDefinition(this, 'Resource', {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
@@ -616,6 +619,14 @@ export class TaskDefinition extends TaskDefinitionBase {
    * @internal
    */
   public _linkContainer(container: ContainerDefinition) {
+    if (this._cpu) {
+      const taskCpu = Number(this._cpu);
+      const sumOfContainerCpu = [...this.containers, container].map(c => c.cpu).filter((cpu): cpu is number => typeof cpu === 'number').reduce((a, c) => a + c, 0);
+      if (taskCpu < sumOfContainerCpu) {
+        throw new Error('The sum of all container cpu values cannot be greater than the value of the task cpu');
+      }
+    }
+
     this.containers.push(container);
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;

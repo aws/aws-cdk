@@ -53,6 +53,10 @@ new nodejs.NodejsFunction(this, 'MyFunction', {
 });
 ```
 
+The handler value will be automatically prefixed with the bundled output file name, `index.`,
+unless the handler value contains a `.` character, in which case the handler value is used as-is to
+allow for values needed by some Lambda extensions.
+
 For monorepos, the reference architecture becomes:
 
 ```plaintext

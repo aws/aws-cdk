@@ -5,6 +5,13 @@
   "description": "The CDK Construct Library for AWS Lambda in Node.js",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "typesVersions": {
+    "<=3.9": {
+      "*": [
+        ".types-compat/ts3.9/*"
+      ]
+    }
+  },
   "jsii": {
     "outdir": "dist",
     "targets": {
@@ -81,7 +88,7 @@
     "@aws-cdk/triggers": "0.0.0",
     "@types/jest": "^27.5.2",
     "delay": "5.0.0",
-    "esbuild": "^0.17.8"
+    "esbuild": "^0.17.11"
   },
   "dependencies": {
     "@aws-cdk/aws-lambda": "0.0.0",

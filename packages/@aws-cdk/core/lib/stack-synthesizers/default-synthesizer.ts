@@ -1,11 +1,11 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
-import { Stack } from '../stack';
-import { Token } from '../token';
 import { assertBound, StringSpecializer } from './_shared';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';
+import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import { Stack } from '../stack';
+import { Token } from '../token';
 
 export const BOOTSTRAP_QUALIFIER_CONTEXT = '@aws-cdk/core:bootstrapQualifier';
 
@@ -169,7 +169,7 @@ export interface DefaultStackSynthesizerProps {
    * Qualifier to disambiguate multiple environments in the same account
    *
    * You can use this and leave the other naming properties empty if you have deployed
-   * the bootstrap environment with standard names but only differnet qualifiers.
+   * the bootstrap environment with standard names but only different qualifiers.
    *
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DefaultStackSynthesizer.DEFAULT_QUALIFIER`
    */

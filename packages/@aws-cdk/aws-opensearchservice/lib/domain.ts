@@ -1770,7 +1770,7 @@ function parseVersion(version: EngineVersion): { versionNum: number, isElasticse
     } else {
       return { versionNum: parseFloat(versionStr.substring(0, secondDot)), isElasticsearchVersion };
     }
-  } catch (error) {
+  } catch {
     throw new Error(`Invalid engine version: ${versionStr}. Version string needs to start with major and minor version (x.y).`);
   }
 }

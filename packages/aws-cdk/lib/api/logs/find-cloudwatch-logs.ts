@@ -50,7 +50,7 @@ export async function findCloudWatchLogGroups(
   // try to assume the lookup role and fallback to the default credentials
   try {
     sdk = (await prepareSdkWithLookupRoleFor(sdkProvider, stackArtifact)).sdk;
-  } catch (e) {
+  } catch {
     sdk = (await sdkProvider.forEnvironment(resolvedEnv, Mode.ForReading)).sdk;
   }
 

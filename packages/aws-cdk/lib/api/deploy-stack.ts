@@ -3,6 +3,16 @@ import type { CloudFormation } from 'aws-sdk';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as uuid from 'uuid';
+import { ISDK, SdkProvider } from './aws-auth';
+import { CfnEvaluationException } from './evaluate-cloudformation-template';
+import { HotswapMode, ICON } from './hotswap/common';
+import { tryHotswapDeployment } from './hotswap-deployments';
+import { ToolkitInfo } from './toolkit-info';
+import {
+  changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
+  waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges, ResourcesToImport,
+} from './util/cloudformation';
+import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 import { addMetadataAssetsToManifest } from '../assets';
 import { Tag } from '../cdk-toolkit';
 import { debug, error, print } from '../logging';
@@ -10,16 +20,6 @@ import { toYAML } from '../serialize';
 import { AssetManifestBuilder } from '../util/asset-manifest-builder';
 import { publishAssets } from '../util/asset-publishing';
 import { contentHash } from '../util/content-hash';
-import { ISDK, SdkProvider } from './aws-auth';
-import { CfnEvaluationException } from './evaluate-cloudformation-template';
-import { tryHotswapDeployment } from './hotswap-deployments';
-import { HotswapMode, ICON } from './hotswap/common';
-import { ToolkitInfo } from './toolkit-info';
-import {
-  changeSetHasNoChanges, CloudFormationStack, TemplateParameters, waitForChangeSet,
-  waitForStackDeploy, waitForStackDelete, ParameterValues, ParameterChanges, ResourcesToImport,
-} from './util/cloudformation';
-import { StackActivityMonitor, StackActivityProgress } from './util/cloudformation/stack-activity-monitor';
 
 type TemplateBodyParameter = {
   TemplateBody?: string
@@ -275,7 +275,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     debug(`${deployName}: skipping deployment (use --force to override)`);
     // if we can skip deployment and we are performing a hotswap, let the user know
     // that no hotswap deployment happened
-    if (options.hotswap) {
+    if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
       print(`\n ${ICON} %s\n`, chalk.bold('hotswap deployment skipped - no changes were detected (use --force to override)'));
     }
     return {
@@ -508,7 +508,7 @@ class FullCloudFormationDeployment {
       // This shouldn't really happen, but catch it anyway. You never know.
       if (!successStack) { throw new Error('Stack deploy failed (the stack disappeared while we were deploying it)'); }
       finalState = successStack;
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(suffixWithErrors(e.message, monitor?.errors));
     } finally {
       await monitor?.stop();
@@ -672,7 +672,7 @@ export async function destroyStack(options: DestroyStackOptions) {
     if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
       throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
     }
-  } catch (e) {
+  } catch (e: any) {
     throw new Error(suffixWithErrors(e.message, monitor?.errors));
   } finally {
     if (monitor) { await monitor.stop(); }

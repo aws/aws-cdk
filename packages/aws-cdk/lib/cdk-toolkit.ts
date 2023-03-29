@@ -5,7 +5,6 @@ import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
-import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
@@ -25,6 +24,7 @@ import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
+import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
 export interface CdkToolkitProps {
 
@@ -86,7 +86,7 @@ export enum AssetBuildTime {
    * Build assets just-in-time, before publishing
    */
   JUST_IN_TIME,
-};
+}
 
 /**
  * Toolkit logic
@@ -489,11 +489,7 @@ export class CdkToolkit {
       roleArn: options.roleArn,
       toolkitStackName: options.toolkitStackName,
       tags,
-      deploymentMethod: {
-        method: 'change-set',
-        changeSetName: options.changeSetName,
-        execute: options.execute,
-      },
+      deploymentMethod: options.deploymentMethod,
       usePreviousParameters: true,
       progress: options.progress,
       rollback: options.rollback,
@@ -612,16 +608,16 @@ export class CdkToolkit {
   /**
    * Bootstrap the CDK Toolkit stack in the accounts used by the specified stack(s).
    *
-   * @param environmentSpecs environment names that need to have toolkit support
-   *             provisioned, as a glob filter. If none is provided,
-   *             all stacks are implicitly selected.
-   * @param toolkitStackName the name to be used for the CDK Toolkit stack.
+   * @param userEnvironmentSpecs environment names that need to have toolkit support
+   *             provisioned, as a glob filter. If none is provided, all stacks are implicitly selected.
+   * @param bootstrapper Legacy or modern.
+   * @param options The name, role ARN, bootstrapping parameters, etc. to be used for the CDK Toolkit stack.
    */
   public async bootstrap(userEnvironmentSpecs: string[], bootstrapper: Bootstrapper, options: BootstrapEnvironmentOptions): Promise<void> {
     // If there is an '--app' argument and an environment looks like a glob, we
-    // select the environments from the app. Otherwise use what the user said.
+    // select the environments from the app. Otherwise, use what the user said.
 
-    // By default glob for everything
+    // By default, glob for everything
     const environmentSpecs = userEnvironmentSpecs.length > 0 ? [...userEnvironmentSpecs] : ['**'];
 
     // Partition into globs and non-globs (this will mutate environmentSpecs).
@@ -782,7 +778,7 @@ export class CdkToolkit {
 
     try {
       await this.deploy(deployOptions);
-    } catch (e) {
+    } catch {
       // just continue - deploy will show the error
     }
   }
@@ -1085,7 +1081,7 @@ export interface ImportOptions extends CfnDeployOptions {
   readonly recordResourceMapping?: string;
 
   /**
-   * Path to a file with with the physical resource mapping to CDK constructs in JSON format
+   * Path to a file with the physical resource mapping to CDK constructs in JSON format
    *
    * @default - No mapping file
    */

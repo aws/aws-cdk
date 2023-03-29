@@ -10,6 +10,16 @@ import { Construct } from 'constructs';
  */
 export interface ReplicaProviderProps {
   /**
+   * The table name
+   *
+   */
+  readonly tableName: string;
+  /**
+   * Regions where replica tables will be created
+   *
+   */
+  readonly regions: string[];
+  /**
    * The timeout for the replication operation.
    *
    * @default Duration.minutes(30)
@@ -21,7 +31,7 @@ export class ReplicaProvider extends NestedStack {
   /**
    * Creates a stack-singleton resource provider nested stack.
    */
-  public static getOrCreate(scope: Construct, props: ReplicaProviderProps = {}) {
+  public static getOrCreate(scope: Construct, props: ReplicaProviderProps) {
     const stack = Stack.of(scope);
     const uid = '@aws-cdk/aws-dynamodb.ReplicaProvider';
     return stack.node.tryFindChild(uid) as ReplicaProvider ?? new ReplicaProvider(stack, uid, props);
@@ -42,7 +52,7 @@ export class ReplicaProvider extends NestedStack {
    */
   public readonly isCompleteHandler: lambda.Function;
 
-  private constructor(scope: Construct, id: string, props: ReplicaProviderProps = {}) {
+  private constructor(scope: Construct, id: string, props: ReplicaProviderProps) {
     super(scope, id);
 
     const code = lambda.Code.fromAsset(path.join(__dirname, 'replica-handler'));
@@ -81,6 +91,19 @@ export class ReplicaProvider extends NestedStack {
       new iam.PolicyStatement({
         actions: ['dynamodb:DescribeLimits'],
         resources: ['*'],
+      }),
+    );
+
+    // Required for replica table deletion
+    let resources: string[] = [];
+    props.regions.forEach((region) => {
+      resources.push(`arn:aws:dynamodb:${region}:${this.account}:table/${props.tableName}`);
+    });
+
+    this.onEventHandler.addToRolePolicy(
+      new iam.PolicyStatement({
+        actions: ['dynamodb:DeleteTable', 'dynamodb:DeleteTableReplica'],
+        resources: resources,
       }),
     );
 

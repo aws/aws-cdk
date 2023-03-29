@@ -1,9 +1,9 @@
 import { IConstruct } from 'constructs';
+import { containsListTokenElement, TokenString, unresolved } from './encoding';
+import { TokenMap } from './token-map';
 import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, ResolveChangeContextOptions, StringConcat } from '../resolvable';
 import { TokenizedStringFragments } from '../string-fragments';
 import { ResolutionTypeHint } from '../type-hints';
-import { containsListTokenElement, TokenString, unresolved } from './encoding';
-import { TokenMap } from './token-map';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
 const tokenMap = TokenMap.instance();
@@ -190,6 +190,14 @@ export function resolve(obj: any, options: IResolveOptions): any {
       .filter(x => leaveEmpty || typeof(x) !== 'undefined');
 
     return arr;
+  }
+
+  //
+  // literal null -- from JsonNull resolution, preserved as-is (semantically meaningful)
+  //
+
+  if (obj === null) {
+    return obj;
   }
 
   //
