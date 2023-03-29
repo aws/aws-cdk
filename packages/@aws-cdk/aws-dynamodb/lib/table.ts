@@ -291,6 +291,13 @@ export interface TableOptions extends SchemaOptions {
    * @default false
    */
   readonly contributorInsightsEnabled?: boolean;
+
+  /**
+   * Enables deletion protection for the table.
+   *
+   * @default false
+   */
+  readonly deletionProtection?: boolean;
 }
 
 /**
@@ -1238,6 +1245,7 @@ export class Table extends TableBase {
       timeToLiveSpecification: props.timeToLiveAttribute ? { attributeName: props.timeToLiveAttribute, enabled: true } : undefined,
       contributorInsightsSpecification: props.contributorInsightsEnabled !== undefined ? { enabled: props.contributorInsightsEnabled } : undefined,
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
+      deletionProtectionEnabled: props.deletionProtection,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
@@ -1616,7 +1624,7 @@ export class Table extends TableBase {
       throw new Error('`replicationRegions` cannot include the region where this stack is deployed.');
     }
 
-    const provider = ReplicaProvider.getOrCreate(this, { timeout });
+    const provider = ReplicaProvider.getOrCreate(this, { tableName: this.tableName, regions, timeout });
 
     // Documentation at https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/V2gt_IAM.html
     // is currently incorrect. AWS Support recommends `dynamodb:*` in both source and destination regions

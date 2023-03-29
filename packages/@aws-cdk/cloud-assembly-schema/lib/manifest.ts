@@ -185,7 +185,7 @@ export class Manifest {
     let obj;
     try {
       obj = JSON.parse(contents);
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(`${e.message}, while parsing ${JSON.stringify(contents)}`);
     }
     if (preprocess) {
