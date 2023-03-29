@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import { App, Stack } from '@aws-cdk/core';
 import * as ivs from '../lib';
 
@@ -23,13 +23,15 @@ test('channel default properties', () => {
   new ivs.Channel(stack, 'Channel');
 
   Template.fromStack(stack).hasResource('AWS::IVS::Channel', {
-    Properties: Match.absent(),
+    Properties: {
+      Name: 'Channel',
+    },
   });
 });
 
 test('channel name', () => {
   new ivs.Channel(stack, 'Channel', {
-    name: 'CarrotsAreTasty',
+    channelName: 'CarrotsAreTasty',
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
@@ -75,8 +77,8 @@ test('channel from arn', () => {
 
 test('channel invalid name throws validation error', () => {
   expect(() => new ivs.Channel(stack, 'Channel', {
-    name: 'Would you like a carrot?',
-  })).toThrow('name must contain only numbers, letters, hyphens and underscores, got: \'Would you like a carrot?\'');
+    channelName: 'Would you like a carrot?',
+  })).toThrow('channelName must contain only numbers, letters, hyphens and underscores, got: \'Would you like a carrot?\'');
 });
 
 test('playback key pair mandatory properties', () => {
@@ -92,7 +94,7 @@ test('playback key pair mandatory properties', () => {
 test('playback key pair name', () => {
   new ivs.PlaybackKeyPair(stack, 'PlaybackKeyPair', {
     publicKeyMaterial: publicKey,
-    name: 'CarrotsAreNutritious',
+    playbackKeyPairName: 'CarrotsAreNutritious',
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::IVS::PlaybackKeyPair', {
@@ -104,8 +106,8 @@ test('playback key pair name', () => {
 test('playback key pair invalid name throws validation error', () => {
   expect(() => new ivs.PlaybackKeyPair(stack, 'PlaybackKeyPair', {
     publicKeyMaterial: 'Carrots Are Orange',
-    name: 'Would you like a carrot?',
-  })).toThrow('name must contain only numbers, letters, hyphens and underscores, got: \'Would you like a carrot?\'');
+    playbackKeyPairName: 'Would you like a carrot?',
+  })).toThrow('playbackKeyPairName must contain only numbers, letters, hyphens and underscores, got: \'Would you like a carrot?\'');
 });
 
 test('stream key mandatory properties', () => {

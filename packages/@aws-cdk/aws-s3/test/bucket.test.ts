@@ -1455,6 +1455,37 @@ describe('bucket', () => {
         },
       });
     });
+
+    test('grant only allowedActionPatterns when specified', () => {
+      const stack = new cdk.Stack();
+      const bucket = new s3.Bucket(stack, 'MyBucket');
+      const user = new iam.User(stack, 'MyUser');
+
+      bucket.grantWrite(user, '*', ['s3:PutObject', 's3:DeleteObject*']);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': [
+            {
+              'Action': [
+                's3:PutObject',
+                's3:DeleteObject*',
+              ],
+              'Effect': 'Allow',
+              'Resource': [
+                { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+                {
+                  'Fn::Join': ['', [
+                    { 'Fn::GetAtt': ['MyBucketF68F3FF0', 'Arn'] },
+                    '/*',
+                  ]],
+                },
+              ],
+            },
+          ],
+        },
+      });
+    });
   });
 
   describe('grantPut', () => {

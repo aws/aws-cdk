@@ -47,7 +47,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
     // submit to cfn as success
     await submitResponse('SUCCESS', responseEvent);
-  } catch (e) {
+  } catch (e: any) {
     const resp: Response = {
       ...event,
       Reason: external.includeStackTraces ? e.stack : e.message,
