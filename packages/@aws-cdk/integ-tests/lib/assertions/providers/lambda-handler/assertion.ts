@@ -137,7 +137,7 @@ function decodeCall(call?: string) {
   try {
     const parsed = JSON.parse(call);
     return parsed;
-  } catch (e) {
+  } catch {
     return call;
   }
 }
