@@ -1383,7 +1383,7 @@ export function verifyCodeConfig(code: CodeConfig, props: FunctionProps) {
   }
 }
 
-function undefinedIfNoKeys<A>(struct: A): A | undefined {
+function undefinedIfNoKeys<A extends { [key:string]: unknown }>(struct: A): A | undefined {
   const allUndefined = Object.values(struct).every(val => val === undefined);
   return allUndefined ? undefined : struct;
 }

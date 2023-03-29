@@ -36,6 +36,17 @@ export class KinesisDestination implements logs.ILogSubscriptionDestination {
     });
     this.stream.grantWrite(role);
     role.grantPassRole(role);
+
+    const policy = role.node.tryFindChild('DefaultPolicy') as iam.CfnPolicy;
+    if (policy) {
+      // Remove circular dependency
+      const cfnRole = role.node.defaultChild as iam.CfnRole;
+      cfnRole.addOverride('DependsOn', undefined);
+
+      // Ensure policy is created before subscription filter
+      scope.node.addDependency(policy);
+    }
+
     return { arn: this.stream.streamArn, role };
   }
 }

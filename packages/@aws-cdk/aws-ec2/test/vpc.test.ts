@@ -2103,6 +2103,27 @@ describe('vpc', () => {
 
     });
 
+    test('can filter by Subnet Ids via selectSubnets', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
+        vpcId: 'vpc-1234',
+        vpcCidrBlock: '192.168.0.0/16',
+        availabilityZones: ['dummy1a', 'dummy1b', 'dummy1c'],
+        privateSubnetIds: ['subnet-1', 'subnet-2', 'subnet-3'],
+      });
+
+      // WHEN
+      const subnets = vpc.selectSubnets({
+        subnetFilters: [SubnetFilter.byIds(['subnet-1'])],
+      });
+
+      // THEN
+      expect(subnets.subnetIds.length).toEqual(1);
+
+    });
+
     test('can filter by Cidr Netmask', () => {
       // GIVEN
       const stack = getTestStack();
