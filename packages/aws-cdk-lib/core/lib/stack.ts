@@ -1458,11 +1458,7 @@ export class Stack extends Construct implements ITaggable {
       throw new Error('unexpected: stack id must always be defined');
     }
 
-    if (prefix != '') {
-      ids[0] = `${prefix}${ids[0]}`;
-    }
-
-    return makeStackName(ids);
+    return makeStackName(ids, prefix);
   }
 
   private resolveExportedValue(exportedValue: any): ResolvedExport {
@@ -1648,9 +1644,9 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  * has only one component. Otherwise we fall back to the regular "makeUniqueId"
  * behavior.
  */
-function makeStackName(components: string[]) {
-  if (components.length === 1 && components[0].length <= 128) { return components[0]; }
-  return makeUniqueResourceName(components, { maxLength: 128 });
+function makeStackName(components: string[], prefix: string='') {
+  if (components.length === 1 && prefix.length === 0) { return components[0]; }
+  return makeUniqueResourceName(components, { maxLength: 128 }, prefix);
 }
 
 function getCreateExportsScope(stack: Stack) {

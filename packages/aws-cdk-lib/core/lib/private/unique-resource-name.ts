@@ -46,7 +46,7 @@ const MAX_LEN = 256;
 
 const HASH_LEN = 8;
 
-export function makeUniqueResourceName(components: string[], options: MakeUniqueResourceNameOptions) {
+export function makeUniqueResourceName(components: string[], options: MakeUniqueResourceNameOptions, prefix: string='') {
   const maxLength = options.maxLength ?? 256;
   const separator = options.separator ?? '';
   components = components.filter(x => x !== HIDDEN_ID);
@@ -59,7 +59,7 @@ export function makeUniqueResourceName(components: string[], options: MakeUnique
   // in order to support transparent migration of cloudformation templates to the CDK without the
   // need to rename all resources.
   if (components.length === 1) {
-    const topLevelResource = removeNonAllowedSpecialCharacters(components[0], separator, options.allowedSpecialCharacters);
+    const topLevelResource = prefix + removeNonAllowedSpecialCharacters(components[0], separator, options.allowedSpecialCharacters);
 
     if (topLevelResource.length <= maxLength) {
       return topLevelResource;
@@ -68,6 +68,9 @@ export function makeUniqueResourceName(components: string[], options: MakeUnique
 
   // Calculate the hash from the full path, included unresolved tokens so the hash value is always unique
   const hash = pathHash(components);
+  if (prefix) {
+    components.unshift(prefix);
+  }
   const human = removeDupes(components)
     .filter(pathElement => pathElement !== HIDDEN_FROM_HUMAN_ID)
     .map(pathElement => removeNonAllowedSpecialCharacters(pathElement, separator, options.allowedSpecialCharacters))

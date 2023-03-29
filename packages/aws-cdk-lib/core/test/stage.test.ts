@@ -111,7 +111,7 @@ describe('stage', () => {
 
     // THEN
     expect(stack.stackName.length).toEqual(128);
-    expect(stack.stackName).toEqual('ThisStageNameIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheLongPrefixA24103F6');
+    expect(stack.stackName).toEqual('ThisStageNameIsVeryLongButWillOnlyBeTooLongWhenCombinedWithTsVeryLongButItWillOnlyBeTooLongWhenCombinedWithTheLongPrefix4CA9F65B');
   });
 
   test('Can not have dependencies to stacks outside the nested asm', () => {
