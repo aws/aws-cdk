@@ -18,6 +18,8 @@ export interface IEksJobDefinition extends IJobDefinition {
    * The DNS Policy of the pod used by this Job Definition
    *
    * @see https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
+   *
+   * @default `DnsPolicy.CLUSTER_FIRST`
    */
   readonly dnsPolicy?: DnsPolicy;
 
@@ -41,6 +43,8 @@ export interface IEksJobDefinition extends IJobDefinition {
    * @see https://docs.aws.amazon.com/eks/latest/userguide/service-accounts.html
    * @see https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
    * @see https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html
+   *
+   * @default - the default service account of the container
    */
   readonly serviceAccount?: string;
 }
@@ -58,6 +62,8 @@ export interface EksJobDefinitionProps extends JobDefinitionProps {
    * The DNS Policy of the pod used by this Job Definition
    *
    * @see https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy
+   *
+   * @default `DnsPolicy.CLUSTER_FIRST`
    */
   readonly dnsPolicy?: DnsPolicy;
 
@@ -81,6 +87,8 @@ export interface EksJobDefinitionProps extends JobDefinitionProps {
    * @see https://docs.aws.amazon.com/eks/latest/userguide/service-accounts.html
    * @see https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
    * @see https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html
+   *
+   * @default - the default service account of the container
    */
   readonly serviceAccount?: string;
 }

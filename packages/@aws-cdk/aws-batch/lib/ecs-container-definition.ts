@@ -231,6 +231,9 @@ Object.defineProperty(EfsVolume.prototype, EFS_VOLUME_SYMBOL, {
 export interface HostVolumeOptions extends EcsVolumeOptions {
   /**
    * The path on the host machine this container will have access to
+   *
+   * @default - Docker will choose the host path.
+   * The data may not persist after the containers that use it stop running.
    */
   readonly hostPath?: string;
 }
@@ -240,10 +243,16 @@ export interface HostVolumeOptions extends EcsVolumeOptions {
  * the data may not persist after the containers that use it stop running.
  */
 export class HostVolume extends EcsVolume {
+  /**
+   * returns `true` if `x` is a `HostVolume`, `false` otherwise
+   */
   public static isHostVolume(x: any): x is HostVolume {
     return x !== null && typeof (x) === 'object' && HOST_VOLUME_SYMBOL in x;
   }
 
+  /**
+   * The path on the host machine this container will have access to
+   */
   public readonly hostPath?: string;
 
   constructor(options: HostVolumeOptions) {
@@ -336,16 +345,22 @@ export interface IEcsContainerDefinition extends IConstruct {
    * The secrets for the container. Can be referenced in your job definition.
    *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
+   *
+   * @default - no secrets
    */
   readonly secrets?: secretsmanager.ISecret[];
 
   /**
    * The user name to use inside the container
+   *
+   * @default - no user
    */
   readonly user?: string;
 
   /**
    * The volumes to mount to this container. Automatically added to the job definition.
+   *
+   * @default - no volumes
    */
   readonly volumes: EcsVolume[];
 
@@ -436,7 +451,7 @@ export interface EcsContainerDefinitionProps {
   /**
    * The loging configuration for this Job
    *
-   * @default the log configuration of the Docker daemon
+   * @default - the log configuration of the Docker daemon
    */
   readonly logging?: ecs.LogDriver;
 
@@ -451,16 +466,22 @@ export interface EcsContainerDefinitionProps {
    * The secrets for the container. Can be referenced in your job definition.
    *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html
+   *
+   * @default - no secrets
    */
   readonly secrets?: secretsmanager.ISecret[];
 
   /**
    * The user name to use inside the container
+   *
+   * @default - no user
    */
   readonly user?: string;
 
   /**
    * The volumes to mount to this container. Automatically added to the job definition.
+   *
+   * @default - no volumes
    */
   readonly volumes?: EcsVolume[];
 }
@@ -751,6 +772,8 @@ export interface IEcsEc2ContainerDefinition extends IEcsContainerDefinition {
    * The number of physical GPUs to reserve for the container.
    * Make sure that the number of GPUs reserved for all containers in a job doesn't exceed
    * the number of available GPUs on the compute resource that the job is launched on.
+   *
+   * @default - no gpus
    */
   readonly gpu?: number;
 
@@ -782,6 +805,8 @@ export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionPr
    * The number of physical GPUs to reserve for the container.
    * Make sure that the number of GPUs reserved for all containers in a job doesn't exceed
    * the number of available GPUs on the compute resource that the job is launched on.
+   *
+   * @default - no gpus
    */
   readonly gpu?: number;
 }

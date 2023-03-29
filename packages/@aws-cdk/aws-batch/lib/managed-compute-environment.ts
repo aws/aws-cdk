@@ -69,6 +69,8 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
    * retry policy.
    *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html
+   *
+   * @default false
    */
   readonly terminateOnUpdate?: boolean;
 
@@ -158,6 +160,8 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    * retry policy.
    *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html
+   *
+   * @default false
    */
   readonly terminateOnUpdate?: boolean;
 
@@ -314,7 +318,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
   /**
    * The execution Role that instances launched by this Compute Environment will use.
    *
-   * @default a role will be created
+   * @default - a role will be created
    */
   readonly instanceRole?: iam.IRole;
 
@@ -348,9 +352,19 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    *
    * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
    *
-   * @default no placement group
+   * @default - no placement group
    */
   readonly placementGroup?: ec2.IPlacementGroup;
+
+  /**
+   * Add an instance type to this compute environment
+   */
+  addInstanceType(instanceType: ec2.InstanceType): void;
+
+  /**
+   * Add an instance class to this compute environment
+   */
+  addInstanceClass(instanceClass: ec2.InstanceClass): void;
 }
 
 /**
@@ -360,6 +374,8 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
 interface MachineImage {
   /**
    * The machine image to use
+   *
+   * @default - chosen by batch
    */
   readonly image?: ec2.IMachineImage;
 }
@@ -370,6 +386,8 @@ interface MachineImage {
 export interface EcsMachineImage extends MachineImage {
   /**
    * Tells Batch which instance type to launch this image on
+   *
+   * @default - 'ECS_AL2' for non-gpu instances, 'ECS_AL2_NVIDIA' for gpu instances
    */
   readonly imageType?: EcsMachineImageType;
 }
@@ -380,6 +398,8 @@ export interface EcsMachineImage extends MachineImage {
 export interface EksMachineImage extends MachineImage{
   /**
    * Tells Batch which instance type to launch this image on
+   *
+   * @default - 'EKS_AL2' for non-gpu instances, 'EKS_AL2_NVIDIA' for gpu instances
    */
   readonly imageType?: EksMachineImageType;
 }
@@ -531,7 +551,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
   /**
    * The execution Role that instances launched by this Compute Environment will use.
    *
-   * @default an instance role will be created
+   * @default - a role will be created
    */
   readonly instanceRole?: iam.IRole;
 
@@ -565,7 +585,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    *
    * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
    *
-   * @default no placement group
+   * @default - no placement group
    */
   readonly placementGroup?: ec2.IPlacementGroup;
 }
@@ -576,6 +596,9 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
  * @resource AWS::Batch::ComputeEnvironment
  */
 export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EcsComputeEnvironment {
+  /**
+   * refer to an existing ComputeEnvironment by its arn.
+   */
   public static fromManagedEc2EcsComputeEnvironmentArn(
     scope: Construct, id: string, managedEc2EcsComputeEnvironmentArn: string,
   ): IManagedEc2EcsComputeEnvironment {
@@ -590,6 +613,13 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       public readonly instanceTypes = [];
       public readonly maxvCpus = 1;
       public readonly connections = { } as any;
+
+      public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
+        throw new Error(`cannot add instance class to imported ComputeEnvironment '${id}'`);
+      }
+      public addInstanceType(_instanceType: ec2.InstanceType): void {
+        throw new Error(`cannot add instance type to imported ComputeEnvironment '${id}'`);
+      }
     }
 
     return new Import(scope, id);
@@ -597,7 +627,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
   readonly images?: EcsMachineImage[];
   readonly allocationStrategy?: AllocationStrategy;
   readonly spotBidPercentage?: number;
-  readonly spotFleetRole?: iam.IRole | undefined;
+  readonly spotFleetRole?: iam.IRole;
   readonly instanceTypes: ec2.InstanceType[];
   readonly instanceClasses: ec2.InstanceClass[];
   readonly instanceRole?: iam.IRole;
@@ -665,16 +695,10 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     this.node.addValidation({ validate: () => validateInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) });
   }
 
-  /**
-   * Add an instance type to this compute environment
-   */
   public addInstanceType(instanceType: ec2.InstanceType): void {
     this.instanceTypes.push(instanceType);
   }
 
-  /**
-   * Add an instance class to this compute environment
-   */
   public addInstanceClass(instanceClass: ec2.InstanceClass): void {
     this.instanceClasses.push(instanceClass);
   }
@@ -752,8 +776,19 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
 
   /**
    * The execution Role that instances launched by this Compute Environment will use.
+   *
+   * @default - a role will be created
    */
   readonly instanceRole?: iam.IRole;
+
+  /**
+   * The service-linked role that Spot Fleet needs to launch instances on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/spot_fleet_IAM_role.html
+   *
+   * @default - a new role will be created
+   */
+  readonly spotFleetRole?: iam.IRole;
 
   /**
    * The Launch Template that this Compute Environment
@@ -763,6 +798,8 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    * launch template and this Compute Environment, **the
    * `securityGroup`s on the Compute Environment override the
    * ones on the launch template.
+   *
+   * @default - no launch template
    */
   readonly launchTemplate?: ec2.ILaunchTemplate;
 
@@ -782,8 +819,20 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    * within a single Availability Zone with high network flow potential.
    *
    * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+   *
+   * @default - no placement group
    */
   readonly placementGroup?: ec2.IPlacementGroup;
+
+  /**
+   * Add an instance type to this compute environment
+   */
+  addInstanceType(instanceType: ec2.InstanceType): void;
+
+  /**
+   * Add an instance class to this compute environment
+   */
+  addInstanceClass(instanceClass: ec2.InstanceClass): void;
 }
 
 /**
@@ -856,17 +905,24 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
   /**
    * The instance types that this Compute Environment can launch.
    * Which one is chosen depends on the `AllocationStrategy` used.
+   *
+   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
    */
   readonly instanceTypes?: ec2.InstanceType[];
 
   /**
    * The instance types that this Compute Environment can launch.
    * Which one is chosen depends on the `AllocationStrategy` used.
+   * Batch will automatically choose the instance size.
+   *
+   * @default - the instances Batch considers will be used (currently C4, M4, and R4)
    */
   readonly instanceClasses?: ec2.InstanceClass[];
 
   /**
    * The execution Role that instances launched by this Compute Environment will use.
+   *
+   * @default - a role will be created
    */
   readonly instanceRole?: iam.IRole;
 
@@ -887,6 +943,8 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * launch template and this Compute Environment, **the
    * `securityGroup`s on the Compute Environment override the
    * ones on the launch template.**
+   *
+   * @default - no launch template
    */
   readonly launchTemplate?: ec2.ILaunchTemplate;
 
@@ -906,6 +964,8 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * within a single Availability Zone with high network flow potential.
    *
    * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+   *
+   * @default - no placement group
    */
   readonly placementGroup?: ec2.IPlacementGroup;
 }
@@ -916,19 +976,19 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
  * @resource AWS::Batch::ComputeEnvironment
  */
 export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBase implements IManagedEc2EksComputeEnvironment {
-  readonly kubernetesNamespace?: string;
-  readonly eksCluster: eks.ICluster;
+  public readonly kubernetesNamespace?: string;
+  public readonly eksCluster: eks.ICluster;
 
-  readonly images?: EksMachineImage[];
-  readonly allocationStrategy?: AllocationStrategy;
-  readonly spotBidPercentage?: number;
-  readonly spotFleetRole?: iam.IRole | undefined;
-  readonly instanceTypes: ec2.InstanceType[];
-  readonly instanceClasses: ec2.InstanceClass[];
-  readonly instanceRole?: iam.IRole;
-  readonly launchTemplate?: ec2.ILaunchTemplate;
-  readonly minvCpus?: number;
-  readonly placementGroup?: ec2.IPlacementGroup;
+  public readonly images?: EksMachineImage[];
+  public readonly allocationStrategy?: AllocationStrategy;
+  public readonly spotBidPercentage?: number;
+  public readonly spotFleetRole?: iam.IRole | undefined;
+  public readonly instanceTypes: ec2.InstanceType[];
+  public readonly instanceClasses: ec2.InstanceClass[];
+  public readonly instanceRole?: iam.IRole;
+  public readonly launchTemplate?: ec2.ILaunchTemplate;
+  public readonly minvCpus?: number;
+  public readonly placementGroup?: ec2.IPlacementGroup;
 
   public readonly computeEnvironmentArn: string;
 
@@ -1023,6 +1083,9 @@ export interface FargateComputeEnvironmentProps extends ManagedComputeEnvironmen
  * @resource AWS::Batch::ComputeEnvironment
  */
 export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase implements IFargateComputeEnvironment {
+  /**
+   * Reference an existing FargateComputeEnvironment by its arn
+   */
   public static fromFargateComputeEnvironmentArn(scope: Construct, id: string, fargateComputeEnvironmentArn: string): IFargateComputeEnvironment {
     const stack = Stack.of(scope);
     const computeEnvironmentName = stack.splitArn(fargateComputeEnvironmentArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;

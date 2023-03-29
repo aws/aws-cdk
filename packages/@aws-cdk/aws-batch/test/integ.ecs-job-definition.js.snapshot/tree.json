@@ -856,16 +856,16 @@
                       "readonlyRootFilesystem": false,
                       "resourceRequirements": [
                         {
-                          "type": "GPU",
-                          "value": "12"
-                        },
-                        {
                           "type": "MEMORY",
                           "value": "2048"
                         },
                         {
                           "type": "VCPU",
                           "value": "256"
+                        },
+                        {
+                          "type": "GPU",
+                          "value": "12"
                         }
                       ],
                       "mountPoints": [
@@ -890,8 +890,7 @@
                           "efsVolumeConfiguration": {
                             "fileSystemId": {
                               "Ref": "myFileSystem1DAA6862"
-                            },
-                            "authorizationConfig": {}
+                            }
                           }
                         }
                       ],

@@ -62,7 +62,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @see: https://kubernetes.io/docs/concepts/containers/images/#updating-images
    *
-   * @default -  `ALWAYS` if the `:latest` tag is specified, `IF_NOT_PRESENT` otherwise
+   * @default - `ALWAYS` if the `:latest` tag is specified, `IF_NOT_PRESENT` otherwise
    */
   readonly imagePullPolicy?: ImagePullPolicy;
 
@@ -256,6 +256,9 @@ export interface IEksContainerDefinition extends IConstruct {
   addHostPathVolume(options: HostPathVolumeOptions): void;
 }
 
+/**
+ * Determines when the image is pulled from the registry to launch a container
+ */
 export enum ImagePullPolicy {
   /**
    * Every time the kubelet launches a container,
@@ -284,6 +287,9 @@ export enum ImagePullPolicy {
   NEVER = 'Never',
 }
 
+/**
+ * Props to configure an EksContainerDefinition
+ */
 export interface EksContainerDefinitionProps {
   /**
    * The image that this container will run
@@ -302,6 +308,8 @@ export interface EksContainerDefinitionProps {
    *
    * @see: https://docs.docker.com/engine/reference/builder/#cmd
    * @see: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
+   *
+   * @default - no args
    */
   readonly args?: string[];
 
@@ -319,6 +327,8 @@ export interface EksContainerDefinitionProps {
    * @see: https://docs.docker.com/engine/reference/builder/#entrypoint
    * @see: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
    * @see: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#entrypoint
+   *
+   * @default - no command
    */
   readonly command?: string[];
 
@@ -327,6 +337,8 @@ export interface EksContainerDefinitionProps {
    *
    * *Note*: Environment variables cannot start with "AWS_BATCH".
    * This naming convention is reserved for variables that AWS Batch sets.
+   *
+   * @default - no environment variables
    */
   readonly env?: { [key:string]: string };
 
@@ -335,7 +347,7 @@ export interface EksContainerDefinitionProps {
    *
    * @see: https://kubernetes.io/docs/concepts/containers/images/#updating-images
    *
-   * @default -  `ALWAYS` if the `:latest` tag is specified, `IF_NOT_PRESENT` otherwise
+   * @default - `ALWAYS` if the `:latest` tag is specified, `IF_NOT_PRESENT` otherwise
    */
   readonly imagePullPolicy?: ImagePullPolicy;
 
@@ -515,6 +527,8 @@ export interface EksContainerDefinitionProps {
    * Automatically added to the Pod.
    *
    * @see: https://kubernetes.io/docs/concepts/storage/volumes/
+   *
+   * @default - no volumes
    */
   readonly volumes?: EksVolume[];
 }
@@ -630,6 +644,9 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
   };
 }
 
+/**
+ * Options to configure an EksVolume
+ */
 export interface EksVolumeOptions {
   /**
    * The name of this volume.
@@ -814,6 +831,9 @@ export interface HostPathVolumeOptions extends EksVolumeOptions {
  * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
  */
 export class HostPathVolume extends EksVolume {
+  /**
+   * returns `true` if `x` is a HostPathVolume, `false` otherwise
+   */
   public static isHostPathVolume(x: any) : x is HostPathVolume {
     return x !== null && typeof(x) === 'object' && HOST_PATH_VOLUME_SYMBOL in x;
   }
@@ -867,6 +887,9 @@ export interface SecretPathVolumeOptions extends EksVolumeOptions {
  * @see: https://kubernetes.io/docs/concepts/storage/volumes/#secret
  */
 export class SecretPathVolume extends EksVolume {
+  /**
+   * returns `true` if `x` is a `SecretPathVolume` and `false` otherwise
+   */
   public static isSecretPathVolume(x: any) : x is SecretPathVolume {
     return x !== null && typeof(x) === 'object' && SECRET_PATH_VOLUME_SYMBOL in x;
   }

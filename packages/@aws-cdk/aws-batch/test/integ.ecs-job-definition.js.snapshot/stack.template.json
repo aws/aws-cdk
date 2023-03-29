@@ -513,16 +513,16 @@
      "ReadonlyRootFilesystem": false,
      "ResourceRequirements": [
       {
-       "Type": "GPU",
-       "Value": "12"
-      },
-      {
        "Type": "MEMORY",
        "Value": "2048"
       },
       {
        "Type": "VCPU",
        "Value": "256"
+      },
+      {
+       "Type": "GPU",
+       "Value": "12"
       }
      ],
      "Ulimits": [
@@ -541,7 +541,6 @@
       },
       {
        "EfsVolumeConfiguration": {
-        "AuthorizationConfig": {},
         "FileSystemId": {
          "Ref": "myFileSystem1DAA6862"
         }

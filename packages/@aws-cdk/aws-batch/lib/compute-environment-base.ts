@@ -4,6 +4,9 @@ import { Construct } from 'constructs';
 import { CfnComputeEnvironmentProps } from './batch.generated';
 
 
+/**
+ * Represents a ComputeEnvironment
+ */
 export interface IComputeEnvironment extends IResource {
   /**
    * The name of the ComputeEnvironment
@@ -46,6 +49,9 @@ export interface IComputeEnvironment extends IResource {
   readonly enabled: boolean;
 }
 
+/**
+ * Props common to all ComputeEnvironments
+ */
 export interface ComputeEnvironmentProps {
   /**
    * The name of the ComputeEnvironment
@@ -75,17 +81,21 @@ export interface ComputeEnvironmentProps {
    * that is, any instances that were scaled up will remain if the ComputeEnvironment is disabled.
    *
    * To ensure you aren't billed for unused capacity, remove the ComputeEnvironment from your stack.
+   *
+   * @default true
    */
   readonly enabled?: boolean;
 }
 
 /**
+ * Abstract base class for ComputeEnvironments
+ *
  * @internal
  */
 export abstract class ComputeEnvironmentBase extends Resource implements IComputeEnvironment {
-  readonly computeEnvironmentName?: string | undefined;
-  readonly serviceRole?: iam.IRole | undefined;
-  readonly enabled: boolean;
+  public readonly computeEnvironmentName?: string | undefined;
+  public readonly serviceRole?: iam.IRole | undefined;
+  public readonly enabled: boolean;
   public abstract readonly computeEnvironmentArn: string;
 
   protected resourceProps: CfnComputeEnvironmentProps;

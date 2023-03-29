@@ -4,6 +4,9 @@ import { CfnJobQueue } from './batch.generated';
 import { IComputeEnvironment } from './compute-environment-base';
 import { ISchedulingPolicy } from './scheduling-policy';
 
+/**
+ * Represents a JobQueue
+ */
 export interface IJobQueue extends IResource {
   /**
    * The set of compute environments mapped to a job queue and their order relative to each other.
@@ -53,10 +56,21 @@ export interface IJobQueue extends IResource {
 
   /**
    * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
+   *
+   * @default - no scheduling policy
    */
   readonly schedulingPolicy?: ISchedulingPolicy
+
+  /**
+   * Add a `ComputeEnvironment` to this Queue.
+   * The Queue will prefer lower-order `ComputeEnvironment`s.
+   */
+  addComputeEnvironment(computeEnvironment: IComputeEnvironment, order: number): void;
 }
 
+/**
+ * Props to configure a JobQueue
+ */
 export interface JobQueueProps {
   /**
    * The set of compute environments mapped to a job queue and their order relative to each other.
@@ -97,31 +111,56 @@ export interface JobQueueProps {
 
   /**
    * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
+   *
+   * @default - no scheduling policy
    */
   readonly schedulingPolicy?: ISchedulingPolicy
 }
 
+/**
+ * Assigns an order to a ComputeEnvironment.
+ * The JobQueue will prioritize the lowest-order ComputeEnvironment.
+ */
 export interface OrderedComputeEnvironment {
+  /**
+   * The ComputeEnvironment to link to this JobQueue
+   */
   readonly computeEnvironment: IComputeEnvironment;
+
+  /**
+   * The order associated with `computeEnvironment`
+   */
   readonly order: number;
 }
 
+/**
+ * JobQueues can receive Jobs, which are removed from the queue when
+ * sent to the linked ComputeEnvironment(s) to be executed.
+ * Jobs exit the queue in FIFO order unless a `SchedulingPolicy` is linked.
+ */
 export class JobQueue extends Resource implements IJobQueue {
+  /**
+   * refer to an existing JobQueue by its arn
+   */
   public static fromJobQueueArn(scope: Construct, id: string, jobQueueArn: string): IJobQueue {
     class Import extends Resource implements IJobQueue {
       public readonly computeEnvironments = [];
       public readonly priority = 0;
       public readonly jobQueueArn = jobQueueArn;
+
+      public addComputeEnvironment(_computeEnvironment: IComputeEnvironment, _order: number): void {
+        throw new Error(`cannot add ComputeEnvironments to imported JobQueue '${id}'`);
+      }
     }
 
     return new Import(scope, id);
   }
 
-  readonly computeEnvironments: OrderedComputeEnvironment[]
-  readonly priority: number
-  readonly jobQueueName?: string
-  readonly enabled?: boolean
-  readonly schedulingPolicy?: ISchedulingPolicy
+  public readonly computeEnvironments: OrderedComputeEnvironment[]
+  public readonly priority: number
+  public readonly jobQueueName?: string
+  public readonly enabled?: boolean
+  public readonly schedulingPolicy?: ISchedulingPolicy
 
   public readonly jobQueueArn: string;
 

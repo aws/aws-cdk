@@ -3,6 +3,9 @@ import { Construct } from 'constructs';
 import { CfnJobDefinitionProps } from './batch.generated';
 
 
+/**
+ * Represents a JobDefinition
+ */
 export interface IJobDefinition extends IResource {
   /**
    * The name of this job definition
@@ -73,6 +76,9 @@ export interface IJobDefinition extends IResource {
   readonly jobDefinitionArn: string;
 }
 
+/**
+ * Props common to all JobDefinitions
+ */
 export interface JobDefinitionProps {
   /**
    * The name of this job definition
@@ -134,12 +140,25 @@ export interface JobDefinitionProps {
   readonly timeout?: Duration;
 }
 
+/**
+ * Define how Jobs using this JobDefinition respond to different exit conditions
+ */
 export class RetryStrategy {
+  /**
+   * Create a new RetryStrategy
+   */
   public static of(action: Action, on: Reason) {
     return new RetryStrategy(action, on);
   }
 
+  /**
+   * The action to take when the job exits with the Reason specified
+   */
   public readonly action: Action;
+
+  /**
+   * If the job exits with this Reason it will trigger the specified Action
+   */
   public readonly on: Reason;
 
   constructor(action: Action, on: Reason) {
@@ -148,34 +167,85 @@ export class RetryStrategy {
   }
 }
 
+/**
+ * The Action to take when all specified conditions in a RetryStrategy are met
+ */
 export enum Action {
+  /**
+   * The job will not retry
+   */
   EXIT = 'EXIT',
+  /**
+   * The job will retry. It can be retried up to the number of times specified in `retryAttempts`.
+   */
   RETRY = 'RETRY',
 }
 
+/**
+ * The corresponding Action will only be taken if *all* of the conditions specified here are met.
+ */
 export interface CustomReason {
+  /**
+   * A glob string that will match on the job exit code. For example, `'40*'` will match 400, 404, 40123456789012
+   *
+   * @default - will not match on the exit code
+   */
   readonly onExitCode?: string;
+
+  /**
+   * A glob string that will match on the statusReason returned by the exiting job.
+   * For example, `'Host EC2*'` indicates that the spot instance has been reclaimed.
+   *
+   * @default - will not match on the status reason
+   */
   readonly onStatusReason?: string;
+
+  /**
+   * A glob string that will match on the reason returned by the exiting job
+   * For example, `'CannotPullContainerError*'` indicates that container needed to start the job could not be pulled.
+   *
+   * @default - will not match on the reason
+   */
   readonly onReason?: string;
 }
 
+/**
+ * Common job exit reasons
+ */
 export class Reason {
+  /**
+   * Will match any non-zero exit code
+   */
   static readonly NON_ZERO_EXIT_CODE: Reason = {
     onExitCode: '*',
   };
+
+  /**
+   * Will only match if the Docker container could not be pulled
+   */
   static readonly CANNOT_PULL_CONTAINER: Reason = {
     onReason: 'CannotPullContainerError:*',
   }
+
+  /**
+   * Will only match if the Spot instance executing the job was reclaimed
+   */
   static readonly SPOT_INSTANCE_RECLAIMED: Reason = {
     onStatusReason: 'Host EC2*',
   }
 
+  /**
+   * A custom Reason that can match on multiple conditions.
+   * Note that all specified conditions must be met for this reason to match.
+   */
   static custom(customReasonProps: CustomReason): Reason {
     return customReasonProps;
   }
 }
 
 /**
+ * Abstract base class for JobDefinitions
+ *
  * @internal
  */
 export abstract class JobDefinitionBase extends Resource implements IJobDefinition {

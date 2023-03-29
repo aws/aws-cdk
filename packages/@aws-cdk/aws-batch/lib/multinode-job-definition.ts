@@ -28,6 +28,10 @@ interface IMultiNodeJobDefinition extends IJobDefinition {
    */
   readonly mainNode?: number;
 
+  /**
+   * Add a container to this multinode job
+   */
+  addContainer(container: MultiNodeContainer): void;
 }
 
 /**
@@ -54,6 +58,9 @@ export interface MultiNodeContainer {
   readonly container: IEcsContainerDefinition;
 }
 
+/**
+ * Props to configure a MultiNodeJobDefinition
+ */
 export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
   /**
    * The containers that this multinode job will run.
@@ -83,6 +90,9 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
  * @resource AWS::Batch::JobDefinition
  */
 export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiNodeJobDefinition {
+  /**
+   * refer to an existing JobDefinition by its arn
+   */
   public static fromJobDefinitionArn(scope: Construct, id: string, jobDefinitionArn: string): IJobDefinition {
     const stack = Stack.of(scope);
     const jobDefinitionName = stack.splitArn(jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
