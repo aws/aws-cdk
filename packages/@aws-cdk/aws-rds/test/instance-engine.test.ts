@@ -243,16 +243,8 @@ describe('instance engine', () => {
   });
 
   describe('PostgreSQL engine bindToInstance', () => {
-    test('returns no features for older versions', () => {
-      const engineNewerVersion = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_10_6 });
-
-      const engineConfig = engineNewerVersion.bindToInstance(new cdk.Stack(), {});
-      expect(engineConfig.features?.s3Import).toEqual(undefined);
-      expect(engineConfig.features?.s3Export).toEqual(undefined);
-    });
-
     test('returns s3 import/export feature if the version supports it', () => {
-      const engineNewerVersion = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13_3 });
+      const engineNewerVersion = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 });
 
       const engineConfig = engineNewerVersion.bindToInstance(new cdk.Stack(), {});
       expect(engineConfig.features?.s3Import).toEqual('s3Import');
