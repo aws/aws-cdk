@@ -143,15 +143,18 @@ export class PrefixList extends PrefixListBase {
 
     this.prefixListName = this.physicalName;
 
+    let defaultMaxEntries = undefined;
     if (!props?.maxEntries && !props?.entries) {
-      throw new Error('Set maxEntries or enrties.');
+      defaultMaxEntries = 1;
+    } else {
+      defaultMaxEntries = props?.entries!.length;
     }
 
     const prefixList = new CfnPrefixList(this, 'PrefixList', {
-      addressFamily: props.addressFamily || AddressFamily.IP_V4,
-      maxEntries: props.maxEntries || props.entries!.length,
+      addressFamily: props?.addressFamily || AddressFamily.IP_V4,
+      maxEntries: props?.maxEntries || defaultMaxEntries,
       prefixListName: this.prefixListName,
-      entries: props.entries || [],
+      entries: props?.entries || [],
     });
 
     this.prefixListId = prefixList.attrPrefixListId;
