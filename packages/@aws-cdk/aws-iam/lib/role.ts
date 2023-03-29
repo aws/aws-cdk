@@ -1,6 +1,5 @@
-import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations, FeatureFlags } from '@aws-cdk/core';
+import { ArnFormat, Duration, Resource, Stack, Token, TokenComparison, Aspects, Annotations } from '@aws-cdk/core';
 import { getCustomizeRolesConfig, getPrecreatedRoleConfig, CUSTOMIZE_ROLES_CONTEXT_KEY, CustomizeRoleConfig } from '@aws-cdk/core/lib/helpers-internal';
-import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '@aws-cdk/cx-api';
 import { Construct, IConstruct, DependencyGroup, Node } from 'constructs';
 import { Grant } from './grant';
 import { CfnRole } from './iam.generated';
@@ -319,7 +318,10 @@ export class Role extends Resource implements IRole {
    * @param options allow customizing the behavior of the returned role
    */
   public static fromRoleName(scope: Construct, id: string, roleName: string, options: FromRoleNameOptions = {}) {
-    this.validateRoleName(scope, roleName);
+    // Validate the role name only if not a token
+    if (!Token.isUnresolved(roleName)) {
+      this.validateRoleName(roleName);
+    }
     return Role.fromRoleArn(scope, id, Stack.of(scope).formatArn({
       region: '',
       service: 'iam',
@@ -369,10 +371,7 @@ export class Role extends Resource implements IRole {
     });
   }
 
-  private static validateRoleName(scope: Construct, roleName: string) {
-    if (FeatureFlags.of(scope).isEnabled(IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME)) {
-      return;
-    }
+  private static validateRoleName(roleName: string) {
     // https://docs.aws.amazon.com/IAM/latest/APIReference/API_CreateRole.html
     const regexp: RegExp = /[\w+=,.@-]+/;
     const matches = regexp.exec(roleName);
