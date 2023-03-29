@@ -879,6 +879,7 @@ gateway.addGatewayRoute('gateway-route-grpc', {
 For some use cases, we want a Virtual Node or Gateway to have different listeners listening to traffic with different protocal or prefix etc. You can achieve this by adding multiple listeners with different port number and specify the corresponding routing rules in Routes and Gateway Routes.
 
 Define a Virtual Node with multiple listener:
+
 ```ts
 const multiListenerNode = mesh.addVirtualNode('multi-listener-node', {
   serviceDiscovery: appmesh.ServiceDiscovery.dns(`node1.${namespace.namespaceName}`, undefined, appmesh.IpPreference.IPV4_ONLY),
@@ -921,6 +922,7 @@ const multiListenerRouter = mesh.addVirtualRouter('multi-listener-router', {
 ```
 
 Add corresponding routes for this Virtual Router. `targetPort` is the port that you will direct your traffic to and `matchPort` is the port number of inbound traffic you want to match. 
+
 ```ts
 multiListenerRouter.addRoute('multi-route-1', {
   routeSpec: appmesh.RouteSpec.http({
