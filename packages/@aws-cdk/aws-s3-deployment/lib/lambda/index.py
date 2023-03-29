@@ -28,7 +28,8 @@ def handler(event, context):
 
     def cfn_error(message=None):
         logger.error("| cfn_error: %s" % message)
-        cfn_send(event, context, CFN_FAILED, reason=message)
+        cfn_send(event, context, CFN_FAILED, reason=message, physicalResourceId=event.get('PhysicalResourceId', None))
+
 
     try:
         # We are not logging ResponseURL as this is a pre-signed S3 URL, and could be used to tamper
