@@ -372,7 +372,7 @@ async function combineRosettaFixtures(libraries: readonly LibraryReference[], ub
         await fs.mkdir(uberRosettaTargetDir);
       }
       const files = await fs.readdir(packageRosettaDir);
-      for (const file of files) {
+      for await (const file of files) {
         await fs.writeFile(
           path.join(uberRosettaTargetDir, file),
           await rewriteRosettaFixtureImports(
@@ -382,6 +382,9 @@ async function combineRosettaFixtures(libraries: readonly LibraryReference[], ub
           { encoding: 'utf8' },
         );
       }
+
+      // Delete the old rosetta dir
+      await fs.remove(path.join(config.monoPackageRoot, library.shortName, 'rosetta'));
     }
   }
 
