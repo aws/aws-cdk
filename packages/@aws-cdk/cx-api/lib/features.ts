@@ -746,7 +746,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       This is a feature flag as the old behavior will be deprecated, but some resources may require manual
       intervention since they might not have the appropriate tags propagated automatically.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.71.0' },
     recommendedValue: true,
   },
 };
