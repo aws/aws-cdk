@@ -129,21 +129,6 @@ export class LinuxParameters extends Construct {
     this.tmpfs.push(...tmpfs);
   }
 
-  protected renderTmpfs(tmpfs: Tmpfs): CfnJobDefinition.TmpfsProperty {
-    return {
-      containerPath: tmpfs.containerPath,
-      size: tmpfs.size,
-      mountOptions: tmpfs.mountOptions,
-    };
-  }
-
-  protected renderDevice(device: Device): CfnJobDefinition.DeviceProperty {
-    return {
-      containerPath: device.containerPath,
-      hostPath: device.hostPath,
-      permissions: device.permissions,
-    };
-  }
 
   /**
    * Renders the Linux parameters to the Batch version of this resource,
@@ -155,8 +140,8 @@ export class LinuxParameters extends Construct {
       sharedMemorySize: this.sharedMemorySize,
       maxSwap: this.maxSwap?.toMebibytes(),
       swappiness: this.swappiness,
-      devices: cdk.Lazy.any({ produce: () => this.devices.map(this.renderDevice) }, { omitEmptyArray: true }),
-      tmpfs: cdk.Lazy.any({ produce: () => this.tmpfs.map(this.renderTmpfs) }, { omitEmptyArray: true }),
+      devices: cdk.Lazy.any({ produce: () => this.devices.map(renderDevice) }, { omitEmptyArray: true }),
+      tmpfs: cdk.Lazy.any({ produce: () => this.tmpfs.map(renderTmpfs) }, { omitEmptyArray: true }),
     };
   }
 }
@@ -198,7 +183,7 @@ export interface Tmpfs {
   /**
    * The size (in MiB) of the tmpfs volume.
    */
-  readonly size: number,
+  readonly size: cdk.Size,
 
   /**
    * The list of tmpfs volume mount options. For more information, see
@@ -272,4 +257,20 @@ export enum TmpfsMountOption {
   NR_INODES = 'nr_inodes',
   NR_BLOCKS = 'nr_blocks',
   MPOL = 'mpol'
+}
+
+function renderTmpfs(tmpfs: Tmpfs): CfnJobDefinition.TmpfsProperty {
+  return {
+    containerPath: tmpfs.containerPath,
+    size: tmpfs.size.toMebibytes(),
+    mountOptions: tmpfs.mountOptions,
+  };
+}
+
+function renderDevice(device: Device): CfnJobDefinition.DeviceProperty {
+  return {
+    containerPath: device.containerPath,
+    hostPath: device.hostPath,
+    permissions: device.permissions,
+  };
 }

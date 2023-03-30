@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ArnFormat, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnComputeEnvironment, CfnComputeEnvironmentProps } from './batch.generated';
+import { CfnComputeEnvironment } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 
 
@@ -77,7 +77,7 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
   /**
    * The security groups this Compute Environment will launch instances in.
    */
-  readonly securityGroups?: ec2.ISecurityGroup[];
+  readonly securityGroups: ec2.ISecurityGroup[];
 
   /**
    * The VPC Subnets this Compute Environment will launch instances in.
@@ -150,6 +150,7 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    * will be allowed to run until `updateTimeout` has expired.
    *
    * @see - https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html
+   *
    * @default 30 minutes
    */
   readonly updateTimeout?: Duration;
@@ -205,12 +206,10 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
   public readonly spot?: boolean;
   public readonly updateTimeout?: Duration;
   public readonly terminateOnUpdate?: boolean;
-  public readonly securityGroups?: ec2.ISecurityGroup[];
+  public readonly securityGroups: ec2.ISecurityGroup[];
   public readonly updateToLatestImageVersion?: boolean;
 
   public readonly connections: ec2.Connections;
-
-  protected readonly resourceProps: CfnComputeEnvironmentProps;
 
   constructor(scope: Construct, id: string, props: ManagedComputeEnvironmentProps) {
     super(scope, id, props);
@@ -229,25 +228,6 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
     this.connections = new ec2.Connections({
       securityGroups: this.securityGroups,
     });
-    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
-
-    this.resourceProps = {
-      serviceRole: this.serviceRole?.roleArn,
-      state: this.enabled ? 'ENABLED' : 'DISABLED',
-      computeResources: {
-        maxvCpus: this.maxvCpus,
-        type: 'managed',
-        updateToLatestImageVersion: this.updateToLatestImageVersion,
-        securityGroupIds: this.securityGroups.map((securityGroup) => securityGroup.securityGroupId),
-        subnets: subnetIds,
-      },
-      updatePolicy: {
-        terminateJobsOnUpdate: this.terminateOnUpdate,
-        jobExecutionTimeoutMinutes: this.updateTimeout?.toMinutes(),
-      },
-      replaceComputeEnvironment: this.replaceComputeEnvironment,
-      type: 'managed',
-    };
   }
 }
 
@@ -616,6 +596,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
       public readonly instanceTypes = [];
       public readonly maxvCpus = 1;
       public readonly connections = { } as any;
+      public readonly securityGroups = [];
 
       public addInstanceClass(_instanceClass: ec2.InstanceClass): void {
         throw new Error(`cannot add instance class to imported ComputeEnvironment '${id}'`);
@@ -664,11 +645,12 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     validateVCpus(id, this.minvCpus, this.maxvCpus);
     validateSpotConfig(id, this.spot, this.spotBidPercentage, this.spotFleetRole);
 
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const resource = new CfnComputeEnvironment(this, 'Resource', {
-      ...this.resourceProps,
+      ...baseManagedResourceProperties(this, subnetIds),
       computeEnvironmentName: props.computeEnvironmentName,
       computeResources: {
-        ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
+        ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         minvCpus: this.minvCpus,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({
@@ -1028,15 +1010,16 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     validateVCpus(id, this.minvCpus, this.maxvCpus);
     validateSpotConfig(id, this.spot, this.spotBidPercentage, this.spotFleetRole);
 
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const resource = new CfnComputeEnvironment(this, 'Resource', {
-      ...this.resourceProps,
+      ...baseManagedResourceProperties(this, subnetIds),
       computeEnvironmentName: props.computeEnvironmentName,
       eksConfiguration: {
         eksClusterArn: this.eksCluster.clusterArn,
         kubernetesNamespace: this.kubernetesNamespace,
       },
       computeResources: {
-        ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
+        ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         minvCpus: this.minvCpus,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({ produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) }),
@@ -1116,10 +1099,11 @@ export class FargateComputeEnvironment extends ManagedComputeEnvironmentBase imp
   constructor(scope: Construct, id: string, props: FargateComputeEnvironmentProps) {
     super(scope, id, props);
 
+    const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const resource = new CfnComputeEnvironment(this, id, {
-      ...this.resourceProps,
+      ...baseManagedResourceProperties(this, subnetIds),
       computeResources: {
-        ...this.resourceProps.computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
+        ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         type: this.spot ? 'FARGATE_SPOT' : 'FARGATE',
       },
     });
@@ -1212,6 +1196,26 @@ function validateVCpus(id: string, minvCpus: number, maxvCpus: number): void {
   if (minvCpus > maxvCpus) {
     throw new Error(`Managed ComputeEnvironment '${id}' has 'minvCpus' = ${minvCpus} > 'maxvCpus' = ${maxvCpus}; 'minvCpus' cannot be greater than 'maxvCpus'`);
   }
+}
+
+function baseManagedResourceProperties(props: ManagedComputeEnvironmentBase, subnetIds: string[]) {
+  return {
+    serviceRole: props.serviceRole?.roleArn,
+    state: props.enabled ? 'ENABLED' : 'DISABLED',
+    computeResources: {
+      maxvCpus: props.maxvCpus,
+      type: 'managed',
+      updateToLatestImageVersion: props.updateToLatestImageVersion,
+      securityGroupIds: props.securityGroups.map((securityGroup) => securityGroup.securityGroupId),
+      subnets: subnetIds,
+    },
+    updatePolicy: {
+      terminateJobsOnUpdate: props.terminateOnUpdate,
+      jobExecutionTimeoutMinutes: props.updateTimeout?.toMinutes(),
+    },
+    replaceComputeEnvironment: props.replaceComputeEnvironment,
+    type: 'managed',
+  };
 }
 
 const DEFAULT_MIN_VCPUS = 0;
