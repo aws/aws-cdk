@@ -811,6 +811,14 @@
     chalk "^4.1.2"
     semver "^7.3.8"
 
+"@jsii/check-node@1.79.0":
+  version "1.79.0"
+  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.79.0.tgz#802fb9db739a805dffd87acc44c3f534c554ad6d"
+  integrity sha512-CQk5RtaFqbWAWcV35ciVqdLT7NnPPjYeRPnlD3KY7bkYhvYC7z2kcmRpTycGBRk7NS7Plr3l+4i02gjCzr59eA==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.3.8"
+
 "@jsii/spec@1.77.0":
   version "1.77.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.77.0.tgz#2ee31c32e26d61880e422a546a62296c6543bff9"
@@ -829,6 +837,13 @@
   version "1.78.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.78.0.tgz#eabf5168c15a23f5fb20fa8a6e301358fc0efe06"
   integrity sha512-5WJ11q5UYujE2z/Z8DSOEdzZiUUIXopRje6Of4LBWf/99a3XdxDgM8M10hYxwpunLh5XMrWRdHnxWbacWpzdCw==
+  dependencies:
+    ajv "^8.12.0"
+
+"@jsii/spec@^1.79.0":
+  version "1.79.0"
+  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.79.0.tgz#0fc9d9dfda05c85cf67295a5b7d6e438128e74d1"
+  integrity sha512-ZmHObap/rOSjvoeqTmQOYrxm26vRftYepAmtd7yVwnNu/3tbwXcdSQMs/2rjaMsn6H3pmDwn048g3lUtYszzaw==
   dependencies:
     ajv "^8.12.0"
 
@@ -7187,12 +7202,12 @@ jsii@1.78.1:
     yargs "^16.2.0"
 
 jsii@v5.0-next:
-  version "5.0.0-dev.3"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-5.0.0-dev.3.tgz#d87ddd873e472b657aaaf884b837833da0ec8056"
-  integrity sha512-y3slZsIEaIPXeNlQcv/k0nPJXZR8qtyl1dVaLU24oQnKaxOZGZQhrmUSDNBzLNjC+6GSk855UXzZWnBNmv3tlg==
+  version "5.0.2-dev.2"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-5.0.2-dev.2.tgz#03df0368380f6c7deeafc0996d2d18f9a5dfafca"
+  integrity sha512-DO9nWtNV0XCG0Be3xxn/bOaWmwgXuTzlDyj8w6fF+odUpnDFx/CJDtqfaOfhC6ITUmpr3rkicNTAhBAZQD/xuQ==
   dependencies:
-    "@jsii/check-node" "1.78.1"
-    "@jsii/spec" "^1.78.1"
+    "@jsii/check-node" "1.79.0"
+    "@jsii/spec" "^1.79.0"
     case "^1.6.3"
     chalk "^4"
     downlevel-dts "^0.11.0"
@@ -7205,13 +7220,13 @@ jsii@v5.0-next:
     typescript "~5.0.2"
     yargs "^17.7.1"
 
-jsii@~5.0.0:
-  version "5.0.0"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-5.0.0.tgz#8e4196c8bb902c30d650f57c035ee418200e8b65"
-  integrity sha512-/lMnzw2ySi8iFtlIuA5o8PoZXkXfeWBURR8TVj32aaeW2A9ueMbgQicqgd8A31yF1BZNLdTjunsenChAMCZK+Q==
+jsii@~5.0.2:
+  version "5.0.2"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-5.0.2.tgz#d8d7252583a73d7812b3d8a58ad22d4b71ce4170"
+  integrity sha512-5L9Kl11jGS9Iikf0Ran/Vv1CYHAkTfeuRs9JPj9x8qvwJxMQwhQDwEiz6RqT1ekAxZs6syknpa077/Yt+l4ifQ==
   dependencies:
-    "@jsii/check-node" "1.78.1"
-    "@jsii/spec" "^1.78.1"
+    "@jsii/check-node" "1.79.0"
+    "@jsii/spec" "^1.79.0"
     case "^1.6.3"
     chalk "^4"
     downlevel-dts "^0.11.0"
