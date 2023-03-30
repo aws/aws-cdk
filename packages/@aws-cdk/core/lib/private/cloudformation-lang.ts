@@ -1,5 +1,6 @@
 import { CfnUtils } from './cfn-utils-provider';
 import { INTRINSIC_KEY_PREFIX, resolvedTypeHint } from './resolve';
+import * as yaml_cfn from './yaml-cfn';
 import { Lazy } from '../lazy';
 import { DefaultTokenResolver, IFragmentConcatenator, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
@@ -29,6 +30,24 @@ export class CloudFormationLang {
       // with custom `toJSON()` functions, but it's ultimately simpler just to
       // reimplement the `stringify()` function from scratch.
       produce: (ctx) => tokenAwareStringify(obj, space ?? 0, ctx),
+    });
+  }
+
+  /**
+   * Turn an arbitrary structure potentially containing Tokens into a YAML string.
+   *
+   * Returns a Token which will evaluate to CloudFormation expression that
+   * will be evaluated by CloudFormation to the YAML representation of the
+   * input structure.
+   *
+   * All Tokens substituted in this way must return strings, or the evaluation
+   * in CloudFormation will fail.
+   *
+   * @param obj The object to stringify
+   */
+  public static toYAML(obj: any): string {
+    return Lazy.uncachedString({
+      produce: () => yaml_cfn.serialize(obj),
     });
   }
 

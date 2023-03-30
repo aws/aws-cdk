@@ -1387,6 +1387,32 @@ test('Source.jsonData() can be used to create a file with a JSON object', () => 
   });
 });
 
+test('Source.yamlData() can be used to create a file with YAML content', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+
+  const config = {
+    foo: 'bar',
+    sub: {
+      hello: bucket.bucketArn,
+    },
+  };
+
+  new s3deploy.BucketDeployment(stack, 'DeployWithVpc3', {
+    sources: [s3deploy.Source.yamlData('app-config.yaml', config)],
+    destinationBucket: bucket,
+  });
+
+  const result = app.synth();
+  const output = readDataFile(result, 'app-config.yaml');
+  expect(output.trim()).toEqual([
+    'foo: bar',
+    'sub:',
+    '  hello: <<marker:0xbaba:0>>',
+  ].join('\n'));
+});
+
 test('can add sources with addSource', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Test');
