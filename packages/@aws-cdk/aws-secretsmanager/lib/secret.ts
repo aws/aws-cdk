@@ -534,7 +534,6 @@ export class Secret extends SecretBase {
    * when you pass the partial ARN to CLI or SDK to get the secret value. If your secret name ends with a hyphen and
    * 6 characters, you should always use fromSecretCompleteArn() to avoid potential AccessDeniedException.
    * @see https://docs.aws.amazon.com/secretsmanager/latest/userguide/troubleshoot.html#ARN_secretnamehyphen
-   * 
    */
   public static fromSecretNameV2(scope: Construct, id: string, secretName: string): ISecret {
     return new class extends SecretBase {
