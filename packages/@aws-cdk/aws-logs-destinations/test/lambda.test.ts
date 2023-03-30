@@ -90,3 +90,17 @@ test('lambda permissions are not added when addPermissions is false', () => {
     Principal: 'logs.amazonaws.com',
   })).toEqual({});
 });
+
+test('subscription depends on lambda\'s permission', () => {
+  // WHEN
+  new logs.SubscriptionFilter(stack, 'Subscription', {
+    logGroup,
+    destination: new dests.LambdaDestination(fn),
+    filterPattern: logs.FilterPattern.allEvents(),
+  });
+
+  // THEN: Subscription filter depends on Lambda's Permission
+  Template.fromStack(stack).hasResource('AWS::Logs::SubscriptionFilter', {
+    DependsOn: ['SubscriptionCanInvokeLambdaD31DEAD2'],
+  });
+});
