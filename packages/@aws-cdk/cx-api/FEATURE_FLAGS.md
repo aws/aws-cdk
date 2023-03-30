@@ -49,7 +49,7 @@ Flags come in three types:
 | [@aws-cdk/aws-ec2:launchTemplateDefaultUserData](#aws-cdkaws-ec2launchtemplatedefaultuserdata) | Define user data for a launch template by default when a machine image is provided. | 2.67.0 | (fix) |
 | [@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments](#aws-cdkaws-secretsmanageruseattachedsecretresourcepolicyforsecrettargetattachments) | SecretTargetAttachments uses the ResourcePolicy of the attached Secret. | 2.67.0 | (fix) |
 | [@aws-cdk/aws-redshift:columnId](#aws-cdkaws-redshiftcolumnid) | Whether to use an ID to track Redshift column changes | 2.68.0 | (fix) |
-| [@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2](#aws-cdkaws-stepfunctions-tasksenableemrservicepolicyv2) | Enable AmazonEMRServicePolicy_v2 managed policies | V2NEXT | (fix) |
+| [@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2](#aws-cdkaws-stepfunctions-tasksenableemrservicepolicyv2) | Enable AmazonEMRServicePolicy_v2 managed policies | 2.72.0 | (fix) |
 
 <!-- END table -->
 
@@ -919,7 +919,7 @@ intervention since they might not have the appropriate tags propagated automatic
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.72.0 | `false` | `true` |
 
 
 <!-- END details -->
