@@ -47,8 +47,10 @@ export interface IJobQueue extends IResource {
   /**
    * If the job queue is enabled, it is able to accept jobs.
    * Otherwise, new jobs can't be added to the queue, but jobs already in the queue can finish.
+   *
+   * @default true
    */
-  readonly enabled: boolean
+  readonly enabled?: boolean
 
   /**
    * The SchedulingPolicy for this JobQueue. Instructs the Scheduler how to schedule different jobs.
@@ -149,7 +151,6 @@ export class JobQueue extends Resource implements IJobQueue {
       public readonly priority = 1;
       public readonly jobQueueArn = jobQueueArn;
       public readonly jobQueueName = stack.splitArn(jobQueueArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-      public readonly enabled = true;
 
       public addComputeEnvironment(_computeEnvironment: IComputeEnvironment, _order: number): void {
         throw new Error(`cannot add ComputeEnvironments to imported JobQueue '${id}'`);
@@ -161,7 +162,7 @@ export class JobQueue extends Resource implements IJobQueue {
 
   public readonly computeEnvironments: OrderedComputeEnvironment[]
   public readonly priority: number
-  public readonly enabled: boolean
+  public readonly enabled?: boolean
   public readonly schedulingPolicy?: ISchedulingPolicy
 
   public readonly jobQueueArn: string;
@@ -174,7 +175,7 @@ export class JobQueue extends Resource implements IJobQueue {
 
     this.computeEnvironments = props?.computeEnvironments ?? [];
     this.priority = props?.priority ?? 1;
-    this.enabled = props?.enabled ?? true;
+    this.enabled = props?.enabled;
     this.schedulingPolicy = props?.schedulingPolicy;
 
     const resource = new CfnJobQueue(this, id, {
@@ -188,7 +189,7 @@ export class JobQueue extends Resource implements IJobQueue {
       }),
       priority: this.priority,
       jobQueueName: props?.jobQueueName,
-      state: this.enabled ? 'ENABLED' : ('DISABLED'),
+      state: (this.enabled ?? true) ? 'ENABLED' : 'DISABLED',
       schedulingPolicyArn: this.schedulingPolicy?.schedulingPolicyArn,
     });
 
