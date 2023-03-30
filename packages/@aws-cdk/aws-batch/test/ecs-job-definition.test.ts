@@ -10,7 +10,7 @@ test('EcsJobDefinition uses Compatibility.EC2 for EC2 containers', () => {
 
   // WHEN
   new EcsJobDefinition(stack, 'ECSJobDefn', {
-    containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsContainer', {
+    container: new EcsEc2ContainerDefinition(stack, 'EcsContainer', {
       cpu: 256,
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       memory: Size.mebibytes(2048),
@@ -29,7 +29,7 @@ test('EcsJobDefinition uses Compatibility.FARGATE for Fargate containers', () =>
 
   // WHEN
   new EcsJobDefinition(stack, 'ECSJobDefn', {
-    containerDefinition: new EcsFargateContainerDefinition(stack, 'EcsContainer', {
+    container: new EcsFargateContainerDefinition(stack, 'EcsContainer', {
       cpu: 256,
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       memory: Size.mebibytes(2048),

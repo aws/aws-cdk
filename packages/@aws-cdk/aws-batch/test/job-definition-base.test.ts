@@ -40,14 +40,14 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
     pascalCaseExpectedMultiNodeProps = capitalizePropertyNames(stack, defaultExpectedMultiNodeProps);
 
     defaultEcsProps = {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsContainer', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsContainer', {
         cpu: 256,
         memory: Size.mebibytes(2048),
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       }),
     };
     defaultEksProps = {
-      containerDefinition: new EksContainerDefinition(stack, 'EksContainer', {
+      container: new EksContainerDefinition(stack, 'EksContainer', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       }),
     };

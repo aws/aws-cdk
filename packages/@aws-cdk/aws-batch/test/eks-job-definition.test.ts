@@ -10,7 +10,7 @@ test('EcsJobDefinition respects dnsPolicy', () => {
 
   // WHEN
   new EksJobDefinition(stack, 'EKSJobDefn', {
-    containerDefinition: new EksContainerDefinition(stack, 'EksContainer', {
+    container: new EksContainerDefinition(stack, 'EksContainer', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     }),
     dnsPolicy: DnsPolicy.CLUSTER_FIRST,
@@ -32,7 +32,7 @@ test('EcsJobDefinition respects useHostNetwork', () => {
 
   // WHEN
   new EksJobDefinition(stack, 'EKSJobDefn', {
-    containerDefinition: new EksContainerDefinition(stack, 'EksContainer', {
+    container: new EksContainerDefinition(stack, 'EksContainer', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     }),
     useHostNetwork: true,
@@ -54,7 +54,7 @@ test('EcsJobDefinition respects serviceAccount', () => {
 
   // WHEN
   new EksJobDefinition(stack, 'EKSJobDefn', {
-    containerDefinition: new EksContainerDefinition(stack, 'EksContainer', {
+    container: new EksContainerDefinition(stack, 'EksContainer', {
       image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     }),
     serviceAccount: 'my-service-account',

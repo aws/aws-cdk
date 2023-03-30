@@ -8,7 +8,7 @@ const app = new App();
 const stack = new Stack(app, 'stack');
 
 new batch.EksJobDefinition(stack, 'EksJobDefn', {
-  containerDefinition: new batch.EksContainerDefinition(stack, 'EksContainer', {
+  container: new batch.EksContainerDefinition(stack, 'EksContainer', {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     args: ['foo'],
     command: ['echo foo'],

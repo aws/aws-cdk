@@ -128,3 +128,16 @@ test('MultiNodeJobDefinition two containers', () => {
     PlatformCapabilities: [Compatibility.EC2],
   });
 });
+
+test('multinode job requires at least one container', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new MultiNodeJobDefinition(stack, 'ECSJobDefn', {
+    instanceType: InstanceType.of(InstanceClass.C4, InstanceSize.LARGE),
+  });
+
+  // THEN
+  expect(() => Template.fromStack(stack)).toThrow(/multinode job has no containers!/);
+});

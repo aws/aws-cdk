@@ -15,7 +15,7 @@ beforeEach(() => {
   stack = new cdk.Stack();
 
   batchJobDefinition = new batch.EcsJobDefinition(stack, 'JobDefinition', {
-    containerDefinition: new batch.EcsEc2ContainerDefinition(stack, 'Container', {
+    container: new batch.EcsEc2ContainerDefinition(stack, 'Container', {
       image: ecs.ContainerImage.fromAsset(
         path.join(__dirname, 'batchjob-image'),
       ),

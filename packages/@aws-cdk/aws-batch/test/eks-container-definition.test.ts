@@ -35,7 +35,7 @@ describe('eks container', () => {
   test('eks container defaults', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
       }),
     });
@@ -49,7 +49,7 @@ describe('eks container', () => {
   test('respects args', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         args: ['arg1', 'arg2'],
       }),
@@ -73,7 +73,7 @@ describe('eks container', () => {
   test('respects command', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         command: ['echo', 'bar'],
       }),
@@ -97,7 +97,7 @@ describe('eks container', () => {
   test('respects cpuLimit', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         cpuLimit: 256,
       }),
@@ -125,7 +125,7 @@ describe('eks container', () => {
   test('respects cpuReservation', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         cpuReservation: 256,
       }),
@@ -153,7 +153,7 @@ describe('eks container', () => {
   test('respects memoryLimitMiB', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         memoryLimitMiB: 2048,
       }),
@@ -181,7 +181,7 @@ describe('eks container', () => {
   test('respects memoryReservationMiB', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         memoryReservationMiB: 2048,
       }),
@@ -209,7 +209,7 @@ describe('eks container', () => {
   test('respects gpuLimit', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         gpuLimit: 20,
       }),
@@ -237,7 +237,7 @@ describe('eks container', () => {
   test('respects gpuReservation', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         gpuReservation: 20,
       }),
@@ -265,7 +265,7 @@ describe('eks container', () => {
   test('respects resource requests and limits', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         cpuLimit: 256,
         cpuReservation: 128,
@@ -305,7 +305,7 @@ describe('eks container', () => {
   test('respects env', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         env: {
           var: 'val',
@@ -341,7 +341,7 @@ describe('eks container', () => {
   test('respects imagePullPolicy', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         imagePullPolicy: ImagePullPolicy.NEVER,
       }),
@@ -365,7 +365,7 @@ describe('eks container', () => {
   test('respects name', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         name: 'myContainerName',
       }),
@@ -389,7 +389,7 @@ describe('eks container', () => {
   test('respects privileged', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         privileged: true,
       }),
@@ -415,7 +415,7 @@ describe('eks container', () => {
   test('respects readonlyFileSystem', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         readonlyRootFilesystem: true,
       }),
@@ -441,7 +441,7 @@ describe('eks container', () => {
   test('respects runAsGroup', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         runAsGroup: 1,
       }),
@@ -467,7 +467,7 @@ describe('eks container', () => {
   test('respects runAsRoot', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         runAsRoot: true,
       }),
@@ -493,7 +493,7 @@ describe('eks container', () => {
   test('respects runAsUser', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         runAsUser: 90,
       }),
@@ -519,7 +519,7 @@ describe('eks container', () => {
   test('respects emptyDir volumes', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         volumes: [
           EksVolume.emptyDir({
@@ -562,7 +562,7 @@ describe('eks container', () => {
   test('respects hostPath volumes', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         volumes: [EksVolume.hostPath({
           name: 'hostPathName',
@@ -601,13 +601,13 @@ describe('eks container', () => {
   test('respects addVolume() with emptyDir volume', () => {
     // GIVEN
     const jobDefn = new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
       }),
     });
 
     // WHEN
-    jobDefn.containerDefinition.addVolume(EksVolume.emptyDir({
+    jobDefn.container.addVolume(EksVolume.emptyDir({
       name: 'emptyDirName',
       medium: EmptyDirMediumType.DISK,
       mountPath: '/mount/path',
@@ -644,13 +644,13 @@ describe('eks container', () => {
   test('respects addVolume() with hostPath volume', () => {
     // GIVEN
     const jobDefn = new EksJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EksContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
       }),
     });
 
     // WHEN
-    jobDefn.containerDefinition.addVolume(EksVolume.hostPath({
+    jobDefn.container.addVolume(EksVolume.hostPath({
       name: 'hostPathName',
       path: 'hostPathPath',
       mountPath: '/mount/path',

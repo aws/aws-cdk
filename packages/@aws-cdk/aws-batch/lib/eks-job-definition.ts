@@ -11,7 +11,7 @@ export interface IEksJobDefinition extends IJobDefinition {
   /**
    * The container this Job Definition will run
    */
-  readonly containerDefinition: EksContainerDefinition;
+  readonly container: EksContainerDefinition;
 
 
   /**
@@ -56,7 +56,7 @@ export interface EksJobDefinitionProps extends JobDefinitionProps {
   /**
    * The container this Job Definition will run
    */
-  readonly containerDefinition: EksContainerDefinition;
+  readonly container: EksContainerDefinition;
 
   /**
    * The DNS Policy of the pod used by this Job Definition
@@ -135,13 +135,13 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
       public readonly jobDefinitionArn = eksJobDefinitionArn;
       public readonly jobDefinitionName = jobDefinitionName;
       public readonly enabled = true;
-      public readonly containerDefinition = {} as any;
+      public readonly container = {} as any;
     }
 
     return new Import(scope, id);
   }
 
-  public readonly containerDefinition: EksContainerDefinition;
+  public readonly container: EksContainerDefinition;
   public readonly dnsPolicy?: DnsPolicy;
   public readonly useHostNetwork?: boolean;
   public readonly serviceAccount?: string;
@@ -152,7 +152,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
   constructor(scope: Construct, id: string, props: EksJobDefinitionProps) {
     super(scope, id, props);
 
-    this.containerDefinition = props.containerDefinition;
+    this.container = props.container;
     this.dnsPolicy = props.dnsPolicy;
     this.useHostNetwork = props.useHostNetwork;
     this.serviceAccount = props.serviceAccount;
@@ -164,17 +164,17 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
       eksProperties: {
         podProperties: {
           containers: [
-            this.containerDefinition._renderContainerDefinition(),
+            this.container._renderContainerDefinition(),
           ],
           dnsPolicy: this.dnsPolicy,
           hostNetwork: this.useHostNetwork,
           serviceAccountName: this.serviceAccount,
           volumes: Lazy.any({
             produce: () => {
-              if (this.containerDefinition.volumes.length === 0) {
+              if (this.container.volumes.length === 0) {
                 return undefined;
               }
-              return this.containerDefinition.volumes.map((volume) => {
+              return this.container.volumes.map((volume) => {
                 if (EmptyDirVolume.isEmptyDirVolume(volume)) {
                   return {
                     name: volume.name,

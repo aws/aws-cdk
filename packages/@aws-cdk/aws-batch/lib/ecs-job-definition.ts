@@ -11,7 +11,7 @@ interface IEcsJobDefinition extends IJobDefinition {
   /**
    * The container that this job will run
    */
-  readonly containerDefinition: IEcsContainerDefinition
+  readonly container: IEcsContainerDefinition
 }
 
 /**
@@ -29,7 +29,7 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
   /**
    * The container that this job will run
    */
-  readonly containerDefinition: IEcsContainerDefinition
+  readonly container: IEcsContainerDefinition
 }
 
 /**
@@ -49,13 +49,13 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
       public readonly jobDefinitionArn = jobDefinitionArn;
       public readonly jobDefinitionName = jobDefinitionName;
       public readonly enabled = true;
-      containerDefinition = {} as any;
+      container = {} as any;
     }
 
     return new Import(scope, id);
   }
 
-  readonly containerDefinition: IEcsContainerDefinition
+  readonly container: IEcsContainerDefinition
 
   public readonly jobDefinitionArn: string;
   public readonly jobDefinitionName: string;
@@ -63,13 +63,13 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
   constructor(scope: Construct, id: string, props: EcsJobDefinitionProps) {
     super(scope, id, props);
 
-    this.containerDefinition = props.containerDefinition;
+    this.container = props.container;
 
     const resource = new CfnJobDefinition(this, 'Resource', {
       ...this.resourceProps,
       type: 'container',
       jobDefinitionName: props.jobDefinitionName,
-      containerProperties: this.containerDefinition?._renderContainerDefinition(),
+      containerProperties: this.container?._renderContainerDefinition(),
       platformCapabilities: this.renderPlatformCapabilities(),
     });
 
@@ -82,7 +82,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
   }
 
   private renderPlatformCapabilities() {
-    if (this.containerDefinition instanceof EcsEc2ContainerDefinition) {
+    if (this.container instanceof EcsEc2ContainerDefinition) {
       return [Compatibility.EC2];
     }
 

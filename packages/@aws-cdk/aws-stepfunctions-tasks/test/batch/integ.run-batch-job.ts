@@ -33,7 +33,7 @@ class RunBatchStack extends cdk.Stack {
     });
 
     const batchJobDefinition = new batch.EcsJobDefinition(this, 'JobDefinition', {
-      containerDefinition: new batch.EcsEc2ContainerDefinition(this, 'Container', {
+      container: new batch.EcsEc2ContainerDefinition(this, 'Container', {
         image: ecs.ContainerImage.fromAsset(
           path.resolve(__dirname, 'batchjob-image'),
         ),

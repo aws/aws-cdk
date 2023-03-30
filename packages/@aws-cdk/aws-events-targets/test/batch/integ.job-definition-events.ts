@@ -19,7 +19,7 @@ const queue = new batch.JobQueue(stack, 'MyQueue', {
   ],
 });
 const job = new batch.EcsJobDefinition(stack, 'MyJob', {
-  containerDefinition: new batch.EcsEc2ContainerDefinition(stack, 'container', {
+  container: new batch.EcsEc2ContainerDefinition(stack, 'container', {
     image: ContainerImage.fromRegistry('test-repo'),
     cpu: 256,
     memory: Size.mebibytes(2048),

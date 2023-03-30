@@ -72,6 +72,8 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
    * The containers that this multinode job will run.
    *
    * @see: https://aws.amazon.com/blogs/compute/building-a-tightly-coupled-molecular-dynamics-workflow-with-multi-node-parallel-jobs-in-aws-batch/
+   *
+   * @default none
    */
   readonly containers?: MultiNodeContainer[];
 
@@ -147,6 +149,8 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
       resourceName: this.physicalName,
     });
     this.jobDefinitionName = this.getResourceNameAttribute(resource.ref);
+
+    this.node.addValidation({ validate: () => validateContainers(this.containers) });
   }
 
   public addContainer(container: MultiNodeContainer) {
@@ -162,4 +166,8 @@ function computeNumNodes(containers: MultiNodeContainer[]) {
   }
 
   return result;
+}
+
+function validateContainers(containers: MultiNodeContainer[]): string[] {
+  return containers.length === 0 ? ['multinode job has no containers!'] : [];
 }

@@ -10,7 +10,7 @@ const stack = new Stack(app, 'stack');
 const vpc = new Vpc(stack, 'vpc');
 
 new batch.EcsJobDefinition(stack, 'ECSJobDefn', {
-  containerDefinition: new batch.EcsEc2ContainerDefinition(stack, 'myContainer', {
+  container: new batch.EcsEc2ContainerDefinition(stack, 'myContainer', {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     cpu: 256,
     memory: Size.mebibytes(2048),
@@ -41,7 +41,7 @@ new batch.EcsJobDefinition(stack, 'ECSJobDefn', {
 });
 
 new batch.EcsJobDefinition(stack, 'ECSFargateJobDefn', {
-  containerDefinition: new batch.EcsFargateContainerDefinition(stack, 'myFargateContainer', {
+  container: new batch.EcsFargateContainerDefinition(stack, 'myFargateContainer', {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     cpu: 16,
     memory: Size.mebibytes(32768),

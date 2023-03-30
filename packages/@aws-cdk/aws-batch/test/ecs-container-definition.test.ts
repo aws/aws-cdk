@@ -49,7 +49,7 @@ describe('ecs container', () => {
   test('ecs container defaults', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
       }),
     });
@@ -63,7 +63,7 @@ describe('ecs container', () => {
   test('respects command', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         command: ['echo', 'foo'],
       }),
@@ -82,7 +82,7 @@ describe('ecs container', () => {
   test('respects privileged', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         privileged: true,
       }),
@@ -101,7 +101,7 @@ describe('ecs container', () => {
   test('respects environment', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         privileged: true,
         environment: {
@@ -126,7 +126,7 @@ describe('ecs container', () => {
   test('respects executionRole', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         privileged: true,
         executionRole: new Role(stack, 'execRole', {
@@ -150,7 +150,7 @@ describe('ecs container', () => {
   test('respects gpu', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         privileged: true,
         gpu: 12,
@@ -183,7 +183,7 @@ describe('ecs container', () => {
   test('respects jobRole', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         privileged: true,
         jobRole: new Role(stack, 'jobRole', {
@@ -207,7 +207,7 @@ describe('ecs container', () => {
   test('respects linuxParameters', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         privileged: true,
         linuxParameters: new LinuxParameters(stack, 'linuxParameters', {
@@ -237,7 +237,7 @@ describe('ecs container', () => {
   test('respects logDriver', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         logging: ecs.LogDriver.awsLogs({
           datetimeFormat: 'format',
@@ -269,7 +269,7 @@ describe('ecs container', () => {
   test('respects readonlyRootFilesystem', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         readonlyRootFilesystem: true,
       }),
@@ -288,7 +288,7 @@ describe('ecs container', () => {
   test('respects secrets', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         secrets: [
           new Secret(stack, 'testSecret'),
@@ -366,7 +366,7 @@ describe('ecs container', () => {
   test('respects user', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         user: 'foo',
       }),
@@ -385,7 +385,7 @@ describe('ecs container', () => {
   test('respects ulimits', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         ulimits: [
           {
@@ -416,7 +416,7 @@ describe('ecs container', () => {
   test('respects efs volumes', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         volumes: [
           EcsVolume.efs({
@@ -490,7 +490,7 @@ describe('ecs container', () => {
   test('respects host volumes', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
         volumes: [
           EcsVolume.host({
@@ -528,13 +528,13 @@ describe('ecs container', () => {
   test('respects addVolume() with an EfsVolume', () => {
     // GIVEN
     const jobDefn = new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
       }),
     });
 
     // WHEN
-    jobDefn.containerDefinition.addVolume(EcsVolume.efs({
+    jobDefn.container.addVolume(EcsVolume.efs({
       containerPath: '/container/path',
       fileSystem: new efs.FileSystem(stack, 'efs', {
         vpc: new Vpc(stack, 'vpc'),
@@ -566,13 +566,13 @@ describe('ecs container', () => {
   test('respects addVolume() with a host volume', () => {
     // GIVEN
     const jobDefn = new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
       }),
     });
 
     // WHEN
-    jobDefn.containerDefinition.addVolume(EcsVolume.host({
+    jobDefn.container.addVolume(EcsVolume.host({
       containerPath: '/container/path/new',
       name: 'hostName',
       hostPath: '/host/path',
@@ -601,13 +601,13 @@ describe('ecs container', () => {
   test('respects addUlimit()', () => {
     // GIVEN
     const jobDefn = new EcsJobDefinition(stack, 'ECSJobDefn', {
-      containerDefinition: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
       }),
     });
 
     // WHEN
-    (jobDefn.containerDefinition as IEcsEc2ContainerDefinition).addUlimit({
+    (jobDefn.container as IEcsEc2ContainerDefinition).addUlimit({
       hardLimit: 10,
       name: UlimitName.SIGPENDING,
       softLimit: 1,
