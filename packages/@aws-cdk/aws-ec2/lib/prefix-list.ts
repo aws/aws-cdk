@@ -1,4 +1,4 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, Lazy, Resource, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnPrefixList } from './ec2.generated';
 
@@ -131,7 +131,9 @@ export class PrefixList extends PrefixListBase {
 
   constructor(scope: Construct, id: string, props?: PrefixListProps) {
     super(scope, id, {
-      physicalName: props?.prefixListName,
+      physicalName: props?.prefixListName ?? Lazy.string({
+        produce: () => Names.uniqueResourceName(this, { maxLength: 255, allowedSpecialCharacters: '.-_' }),
+      }),
     });
 
     if (props?.prefixListName) {
@@ -145,11 +147,9 @@ export class PrefixList extends PrefixListBase {
 
     this.prefixListName = this.physicalName;
 
-    let defaultMaxEntries = undefined;
-    if (!props?.maxEntries && !props?.entries) {
-      defaultMaxEntries = 1;
-    } else {
-      defaultMaxEntries = props?.entries!.length;
+    let defaultMaxEntries = 1;
+    if (props?.entries && props.entries.length > 0) {
+      defaultMaxEntries = props.entries.length;
     }
 
     const prefixList = new CfnPrefixList(this, 'PrefixList', {
