@@ -7,7 +7,7 @@ FROM $IMAGE
 RUN npm install --global yarn@1.22.5
 
 # Install pnpm
-RUN npm install --global pnpm@8.0.0
+RUN npm install --global pnpm@7.30.5
 
 # Install typescript
 RUN npm install --global typescript
