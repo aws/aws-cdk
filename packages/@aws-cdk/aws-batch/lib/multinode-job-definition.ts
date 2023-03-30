@@ -63,11 +63,17 @@ export interface MultiNodeContainer {
  */
 export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
   /**
+   * The instance type that this job definition
+   * will run.
+   */
+  readonly instanceType: ec2.InstanceType;
+
+  /**
    * The containers that this multinode job will run.
    *
    * @see: https://aws.amazon.com/blogs/compute/building-a-tightly-coupled-molecular-dynamics-workflow-with-multi-node-parallel-jobs-in-aws-batch/
    */
-  readonly containers: MultiNodeContainer[];
+  readonly containers?: MultiNodeContainer[];
 
   /**
    * The index of the main node in this job.
@@ -76,12 +82,6 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
    * @default 0
    */
   readonly mainNode?: number;
-
-  /**
-   * The instance type that this job definition
-   * will run.
-   */
-  readonly instanceType: ec2.InstanceType;
 }
 
 /**
@@ -116,7 +116,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   constructor(scope: Construct, id: string, props: MultiNodeJobDefinitionProps) {
     super(scope, id, props);
 
-    this.containers = props.containers;
+    this.containers = props.containers ?? [];
     this.mainNode = props.mainNode;
     this.instanceType = props.instanceType;
 

@@ -56,7 +56,6 @@ Workloads that are fault-tolerant or stateless can take advantage of spot pricin
 To use spot spot instances, set `spot` to `true` on a managed Ec2 or Fargate Compute Environment:
 
 ```ts
-import * as batch from 'aws-cdk-lib/aws-batch';
 new batch.FargateComputeEnvironment(this, 'myFargateComputeEnv', {
   spot: true,
 });
@@ -66,13 +65,12 @@ Batch allows you to specify the percentage of the on-demand instance that the cu
 must be to provision the instance using the `spotBidPercentage`.
 This defaults to 100%, which is the recommended value.
 This value cannot be specified for `FargateComputeEnvironment`s
-and only applies to `ManagedEc2ComputeEnvironment`s.
+and only applies to `ManagedEc2EcsComputeEnvironment`s.
 The following code configures a Compute Environment to only use spot instances that
 are at most 20% the price of the on-demand instance price:
 
 ```ts
-import * as batch from 'aws-cdk-lib/aws-batch';
-new batch.MangedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
    spot: true,
    spotBidPercentage: 20,
 });
@@ -86,7 +84,7 @@ Batch allows you to choose the instance types or classes that will run your work
 This example configures your `ComputeEnvironment` to use only the `M5AD.large` instance:
 
 ```ts
-new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
   instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE)],
 });
 ```
@@ -96,7 +94,7 @@ Batch allows you to specify only the instance class and to let it choose the siz
 ```ts
 computeEnv.addInstanceClass(ec2.InstanceClass.M5AD);
 // Or, specify it on the constructor:
-new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
   instanceClasses: [ec2.InstanceClass.A1],
 });
 ```
@@ -109,7 +107,7 @@ because `A1` uses ARM and `'optimal'` uses x86_64.
 You can specify both `'optimal'` alongside several different instance types in the same compute environment:
 
 ```ts
-const computeEnv = new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
+const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
   instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE)],
   useOptimalInstanceTypes: true, // default
 });
@@ -157,7 +155,7 @@ This example shows a `ComputeEnvironment` that uses `BEST_FIT_PROGRESSIVE`
 with `'optimal'` and `InstanceClass.M5` instance types:
 
 ```ts
-const computeEnv = new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
+const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
   instanceClasses: [ec2.InstanceClass.M5],
 });
 ```
@@ -165,8 +163,8 @@ const computeEnv = new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv
 This example shows a `ComputeEnvironment` that uses `BEST_FIT` with `'optimal'` instances:
 
 ```ts
-const computeEnv = new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
-  allocationStrategy: AllocationStrategy.BEST_FIT,
+const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+  allocationStrategy: batch.AllocationStrategy.BEST_FIT,
 });
 ```
 
@@ -182,7 +180,7 @@ batch may exceed `maxvCpus`; it will never exceed `maxvCpus` by more than a sing
 `minvCpus` of 10 and a `maxvCpus` of 100:
 
 ```ts
-new batch.ManagedEC2ComputeEnvironment(this, 'myEc2ComputeEnv', {
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
   instanceClasses: [ec2.InstanceClass.A1],
   minvCpus: 10,
   maxvCpus: 100,
@@ -274,7 +272,7 @@ fairsharePolicy.addShare({
   weightFactor: 1,
 });
 new batch.JobQueue(this, 'JobQueue', {
-  fairsharePolicy,
+  schedulingPolicy: fairsharePolicy,
 });
 ```
 
@@ -341,7 +339,7 @@ the only difference is that instead of competing for 100% of the max capacity, j
 This example specifies a `computeReservation` of 75% that will behave as explained in the example above:
 
 ```ts
-const fairsharePolicy = new FairshareSchedulingPolicy(this, 'myFairsharePolicy', {
+new FairshareSchedulingPolicy(this, 'myFairsharePolicy', {
   computeReservation: 75,
   shares: [
     { id: 'A' },
@@ -369,9 +367,10 @@ the `Reason` class. This example shows some common failure reasons:
 
 ```ts
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
-   containerDefinition: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
+   containerDefinition: new batch.EcsContainerDefinition(this, 'containerDefn', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
-    memoryLimitMiB: 2048,
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
   }),
   attempts: 5,
   retryStrategies: [{
@@ -412,10 +411,11 @@ This examples creates a `JobDefinition` that runs a single container with ECS:
 
 ```ts
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
-  containerDefinition: new batch.Ec2ContainerDefinition(this, 'containerDefn', {
+  containerDefinition: new batch.EcsContainerDefinition(this, 'containerDefn', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
-    memoryLimitMiB: 2048,
-    volumes: [EcsVolume.efsVolume({
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+    volumes: [EcsVolume.efs({
       name: 'myVolume',
       efsVolumeConfiguration: {
         fileSystem: myFileSystem
@@ -495,20 +495,24 @@ In particular, the environment variable that tells the containers which one is t
 const multiNodeJob = new batch.MultiNodeJobDefinition(this, 'JobDefinition', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE),
   containers: [
-    new MultiNodeContainer(this, 'mainMPIContainer', {
-      startNode: 0,
-      endNode: 5,
+    new EcsContainerDefinition(this, 'mainMPIContainer', {
       image: ecs.ContainerImage.fromRegistry('yourregsitry.com/yourMPIImage:latest'),
-      memoryLimitMiB: 2048,
+      cpu: 256,
+      memory: cdk.Size.mebibytes(2048),
     }),
+    startNode: 0,
+    endNode: 5,
   ],
 });
 // convenience method
 multiNodeJob.addContainer(this, 'secondContanerType', {
   startNode: 6,
   endNode: 10,
-  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
-  memoryLimitMiB: 2048,
+  container: new batch.EcsEc2ContainerDefinition(stack, 'multiContainer', {
+    image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    cpu: 256,
+    memory: Size.mebibytes(2048),
+  }),
 });
 ```
 
@@ -527,9 +531,10 @@ Batch allows you define parameters in your `JobDefinition`, which can be referen
 ```ts
 new batch.EcsJobDefinition(this, 'JobDefn', {
   parameters: { echoParam: 'foobar' },
-  containerDefinition: new batch.ContainerDefinition(this, 'containerDefn', {
+  containerDefinition: new batch.EcsContainerDefinition(this, 'containerDefn', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
-    memoryLimitMiB: 2048,
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
     compatibility: Compatibility.EC2,
     command: [
       'echo',
