@@ -813,7 +813,7 @@ export interface HostPathVolumeOptions extends EksVolumeOptions {
    *
    * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
    */
-  readonly path: string;
+  readonly hostPath: string;
 }
 
 /**
@@ -836,11 +836,11 @@ export class HostPathVolume extends EksVolume {
    *
    * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
    */
-  path: string;
+  public readonly path: string;
 
   constructor(options: HostPathVolumeOptions) {
     super(options);
-    this.path = options.path;
+    this.path = options.hostPath;
   }
 }
 

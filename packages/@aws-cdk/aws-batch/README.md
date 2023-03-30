@@ -56,7 +56,9 @@ Workloads that are fault-tolerant or stateless can take advantage of spot pricin
 To use spot spot instances, set `spot` to `true` on a managed Ec2 or Fargate Compute Environment:
 
 ```ts
+const vpc = new ec2.Vpc(this, 'VPC');
 new batch.FargateComputeEnvironment(this, 'myFargateComputeEnv', {
+  vpc,
   spot: true,
 });
 ```
@@ -70,7 +72,9 @@ The following code configures a Compute Environment to only use spot instances t
 are at most 20% the price of the on-demand instance price:
 
 ```ts
+const vpc = new ec2.Vpc(this, 'VPC');
 new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+   vpc,
    spot: true,
    spotBidPercentage: 20,
 });
@@ -84,7 +88,10 @@ Batch allows you to choose the instance types or classes that will run your work
 This example configures your `ComputeEnvironment` to use only the `M5AD.large` instance:
 
 ```ts
+const vpc = new ec2.Vpc(this, 'VPC');
+
 new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+  vpc,
   instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE)],
 });
 ```
@@ -92,10 +99,14 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
 Batch allows you to specify only the instance class and to let it choose the size, which you can do like this:
 
 ```ts
+const vpc = new ec2.Vpc(this, 'VPC');
+
+declare const computeEnv: batch.IManagedEc2EcsComputeEnvironment
 computeEnv.addInstanceClass(ec2.InstanceClass.M5AD);
 // Or, specify it on the constructor:
 new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
-  instanceClasses: [ec2.InstanceClass.A1],
+  vpc,
+  instanceClasses: [ec2.InstanceClass.R4],
 });
 ```
 
@@ -107,9 +118,12 @@ because `A1` uses ARM and `'optimal'` uses x86_64.
 You can specify both `'optimal'` alongside several different instance types in the same compute environment:
 
 ```ts
+declare const vpc: ec2.IVpc;
+
 const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
   instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE)],
-  useOptimalInstanceTypes: true, // default
+  useOptimalInstanceClasses: true, // default
+  vpc,
 });
 // Note: this is equivalent to specifying
 computeEnv.addInstanceType(ec2.InstanceType.of(ec2.InstanceClass.M5AD, ec2.InstanceSize.LARGE));
@@ -155,7 +169,10 @@ This example shows a `ComputeEnvironment` that uses `BEST_FIT_PROGRESSIVE`
 with `'optimal'` and `InstanceClass.M5` instance types:
 
 ```ts
+declare const vpc: ec2.IVpc;
+
 const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+  vpc,
   instanceClasses: [ec2.InstanceClass.M5],
 });
 ```
@@ -163,7 +180,10 @@ const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2Compute
 This example shows a `ComputeEnvironment` that uses `BEST_FIT` with `'optimal'` instances:
 
 ```ts
+declare const vpc: ec2.IVpc;
+
 const computeEnv = new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
+  vpc,
   allocationStrategy: batch.AllocationStrategy.BEST_FIT,
 });
 ```
@@ -180,8 +200,11 @@ batch may exceed `maxvCpus`; it will never exceed `maxvCpus` by more than a sing
 `minvCpus` of 10 and a `maxvCpus` of 100:
 
 ```ts
+declare const vpc: ec2.IVpc;
+
 new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
-  instanceClasses: [ec2.InstanceClass.A1],
+  vpc,
+  instanceClasses: [ec2.InstanceClass.R4],
   minvCpus: 10,
   maxvCpus: 100,
 });
@@ -198,7 +221,9 @@ Batch will pick the Job from the Queue with the highest priority.
 This example creates two `JobQueue`s that share a `ComputeEnvironment`:
 
 ```ts
+declare const vpc: ec2.IVpc;
 const sharedComputeEnv = new batch.FargateComputeEnvironment(this, 'spotEnv', {
+  vpc,
   spot: true,
 });
 const lowPriorityQueue = new batch.JobQueue(this, 'JobQueue', {
@@ -262,7 +287,8 @@ weight factors are inversely correlated with the vCpus allocated to the correspo
 This example would be configured like this:
 
 ```ts
-const fairsharePolicy = new FairshareSchedulingPolicy(this, 'myFairsharePolicy');
+const fairsharePolicy = new batch.FairshareSchedulingPolicy(this, 'myFairsharePolicy');
+
 fairsharePolicy.addShare({
   shareIdentifier: 'A',
   weightFactor: 1,
@@ -288,8 +314,9 @@ but after a whole minute the scheduler pretends they don't exist for fairness ca
 The following code specifies a `shareDecay` of 5 minutes:
 
 ```ts
-const fairsharePolicy = new FairshareSchedulingPolicy(this, 'myFairsharePolicy', {
-   shareDecay: Duration.minutes(5),
+import * as cdk from '@aws-cdk/core'
+const fairsharePolicy = new batch.FairshareSchedulingPolicy(this, 'myFairsharePolicy', {
+   shareDecay: cdk.Duration.minutes(5),
 });
 ```
 
@@ -339,12 +366,12 @@ the only difference is that instead of competing for 100% of the max capacity, j
 This example specifies a `computeReservation` of 75% that will behave as explained in the example above:
 
 ```ts
-new FairshareSchedulingPolicy(this, 'myFairsharePolicy', {
+new batch.FairshareSchedulingPolicy(this, 'myFairsharePolicy', {
   computeReservation: 75,
   shares: [
-    { id: 'A' },
-    { id: 'B' },
-    { id: 'C' },
+    { weightFactor: 1, shareIdentifier: 'A' },
+    { weightFactor: 0.5, shareIdentifier: 'B' },
+    { weightFactor: 2, shareIdentifier: 'C' },
   ],
 });
 ```
@@ -366,33 +393,31 @@ To specify common `exitCode`s, `reason`s, or `statusReason`s, use the correspond
 the `Reason` class. This example shows some common failure reasons:
 
 ```ts
+import * as cdk from '@aws-cdk/core';
+
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
-   containerDefinition: new batch.EcsContainerDefinition(this, 'containerDefn', {
+   container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
     memory: cdk.Size.mebibytes(2048),
     cpu: 256,
   }),
-  attempts: 5,
-  retryStrategies: [{
-    action: Action.EXIT,
-    reason: Reason.NON_ZERO_EXIT_CODE,
-  }],
+  retryAttempts: 5,
+  retryStrategies: [
+    batch.RetryStrategy.of(batch.Action.EXIT, batch.Reason.CANNOT_PULL_CONTAINER),
+  ],
 });
-jobDefn.addRetryStrategy({
-  action: Action.RETRY,
-  reason: Reason.SPOT_INSTANCE_RECLAIMED,
-});
-jobDefn.addRetryStrategy({
-   action: Action.EXIT,
-   reason: Reason.CANNOT_PULL_CONTAINER,
-});
-jobDefn.addRetryStrategy({
-  action: Action.RETRY,
-  reason: Reason.custom({
+jobDefn.addRetryStrategy(
+  batch.RetryStrategy.of(batch.Action.EXIT, batch.Reason.SPOT_INSTANCE_RECLAIMED),
+);
+jobDefn.addRetryStrategy(
+  batch.RetryStrategy.of(batch.Action.EXIT, batch.Reason.CANNOT_PULL_CONTAINER),
+);
+jobDefn.addRetryStrategy(
+  batch.RetryStrategy.of(batch.Action.EXIT, batch.Reason.custom({
     onExitCode: '40*',
     onReason: 'some reason',
-  }),
-});
+  })),
+);
 ```
 
 When specifying a custom reason,
@@ -410,16 +435,19 @@ Batch can jobs on ECS or EKS. ECS jobs can defined as single container or multin
 This examples creates a `JobDefinition` that runs a single container with ECS:
 
 ```ts
+import * as cdk from '@aws-cdk/core';
+import * as efs from '@aws-cdk/aws-efs';
+
+declare const myFileSystem: efs.IFileSystem;
+
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
-  containerDefinition: new batch.EcsContainerDefinition(this, 'containerDefn', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
     memory: cdk.Size.mebibytes(2048),
     cpu: 256,
-    volumes: [EcsVolume.efs({
+    volumes: [batch.EcsVolume.efs({
       name: 'myVolume',
-      efsVolumeConfiguration: {
-        fileSystem: myFileSystem
-      },
+      fileSystem: myFileSystem,
       containerPath: '/Volumes/myVolume',
     })],
   }),
@@ -430,11 +458,14 @@ For workflows that need persistent storage, batch supports mounting `Volume`s to
 You can both provision the volume and mount it to the container in a single operation:
 
 ```ts
-jobDefn.containerDefinition.addVolume(EcsVolume.efs({
+import * as efs from '@aws-cdk/aws-efs';
+
+declare const myFileSystem: efs.IFileSystem;
+declare const jobDefn: batch.EcsJobDefinition;
+
+jobDefn.container.addVolume(batch.EcsVolume.efs({
   name: 'myVolume',
-  efsVolumeConfiguration: {
-    fileSystem: myFileSystem
-  },
+  fileSystem: myFileSystem,
   containerPath: '/Volumes/myVolume',
 }));
 ```
@@ -444,15 +475,16 @@ jobDefn.containerDefinition.addVolume(EcsVolume.efs({
 Batch also supports running workflows on EKS. The following example creates a `JobDefinition` that runs on EKS:
 
 ```ts
+import * as cdk from '@aws-cdk/core';
 const jobDefn = new batch.EksJobDefinition(this, 'eksf2', {
-  containerDefinition: new batch.EksContainerDefinition(this, 'container', {
+  container: new batch.EksContainerDefinition(this, 'container', {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
-    volumes: [EksVolume.emptyDir({
+    volumes: [batch.EksVolume.emptyDir({
       name: 'myEmptyDirVolume',
       mountPath: '/mount/path',
       medium: batch.EmptyDirMediumType.MEMORY,
       readonly: true,
-      sizeLimit: Size.mebibytes(2048),
+      sizeLimit: cdk.Size.mebibytes(2048),
     })],
   }),
 });
@@ -461,19 +493,21 @@ const jobDefn = new batch.EksJobDefinition(this, 'eksf2', {
 You can mount `Volume`s to these containers in a single operation:
 
 ```ts
-jobDefn.containerDefinition.addVolume(EksVolume.EmptyDir({
+declare const jobDefn: batch.EksJobDefinition;
+jobDefn.container.addVolume(batch.EksVolume.emptyDir({
   name: 'emptyDir',
   mountPath: '/Volumes/emptyDir',
 }));
-jobDefn.containerDefinition.addVolume(EksVolume.HostPathVolume({
+jobDefn.container.addVolume(batch.EksVolume.hostPath({
   name: 'hostPath',
   hostPath: '/sys',
   mountPath: '/Volumes/hostPath',
 }));
-jobDefn.containerDefinition.addVolume(EksVolume.SecretVolume({
+jobDefn.container.addVolume(batch.EksVolume.secret({
   name: 'secret',
   optional: true,
   mountPath: '/Volumes/secret',
+  secretName: 'mySecret',
 }));
 ```
 
@@ -492,26 +526,27 @@ see this [blog post](https://aws.amazon.com/blogs/compute/building-a-tightly-cou
 In particular, the environment variable that tells the containers which one is the main node can be configured on your `MultiNodeJobDefinition` as follows:
 
 ```ts
+import * as cdk from '@aws-cdk/core';
 const multiNodeJob = new batch.MultiNodeJobDefinition(this, 'JobDefinition', {
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.LARGE),
-  containers: [
-    new EcsContainerDefinition(this, 'mainMPIContainer', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE),
+  containers: [{
+    container: new batch.EcsEc2ContainerDefinition(this, 'mainMPIContainer', {
       image: ecs.ContainerImage.fromRegistry('yourregsitry.com/yourMPIImage:latest'),
       cpu: 256,
       memory: cdk.Size.mebibytes(2048),
     }),
     startNode: 0,
     endNode: 5,
-  ],
+  }],
 });
 // convenience method
-multiNodeJob.addContainer(this, 'secondContanerType', {
+multiNodeJob.addContainer({
   startNode: 6,
   endNode: 10,
-  container: new batch.EcsEc2ContainerDefinition(stack, 'multiContainer', {
-    image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  container: new batch.EcsEc2ContainerDefinition(this, 'multiContainer', {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
     cpu: 256,
-    memory: Size.mebibytes(2048),
+    memory: cdk.Size.mebibytes(2048),
   }),
 });
 ```
@@ -521,6 +556,7 @@ If you need to set the control node to an index other than 0, specify it in dire
 ```ts
 const multiNodeJob = new batch.MultiNodeJobDefinition(this, 'JobDefinition', {
   mainNode: 5,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE),
 });
 ```
 
@@ -529,13 +565,13 @@ const multiNodeJob = new batch.MultiNodeJobDefinition(this, 'JobDefinition', {
 Batch allows you define parameters in your `JobDefinition`, which can be referenced in the container command. For example:
 
 ```ts
+import * as cdk from '@aws-cdk/core';
 new batch.EcsJobDefinition(this, 'JobDefn', {
   parameters: { echoParam: 'foobar' },
-  containerDefinition: new batch.EcsContainerDefinition(this, 'containerDefn', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
     image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
     memory: cdk.Size.mebibytes(2048),
     cpu: 256,
-    compatibility: Compatibility.EC2,
     command: [
       'echo',
       'Ref::echoParam',

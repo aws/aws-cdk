@@ -216,6 +216,28 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
     });
   });
 
+  test('JobDefinition respects addRetryStrategy()', () => {
+    // WHEN
+    const jobDefn = new JobDefinition(stack, 'ECSJobDefn', {
+      ...defaultProps,
+    });
+
+    jobDefn.addRetryStrategy(RetryStrategy.of(Action.RETRY, Reason.SPOT_INSTANCE_RECLAIMED));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...expectedProps,
+      RetryStrategy: {
+        EvaluateOnExit: [
+          {
+            Action: 'RETRY',
+            OnStatusReason: 'Host EC2*',
+          },
+        ],
+      },
+    });
+  });
+
   /*
   test('can be imported from name', () => {
     // WHEN

@@ -566,7 +566,7 @@ describe('eks container', () => {
         ...defaultContainerProps,
         volumes: [EksVolume.hostPath({
           name: 'hostPathName',
-          path: 'hostPathPath',
+          hostPath: 'hostPathPath',
           mountPath: '/mount/path',
           readonly: true,
         })],
@@ -652,7 +652,7 @@ describe('eks container', () => {
     // WHEN
     jobDefn.container.addVolume(EksVolume.hostPath({
       name: 'hostPathName',
-      path: 'hostPathPath',
+      hostPath: 'hostPathPath',
       mountPath: '/mount/path',
       readonly: true,
     }));

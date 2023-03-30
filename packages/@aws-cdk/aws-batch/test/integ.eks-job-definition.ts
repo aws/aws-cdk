@@ -41,7 +41,7 @@ new batch.EksJobDefinition(stack, 'EksJobDefn', {
       */
       batch.EksVolume.hostPath({
         name: 'hostPath',
-        path: '/foo/bar',
+        hostPath: '/foo/bar',
         mountPath: '/fooasdfadfs',
       }),
     ],

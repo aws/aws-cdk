@@ -1,4 +1,4 @@
-import { Duration, IResource, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinitionProps } from './batch.generated';
 
@@ -53,7 +53,7 @@ export interface IJobDefinition extends IResource {
    *
    * @default - no `RetryStrategy`
    */
-  readonly retryStrategies?: RetryStrategy[];
+  readonly retryStrategies: RetryStrategy[];
 
   /**
    * The priority of this Job. Only used in Fairshare Scheduling
@@ -72,6 +72,12 @@ export interface IJobDefinition extends IResource {
    * @default - no timeout
    */
   readonly timeout?: Duration;
+
+
+  /**
+   * Add a RetryStrategy to this JobDefinition
+   */
+  addRetryStrategy(strategy: RetryStrategy): void;
 }
 
 /**
@@ -253,7 +259,7 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
   public readonly parameters?: { [key:string]: any };
   public readonly propagateTags?: boolean;
   public readonly retryAttempts?: number;
-  public readonly retryStrategies?: RetryStrategy[];
+  public readonly retryStrategies: RetryStrategy[];
   public readonly schedulingPriority?: number;
   public readonly timeout?: Duration;
 
@@ -268,7 +274,7 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
     this.parameters = props?.parameters;
     this.propagateTags = props?.propagateTags;
     this.retryAttempts = props?.retryAttempts;
-    this.retryStrategies = props?.retryStrategies;
+    this.retryStrategies = props?.retryStrategies ?? [];
     this.schedulingPriority = props?.schedulingPriority;
     this.timeout = props?.timeout;
 
@@ -277,11 +283,18 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
       propagateTags: this.propagateTags,
       retryStrategy: {
         attempts: this.retryAttempts,
-        evaluateOnExit: this.retryStrategies?.map((strategy) => {
-          return {
-            action: strategy.action,
-            ...strategy.on,
-          };
+        evaluateOnExit: Lazy.any({
+          produce: () => {
+            if (this.retryStrategies.length === 0) {
+              return undefined;
+            }
+            return this.retryStrategies.map((strategy) => {
+              return {
+                action: strategy.action,
+                ...strategy.on,
+              };
+            });
+          },
         }),
       },
       schedulingPriority: this.schedulingPriority,
@@ -290,5 +303,9 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
       },
       type: 'dummy',
     };
+  }
+
+  addRetryStrategy(strategy: RetryStrategy): void {
+    this.retryStrategies.push(strategy);
   }
 }

@@ -27,6 +27,7 @@ test('JobQueue respects computeEnvironments', () => {
       Order: 1,
     }],
     Priority: 10,
+    State: 'ENABLED',
   });
 });
 
