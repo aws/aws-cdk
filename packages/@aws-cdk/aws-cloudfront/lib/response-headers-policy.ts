@@ -212,7 +212,7 @@ export interface ResponseHeadersCorsBehavior {
   /**
    * A list of HTTP methods that CloudFront includes as values for the Access-Control-Allow-Methods HTTP response header.
    */
-  readonly accessControlAllowMethods: string[];
+  readonly accessControlAllowMethods: HttpMethods[];
 
   /**
    * A list of origins (domain names) that CloudFront can use as the value for the Access-Control-Allow-Origin HTTP response header.
@@ -508,4 +508,43 @@ export enum HeadersReferrerPolicy {
 function hasMaxDecimalPlaces(num: number, decimals: number): boolean {
   const parts = num.toString().split('.');
   return parts.length === 1 || parts[1].length <= decimals;
+}
+
+/**
+ * Http methods for response header CORS policy
+ */
+export enum HttpMethods {
+    /**
+     * Retrieve data from a server at the specified resource
+     */
+    GET = "GET",
+    /**
+     * Send data to the API endpoint to create or update a resource
+     */
+    POST = "POST",
+    /**
+     * Send data to the API endpoint to update or create a resource
+     */
+    PUT = "PUT",
+    /**
+     * Delete the resource at the specified endpoint
+     */
+    DELETE = "DELETE",
+    /**
+     * Apply partial modifications to the resource
+     */
+    PATCH = "PATCH",
+    /**
+     * Retrieve data from a server at the specified resource without the response body
+     */
+    HEAD = "HEAD",
+    /**
+     * Request permitted communication options for a given URL or server
+     */
+    OPTIONS = "OPTIONS",
+    /**
+     * Include all of the listed HTTP methods
+     */
+    ALL = "ALL"
+
 }
