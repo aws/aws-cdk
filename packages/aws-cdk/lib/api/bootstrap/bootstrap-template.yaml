@@ -165,6 +165,7 @@ Resources:
               AWS:
                 Fn::Sub: "${FilePublishingRole.Arn}"
             Resource: "*"
+        Version: '2012-10-17'
     Condition: CreateNewKey
   FileAssetsBucketEncryptionKeyAlias:
     Condition: CreateNewKey
@@ -231,6 +232,7 @@ Resources:
             Condition:
               Bool: { 'aws:SecureTransport': 'false' }
             Principal: '*'
+        Version: '2012-10-17'
   ContainerAssetsRepository:
     Type: AWS::ECR::Repository
     Properties:
@@ -259,7 +261,6 @@ Resources:
           - Fn::Sub: "${ContainerAssetsRepositoryName}"
           - Fn::Sub: cdk-${Qualifier}-container-assets-${AWS::AccountId}-${AWS::Region}
       RepositoryPolicyText:
-        Version: "2012-10-17"
         Statement:
           # Necessary for Lambda container images
           # https://docs.aws.amazon.com/lambda/latest/dg/configuration-images.html#configuration-images-permissions
@@ -272,6 +273,7 @@ Resources:
             Condition:
               StringLike:
                 "aws:sourceArn": { "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*" }
+        Version: "2012-10-17"
   FilePublishingRole:
     Type: AWS::IAM::Role
     Properties:
@@ -290,6 +292,7 @@ Resources:
                   AWS:
                     Ref: TrustedAccounts
               - Ref: AWS::NoValue
+        Version: "2012-10-17"
       RoleName:
         Fn::Sub: cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}
       Tags:
@@ -313,6 +316,7 @@ Resources:
                   AWS:
                     Ref: TrustedAccounts
               - Ref: AWS::NoValue
+        Version: '2012-10-17'
       RoleName:
         Fn::Sub: cdk-${Qualifier}-image-publishing-role-${AWS::AccountId}-${AWS::Region}
       Tags:
@@ -344,6 +348,7 @@ Resources:
                   AWS:
                     Ref: TrustedAccounts
               - Ref: AWS::NoValue
+        Version: '2012-10-17'
       RoleName:
         Fn::Sub: cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}
       ManagedPolicyArns:
@@ -440,6 +445,7 @@ Resources:
                   AWS:
                     Ref: TrustedAccounts
               - Ref: AWS::NoValue
+        Version: '2012-10-17'
       Policies:
         - PolicyDocument:
             Statement:
