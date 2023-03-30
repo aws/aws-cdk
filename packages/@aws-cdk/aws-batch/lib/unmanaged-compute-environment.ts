@@ -71,9 +71,9 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
 
     this.unmanagedvCPUs = props?.unmanagedvCpus;
     const resource = new CfnComputeEnvironment(this, 'Resource', {
-      ...this.resourceProps,
-      computeEnvironmentName: props?.computeEnvironmentName,
       type: 'unmanaged',
+      state: this.enabled ? 'ENABLED' : 'DISABLED',
+      computeEnvironmentName: props?.computeEnvironmentName,
       unmanagedvCpus: this.unmanagedvCPUs,
       serviceRole: props?.serviceRole?.roleArn
       ?? new Role(this, 'BatchServiceRole', {

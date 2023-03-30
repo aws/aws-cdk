@@ -4,7 +4,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import { IRole } from '@aws-cdk/aws-iam';
 import { ArnFormat, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnComputeEnvironment } from './batch.generated';
+import { CfnComputeEnvironment, CfnComputeEnvironmentProps } from './batch.generated';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 
 
@@ -200,15 +200,17 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
  * @internal
  */
 export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBase implements IManagedComputeEnvironment {
-  readonly maxvCpus: number;
-  readonly replaceComputeEnvironment?: boolean;
-  readonly spot?: boolean;
-  readonly updateTimeout?: Duration;
-  readonly terminateOnUpdate?: boolean;
-  readonly securityGroups?: ec2.ISecurityGroup[];
-  readonly updateToLatestImageVersion?: boolean;
+  public readonly maxvCpus: number;
+  public readonly replaceComputeEnvironment?: boolean;
+  public readonly spot?: boolean;
+  public readonly updateTimeout?: Duration;
+  public readonly terminateOnUpdate?: boolean;
+  public readonly securityGroups?: ec2.ISecurityGroup[];
+  public readonly updateToLatestImageVersion?: boolean;
 
-  readonly connections: ec2.Connections;
+  public readonly connections: ec2.Connections;
+
+  protected readonly resourceProps: CfnComputeEnvironmentProps;
 
   constructor(scope: Construct, id: string, props: ManagedComputeEnvironmentProps) {
     super(scope, id, props);
@@ -230,10 +232,11 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
 
     this.resourceProps = {
-      ...this.resourceProps,
+      serviceRole: this.serviceRole?.roleArn,
+      state: this.enabled ? 'ENABLED' : 'DISABLED',
       computeResources: {
         maxvCpus: this.maxvCpus,
-        type: 'dummy',
+        type: 'managed',
         updateToLatestImageVersion: this.updateToLatestImageVersion,
         securityGroupIds: this.securityGroups.map((securityGroup) => securityGroup.securityGroupId),
         subnets: subnetIds,

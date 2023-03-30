@@ -1,7 +1,6 @@
 import * as iam from '@aws-cdk/aws-iam';
 import { IResource, Resource } from '@aws-cdk/core';
 import { Construct } from 'constructs';
-import { CfnComputeEnvironmentProps } from './batch.generated';
 
 
 /**
@@ -96,8 +95,6 @@ export abstract class ComputeEnvironmentBase extends Resource implements IComput
   public readonly enabled: boolean;
   public abstract readonly computeEnvironmentArn: string;
 
-  protected resourceProps: CfnComputeEnvironmentProps;
-
   constructor(scope: Construct, id: string, props?: ComputeEnvironmentProps) {
     super(scope, id, {
       physicalName: props?.computeEnvironmentName,
@@ -105,11 +102,5 @@ export abstract class ComputeEnvironmentBase extends Resource implements IComput
 
     this.serviceRole = props?.serviceRole;
     this.enabled = props?.enabled ?? true;
-
-    this.resourceProps = {
-      serviceRole: this.serviceRole?.roleArn,
-      state: this.enabled ? 'ENABLED' : 'DISABLED',
-      type: 'dummy',
-    };
   }
 }
