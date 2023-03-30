@@ -7,7 +7,8 @@
   "typesVersions": {
     "<=3.9": {
       "*": [
-        ".types-compat/ts3.9/*"
+        ".types-compat/ts3.9/*",
+        ".types-compat/ts3.9/*/index.d.ts"
       ]
     }
   },
@@ -482,6 +483,7 @@
     "./aws-codestarconnections": "./aws-codestarconnections/index.js",
     "./aws-codestarnotifications": "./aws-codestarnotifications/index.js",
     "./aws-cognito": "./aws-cognito/index.js",
+    "./aws-comprehend": "./aws-comprehend/index.js",
     "./aws-config": "./aws-config/index.js",
     "./aws-connect": "./aws-connect/index.js",
     "./aws-connectcampaigns": "./aws-connectcampaigns/index.js",
@@ -543,6 +545,7 @@
     "./aws-imagebuilder": "./aws-imagebuilder/index.js",
     "./aws-inspector": "./aws-inspector/index.js",
     "./aws-inspectorv2": "./aws-inspectorv2/index.js",
+    "./aws-internetmonitor": "./aws-internetmonitor/index.js",
     "./aws-iot": "./aws-iot/index.js",
     "./aws-iot1click": "./aws-iot1click/index.js",
     "./aws-iotanalytics": "./aws-iotanalytics/index.js",
@@ -555,6 +558,7 @@
     "./aws-iottwinmaker": "./aws-iottwinmaker/index.js",
     "./aws-iotwireless": "./aws-iotwireless/index.js",
     "./aws-ivs": "./aws-ivs/index.js",
+    "./aws-ivschat": "./aws-ivschat/index.js",
     "./aws-kafkaconnect": "./aws-kafkaconnect/index.js",
     "./aws-kendra": "./aws-kendra/index.js",
     "./aws-kendraranking": "./aws-kendraranking/index.js",
@@ -656,9 +660,11 @@
     "./aws-stepfunctions-tasks": "./aws-stepfunctions-tasks/index.js",
     "./aws-supportapp": "./aws-supportapp/index.js",
     "./aws-synthetics": "./aws-synthetics/index.js",
+    "./aws-systemsmanagersap": "./aws-systemsmanagersap/index.js",
     "./aws-timestream": "./aws-timestream/index.js",
     "./aws-transfer": "./aws-transfer/index.js",
     "./aws-voiceid": "./aws-voiceid/index.js",
+    "./aws-vpclattice": "./aws-vpclattice/index.js",
     "./aws-waf": "./aws-waf/index.js",
     "./aws-wafregional": "./aws-wafregional/index.js",
     "./aws-wafv2": "./aws-wafv2/index.js",
