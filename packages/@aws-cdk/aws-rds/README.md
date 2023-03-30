@@ -386,6 +386,7 @@ declare const instance: rds.DatabaseInstance;
 const myUserSecret = new rds.DatabaseSecret(this, 'MyUserSecret', {
   username: 'myuser',
   secretName: 'my-user-secret', // optional, defaults to a CloudFormation-generated name
+  dbname: 'mydb', //optional, defaults to the main database of the RDS cluster this secret gets attached to
   masterSecret: instance.secret,
   excludeCharacters: '{}[]()\'"/\\', // defaults to the set " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
 });
