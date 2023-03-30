@@ -9,14 +9,17 @@ import { PolicyValidationPluginReportBeta1, PolicyViolationBeta1 } from '../../l
 
 let consoleErrorMock: jest.SpyInstance;
 let consoleLogMock: jest.SpyInstance;
+let exitMock: jest.SpyInstance;
 beforeEach(() => {
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
   consoleLogMock = jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+  exitMock = jest.spyOn(process, 'exit').mockImplementation(() => { throw 'MOCK_EXIT'; });
 });
 
 afterEach(() => {
   consoleErrorMock.mockRestore();
   consoleLogMock.mockRestore();
+  exitMock.mockRestore();
 });
 
 describe('validations', () => {
@@ -45,9 +48,9 @@ describe('validations', () => {
         result: 'failure',
       },
     });
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+
+    synth(app);
+    expect(exitMock.mock.calls[0][0]).toEqual(1);
 
     expect(consoleErrorMock.mock.calls[0][0].split('\n')).toEqual(expect.arrayContaining(validationReport([{
       templatePath: '/path/to/Default.template.json',
@@ -88,9 +91,9 @@ describe('validations', () => {
         result: 'success',
       },
     });
-    expect(() => {
-      app.synth();
-    }).not.toThrow(/Validation failed/);
+
+    synth(app);
+
     expect(consoleLogMock.mock.calls).toEqual([
       [
         expect.stringMatching(/Performing Policy Validations/),
@@ -144,9 +147,9 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+
+    synth(app);
+    expect(exitMock.mock.calls[0][0]).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0];
     // Assuming the rest of the report's content is checked by another test
@@ -228,9 +231,9 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+
+    synth(app);
+    expect(exitMock.mock.calls[0][0]).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0].split('\n');
     // Assuming the rest of the report's content is checked by another test
@@ -336,7 +339,7 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    app.synth();
+    synth(app);
 
     expect(mockValidate).toHaveBeenCalledTimes(2);
     expect(mockValidate).toHaveBeenNthCalledWith(2, {
@@ -393,7 +396,7 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    app.synth();
+    synth(app);
 
     expect(mockValidate).toHaveBeenCalledTimes(1);
     expect(mockValidate).toHaveBeenCalledWith({
@@ -422,9 +425,8 @@ Policy Validation Report Summary
     const stack = new core.Stack(app);
     new LevelTwoConstruct(stack, 'SomeResource');
     new LevelTwoConstruct(stack, 'AnotherResource');
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+    synth(app);
+    expect(exitMock.mock.calls[0][0]).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0];
     // Assuming the rest of the report's content is checked by another test
@@ -462,9 +464,8 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+    synth(app);
+    expect(exitMock.mock.calls[0][0]).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0].split('\n');
     expect(report).toEqual(expect.arrayContaining(
@@ -523,9 +524,7 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+    synth(app);
 
     const report = consoleErrorMock.mock.calls[0][0].split('\n');
     expect(report).toEqual(expect.arrayContaining(
@@ -588,9 +587,8 @@ Policy Validation Report Summary
       },
     });
 
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+    synth(app);
+    expect(exitMock.mock.calls[0][0]).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0];
     expect(report).toContain('error: Validation plugin \'broken-plugin\' failed: Something went wrong');
@@ -640,9 +638,8 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+    synth(app);
+    expect(exitMock.mock.calls[0][0]).toEqual(1);
 
     const report = fs.readFileSync(path.join(app.outdir, 'policy-validation-report.json')).toString('utf-8');
     expect(JSON.parse(report)).toEqual(expect.objectContaining({
@@ -785,7 +782,6 @@ const validationReport = (data: ValidationReportData[]) => {
         expect.stringMatching(new RegExp('      > test-location')),
         expect.stringMatching(new RegExp(`  Description: ${d.description ?? 'test recommendation'}`)),
         ...d.ruleMetadata ? [expect.stringMatching('  Rule Metadata:'), ...Object.entries(d.ruleMetadata).flatMap(([key, value]) => expect.stringMatching(`${key}: ${value}`))] : [],
-        // new RegExp(''),
       ];
     }
     return [];
@@ -818,5 +814,18 @@ class LevelTwoConstruct extends Construct {
         result: 'success',
       },
     });
+  }
+}
+
+function synth(app: core.App) {
+  try {
+    app.synth();
+  } catch (e) {
+    // The exit() function is mocked to throw an error, to interrupt the
+    // control flow. If this is the error we got here, we can safely ignore
+    // it. Otherwise, it's a genuine error and we should re-throw it.
+    if (e !== 'MOCK_EXIT') {
+      throw e;
+    }
   }
 }

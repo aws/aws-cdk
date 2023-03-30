@@ -15,6 +15,7 @@ import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { IPolicyValidationPluginBeta1 } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
+import { PolicyValidationError } from '../validation/private/error';
 import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
@@ -147,7 +148,10 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
     }
     const failed = reports.some(r => !r.success);
     if (failed) {
-      throw new Error('Validation failed. See the validation report above for details');
+      // eslint-disable-next-line no-console
+      console.log('Validation failed. See the validation report above for details');
+
+      throw new PolicyValidationError();
     } else {
       // eslint-disable-next-line no-console
       console.log('Policy Validation Successful!');
