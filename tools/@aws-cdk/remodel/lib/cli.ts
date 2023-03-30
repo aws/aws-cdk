@@ -26,6 +26,7 @@ import {
   rewriteDepVersions,
   rewriteSourceFiles,
   replaceInFiles,
+  rewriteSourceFile,
 } from './util';
 
 
@@ -629,6 +630,19 @@ async function reformatCliPackage(dir: string) {
 
     return lines.join('\n');
   });
+
+  // Use cloud-assembly-schema from aws-cdk-lib in test so it matches correctly
+  await rewriteSourceFile(
+    path.join(dir, 'test', 'api', 'exec.test.ts'),
+    async (fileContent: string) => {
+      const lines = fileContent.split('\n')
+        .map((line) => {
+          return line.replace('@aws-cdk/cloud-assembly-schema', 'aws-cdk-lib/cloud-assembly-schema');
+        });
+
+      return lines.join('\n');
+    },
+  );
 }
 
 async function reformatIntegPackage(dir: string) {
