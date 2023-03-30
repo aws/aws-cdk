@@ -2,7 +2,6 @@ import * as path from 'path';
 import * as codebuild from '@aws-cdk/aws-codebuild';
 import * as iam from '@aws-cdk/aws-iam';
 import * as lambda from '@aws-cdk/aws-lambda';
-import { NodejsFunction } from '@aws-cdk/aws-lambda-nodejs';
 import { Asset } from '@aws-cdk/aws-s3-assets';
 import {
   CustomResource,
@@ -229,48 +228,34 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
-    const onEvent = new NodejsFunction(
-      this,
-      'amplify-asset-deployment-on-event',
-      {
-        entry: path.join(
-          __dirname,
-          'asset-deployment-handler/index.js',
-        ),
-        runtime: lambda.Runtime.NODEJS_14_X,
-        handler: 'onEvent',
-        initialPolicy: [
-          new iam.PolicyStatement({
-            resources: ['*'],
-            actions: [
-              's3:GetObject',
-              's3:GetSignedUrl',
-              'amplify:ListJobs',
-              'amplify:StartDeployment',
-            ],
-          }),
-        ],
-      },
-    );
+    const onEvent = new lambda.Function(this, 'amplify-asset-deployment-on-event', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, './asset-deployment-handler')),
+      handler: 'index.onEvent',
+      initialPolicy: [
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: [
+            's3:GetObject',
+            's3:GetSignedUrl',
+            'amplify:ListJobs',
+            'amplify:StartDeployment',
+          ],
+        }),
+      ],
+    });
 
-    const isComplete = new NodejsFunction(
-      this,
-      'amplify-asset-deployment-is-complete',
-      {
-        entry: path.join(
-          __dirname,
-          'asset-deployment-handler/index.js',
-        ),
-        runtime: lambda.Runtime.NODEJS_14_X,
-        handler: 'isComplete',
-        initialPolicy: [
-          new iam.PolicyStatement({
-            resources: ['*'],
-            actions: ['amplify:GetJob*'],
-          }),
-        ],
-      },
-    );
+    const isComplete = new lambda.Function(this, 'amplify-asset-deployment-is-complete', {
+      runtime: lambda.Runtime.NODEJS_14_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, './asset-deployment-handler')),
+      handler: 'index.isComplete',
+      initialPolicy: [
+        new iam.PolicyStatement({
+          resources: ['*'],
+          actions: ['amplify:GetJob*'],
+        }),
+      ],
+    });
 
     this.provider = new Provider(
       this,
