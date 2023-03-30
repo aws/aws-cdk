@@ -63,23 +63,30 @@ export class UserTablePrivileges extends Construct {
         tablePrivileges: cdk.Lazy.any({
           produce: () => {
             const reducedPrivileges = this.privileges.reduce((privileges, { table, actions }) => {
-              const tableName = table.tableName;
-              if (!(tableName in privileges)) {
-                privileges[tableName] = [];
+              const tableId = table.id;
+              if (!(tableId in privileges)) {
+                privileges[tableId] = {
+                  tableName: table.tableName,
+                  actions: [],
+                };
               }
-              actions = actions.concat(privileges[tableName]);
+              actions = actions.concat(privileges[tableId].actions);
               if (actions.includes(TableAction.ALL)) {
                 actions = [TableAction.ALL];
               }
               if (actions.includes(TableAction.UPDATE) || actions.includes(TableAction.DELETE)) {
                 actions.push(TableAction.SELECT);
               }
-              privileges[tableName] = Array.from(new Set(actions));
+              privileges[tableId] = {
+                tableName: table.tableName,
+                actions: Array.from(new Set(actions)),
+              };
               return privileges;
-            }, {} as { [key: string]: TableAction[] });
-            const serializedPrivileges: SerializedTablePrivilege[] = Object.entries(reducedPrivileges).map(([tableName, actions]) => ({
-              tableName: tableName,
-              actions: actions.map(action => TableAction[action]),
+            }, {} as { [key: string]: { tableName: string, actions: TableAction[] } });
+            const serializedPrivileges: SerializedTablePrivilege[] = Object.entries(reducedPrivileges).map(([tableId, config]) => ({
+              tableId,
+              tableName: config.tableName,
+              actions: config.actions.map(action => TableAction[action]),
             }));
             return serializedPrivileges;
           },

@@ -3,7 +3,9 @@ import type * as AWSLambda from 'aws-lambda';
 
 const username = 'username';
 const tableName = 'tableName';
-const tablePrivileges = [{ tableName, actions: ['INSERT', 'SELECT'] }];
+const tableId = 'tableId';
+const actions = ['INSERT', 'SELECT'];
+const tablePrivileges = [{ tableId, tableName, actions }];
 const clusterName = 'clusterName';
 const adminUserArn = 'adminUserArn';
 const databaseName = 'databaseName';
@@ -142,9 +144,27 @@ describe('update', () => {
     }));
   });
 
-  test('does not replace when privileges change', async () => {
+  test('does not replace when table name is changed', async () => {
     const newTableName = 'newTableName';
-    const newTablePrivileges = [{ tableName: newTableName, actions: ['DROP'] }];
+    const newTablePrivileges = [{ tableId, tableName: newTableName, actions }];
+    const newResourceProperties = {
+      ...resourceProperties,
+      tablePrivileges: newTablePrivileges,
+    };
+
+    await expect(managePrivileges(newResourceProperties, event)).resolves.toMatchObject({
+      PhysicalResourceId: physicalResourceId,
+    });
+    expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `REVOKE INSERT, SELECT ON ${newTableName} FROM ${username}`,
+    }));
+    expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+      Sql: expect.stringMatching(new RegExp(`.+ ON ${tableName} TO ${username}`)),
+    }));
+  });
+
+  test('does not replace when table actions are changed', async () => {
+    const newTablePrivileges = [{ tableId, tableName, actions: ['DROP'] }];
     const newResourceProperties = {
       ...resourceProperties,
       tablePrivileges: newTablePrivileges,
@@ -157,7 +177,46 @@ describe('update', () => {
       Sql: `REVOKE INSERT, SELECT ON ${tableName} FROM ${username}`,
     }));
     expect(mockExecuteStatement).toHaveBeenCalledWith(expect.objectContaining({
-      Sql: `GRANT DROP ON ${newTableName} TO ${username}`,
+      Sql: `GRANT DROP ON ${tableName} TO ${username}`,
+    }));
+  });
+
+  test('does not replace when table id is changed', async () => {
+    const newTableId = 'newTableId';
+    const newTablePrivileges = [{ tableId: newTableId, tableName, actions }];
+    const newResourceProperties = {
+      ...resourceProperties,
+      tablePrivileges: newTablePrivileges,
+    };
+
+    await expect(managePrivileges(newResourceProperties, event)).resolves.toMatchObject({
+      PhysicalResourceId: physicalResourceId,
+    });
+    expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `.+ ON ${tableName} FROM ${username}`,
+    }));
+  });
+
+  test('does not replace when table id is appended', async () => {
+    const newTablePrivileges = [{ tableId: 'newTableId', tableName, actions }];
+    const newResourceProperties = {
+      ...resourceProperties,
+      tablePrivileges: newTablePrivileges,
+    };
+
+    const newEvent = {
+      ...event,
+      OldResourceProperties: {
+        ...event.OldResourceProperties,
+        tablePrivileges: [{ tableName, actions }],
+      },
+    };
+
+    await expect(managePrivileges(newResourceProperties, newEvent)).resolves.toMatchObject({
+      PhysicalResourceId: physicalResourceId,
+    });
+    expect(mockExecuteStatement).not.toHaveBeenCalledWith(expect.objectContaining({
+      Sql: `.+ ON ${tableName} FROM ${username}`,
     }));
   });
 });

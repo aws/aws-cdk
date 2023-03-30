@@ -62,10 +62,28 @@ async function updatePrivileges(
   }
 
   const oldTablePrivileges = oldResourceProperties.tablePrivileges;
-  if (oldTablePrivileges !== tablePrivileges) {
-    await revokePrivileges(username, oldTablePrivileges, clusterProps);
-    await grantPrivileges(username, tablePrivileges, clusterProps);
-    return { replace: false };
+  const tablesToRevoke = oldTablePrivileges.filter(({ tableId, actions }) => {
+    const tableRemoved = !tablePrivileges.find(({ tableId: otherTableId }) => tableId === otherTableId);
+    const actionsRemoved = tablePrivileges.find(({ tableId: otherTableId, actions: otherActions }) => (
+      tableId === otherTableId && actions.some(action => !otherActions.includes(action))
+    ));
+    return tableRemoved || actionsRemoved;
+  });
+  if (tablesToRevoke.length > 0) {
+    await revokePrivileges(username, tablesToRevoke, clusterProps);
+  }
+
+  const tablesToGrant = tablePrivileges.filter(({ tableId, tableName, actions }) => {
+    const tableAdded = !oldTablePrivileges.find(({ tableId: otherTableId, tableName: otherTableName }) => (
+      tableId === otherTableId && tableName === otherTableName
+    ));
+    const actionsAdded = oldTablePrivileges.find(({ tableId: otherTableId, actions: otherActions }) => (
+      tableId === otherTableId && otherActions.some(action => !actions.includes(action))
+    ));
+    return tableAdded || actionsAdded;
+  });
+  if (tablesToGrant.length > 0) {
+    await grantPrivileges(username, tablesToGrant, clusterProps);
   }
 
   return { replace: false };
