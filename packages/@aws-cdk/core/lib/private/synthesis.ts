@@ -15,7 +15,6 @@ import { ISynthesisSession } from '../stack-synthesizers/types';
 import { Stage, StageSynthesisOptions } from '../stage';
 import { IPolicyValidationPluginBeta1 } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
-import { PolicyValidationError } from '../validation/private/error';
 import { PolicyValidationReportFormatter, NamedValidationPluginReport } from '../validation/private/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
@@ -140,18 +139,22 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: Clo
       ? formatter.formatJson(reports)
       : formatter.formatPrettyPrinted(reports);
 
+    const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
     if (formatJson) {
-      fs.writeFileSync(path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH), JSON.stringify(output, undefined, 2));
+      fs.writeFileSync(reportFile, JSON.stringify(output, undefined, 2));
     } else {
       // eslint-disable-next-line no-console
       console.error(output);
     }
     const failed = reports.some(r => !r.success);
     if (failed) {
-      // eslint-disable-next-line no-console
-      console.log('Validation failed. See the validation report above for details');
+      const message = formatJson
+        ? `Validation failed. See the validation report in '${reportFile}' for details`
+        : 'Validation failed. See the validation report above for details';
 
-      throw new PolicyValidationError();
+      // eslint-disable-next-line no-console
+      console.log(message);
+      process.exitCode = 1;
     } else {
       // eslint-disable-next-line no-console
       console.log('Policy Validation Successful!');

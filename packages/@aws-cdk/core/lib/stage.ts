@@ -4,7 +4,6 @@ import { Environment } from './environment';
 import { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { IPolicyValidationPluginBeta1 } from './validation';
-import { PolicyValidationError } from './validation/private/error';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
@@ -215,24 +214,13 @@ export class Stage extends Construct {
    */
   public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
     if (!this.assembly || options.force) {
-      this.assembly = this.trySynth(options);
-    }
-
-    return this.assembly;
-  }
-
-  private trySynth(options: StageSynthesisOptions): cxapi.CloudAssembly {
-    try {
-      return synthesize(this, {
+      this.assembly = synthesize(this, {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
       });
-    } catch (e) {
-      if (PolicyValidationError.isPolicyValidationError(e)) {
-        process.exit(1);
-      }
-      throw e;
     }
+
+    return this.assembly;
   }
 
   private createBuilder(outdir?: string) {

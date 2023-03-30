@@ -9,17 +9,15 @@ import { PolicyValidationPluginReportBeta1, PolicyViolationBeta1 } from '../../l
 
 let consoleErrorMock: jest.SpyInstance;
 let consoleLogMock: jest.SpyInstance;
-let exitMock: jest.SpyInstance;
 beforeEach(() => {
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
   consoleLogMock = jest.spyOn(console, 'log').mockImplementation(() => { return true; });
-  exitMock = jest.spyOn(process, 'exit').mockImplementation(() => { throw 'MOCK_EXIT'; });
+  process.exitCode = undefined;
 });
 
 afterEach(() => {
   consoleErrorMock.mockRestore();
   consoleLogMock.mockRestore();
-  exitMock.mockRestore();
 });
 
 describe('validations', () => {
@@ -49,8 +47,8 @@ describe('validations', () => {
       },
     });
 
-    synth(app);
-    expect(exitMock.mock.calls[0][0]).toEqual(1);
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     expect(consoleErrorMock.mock.calls[0][0].split('\n')).toEqual(expect.arrayContaining(validationReport([{
       templatePath: '/path/to/Default.template.json',
@@ -92,7 +90,8 @@ describe('validations', () => {
       },
     });
 
-    synth(app);
+    app.synth();
+    expect(process.exitCode).toBeUndefined();
 
     expect(consoleLogMock.mock.calls).toEqual([
       [
@@ -148,8 +147,8 @@ Policy Validation Report Summary
       },
     });
 
-    synth(app);
-    expect(exitMock.mock.calls[0][0]).toEqual(1);
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0];
     // Assuming the rest of the report's content is checked by another test
@@ -232,8 +231,8 @@ Policy Validation Report Summary
       },
     });
 
-    synth(app);
-    expect(exitMock.mock.calls[0][0]).toEqual(1);
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0].split('\n');
     // Assuming the rest of the report's content is checked by another test
@@ -339,7 +338,7 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    synth(app);
+    app.synth();
 
     expect(mockValidate).toHaveBeenCalledTimes(2);
     expect(mockValidate).toHaveBeenNthCalledWith(2, {
@@ -396,7 +395,7 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    synth(app);
+    app.synth();
 
     expect(mockValidate).toHaveBeenCalledTimes(1);
     expect(mockValidate).toHaveBeenCalledWith({
@@ -425,8 +424,8 @@ Policy Validation Report Summary
     const stack = new core.Stack(app);
     new LevelTwoConstruct(stack, 'SomeResource');
     new LevelTwoConstruct(stack, 'AnotherResource');
-    synth(app);
-    expect(exitMock.mock.calls[0][0]).toEqual(1);
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0];
     // Assuming the rest of the report's content is checked by another test
@@ -464,8 +463,8 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    synth(app);
-    expect(exitMock.mock.calls[0][0]).toEqual(1);
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0].split('\n');
     expect(report).toEqual(expect.arrayContaining(
@@ -524,7 +523,7 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    synth(app);
+    app.synth();
 
     const report = consoleErrorMock.mock.calls[0][0].split('\n');
     expect(report).toEqual(expect.arrayContaining(
@@ -587,8 +586,8 @@ Policy Validation Report Summary
       },
     });
 
-    synth(app);
-    expect(exitMock.mock.calls[0][0]).toEqual(1);
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0];
     expect(report).toContain('error: Validation plugin \'broken-plugin\' failed: Something went wrong');
@@ -638,8 +637,8 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    synth(app);
-    expect(exitMock.mock.calls[0][0]).toEqual(1);
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     const report = fs.readFileSync(path.join(app.outdir, 'policy-validation-report.json')).toString('utf-8');
     expect(JSON.parse(report)).toEqual(expect.objectContaining({
@@ -814,18 +813,5 @@ class LevelTwoConstruct extends Construct {
         result: 'success',
       },
     });
-  }
-}
-
-function synth(app: core.App) {
-  try {
-    app.synth();
-  } catch (e) {
-    // The exit() function is mocked to throw an error, to interrupt the
-    // control flow. If this is the error we got here, we can safely ignore
-    // it. Otherwise, it's a genuine error and we should re-throw it.
-    if (e !== 'MOCK_EXIT') {
-      throw e;
-    }
   }
 }
