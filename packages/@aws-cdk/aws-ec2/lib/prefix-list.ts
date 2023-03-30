@@ -3,11 +3,11 @@ import { Construct } from 'constructs';
 import { CfnPrefixList } from './ec2.generated';
 
 /**
- * A Prefix List
+ * A prefix list
  */
 export interface IPrefixList extends IResource {
   /**
-   * The Id of the Prefix List
+   * The ID of the prefix list
    *
    * @attribute
    */
@@ -23,7 +23,7 @@ export enum AddressFamily {
 }
 
 /**
- * Options to add a prefixlist
+ * Options to add a prefix list
  */
 export interface PrefixListOptions {
   /**
@@ -64,11 +64,11 @@ export interface PrefixListProps extends PrefixListOptions {
 }
 
 /**
- * The base class for a Prefix List
+ * The base class for a prefix list
  */
 abstract class PrefixListBase extends Resource implements IPrefixList {
   /**
-   * The Id of the Prefix List
+   * The ID of the prefix list
    *
    * @attribute
    */
@@ -91,40 +91,40 @@ export class PrefixList extends PrefixListBase {
     return new Import(scope, id);
   }
   /**
-   * The Id of the Prefix List
+   * The ID of the prefix list
    *
    * @attribute
    */
   public readonly prefixListId: string;
 
   /**
-   * The Name of the Prefix List
+   * The name of the prefix list
    *
    * @attribute
    */
   public readonly prefixListName: string;
 
   /**
-   * The ARN of the Prefix List
+   * The ARN of the prefix list
    *
    * @attribute
    */
   public readonly prefixListArn: string;
 
   /**
-   * The OwnerId of the Prefix List
+   * The owner ID of the prefix list
    *
    */
   public readonly ownerId: string;
 
   /**
-   * The Version of the Prefix List
+   * The version of the prefix list
    *
    */
   public readonly version: number;
 
   /**
-   * The AddressFamily of the Prefix List
+   * The address family of the prefix list
    *
    */
   public readonly addressFamily: string;
