@@ -12,6 +12,7 @@ let consoleLogMock: jest.SpyInstance;
 beforeEach(() => {
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
   consoleLogMock = jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+  process.exitCode = undefined;
 });
 
 afterEach(() => {
@@ -45,9 +46,9 @@ describe('validations', () => {
         result: 'failure',
       },
     });
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     expect(consoleErrorMock.mock.calls[0][0].split('\n')).toEqual(expect.arrayContaining(validationReport([{
       templatePath: '/path/to/Default.template.json',
@@ -88,9 +89,10 @@ describe('validations', () => {
         result: 'success',
       },
     });
-    expect(() => {
-      app.synth();
-    }).not.toThrow(/Validation failed/);
+
+    app.synth();
+    expect(process.exitCode).toBeUndefined();
+
     expect(consoleLogMock.mock.calls).toEqual([
       [
         expect.stringMatching(/Performing Policy Validations/),
@@ -144,9 +146,9 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0];
     // Assuming the rest of the report's content is checked by another test
@@ -228,9 +230,9 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0].split('\n');
     // Assuming the rest of the report's content is checked by another test
@@ -422,9 +424,8 @@ Policy Validation Report Summary
     const stack = new core.Stack(app);
     new LevelTwoConstruct(stack, 'SomeResource');
     new LevelTwoConstruct(stack, 'AnotherResource');
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0];
     // Assuming the rest of the report's content is checked by another test
@@ -462,9 +463,8 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0].split('\n');
     expect(report).toEqual(expect.arrayContaining(
@@ -523,9 +523,7 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+    app.synth();
 
     const report = consoleErrorMock.mock.calls[0][0].split('\n');
     expect(report).toEqual(expect.arrayContaining(
@@ -588,9 +586,8 @@ Policy Validation Report Summary
       },
     });
 
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     const report = consoleErrorMock.mock.calls[0][0];
     expect(report).toContain('error: Validation plugin \'broken-plugin\' failed: Something went wrong');
@@ -640,9 +637,8 @@ Policy Validation Report Summary
         result: 'failure',
       },
     });
-    expect(() => {
-      app.synth();
-    }).toThrow(/Validation failed/);
+    app.synth();
+    expect(process.exitCode).toEqual(1);
 
     const report = fs.readFileSync(path.join(app.outdir, 'policy-validation-report.json')).toString('utf-8');
     expect(JSON.parse(report)).toEqual(expect.objectContaining({
@@ -785,7 +781,6 @@ const validationReport = (data: ValidationReportData[]) => {
         expect.stringMatching(new RegExp('      > test-location')),
         expect.stringMatching(new RegExp(`  Description: ${d.description ?? 'test recommendation'}`)),
         ...d.ruleMetadata ? [expect.stringMatching('  Rule Metadata:'), ...Object.entries(d.ruleMetadata).flatMap(([key, value]) => expect.stringMatching(`${key}: ${value}`))] : [],
-        // new RegExp(''),
       ];
     }
     return [];
