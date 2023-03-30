@@ -263,6 +263,13 @@ async function makeAwsCdkLib(target: string) {
       '@types/punycode': '^2.1.0',
       'typescript-json-schema': '^0.55.0',
     },
+    'exports': {
+      ...pkgJson.exports,
+      // Add generated files to exports that are used by the alpha modules
+      './aws-kinesisfirehose/lib/kinesisfirehose-canned-metrics.generated': './aws-kinesisfirehose/lib/kinesisfirehose-canned-metrics.generated.js',
+      './aws-synthetics/lib/synthetics-canned-metrics.generated': './aws-synthetics/lib/synthetics-canned-metrics.generated.js',
+      './aws-gamelift/lib/gamelift-canned-metrics.generated': './aws-gamelift/lib/gamelift-canned-metrics.generated.js',
+    },
   });
 
   await fs.remove(path.join(awsCdkLibDir, 'integ-tests'));
