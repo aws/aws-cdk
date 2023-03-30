@@ -1,0 +1,13 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "CloudFrontS3OriginOACTest/DefaultTest": {
+      "stacks": [
+        "s3origin-oac-1",
+        "s3origin-oac-multistack"
+      ],
+      "assertionStack": "CloudFrontS3OriginOACTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CloudFrontS3OriginOACTestDefaultTestDeployAssert62DBC588"
+    }
+  }
+}

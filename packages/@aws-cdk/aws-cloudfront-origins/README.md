@@ -20,7 +20,7 @@ Any public HTTP or HTTPS endpoint can be used as an origin, as long as it has a 
 ```ts
 // Creates a distribution from an HTTP endpoint
 new cloudfront.Distribution(this, 'myDist', {
-  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+  defaultBehavior: { origin: new origins.HttpOrigin('www-origin.example.com') },
 });
 ```
 
@@ -34,7 +34,7 @@ is a legacy authentication method which will not be supported in new regions. It
 new deployments.
 
 You can enable OAC by setting the `originAccessControl` property to `true`, or by explicitly supplying an `OriginAccessControl`
-resource. If you leave OAC disabled, the legacy OAI method will be used by default for backwards-compatibility reasons.
+resource. If you do not specify anything, the legacy OAI method will be used by default for backwards-compatibility reasons.
 
 ```ts
 // Creates a distribution from a private S3 bucket using Origin Access Control

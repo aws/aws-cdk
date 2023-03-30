@@ -1,0 +1,111 @@
+{
+ "Resources": {
+  "DistCrossStackDEBC5038": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "CacheBehaviors": [
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "0/*",
+       "TargetOriginId": "s3originoacmultistackDistCrossStackOrigin2C0D71C3F",
+       "ViewerProtocolPolicy": "allow-all"
+      }
+     ],
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "s3originoacmultistackDistCrossStackOrigin1B87A34D7",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "DomainName": {
+        "Fn::ImportValue": "s3origin-oac-1:ExportsOutputFnGetAttBucket83908E77RegionalDomainName2BE53631"
+       },
+       "Id": "s3originoacmultistackDistCrossStackOrigin1B87A34D7",
+       "OriginAccessControlId": {
+        "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
+       },
+       "S3OriginConfig": {}
+      },
+      {
+       "DomainName": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::ImportValue": "s3origin-oac-1:ExportsOutputRefBucket83908E7781C90AC0"
+          },
+          ".s3.",
+          {
+           "Ref": "AWS::Region"
+          },
+          ".",
+          {
+           "Ref": "AWS::URLSuffix"
+          }
+         ]
+        ]
+       },
+       "Id": "s3originoacmultistackDistCrossStackOrigin2C0D71C3F",
+       "OriginAccessControlId": {
+        "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
+       },
+       "S3OriginConfig": {}
+      }
+     ]
+    }
+   }
+  },
+  "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "s3originoacmultistackOriginAEFE0CA7DB170D0C7D8E8DC4943CF8E9591F8",
+     "OriginAccessControlOriginType": "s3",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

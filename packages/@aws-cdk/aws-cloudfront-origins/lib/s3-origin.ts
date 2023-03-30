@@ -1,5 +1,4 @@
 import * as cloudfront from '@aws-cdk/aws-cloudfront';
-import { OriginAccessControl } from '@aws-cdk/aws-cloudfront';
 import * as iam from '@aws-cdk/aws-iam';
 import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
@@ -49,9 +48,11 @@ export interface S3OriginProps extends cloudfront.OriginProps {
    * When used in a stack with a legacy OAI configuration, only a best-effort attempt will be made to set
    * resource policies. Any failures due to imported or cross-stack resources will be ignored.
    *
+   * `true` is a convenience alias for READ_ONLY and `false` is an alias for NONE.
+   *
    * @default S3OriginAutoResourcePolicyConfig.READ_ONLY
    */
-  readonly autoResourcePolicy?: S3OriginAutoResourcePolicy;
+  readonly autoResourcePolicy?: S3OriginAutoResourcePolicy | boolean;
   /**
    * An optional "origin access control" (OAC) resource which describes how the distribution should
    * sign its requests for the S3 bucket origin. Can also be set to `true` to apply a default OAC.
@@ -116,44 +117,63 @@ class S3BucketOrigin extends cloudfront.OriginBase {
     }
     this.originAccessControl = props.originAccessControl;
     this.originAccessIdentity = props.originAccessIdentity;
-    this.autoResourcePolicy = props.autoResourcePolicy ?? S3OriginAutoResourcePolicy.READ_ONLY;
+    const autopolicy = props.autoResourcePolicy ?? true;
+    if (autopolicy === true) {
+      this.autoResourcePolicy = S3OriginAutoResourcePolicy.READ_ONLY;
+    } else if (autopolicy === false) {
+      this.autoResourcePolicy = S3OriginAutoResourcePolicy.NONE;
+    } else {
+      this.autoResourcePolicy = autopolicy;
+    }
+  }
+
+  private bindOAC(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+    if (this.autoResourcePolicy != S3OriginAutoResourcePolicy.NONE) {
+      if (cdk.Stack.of(this.bucket) != cdk.Stack.of(scope)) {
+        // The bucket policy must be mangaed by the same stack as the CloudFront distribution.
+        // If we do not check for this, it will create a circular cross-stack dependency.
+        throw new Error('Cannot edit cross-stack bucket policy due to circular dependency, set autoResourcePolicy to false');
+      }
+      const readonly = this.autoResourcePolicy == S3OriginAutoResourcePolicy.READ_ONLY;
+      const dist = scope.node.scope as cloudfront.Distribution;
+      const lazyDistArn = cdk.Lazy.string({ produce: () => dist.distributionArn });
+      const added = this.bucket.addToResourcePolicy(new iam.PolicyStatement({
+        principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
+        actions: readonly ? ['s3:GetObject'] : ['s3:GetObject', 's3:PutObject'],
+        resources: [this.bucket.arnForObjects('*')],
+        conditions: { StringEquals: { 'aws:SourceArn': lazyDistArn } },
+      }));
+      if (!added.statementAdded) {
+        throw new Error('Cannot edit non-CDK-managed policy on imported buckets, set autoResourcePolicy to false');
+      }
+      // Buckets work because the bucket policies are only installed after the bucket
+      // is created, so the bucket policy can have a dependency on the distribution
+      // which depends on the bucket. But KMS keys need their policy at creation time,
+      // and there is no way to break the circular dependency with the distribution...
+      // unless we write a custom resource Lambda that modifies the key policy "later"?
+      if (this.bucket.encryptionKey) {
+        throw new Error('Cannot edit KMS key policy due to circular dependency, set autoResourcePolicy to false');
+      }
+    }
+    let oac = this.originAccessControl ?? true;
+    if (oac === true) {
+      oac = cloudfront.OriginAccessControl.fromS3Defaults(scope);
+    }
+    // Wrap base-class results and directly inject OAC Id property
+    const baseConfig = super.bind(scope, options);
+    return {
+      ...baseConfig,
+      originProperty: {
+        ...baseConfig.originProperty!,
+        originAccessControlId: oac.originAccessControlId,
+      },
+    };
   }
 
   public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     if (this.originAccessControl) {
-      if (this.autoResourcePolicy != S3OriginAutoResourcePolicy.NONE) {
-        const readonly = this.autoResourcePolicy == S3OriginAutoResourcePolicy.READ_ONLY;
-        const dist = scope.node.scope as cloudfront.Distribution;
-        const lazyDistArn = cdk.Lazy.string({ produce: () => dist.distributionArn });
-        const added = this.bucket.addToResourcePolicy(new iam.PolicyStatement({
-          principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
-          actions: readonly ? ['s3:GetObject'] : ['s3:GetObject', 's3:PutObject'],
-          resources: [this.bucket.arnForObjects('*')],
-          conditions: { StringEquals: { 'aws:SourceArn': lazyDistArn } },
-        }));
-        if (!added.statementAdded) {
-          throw new Error('S3Origin cannot edit imported buckets, try autoResourcePolicy=NONE');
-        }
-        // Buckets work because the bucket policies are only installed after the bucket
-        // is created, so the bucket policy can have a dependency on the distribution
-        // which depends on the bucket. But KMS keys need their policy at creation time,
-        // and there is no way to break the circular dependency with the distribution...
-        // unless we write a custom resource Lambda that modifies the key policy "later"?
-        if (this.bucket.encryptionKey) {
-          throw new Error('S3Origin cannot edit KMS keys at this time, try autoResourcePolicy=NONE');
-        }
-      }
-      let oac = this.originAccessControl;
-      if (oac === true) {
-        oac = OriginAccessControl.fromS3Defaults(scope);
-      }
-      const newBindConfig = { ...super.bind(scope, options) };
-      const newOriginProp = { ...newBindConfig.originProperty! };
-      newOriginProp.originAccessControlId = oac.originAccessControlId;
-      newBindConfig.originProperty = newOriginProp;
-      return newBindConfig;
+      return this.bindOAC(scope, options);
     }
-
     if (!this.originAccessIdentity) {
       // Using a bucket from another stack creates a cyclic reference with
       // the bucket taking a dependency on the generated S3CanonicalUserId for the grant principal,
@@ -169,9 +189,9 @@ class S3BucketOrigin extends cloudfront.OriginBase {
       });
     }
     if (this.autoResourcePolicy == S3OriginAutoResourcePolicy.READ_WRITE) {
-      throw new Error('S3OriginAutoResourcePolicy.READ_WRITE is not supported with Origin Access Identity');
+      throw new Error('S3OriginAutoResourcePolicy.READ_WRITE cannot be used with originAccessIdentity');
     }
-    if (this.autoResourcePolicy == S3OriginAutoResourcePolicy.READ_ONLY) {
+    if (this.autoResourcePolicy != S3OriginAutoResourcePolicy.NONE) {
       // Used rather than `grantRead` because `grantRead` will grant overly-permissive policies.
       // Only GetObject is needed to retrieve objects for the distribution.
       // This also excludes KMS permissions; currently, OAI only supports SSE-S3 for buckets.

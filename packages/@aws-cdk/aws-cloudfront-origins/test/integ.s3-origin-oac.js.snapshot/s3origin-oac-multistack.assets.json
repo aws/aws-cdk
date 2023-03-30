@@ -1,0 +1,19 @@
+{
+  "version": "31.0.0",
+  "files": {
+    "a67e710f43b68ae6f010f859dec3c563f3637bb9ea3a9ffc40af3a93c5ab360e": {
+      "source": {
+        "path": "s3origin-oac-multistack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a67e710f43b68ae6f010f859dec3c563f3637bb9ea3a9ffc40af3a93c5ab360e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
