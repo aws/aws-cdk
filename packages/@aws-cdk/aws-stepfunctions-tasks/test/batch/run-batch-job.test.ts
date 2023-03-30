@@ -15,20 +15,22 @@ beforeEach(() => {
   // GIVEN
   stack = new cdk.Stack();
 
-  batchJobDefinition = new batch.JobDefinition(stack, 'JobDefinition', {
-    container: {
+  batchJobDefinition = new batch.EcsJobDefinition(stack, 'JobDefinition', {
+    containerDefinition: new batch.EcsEc2ContainerDefinition(stack, 'Container', {
       image: ecs.ContainerImage.fromAsset(
         path.join(__dirname, 'batchjob-image'),
       ),
-    },
+      cpu: 256,
+      memory: cdk.Size.mebibytes(2048),
+    }),
   });
 
   batchJobQueue = new batch.JobQueue(stack, 'JobQueue', {
     computeEnvironments: [
       {
         order: 1,
-        computeEnvironment: new batch.ComputeEnvironment(stack, 'ComputeEnv', {
-          computeResources: { vpc: new ec2.Vpc(stack, 'vpc') },
+        computeEnvironment: new batch.ManagedEc2EcsComputeEnvironment(stack, 'ComputeEnv', {
+          vpc: new ec2.Vpc(stack, 'vpc'),
         }),
       },
     ],
@@ -65,7 +67,12 @@ describeDeprecated('RunBatchJob', () => {
       Parameters: {
         JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
         JobName: 'JobName',
-        JobQueue: { Ref: 'JobQueueEE3AD499' },
+        JobQueue: {
+          'Fn::GetAtt': [
+            'JobQueueC5644E0D',
+            'JobQueueArn',
+          ],
+        },
       },
     });
   });
@@ -115,7 +122,12 @@ describeDeprecated('RunBatchJob', () => {
       Parameters: {
         JobDefinition: { Ref: 'JobDefinition24FFE3ED' },
         JobName: 'JobName',
-        JobQueue: { Ref: 'JobQueueEE3AD499' },
+        JobQueue: {
+          'Fn::GetAtt': [
+            'JobQueueC5644E0D',
+            'JobQueueArn',
+          ],
+        },
         ArrayProperties: { Size: 15 },
         ContainerOverrides: {
           Command: ['sudo', 'rm'],
@@ -165,7 +177,12 @@ describeDeprecated('RunBatchJob', () => {
       Parameters: {
         'JobDefinition': { Ref: 'JobDefinition24FFE3ED' },
         'JobName.$': '$.jobName',
-        'JobQueue': { Ref: 'JobQueueEE3AD499' },
+        'JobQueue': {
+          'Fn::GetAtt': [
+            'JobQueueC5644E0D',
+            'JobQueueArn',
+          ],
+        },
         'ArrayProperties': {
           'Size.$': '$.arraySize',
         },

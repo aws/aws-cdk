@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445": {
+  "ComputeEnvironmentBatchServiceRole3533BE31": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -34,23 +34,26 @@
   "ComputeEnvironmentC570994D": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
-    "Type": "UNMANAGED",
+    "Type": "unmanaged",
     "ServiceRole": {
      "Fn::GetAtt": [
-      "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445",
+      "ComputeEnvironmentBatchServiceRole3533BE31",
       "Arn"
      ]
     },
     "State": "ENABLED"
    }
   },
-  "MyQueueE6CA6235": {
+  "MyQueue4F9177CF": {
    "Type": "AWS::Batch::JobQueue",
    "Properties": {
     "ComputeEnvironmentOrder": [
      {
       "ComputeEnvironment": {
-       "Ref": "ComputeEnvironmentC570994D"
+       "Fn::GetAtt": [
+        "ComputeEnvironmentC570994D",
+        "ComputeEnvironmentArn"
+       ]
       },
       "Order": 1
      }
@@ -59,45 +62,52 @@
     "State": "ENABLED"
    }
   },
+  "containerExecutionRoleFD602179": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
   "MyJob8719E923": {
    "Type": "AWS::Batch::JobDefinition",
    "Properties": {
     "Type": "container",
     "ContainerProperties": {
-     "Environment": [
-      {
-       "Name": "AWS_REGION",
-       "Value": {
-        "Ref": "AWS::Region"
-       }
-      },
-      {
-       "Name": "AWS_ACCOUNT",
-       "Value": {
-        "Ref": "AWS::AccountId"
-       }
-      }
-     ],
+     "Environment": [],
+     "ExecutionRoleArn": {
+      "Fn::GetAtt": [
+       "containerExecutionRoleFD602179",
+       "Arn"
+      ]
+     },
      "Image": "test-repo",
-     "Privileged": false,
      "ReadonlyRootFilesystem": false,
      "ResourceRequirements": [
       {
-       "Type": "VCPU",
-       "Value": "1"
+       "Type": "MEMORY",
+       "Value": "2048"
       },
       {
-       "Type": "MEMORY",
-       "Value": "4"
+       "Type": "VCPU",
+       "Value": "256"
       }
      ]
     },
     "PlatformCapabilities": [
      "EC2"
     ],
-    "RetryStrategy": {
-     "Attempts": 1
-    },
+    "RetryStrategy": {},
     "Timeout": {}
    }
   },
@@ -128,10 +138,13 @@
        "Effect": "Allow",
        "Resource": [
         {
-         "Ref": "MyJob8719E923"
+         "Fn::GetAtt": [
+          "MyQueue4F9177CF",
+          "JobQueueArn"
+         ]
         },
         {
-         "Ref": "MyQueueE6CA6235"
+         "Ref": "MyJob8719E923"
         }
        ]
       }
@@ -154,7 +167,10 @@
     "Targets": [
      {
       "Arn": {
-       "Ref": "MyQueueE6CA6235"
+       "Fn::GetAtt": [
+        "MyQueue4F9177CF",
+        "JobQueueArn"
+       ]
       },
       "BatchParameters": {
        "JobDefinition": {
@@ -181,7 +197,10 @@
     "Targets": [
      {
       "Arn": {
-       "Ref": "MyQueueE6CA6235"
+       "Fn::GetAtt": [
+        "MyQueue4F9177CF",
+        "JobQueueArn"
+       ]
       },
       "BatchParameters": {
        "JobDefinition": {

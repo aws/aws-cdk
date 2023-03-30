@@ -31,8 +31,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPC",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "PublicSubnet1": {
@@ -75,16 +75,16 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-stepfunctions-integ/vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "RouteTable": {
@@ -105,8 +105,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "RouteTableAssociation": {
@@ -124,8 +124,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "DefaultRoute": {
@@ -144,8 +144,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "EIP": {
@@ -164,8 +164,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "NATGateway": {
@@ -192,14 +192,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "PublicSubnet2": {
@@ -242,16 +242,16 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-stepfunctions-integ/vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "RouteTable": {
@@ -272,8 +272,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "RouteTableAssociation": {
@@ -291,8 +291,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "DefaultRoute": {
@@ -311,8 +311,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "EIP": {
@@ -331,8 +331,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnEIP",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "NATGateway": {
@@ -359,14 +359,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "PrivateSubnet1": {
@@ -409,16 +409,16 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-stepfunctions-integ/vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "RouteTable": {
@@ -439,8 +439,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "RouteTableAssociation": {
@@ -458,8 +458,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "DefaultRoute": {
@@ -478,14 +478,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "PrivateSubnet2": {
@@ -528,16 +528,16 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-stepfunctions-integ/vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "RouteTable": {
@@ -558,8 +558,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "RouteTableAssociation": {
@@ -577,8 +577,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "DefaultRoute": {
@@ -597,14 +597,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "IGW": {
@@ -622,8 +622,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "VPCGW": {
@@ -641,31 +641,31 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ec2.Vpc",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "ComputeEnv": {
             "id": "ComputeEnv",
             "path": "aws-stepfunctions-integ/ComputeEnv",
             "children": {
-              "Resource-Security-Group": {
-                "id": "Resource-Security-Group",
-                "path": "aws-stepfunctions-integ/ComputeEnv/Resource-Security-Group",
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-stepfunctions-integ/ComputeEnv/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-integ/ComputeEnv/Resource-Security-Group/Resource",
+                    "path": "aws-stepfunctions-integ/ComputeEnv/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "aws-stepfunctions-integ/ComputeEnv/Resource-Security-Group",
+                        "groupDescription": "aws-stepfunctions-integ/ComputeEnv/SecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -679,31 +679,31 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
-              "Ecs-Instance-Role": {
-                "id": "Ecs-Instance-Role",
-                "path": "aws-stepfunctions-integ/ComputeEnv/Ecs-Instance-Role",
+              "InstanceProfileRole": {
+                "id": "InstanceProfileRole",
+                "path": "aws-stepfunctions-integ/ComputeEnv/InstanceProfileRole",
                 "children": {
-                  "ImportEcs-Instance-Role": {
-                    "id": "ImportEcs-Instance-Role",
-                    "path": "aws-stepfunctions-integ/ComputeEnv/Ecs-Instance-Role/ImportEcs-Instance-Role",
+                  "ImportInstanceProfileRole": {
+                    "id": "ImportInstanceProfileRole",
+                    "path": "aws-stepfunctions-integ/ComputeEnv/InstanceProfileRole/ImportInstanceProfileRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-stepfunctions-integ/ComputeEnv/Ecs-Instance-Role/Resource",
+                    "path": "aws-stepfunctions-integ/ComputeEnv/InstanceProfileRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -718,21 +718,7 @@
                             }
                           ],
                           "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
-                              ]
-                            ]
-                          }
-                        ]
+                        }
                       }
                     },
                     "constructInfo": {
@@ -746,15 +732,15 @@
                   "version": "0.0.0"
                 }
               },
-              "Instance-Profile": {
-                "id": "Instance-Profile",
-                "path": "aws-stepfunctions-integ/ComputeEnv/Instance-Profile",
+              "InstanceProfile": {
+                "id": "InstanceProfile",
+                "path": "aws-stepfunctions-integ/ComputeEnv/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
                     "roles": [
                       {
-                        "Ref": "ComputeEnvEcsInstanceRoleCFB290F9"
+                        "Ref": "ComputeEnvInstanceProfileRole7000C8A9"
                       }
                     ]
                   }
@@ -764,76 +750,21 @@
                   "version": "0.0.0"
                 }
               },
-              "Resource-Service-Instance-Role": {
-                "id": "Resource-Service-Instance-Role",
-                "path": "aws-stepfunctions-integ/ComputeEnv/Resource-Service-Instance-Role",
-                "children": {
-                  "ImportResource-Service-Instance-Role": {
-                    "id": "ImportResource-Service-Instance-Role",
-                    "path": "aws-stepfunctions-integ/ComputeEnv/Resource-Service-Instance-Role/ImportResource-Service-Instance-Role",
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-stepfunctions-integ/ComputeEnv/Resource-Service-Instance-Role/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "batch.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSBatchServiceRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
-                }
-              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-stepfunctions-integ/ComputeEnv/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
                   "aws:cdk:cloudformation:props": {
-                    "type": "MANAGED",
+                    "type": "managed",
                     "computeResources": {
                       "maxvCpus": 256,
+                      "type": "EC2",
+                      "updateToLatestImageVersion": true,
                       "securityGroupIds": [
                         {
                           "Fn::GetAtt": [
-                            "ComputeEnvResourceSecurityGroupB84CF86B",
+                            "ComputeEnvSecurityGroup1946AFCC",
                             "GroupId"
                           ]
                         }
@@ -846,26 +777,20 @@
                           "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
                         }
                       ],
-                      "type": "EC2",
-                      "allocationStrategy": "BEST_FIT",
+                      "minvCpus": 0,
                       "instanceRole": {
                         "Fn::GetAtt": [
-                          "ComputeEnvInstanceProfile81AFCCF2",
+                          "ComputeEnvInstanceProfileB98CEF4C",
                           "Arn"
                         ]
                       },
                       "instanceTypes": [
                         "optimal"
                       ],
-                      "minvCpus": 0
+                      "allocationStrategy": "BEST_FIT_PROGRESSIVE"
                     },
-                    "serviceRole": {
-                      "Fn::GetAtt": [
-                        "ComputeEnvResourceServiceInstanceRoleCF89E9E1",
-                        "Arn"
-                      ]
-                    },
-                    "state": "ENABLED"
+                    "state": "ENABLED",
+                    "updatePolicy": {}
                   }
                 },
                 "constructInfo": {
@@ -875,7 +800,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.ComputeEnvironment",
+              "fqn": "@aws-cdk/aws-batch.ManagedEc2EcsComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -883,16 +808,19 @@
             "id": "JobQueue",
             "path": "aws-stepfunctions-integ/JobQueue",
             "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-stepfunctions-integ/JobQueue/Resource",
+              "JobQueue": {
+                "id": "JobQueue",
+                "path": "aws-stepfunctions-integ/JobQueue/JobQueue",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::JobQueue",
                   "aws:cdk:cloudformation:props": {
                     "computeEnvironmentOrder": [
                       {
                         "computeEnvironment": {
-                          "Ref": "ComputeEnv2C40ACC2"
+                          "Fn::GetAtt": [
+                            "ComputeEnv2C40ACC2",
+                            "ComputeEnvironmentArn"
+                          ]
                         },
                         "order": 1
                       }
@@ -912,69 +840,138 @@
               "version": "0.0.0"
             }
           },
-          "JobDefinition": {
-            "id": "JobDefinition",
-            "path": "aws-stepfunctions-integ/JobDefinition",
+          "Container": {
+            "id": "Container",
+            "path": "aws-stepfunctions-integ/Container",
             "children": {
-              "Resource-Batch-Task-Definition-Role": {
-                "id": "Resource-Batch-Task-Definition-Role",
-                "path": "aws-stepfunctions-integ/JobDefinition/Resource-Batch-Task-Definition-Role",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.LazyRole",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource-Batch-Job-Container-Definition": {
-                "id": "Resource-Batch-Job-Container-Definition",
-                "path": "aws-stepfunctions-integ/JobDefinition/Resource-Batch-Job-Container-Definition",
+              "ExecutionRole": {
+                "id": "ExecutionRole",
+                "path": "aws-stepfunctions-integ/Container/ExecutionRole",
                 "children": {
-                  "AssetImage": {
-                    "id": "AssetImage",
-                    "path": "aws-stepfunctions-integ/JobDefinition/Resource-Batch-Job-Container-Definition/AssetImage",
-                    "children": {
-                      "Staging": {
-                        "id": "Staging",
-                        "path": "aws-stepfunctions-integ/JobDefinition/Resource-Batch-Job-Container-Definition/AssetImage/Staging",
-                        "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                  "ImportExecutionRole": {
+                    "id": "ImportExecutionRole",
+                    "path": "aws-stepfunctions-integ/Container/ExecutionRole/ImportExecutionRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-integ/Container/ExecutionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
                         }
-                      },
-                      "Repository": {
-                        "id": "Repository",
-                        "path": "aws-stepfunctions-integ/JobDefinition/Resource-Batch-Job-Container-Definition/AssetImage/Repository",
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-stepfunctions-integ/Container/ExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-stepfunctions-integ/Container/ExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "ecr:BatchCheckLayerAvailability",
+                                    "ecr:BatchGetImage",
+                                    "ecr:GetDownloadUrlForLayer"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":ecr:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":repository/",
+                                        {
+                                          "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "ecr:GetAuthorizationToken",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "ContainerExecutionRoleDefaultPolicy13E3B4C3",
+                            "roles": [
+                              {
+                                "Ref": "ContainerExecutionRole65F36CD2"
+                              }
+                            ]
+                          }
+                        },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ecr-assets.DockerImageAsset",
+                      "fqn": "@aws-cdk/aws-iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
+                  "fqn": "@aws-cdk/aws-iam.Role",
                   "version": "0.0.0"
                 }
               },
               "AssetImage": {
                 "id": "AssetImage",
-                "path": "aws-stepfunctions-integ/JobDefinition/AssetImage",
+                "path": "aws-stepfunctions-integ/Container/AssetImage",
                 "children": {
                   "Staging": {
                     "id": "Staging",
-                    "path": "aws-stepfunctions-integ/JobDefinition/AssetImage/Staging",
+                    "path": "aws-stepfunctions-integ/Container/AssetImage/Staging",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.AssetStaging",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "Repository": {
                     "id": "Repository",
-                    "path": "aws-stepfunctions-integ/JobDefinition/AssetImage/Repository",
+                    "path": "aws-stepfunctions-integ/Container/AssetImage/Repository",
                     "constructInfo": {
                       "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
                       "version": "0.0.0"
@@ -985,7 +982,17 @@
                   "fqn": "@aws-cdk/aws-ecr-assets.DockerImageAsset",
                   "version": "0.0.0"
                 }
-              },
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          },
+          "JobDefinition": {
+            "id": "JobDefinition",
+            "path": "aws-stepfunctions-integ/JobDefinition",
+            "children": {
               "Resource": {
                 "id": "Resource",
                 "path": "aws-stepfunctions-integ/JobDefinition/Resource",
@@ -994,42 +1001,32 @@
                   "aws:cdk:cloudformation:props": {
                     "type": "container",
                     "containerProperties": {
-                      "environment": [
-                        {
-                          "name": "AWS_REGION",
-                          "value": {
-                            "Ref": "AWS::Region"
-                          }
-                        },
-                        {
-                          "name": "AWS_ACCOUNT",
-                          "value": {
-                            "Ref": "AWS::AccountId"
-                          }
-                        }
-                      ],
                       "image": {
                         "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b"
                       },
-                      "privileged": false,
+                      "environment": [],
+                      "executionRoleArn": {
+                        "Fn::GetAtt": [
+                          "ContainerExecutionRole65F36CD2",
+                          "Arn"
+                        ]
+                      },
                       "readonlyRootFilesystem": false,
                       "resourceRequirements": [
                         {
-                          "type": "VCPU",
-                          "value": "1"
+                          "type": "MEMORY",
+                          "value": "2048"
                         },
                         {
-                          "type": "MEMORY",
-                          "value": "4"
+                          "type": "VCPU",
+                          "value": "256"
                         }
                       ]
                     },
                     "platformCapabilities": [
                       "EC2"
                     ],
-                    "retryStrategy": {
-                      "attempts": 1
-                    },
+                    "retryStrategy": {},
                     "timeout": {}
                   }
                 },
@@ -1040,7 +1037,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.JobDefinition",
+              "fqn": "@aws-cdk/aws-batch.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -1072,8 +1069,8 @@
                     "id": "ImportRole",
                     "path": "aws-stepfunctions-integ/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "Resource": {
@@ -1118,6 +1115,12 @@
                                   "Effect": "Allow",
                                   "Resource": [
                                     {
+                                      "Fn::GetAtt": [
+                                        "JobQueueC5644E0D",
+                                        "JobQueueArn"
+                                      ]
+                                    },
+                                    {
                                       "Fn::Join": [
                                         "",
                                         [
@@ -1136,9 +1139,6 @@
                                           ":job-definition/*"
                                         ]
                                       ]
-                                    },
-                                    {
-                                      "Ref": "JobQueueEE3AD499"
                                     }
                                   ]
                                 },
@@ -1220,7 +1220,10 @@
                           },
                           "\",\"JobName\":\"MyJob\",\"JobQueue\":\"",
                           {
-                            "Ref": "JobQueueEE3AD499"
+                            "Fn::GetAtt": [
+                              "JobQueueC5644E0D",
+                              "JobQueueArn"
+                            ]
                           },
                           "\",\"Parameters\":{\"foo.$\":\"$.bar\"},\"ContainerOverrides\":{\"Environment\":[{\"Name\":\"key\",\"Value\":\"value\"}],\"Memory\":256,\"Vcpus\":1},\"RetryStrategy\":{\"Attempts\":3},\"Timeout\":{\"AttemptDurationSeconds\":60}},\"Type\":\"Task\",\"Resource\":\"arn:",
                           {
@@ -1247,38 +1250,38 @@
             "id": "JobQueueArn",
             "path": "aws-stepfunctions-integ/JobQueueArn",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "StateMachineArn": {
             "id": "StateMachineArn",
             "path": "aws-stepfunctions-integ/StateMachineArn",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnOutput",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-stepfunctions-integ/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-stepfunctions-integ/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       },
       "Tree": {
@@ -1286,13 +1289,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.270"
     }
   }
 }

@@ -391,10 +391,10 @@
     }
    }
   },
-  "ComputeEnvResourceSecurityGroupB84CF86B": {
+  "ComputeEnvSecurityGroup1946AFCC": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-stepfunctions-integ/ComputeEnv/Resource-Security-Group",
+    "GroupDescription": "aws-stepfunctions-integ/ComputeEnv/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -405,34 +405,9 @@
     "VpcId": {
      "Ref": "vpcA2121C38"
     }
-   },
-   "DependsOn": [
-    "vpcIGWE57CBDCA",
-    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-    "vpcPrivateSubnet1RouteTableB41A48CC",
-    "vpcPrivateSubnet1RouteTableAssociation67945127",
-    "vpcPrivateSubnet1Subnet934893E8",
-    "vpcPrivateSubnet2DefaultRouteB0E07F99",
-    "vpcPrivateSubnet2RouteTable7280F23E",
-    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-    "vpcPrivateSubnet2Subnet7031C2BA",
-    "vpcPublicSubnet1DefaultRoute10708846",
-    "vpcPublicSubnet1EIPDA49DCBE",
-    "vpcPublicSubnet1NATGateway9C16659E",
-    "vpcPublicSubnet1RouteTable48A2DF9B",
-    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-    "vpcPublicSubnet1Subnet2E65531E",
-    "vpcPublicSubnet2DefaultRouteA1EC0F60",
-    "vpcPublicSubnet2EIP9B3743B1",
-    "vpcPublicSubnet2NATGateway9B8AE11A",
-    "vpcPublicSubnet2RouteTableEB40D4CB",
-    "vpcPublicSubnet2RouteTableAssociation21F81B59",
-    "vpcPublicSubnet2Subnet009B674F",
-    "vpcA2121C38",
-    "vpcVPCGW7984C166"
-   ]
+   }
   },
-  "ComputeEnvEcsInstanceRoleCFB290F9": {
+  "ComputeEnvInstanceProfileRole7000C8A9": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -446,148 +421,28 @@
       }
      ],
      "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
-       ]
-      ]
-     }
-    ]
-   },
-   "DependsOn": [
-    "vpcIGWE57CBDCA",
-    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-    "vpcPrivateSubnet1RouteTableB41A48CC",
-    "vpcPrivateSubnet1RouteTableAssociation67945127",
-    "vpcPrivateSubnet1Subnet934893E8",
-    "vpcPrivateSubnet2DefaultRouteB0E07F99",
-    "vpcPrivateSubnet2RouteTable7280F23E",
-    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-    "vpcPrivateSubnet2Subnet7031C2BA",
-    "vpcPublicSubnet1DefaultRoute10708846",
-    "vpcPublicSubnet1EIPDA49DCBE",
-    "vpcPublicSubnet1NATGateway9C16659E",
-    "vpcPublicSubnet1RouteTable48A2DF9B",
-    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-    "vpcPublicSubnet1Subnet2E65531E",
-    "vpcPublicSubnet2DefaultRouteA1EC0F60",
-    "vpcPublicSubnet2EIP9B3743B1",
-    "vpcPublicSubnet2NATGateway9B8AE11A",
-    "vpcPublicSubnet2RouteTableEB40D4CB",
-    "vpcPublicSubnet2RouteTableAssociation21F81B59",
-    "vpcPublicSubnet2Subnet009B674F",
-    "vpcA2121C38",
-    "vpcVPCGW7984C166"
-   ]
+    }
+   }
   },
-  "ComputeEnvInstanceProfile81AFCCF2": {
+  "ComputeEnvInstanceProfileB98CEF4C": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
      {
-      "Ref": "ComputeEnvEcsInstanceRoleCFB290F9"
+      "Ref": "ComputeEnvInstanceProfileRole7000C8A9"
      }
     ]
-   },
-   "DependsOn": [
-    "vpcIGWE57CBDCA",
-    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-    "vpcPrivateSubnet1RouteTableB41A48CC",
-    "vpcPrivateSubnet1RouteTableAssociation67945127",
-    "vpcPrivateSubnet1Subnet934893E8",
-    "vpcPrivateSubnet2DefaultRouteB0E07F99",
-    "vpcPrivateSubnet2RouteTable7280F23E",
-    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-    "vpcPrivateSubnet2Subnet7031C2BA",
-    "vpcPublicSubnet1DefaultRoute10708846",
-    "vpcPublicSubnet1EIPDA49DCBE",
-    "vpcPublicSubnet1NATGateway9C16659E",
-    "vpcPublicSubnet1RouteTable48A2DF9B",
-    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-    "vpcPublicSubnet1Subnet2E65531E",
-    "vpcPublicSubnet2DefaultRouteA1EC0F60",
-    "vpcPublicSubnet2EIP9B3743B1",
-    "vpcPublicSubnet2NATGateway9B8AE11A",
-    "vpcPublicSubnet2RouteTableEB40D4CB",
-    "vpcPublicSubnet2RouteTableAssociation21F81B59",
-    "vpcPublicSubnet2Subnet009B674F",
-    "vpcA2121C38",
-    "vpcVPCGW7984C166"
-   ]
-  },
-  "ComputeEnvResourceServiceInstanceRoleCF89E9E1": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "batch.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSBatchServiceRole"
-       ]
-      ]
-     }
-    ]
-   },
-   "DependsOn": [
-    "vpcIGWE57CBDCA",
-    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-    "vpcPrivateSubnet1RouteTableB41A48CC",
-    "vpcPrivateSubnet1RouteTableAssociation67945127",
-    "vpcPrivateSubnet1Subnet934893E8",
-    "vpcPrivateSubnet2DefaultRouteB0E07F99",
-    "vpcPrivateSubnet2RouteTable7280F23E",
-    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-    "vpcPrivateSubnet2Subnet7031C2BA",
-    "vpcPublicSubnet1DefaultRoute10708846",
-    "vpcPublicSubnet1EIPDA49DCBE",
-    "vpcPublicSubnet1NATGateway9C16659E",
-    "vpcPublicSubnet1RouteTable48A2DF9B",
-    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-    "vpcPublicSubnet1Subnet2E65531E",
-    "vpcPublicSubnet2DefaultRouteA1EC0F60",
-    "vpcPublicSubnet2EIP9B3743B1",
-    "vpcPublicSubnet2NATGateway9B8AE11A",
-    "vpcPublicSubnet2RouteTableEB40D4CB",
-    "vpcPublicSubnet2RouteTableAssociation21F81B59",
-    "vpcPublicSubnet2Subnet009B674F",
-    "vpcA2121C38",
-    "vpcVPCGW7984C166"
-   ]
+   }
   },
   "ComputeEnv2C40ACC2": {
    "Type": "AWS::Batch::ComputeEnvironment",
    "Properties": {
-    "Type": "MANAGED",
+    "Type": "managed",
     "ComputeResources": {
-     "AllocationStrategy": "BEST_FIT",
+     "AllocationStrategy": "BEST_FIT_PROGRESSIVE",
      "InstanceRole": {
       "Fn::GetAtt": [
-       "ComputeEnvInstanceProfile81AFCCF2",
+       "ComputeEnvInstanceProfileB98CEF4C",
        "Arn"
       ]
      },
@@ -599,7 +454,7 @@
      "SecurityGroupIds": [
       {
        "Fn::GetAtt": [
-        "ComputeEnvResourceSecurityGroupB84CF86B",
+        "ComputeEnvSecurityGroup1946AFCC",
         "GroupId"
        ]
       }
@@ -612,49 +467,23 @@
        "Ref": "vpcPrivateSubnet2Subnet7031C2BA"
       }
      ],
-     "Type": "EC2"
+     "Type": "EC2",
+     "UpdateToLatestImageVersion": true
     },
-    "ServiceRole": {
-     "Fn::GetAtt": [
-      "ComputeEnvResourceServiceInstanceRoleCF89E9E1",
-      "Arn"
-     ]
-    },
-    "State": "ENABLED"
-   },
-   "DependsOn": [
-    "vpcIGWE57CBDCA",
-    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-    "vpcPrivateSubnet1RouteTableB41A48CC",
-    "vpcPrivateSubnet1RouteTableAssociation67945127",
-    "vpcPrivateSubnet1Subnet934893E8",
-    "vpcPrivateSubnet2DefaultRouteB0E07F99",
-    "vpcPrivateSubnet2RouteTable7280F23E",
-    "vpcPrivateSubnet2RouteTableAssociation007E94D3",
-    "vpcPrivateSubnet2Subnet7031C2BA",
-    "vpcPublicSubnet1DefaultRoute10708846",
-    "vpcPublicSubnet1EIPDA49DCBE",
-    "vpcPublicSubnet1NATGateway9C16659E",
-    "vpcPublicSubnet1RouteTable48A2DF9B",
-    "vpcPublicSubnet1RouteTableAssociation5D3F4579",
-    "vpcPublicSubnet1Subnet2E65531E",
-    "vpcPublicSubnet2DefaultRouteA1EC0F60",
-    "vpcPublicSubnet2EIP9B3743B1",
-    "vpcPublicSubnet2NATGateway9B8AE11A",
-    "vpcPublicSubnet2RouteTableEB40D4CB",
-    "vpcPublicSubnet2RouteTableAssociation21F81B59",
-    "vpcPublicSubnet2Subnet009B674F",
-    "vpcA2121C38",
-    "vpcVPCGW7984C166"
-   ]
+    "State": "ENABLED",
+    "UpdatePolicy": {}
+   }
   },
-  "JobQueueEE3AD499": {
+  "JobQueueC5644E0D": {
    "Type": "AWS::Batch::JobQueue",
    "Properties": {
     "ComputeEnvironmentOrder": [
      {
       "ComputeEnvironment": {
-       "Ref": "ComputeEnv2C40ACC2"
+       "Fn::GetAtt": [
+        "ComputeEnv2C40ACC2",
+        "ComputeEnvironmentArn"
+       ]
       },
       "Order": 1
      }
@@ -663,47 +492,106 @@
     "State": "ENABLED"
    }
   },
+  "ContainerExecutionRole65F36CD2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ecs-tasks.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ContainerExecutionRoleDefaultPolicy13E3B4C3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:BatchGetImage",
+        "ecr:GetDownloadUrlForLayer"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecr:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":repository/",
+          {
+           "Fn::Sub": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}"
+          }
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "ecr:GetAuthorizationToken",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ContainerExecutionRoleDefaultPolicy13E3B4C3",
+    "Roles": [
+     {
+      "Ref": "ContainerExecutionRole65F36CD2"
+     }
+    ]
+   }
+  },
   "JobDefinition24FFE3ED": {
    "Type": "AWS::Batch::JobDefinition",
    "Properties": {
     "Type": "container",
     "ContainerProperties": {
-     "Environment": [
-      {
-       "Name": "AWS_REGION",
-       "Value": {
-        "Ref": "AWS::Region"
-       }
-      },
-      {
-       "Name": "AWS_ACCOUNT",
-       "Value": {
-        "Ref": "AWS::AccountId"
-       }
-      }
-     ],
+     "Environment": [],
+     "ExecutionRoleArn": {
+      "Fn::GetAtt": [
+       "ContainerExecutionRole65F36CD2",
+       "Arn"
+      ]
+     },
      "Image": {
       "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b"
      },
-     "Privileged": false,
      "ReadonlyRootFilesystem": false,
      "ResourceRequirements": [
       {
-       "Type": "VCPU",
-       "Value": "1"
+       "Type": "MEMORY",
+       "Value": "2048"
       },
       {
-       "Type": "MEMORY",
-       "Value": "4"
+       "Type": "VCPU",
+       "Value": "256"
       }
      ]
     },
     "PlatformCapabilities": [
      "EC2"
     ],
-    "RetryStrategy": {
-     "Attempts": 1
-    },
+    "RetryStrategy": {},
     "Timeout": {}
    }
   },
@@ -734,6 +622,12 @@
        "Effect": "Allow",
        "Resource": [
         {
+         "Fn::GetAtt": [
+          "JobQueueC5644E0D",
+          "JobQueueArn"
+         ]
+        },
+        {
          "Fn::Join": [
           "",
           [
@@ -752,9 +646,6 @@
            ":job-definition/*"
           ]
          ]
-        },
-        {
-         "Ref": "JobQueueEE3AD499"
         }
        ]
       },
@@ -816,7 +707,10 @@
        },
        "\",\"JobName\":\"MyJob\",\"JobQueue\":\"",
        {
-        "Ref": "JobQueueEE3AD499"
+        "Fn::GetAtt": [
+         "JobQueueC5644E0D",
+         "JobQueueArn"
+        ]
        },
        "\",\"Parameters\":{\"foo.$\":\"$.bar\"},\"ContainerOverrides\":{\"Environment\":[{\"Name\":\"key\",\"Value\":\"value\"}],\"Memory\":256,\"Vcpus\":1},\"RetryStrategy\":{\"Attempts\":3},\"Timeout\":{\"AttemptDurationSeconds\":60}},\"Type\":\"Task\",\"Resource\":\"arn:",
        {
@@ -838,7 +732,10 @@
  "Outputs": {
   "JobQueueArn": {
    "Value": {
-    "Ref": "JobQueueEE3AD499"
+    "Fn::GetAtt": [
+     "JobQueueC5644E0D",
+     "JobQueueArn"
+    ]
    }
   },
   "StateMachineArn": {

@@ -25,19 +25,21 @@ class RunBatchStack extends cdk.Stack {
       computeEnvironments: [
         {
           order: 1,
-          computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnv', {
-            computeResources: { vpc },
+          computeEnvironment: new batch.ManagedEc2EcsComputeEnvironment(this, 'ComputeEnv', {
+            vpc,
           }),
         },
       ],
     });
 
-    const batchJobDefinition = new batch.JobDefinition(this, 'JobDefinition', {
-      container: {
+    const batchJobDefinition = new batch.EcsJobDefinition(this, 'JobDefinition', {
+      containerDefinition: new batch.EcsEc2ContainerDefinition(this, 'Container', {
         image: ecs.ContainerImage.fromAsset(
           path.resolve(__dirname, 'batchjob-image'),
         ),
-      },
+        cpu: 256,
+        memory: cdk.Size.mebibytes(2048),
+      }),
     });
 
     const submitJob = new sfn.Task(this, 'Submit Job', {

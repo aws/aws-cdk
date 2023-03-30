@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "31.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "batch-events.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f4536a01069bddec46bab47fc02dee0ac63696068a6b96a7520dbf9bc48535f3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0776292c0a44d9b0a502c6e8f5151f85ce0df1368d7a891bc5eb433c315e0c24.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -39,22 +33,31 @@
         "batch-events.assets"
       ],
       "metadata": {
-        "/batch-events/ComputeEnvironment/Resource-Service-Instance-Role/Resource": [
+        "/batch-events/ComputeEnvironment/BatchServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445"
+            "data": "ComputeEnvironmentBatchServiceRole3533BE31"
           }
         ],
         "/batch-events/ComputeEnvironment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ComputeEnvironmentC570994D"
+            "data": "ComputeEnvironmentC570994D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
-        "/batch-events/MyQueue/Resource": [
+        "/batch-events/MyQueue/MyQueue": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyQueueE6CA6235"
+            "data": "MyQueue4F9177CF"
+          }
+        ],
+        "/batch-events/container/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "containerExecutionRoleFD602179"
           }
         ],
         "/batch-events/MyJob/Resource": [
@@ -110,9 +113,33 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "MyQueueE6CA6235": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueE6CA6235",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "batch-events"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

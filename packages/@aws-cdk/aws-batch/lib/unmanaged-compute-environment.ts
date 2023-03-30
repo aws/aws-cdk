@@ -1,3 +1,4 @@
+import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { ArnFormat, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnComputeEnvironment } from './batch.generated';
@@ -74,6 +75,13 @@ export class UnmanagedComputeEnvironment extends ComputeEnvironmentBase implemen
       computeEnvironmentName: props?.computeEnvironmentName,
       type: 'unmanaged',
       unmanagedvCpus: this.unmanagedvCPUs,
+      serviceRole: props?.serviceRole?.roleArn
+      ?? new Role(this, 'BatchServiceRole', {
+        managedPolicies: [
+          ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSBatchServiceRole'),
+        ],
+        assumedBy: new ServicePrincipal('batch.amazonaws.com'),
+      }).roleArn,
     });
     this.computeEnvironmentName = this.getResourceNameAttribute(resource.ref);
     this.computeEnvironmentArn = this.getResourceArnAttribute(resource.attrComputeEnvironmentArn, {

@@ -47,7 +47,10 @@ describe('Batch job event target', () => {
       Targets: [
         {
           Arn: {
-            Ref: 'MyQueueE6CA6235',
+            'Fn::GetAtt': [
+              'MyQueue4F9177CF',
+              'JobQueueArn',
+            ],
           },
           Id: 'Target0',
           RoleArn: {
@@ -57,7 +60,9 @@ describe('Batch job event target', () => {
             ],
           },
           BatchParameters: {
-            JobDefinition: { Ref: 'MyJob8719E923' },
+            JobDefinition: {
+              Ref: 'MyJob8719E923',
+            },
             JobName: 'Rule',
           },
         },
@@ -72,7 +77,12 @@ describe('Batch job event target', () => {
             Effect: 'Allow',
             Resource: [
               { Ref: 'MyJob8719E923' },
-              { Ref: 'MyQueueE6CA6235' },
+              {
+                'Fn::GetAtt': [
+                  'MyQueue4F9177CF',
+                  'JobQueueArn',
+                ],
+              },
             ],
           },
         ],
@@ -112,7 +122,10 @@ describe('Batch job event target', () => {
       Targets: [
         {
           Arn: {
-            Ref: 'MyQueueE6CA6235',
+            'Fn::GetAtt': [
+              'MyQueue4F9177CF',
+              'JobQueueArn',
+            ],
           },
           Id: 'Target0',
           DeadLetterConfig: {
@@ -128,7 +141,9 @@ describe('Batch job event target', () => {
             'Fn::GetAtt': ['MyJobEventsRoleCF43C336', 'Arn'],
           },
           BatchParameters: {
-            JobDefinition: { Ref: 'MyJob8719E923' },
+            JobDefinition: {
+              Ref: 'MyJob8719E923',
+            },
             JobName: 'Rule',
           },
         },
@@ -205,7 +220,10 @@ describe('Batch job event target', () => {
       Targets: [
         {
           Arn: {
-            Ref: 'MyQueueE6CA6235',
+            'Fn::GetAtt': [
+              'MyQueue4F9177CF',
+              'JobQueueArn',
+            ],
           },
           BatchParameters: {
             JobDefinition: {
@@ -266,7 +284,10 @@ describe('Batch job event target', () => {
       Targets: [
         {
           Arn: {
-            Ref: 'MyQueueE6CA6235',
+            'Fn::GetAtt': [
+              'MyQueue4F9177CF',
+              'JobQueueArn',
+            ],
           },
           BatchParameters: {
             JobDefinition: {

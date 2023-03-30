@@ -532,7 +532,12 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.user = props.user;
     this.volumes = props.volumes ?? [];
 
-    this.imageConfig = props.image.bind(this, this as any);
+    this.imageConfig = props.image.bind(this, {
+      ...this as any,
+      taskDefinition: {
+        obtainExecutionRole: () => this.executionRole,
+      },
+    });
   }
 
   /**

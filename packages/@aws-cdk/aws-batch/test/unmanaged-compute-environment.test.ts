@@ -11,7 +11,9 @@ const defaultExpectedProps: CfnComputeEnvironmentProps = {
   computeResources: undefined,
   eksConfiguration: undefined,
   replaceComputeEnvironment: undefined,
-  serviceRole: undefined,
+  serviceRole: {
+    'Fn::GetAtt': ['MyCEBatchServiceRole4FDA2CB6', 'Arn'],
+  } as any,
   state: 'ENABLED',
   tags: undefined,
   unmanagedvCpus: undefined,

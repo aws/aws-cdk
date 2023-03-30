@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "batch-events": {
         "id": "batch-events",
         "path": "batch-events",
@@ -20,13 +12,21 @@
             "id": "ComputeEnvironment",
             "path": "batch-events/ComputeEnvironment",
             "children": {
-              "Resource-Service-Instance-Role": {
-                "id": "Resource-Service-Instance-Role",
-                "path": "batch-events/ComputeEnvironment/Resource-Service-Instance-Role",
+              "BatchServiceRole": {
+                "id": "BatchServiceRole",
+                "path": "batch-events/ComputeEnvironment/BatchServiceRole",
                 "children": {
+                  "ImportBatchServiceRole": {
+                    "id": "ImportBatchServiceRole",
+                    "path": "batch-events/ComputeEnvironment/BatchServiceRole/ImportBatchServiceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
-                    "path": "batch-events/ComputeEnvironment/Resource-Service-Instance-Role/Resource",
+                    "path": "batch-events/ComputeEnvironment/BatchServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -75,10 +75,10 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::ComputeEnvironment",
                   "aws:cdk:cloudformation:props": {
-                    "type": "UNMANAGED",
+                    "type": "unmanaged",
                     "serviceRole": {
                       "Fn::GetAtt": [
-                        "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445",
+                        "ComputeEnvironmentBatchServiceRole3533BE31",
                         "Arn"
                       ]
                     },
@@ -92,7 +92,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.ComputeEnvironment",
+              "fqn": "@aws-cdk/aws-batch.UnmanagedComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -100,16 +100,19 @@
             "id": "MyQueue",
             "path": "batch-events/MyQueue",
             "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "batch-events/MyQueue/Resource",
+              "MyQueue": {
+                "id": "MyQueue",
+                "path": "batch-events/MyQueue/MyQueue",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Batch::JobQueue",
                   "aws:cdk:cloudformation:props": {
                     "computeEnvironmentOrder": [
                       {
                         "computeEnvironment": {
-                          "Ref": "ComputeEnvironmentC570994D"
+                          "Fn::GetAtt": [
+                            "ComputeEnvironmentC570994D",
+                            "ComputeEnvironmentArn"
+                          ]
                         },
                         "order": 1
                       }
@@ -129,26 +132,63 @@
               "version": "0.0.0"
             }
           },
+          "container": {
+            "id": "container",
+            "path": "batch-events/container",
+            "children": {
+              "ExecutionRole": {
+                "id": "ExecutionRole",
+                "path": "batch-events/container/ExecutionRole",
+                "children": {
+                  "ImportExecutionRole": {
+                    "id": "ImportExecutionRole",
+                    "path": "batch-events/container/ExecutionRole/ImportExecutionRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "batch-events/container/ExecutionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-batch.EcsEc2ContainerDefinition",
+              "version": "0.0.0"
+            }
+          },
           "MyJob": {
             "id": "MyJob",
             "path": "batch-events/MyJob",
             "children": {
-              "Resource-Batch-Task-Definition-Role": {
-                "id": "Resource-Batch-Task-Definition-Role",
-                "path": "batch-events/MyJob/Resource-Batch-Task-Definition-Role",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.LazyRole",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource-Batch-Job-Container-Definition": {
-                "id": "Resource-Batch-Job-Container-Definition",
-                "path": "batch-events/MyJob/Resource-Batch-Job-Container-Definition",
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
-                  "version": "0.0.0"
-                }
-              },
               "Resource": {
                 "id": "Resource",
                 "path": "batch-events/MyJob/Resource",
@@ -157,40 +197,30 @@
                   "aws:cdk:cloudformation:props": {
                     "type": "container",
                     "containerProperties": {
-                      "environment": [
-                        {
-                          "name": "AWS_REGION",
-                          "value": {
-                            "Ref": "AWS::Region"
-                          }
-                        },
-                        {
-                          "name": "AWS_ACCOUNT",
-                          "value": {
-                            "Ref": "AWS::AccountId"
-                          }
-                        }
-                      ],
                       "image": "test-repo",
-                      "privileged": false,
+                      "environment": [],
+                      "executionRoleArn": {
+                        "Fn::GetAtt": [
+                          "containerExecutionRoleFD602179",
+                          "Arn"
+                        ]
+                      },
                       "readonlyRootFilesystem": false,
                       "resourceRequirements": [
                         {
-                          "type": "VCPU",
-                          "value": "1"
+                          "type": "MEMORY",
+                          "value": "2048"
                         },
                         {
-                          "type": "MEMORY",
-                          "value": "4"
+                          "type": "VCPU",
+                          "value": "256"
                         }
                       ]
                     },
                     "platformCapabilities": [
                       "EC2"
                     ],
-                    "retryStrategy": {
-                      "attempts": 1
-                    },
+                    "retryStrategy": {},
                     "timeout": {}
                   }
                 },
@@ -203,6 +233,14 @@
                 "id": "EventsRole",
                 "path": "batch-events/MyJob/EventsRole",
                 "children": {
+                  "ImportEventsRole": {
+                    "id": "ImportEventsRole",
+                    "path": "batch-events/MyJob/EventsRole/ImportEventsRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "batch-events/MyJob/EventsRole/Resource",
@@ -245,10 +283,13 @@
                                   "Effect": "Allow",
                                   "Resource": [
                                     {
-                                      "Ref": "MyJob8719E923"
+                                      "Fn::GetAtt": [
+                                        "MyQueue4F9177CF",
+                                        "JobQueueArn"
+                                      ]
                                     },
                                     {
-                                      "Ref": "MyQueueE6CA6235"
+                                      "Ref": "MyJob8719E923"
                                     }
                                   ]
                                 }
@@ -282,7 +323,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.JobDefinition",
+              "fqn": "@aws-cdk/aws-batch.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -302,7 +343,10 @@
                       {
                         "id": "Target0",
                         "arn": {
-                          "Ref": "MyQueueE6CA6235"
+                          "Fn::GetAtt": [
+                            "MyQueue4F9177CF",
+                            "JobQueueArn"
+                          ]
                         },
                         "roleArn": {
                           "Fn::GetAtt": [
@@ -347,7 +391,10 @@
                       {
                         "id": "Target0",
                         "arn": {
-                          "Ref": "MyQueueE6CA6235"
+                          "Fn::GetAtt": [
+                            "MyQueue4F9177CF",
+                            "JobQueueArn"
+                          ]
                         },
                         "roleArn": {
                           "Fn::GetAtt": [
@@ -466,17 +513,41 @@
               "fqn": "@aws-cdk/aws-sqs.Queue",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "batch-events/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "batch-events/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
           }
         },
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.270"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
       "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "version": "10.1.270"
     }
   }
 }
