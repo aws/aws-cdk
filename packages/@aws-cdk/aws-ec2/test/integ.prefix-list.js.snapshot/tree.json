@@ -12,15 +12,15 @@
             "id": "prefix-list",
             "path": "PrefixListTestStack/prefix-list",
             "children": {
-              "PrefixList": {
-                "id": "PrefixList",
-                "path": "PrefixListTestStack/prefix-list/PrefixList",
+              "Resource": {
+                "id": "Resource",
+                "path": "PrefixListTestStack/prefix-list/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::PrefixList",
                   "aws:cdk:cloudformation:props": {
                     "addressFamily": "IPv4",
                     "maxEntries": 2,
-                    "prefixListName": "prefix-list",
+                    "prefixListName": "PrefixListTestStackprefixlist50310DAA",
                     "entries": [
                       {
                         "cidr": "10.0.0.1/32"
@@ -47,22 +47,22 @@
             "id": "BootstrapVersion",
             "path": "PrefixListTestStack/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "PrefixListTestStack/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       },
       "prefix-list": {
@@ -78,7 +78,7 @@
                 "path": "prefix-list/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.249"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -89,22 +89,22 @@
                     "id": "BootstrapVersion",
                     "path": "prefix-list/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "prefix-list/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
@@ -124,13 +124,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.249"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.1.270"
     }
   }
 }

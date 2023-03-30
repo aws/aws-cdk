@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "31.0.0",
   "artifacts": {
     "PrefixListTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0bb850d7a85be08169a5e72931bb1a3167b64199fac5add5f235384a522547ac.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/38c6056f7f4c5b5d5f39c074183b12f1a9b2d8ef0c9de94a75e49a7d17b4af57.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +33,10 @@
         "PrefixListTestStack.assets"
       ],
       "metadata": {
-        "/PrefixListTestStack/prefix-list/PrefixList": [
+        "/PrefixListTestStack/prefix-list/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "prefixlistPrefixList73152D82"
+            "data": "prefixlist1C1855BF"
           }
         ],
         "/PrefixListTestStack/BootstrapVersion": [
@@ -49,6 +49,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "prefixlistPrefixList73152D82": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "prefixlistPrefixList73152D82",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
