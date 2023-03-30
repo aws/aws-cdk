@@ -829,7 +829,10 @@ var CustomResourceHandler = class {
       hostname: parsedUrl.hostname,
       path: parsedUrl.path,
       method: "PUT",
-      headers: { "content-type": "", "content-length": responseBody.length }
+      headers: {
+        "content-type": "",
+        "content-length": Buffer.byteLength(responseBody, "utf8")
+      }
     };
     return new Promise((resolve, reject) => {
       try {
@@ -984,7 +987,7 @@ function decodeCall(call) {
   try {
     const parsed = JSON.parse(call);
     return parsed;
-  } catch (e) {
+  } catch {
     return call;
   }
 }
