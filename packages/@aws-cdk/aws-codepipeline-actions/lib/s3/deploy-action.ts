@@ -91,7 +91,6 @@ export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
   /**
    * The AWS KMS encryption key for the host bucket.
    * The encryptionKey parameter encrypts uploaded artifacts with the provided AWS KMS key.
-   * For a KMS key, you can use the key ID, the key ARN, or the alias ARN.
    * @default - none
    */
   readonly encryptionKey?: kms.IKey;

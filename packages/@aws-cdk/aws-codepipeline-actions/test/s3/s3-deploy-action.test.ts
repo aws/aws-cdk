@@ -1,4 +1,4 @@
-import { Match, Template } from '@aws-cdk/assertions';
+import { Template } from '@aws-cdk/assertions';
 import * as codepipeline from '@aws-cdk/aws-codepipeline';
 import * as kms from '@aws-cdk/aws-kms';
 import * as s3 from '@aws-cdk/aws-s3';
@@ -188,7 +188,7 @@ describe('S3 Deploy Action', () => {
           'Actions': [
             {
               'Configuration': {
-                'KMSEncryptionKeyARN': Match.anyValue(),
+                'KMSEncryptionKeyARN': 'EnvVarEncryptKey',
               },
             },
           ],
