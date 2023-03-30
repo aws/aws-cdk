@@ -87,13 +87,6 @@ export interface HttpGatewayRouteMatch {
   readonly hostname?: GatewayRouteHostnameMatch;
 
   /**
-   * The port number to be matched on.
-   *
-   * @default - do not match on port number
-   */
-  readonly matchPort?: number;
-
-  /**
    * The method to match on.
    *
    * @default - do not match on method
@@ -136,13 +129,6 @@ export interface GrpcGatewayRouteMatch {
   readonly hostname?: GatewayRouteHostnameMatch;
 
   /**
-   * Create port based gRPC gateway route match.
-   *
-   * @default - no matching on port number
-   */
-  readonly matchPort?: number;
-
-  /**
    * Create metadata based gRPC gateway route match.
    * All specified metadata must match for the route to match.
    *
@@ -171,13 +157,6 @@ export interface CommonGatewayRouteSpecOptions {
    * @default - no particular priority
    */
   readonly priority?: number;
-
-  /**
-   * The target port number directs traffic to
-   *
-   * @default - not target port specified
-   */
-  readonly targetPort?: number;
 }
 
 /**
@@ -298,11 +277,6 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
    * Type of route you are creating
    */
   readonly routeType: Protocol;
-
-  /**
-   * Target port number to route traffic to
-   */
-  readonly targetPort?: number;
   readonly priority?: number;
 
   constructor(options: HttpGatewayRouteSpecOptions, protocol: Protocol.HTTP | Protocol.HTTP2) {
@@ -311,7 +285,6 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
     this.routeType = protocol;
     this.match = options.match;
     this.priority = options.priority;
-    this.targetPort = options.targetPort;
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
@@ -325,7 +298,6 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
       match: {
         prefix: pathMatchConfig.prefixPathMatch,
         path: pathMatchConfig.wholePathMatch,
-        port: this.match?.matchPort,
         hostname: this.match?.hostname?.bind(scope).hostnameMatch,
         method: this.match?.method,
         headers: this.match?.headers?.map(header => header.bind(scope).headerMatch),
@@ -336,7 +308,6 @@ class HttpGatewayRouteSpec extends GatewayRouteSpec {
           virtualService: {
             virtualServiceName: this.routeTarget.virtualServiceName,
           },
-          port: this.targetPort,
         },
         rewrite: rewriteRequestHostname !== undefined || prefixPathRewrite || wholePathRewrite
           ? {
@@ -368,17 +339,11 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
   readonly routeTarget: IVirtualService;
   readonly priority?: number;
 
-  /**
-   * Target port number to route traffic to
-   */
-  readonly targetPort?: number;
-
   constructor(options: GrpcGatewayRouteSpecOptions) {
     super();
     this.match = options.match;
     this.routeTarget = options.routeTarget;
     this.priority = options.priority;
-    this.targetPort = options.targetPort;
   }
 
   public bind(scope: Construct): GatewayRouteSpecConfig {
@@ -393,14 +358,12 @@ class GrpcGatewayRouteSpec extends GatewayRouteSpec {
           serviceName: this.match.serviceName,
           hostname: this.match.hostname?.bind(scope).hostnameMatch,
           metadata: metadataMatch?.map(metadata => metadata.bind(scope).headerMatch),
-          port: this.match.matchPort,
         },
         action: {
           target: {
             virtualService: {
               virtualServiceName: this.routeTarget.virtualServiceName,
             },
-            port: this.targetPort,
           },
           rewrite: this.match.rewriteRequestHostname === undefined
             ? undefined

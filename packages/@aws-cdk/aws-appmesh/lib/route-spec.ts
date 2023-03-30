@@ -24,13 +24,6 @@ export interface WeightedTarget {
    * @default 1
    */
   readonly weight?: number;
-
-  /**
-   * The port number to direct traffic to.
-   *
-   * @default - do not direct based on port number
-   */
-  readonly targetPort?: number;
 }
 
 /**
@@ -43,13 +36,6 @@ export interface HttpRouteMatch {
    * @default - matches requests with all paths
    */
   readonly path?: HttpRoutePathMatch;
-
-  /**
-   * The port number to be matched on.
-   *
-   * @default - do not match on port number
-   */
-  readonly matchPort?: number;
 
   /**
    * Specifies the client request headers to match on. All specified headers
@@ -124,25 +110,6 @@ export interface GrpcRouteMatch {
    * @default - do not match on method name
    */
   readonly methodName?: string;
-
-  /**
-   * The port number to be matched on.
-   *
-   * @default - do not match on port number
-   */
-  readonly matchPort?: number;
-}
-
-/**
- * The criterion for determining a request match for this Route.
- */
-export interface TcpRouteMatch {
-  /**
-   * The port number to be matched on.
-   *
-   * @default - do not match on port number
-   */
-  readonly matchPort?: number;
 }
 
 /**
@@ -261,13 +228,6 @@ export enum TcpRetryEvent {
  * Properties specific for a TCP Based Routes
  */
 export interface TcpRouteSpecOptions extends RouteSpecOptionsBase {
-  /**
-   * The criterion for determining a request match for this Route
-   *
-   * @default: - None
-   */
-  readonly match?: TcpRouteMatch;
-
   /**
    * List of targets that traffic is routed to when a request matches the route
    */
@@ -495,7 +455,6 @@ class HttpRouteSpec extends RouteSpec {
       match: {
         prefix: pathMatchConfig.prefixPathMatch,
         path: pathMatchConfig.wholePathMatch,
-        port: this.match?.matchPort,
         headers: headers?.map(header => header.bind(scope).headerMatch),
         method: this.match?.method,
         scheme: this.match?.protocol,
@@ -528,26 +487,17 @@ class TcpRouteSpec extends RouteSpec {
    */
   public readonly timeout?: TcpTimeout;
 
-  /**
-   * The criteria for matching inboud requests
-   */
-  public readonly match?: TcpRouteMatch;
-
   constructor(props: TcpRouteSpecOptions) {
     super();
     this.weightedTargets = props.weightedTargets;
     this.timeout = props.timeout;
     this.priority = props.priority;
-    this.match = props.match;
   }
 
   public bind(_scope: Construct): RouteSpecConfig {
     return {
       priority: this.priority,
       tcpRouteSpec: {
-        match: this.match? {
-          port: this.match?.matchPort,
-        } : undefined,
         action: {
           weightedTargets: renderWeightedTargets(this.weightedTargets),
         },
@@ -619,7 +569,6 @@ class GrpcRouteSpec extends RouteSpec {
           serviceName: serviceName,
           methodName: methodName,
           metadata: metadata?.map(singleMetadata => singleMetadata.bind(scope).headerMatch),
-          port: this.match.matchPort,
         },
         timeout: renderTimeout(this.timeout),
         retryPolicy: this.retryPolicy ? renderGrpcRetryPolicy(this.retryPolicy) : undefined,
@@ -637,7 +586,6 @@ function renderWeightedTargets(weightedTargets: WeightedTarget[]): CfnRoute.Weig
     renderedTargets.push({
       virtualNode: t.virtualNode.virtualNodeName,
       weight: t.weight == undefined ? 1 : t.weight,
-      port: t.targetPort,
     });
   }
   return renderedTargets;
