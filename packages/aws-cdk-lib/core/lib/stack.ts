@@ -1649,6 +1649,7 @@ function makeStackName(components: string[], prefix: string='') {
     const stack_name = prefix + components[0];
     if (stack_name.length <= 128) {
       return prefix + components[0];
+    }
   }
   return makeUniqueResourceName(components, { maxLength: 128 }, prefix);
 }
