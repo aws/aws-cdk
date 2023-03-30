@@ -42,7 +42,7 @@ export interface CliCredentialsStackSynthesizerProps {
    * Qualifier to disambiguate multiple environments in the same account
    *
    * You can use this and leave the other naming properties empty if you have deployed
-   * the bootstrap environment with standard names but only differnet qualifiers.
+   * the bootstrap environment with standard names but only different qualifiers.
    *
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DefaultStackSynthesizer.DEFAULT_QUALIFIER`
    */

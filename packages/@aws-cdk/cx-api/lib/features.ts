@@ -733,7 +733,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
-  //////////////////////////////////////////////////////////////////////
   [ENABLE_EMR_SERVICE_POLICY_V2]: {
     type: FlagType.BugFix,
     summary: 'Enable AmazonEMRServicePolicy_v2 managed policies',
@@ -747,7 +746,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       This is a feature flag as the old behavior will be deprecated, but some resources may require manual
       intervention since they might not have the appropriate tags propagated automatically.
       `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.72.0' },
     recommendedValue: true,
   },
 };
