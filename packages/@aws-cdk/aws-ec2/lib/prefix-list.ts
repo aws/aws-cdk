@@ -152,7 +152,7 @@ export class PrefixList extends PrefixListBase {
       defaultMaxEntries = props.entries.length;
     }
 
-    const prefixList = new CfnPrefixList(this, 'PrefixList', {
+    const prefixList = new CfnPrefixList(this, 'Resource', {
       addressFamily: props?.addressFamily || AddressFamily.IP_V4,
       maxEntries: props?.maxEntries || defaultMaxEntries,
       prefixListName: this.prefixListName,
@@ -164,7 +164,5 @@ export class PrefixList extends PrefixListBase {
     this.ownerId = prefixList.attrOwnerId;
     this.version = prefixList.attrVersion;
     this.addressFamily = prefixList.addressFamily;
-
-    this.node.defaultChild = prefixList;
   }
 }
