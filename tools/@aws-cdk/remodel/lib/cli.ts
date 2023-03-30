@@ -628,7 +628,7 @@ async function reformatCliPackage(dir: string) {
         return line.replace('@aws-cdk/core', 'aws-cdk-lib');
       });
 
-    return ['// eslint-disable import/order', ...lines].join('\n');
+    return ['/* eslint-disable import/order */', ...lines].join('\n');
   });
 
   // Use cloud-assembly-schema from aws-cdk-lib in test so it matches correctly
