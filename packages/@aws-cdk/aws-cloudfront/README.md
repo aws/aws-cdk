@@ -320,7 +320,7 @@ const myResponseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(this, 'Resp
   corsBehavior: {
     accessControlAllowCredentials: false,
     accessControlAllowHeaders: ['X-Custom-Header-1', 'X-Custom-Header-2'],
-    accessControlAllowMethods: ['GET', 'POST'],
+    accessControlAllowMethods: [HttpMethods.GET, HttpMethods.POST],
     accessControlAllowOrigins: ['*'],
     accessControlExposeHeaders: ['X-Custom-Header-1', 'X-Custom-Header-2'],
     accessControlMaxAge: Duration.seconds(600),
