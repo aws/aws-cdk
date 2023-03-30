@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { TestOrigin } from './test-origin';
 import * as cloudfront from '../lib';
-import { OriginRequestPolicy } from '../lib';
+import { OriginRequestPolicy, HttpMethods } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-distribution-policies');
@@ -20,7 +20,7 @@ const responseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(stack, 'Respo
   corsBehavior: {
     accessControlAllowCredentials: false,
     accessControlAllowHeaders: ['X-Custom-Header-1', 'X-Custom-Header-2'],
-    accessControlAllowMethods: ['GET', 'POST'],
+    accessControlAllowMethods: [HttpMethods.GET, HttpMethods.POST],
     accessControlAllowOrigins: ['*'],
     accessControlExposeHeaders: ['X-Custom-Header-1', 'X-Custom-Header-2'],
     accessControlMaxAge: cdk.Duration.seconds(600),

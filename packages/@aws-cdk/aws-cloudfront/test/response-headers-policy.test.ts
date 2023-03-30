@@ -1,6 +1,6 @@
 import { Template } from '@aws-cdk/assertions';
 import { App, Duration, Stack } from '@aws-cdk/core';
-import { HeadersFrameOption, HeadersReferrerPolicy, ResponseHeadersPolicy } from '../lib';
+import { HeadersFrameOption, HeadersReferrerPolicy, HttpMethods, ResponseHeadersPolicy } from '../lib';
 
 describe('ResponseHeadersPolicy', () => {
   let app: App;
@@ -44,7 +44,7 @@ describe('ResponseHeadersPolicy', () => {
       corsBehavior: {
         accessControlAllowCredentials: false,
         accessControlAllowHeaders: ['X-Custom-Header-1', 'X-Custom-Header-2'],
-        accessControlAllowMethods: ['GET', 'POST'],
+        accessControlAllowMethods: [HttpMethods.GET, HttpMethods.POST],
         accessControlAllowOrigins: ['*'],
         accessControlExposeHeaders: ['X-Custom-Header-1', 'X-Custom-Header-2'],
         accessControlMaxAge: Duration.seconds(600),
