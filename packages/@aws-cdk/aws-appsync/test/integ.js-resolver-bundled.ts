@@ -1,10 +1,10 @@
 import * as path from 'path';
-import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as logs from 'aws-cdk-lib/aws-logs';
-import * as cdk from 'aws-cdk-lib';
-import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
-import * as appsync from 'aws-cdk-lib/aws-appsync';
+import * as dynamodb from '@aws-cdk/aws-dynamodb';
+import * as lambda from '@aws-cdk/aws-lambda';
+import * as logs from '@aws-cdk/aws-logs';
+import * as cdk from '@aws-cdk/core';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
+import * as appsync from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'AppSyncJsResolverTestStack');
@@ -36,8 +36,13 @@ const addTestFunc = dataSource.createFunction('AddTestFunction', {
     __dirname,
     'integ-assets',
     'appsync-js-resolver',
-    'index.js',
-  )),
+  ), {
+    bundling: {
+      image: lambda.Runtime.NODEJS_18_X.bundlingImage,
+      command: ['cp', '-a', '/asset-input/.', '/asset-output/'],
+      outputType: cdk.BundlingOutput.FILE,
+    },
+  }),
 });
 
 new appsync.Resolver(stack, 'AddTestResolver', {
@@ -48,8 +53,13 @@ new appsync.Resolver(stack, 'AddTestResolver', {
     __dirname,
     'integ-assets',
     'appsync-js-pipeline',
-    'index.js',
-  )),
+  ), {
+    bundling: {
+      image: lambda.Runtime.NODEJS_18_X.bundlingImage,
+      command: ['cp', '-a', '/asset-input/.', '/asset-output/'],
+      outputType: cdk.BundlingOutput.FILE,
+    },
+  }),
   runtime: appsync.FunctionRuntime.JS_1_0_0,
   pipelineConfig: [addTestFunc],
 });
