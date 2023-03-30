@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.133"
-        }
-      },
       "aws-cdk-rds-instance-dual-integ": {
         "id": "aws-cdk-rds-instance-dual-integ",
         "path": "aws-cdk-rds-instance-dual-integ",
@@ -667,7 +659,7 @@
                       "Ref": "DualstackInstanceSubnetGroupB16A837F"
                     },
                     "engine": "postgres",
-                    "engineVersion": "11.12",
+                    "engineVersion": "15.2",
                     "masterUsername": "postgres",
                     "masterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
                     "multiAz": false,
@@ -778,7 +770,7 @@
                       "Ref": "Ipv4InstanceSubnetGroup6E04EDDC"
                     },
                     "engine": "postgres",
-                    "engineVersion": "11.12",
+                    "engineVersion": "15.2",
                     "masterUsername": "postgres",
                     "masterUserPassword": "7959866cacc02c2d243ecfe177464fe6",
                     "multiAz": false,
@@ -805,6 +797,22 @@
               "fqn": "@aws-cdk/aws-rds.DatabaseInstance",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-rds-instance-dual-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-rds-instance-dual-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
@@ -825,12 +833,30 @@
                 "path": "instance-dual-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.133"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
                 "path": "instance-dual-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "instance-dual-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "instance-dual-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
                 "constructInfo": {
                   "fqn": "@aws-cdk/core.Stack",
                   "version": "0.0.0"
@@ -846,6 +872,14 @@
         "constructInfo": {
           "fqn": "@aws-cdk/integ-tests.IntegTest",
           "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       }
     },
