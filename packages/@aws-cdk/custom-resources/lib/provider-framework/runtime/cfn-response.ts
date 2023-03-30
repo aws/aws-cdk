@@ -49,7 +49,7 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
     method: 'PUT',
     headers: {
       'content-type': '',
-      'content-length': responseBody.length,
+      'content-length': Buffer.byteLength(responseBody, 'utf8'),
     },
   }, responseBody);
 }
@@ -70,7 +70,7 @@ export function safeHandler(block: (event: any) => Promise<void>) {
 
     try {
       await block(event);
-    } catch (e) {
+    } catch (e: any) {
       // tell waiter state machine to retry
       if (e instanceof Retry) {
         log('retry requested by handler');

@@ -119,19 +119,35 @@ repository.addLifecycleRule({ tagPrefixList: ['prod'], maxImageCount: 9999 });
 repository.addLifecycleRule({ maxImageAge: Duration.days(30) });
 ```
 
+### Repository deletion
+
+When a repository is removed from a stack (or the stack is deleted), the ECR
+repository will be removed according to its removal policy (which by default will
+simply orphan the repository and leave it in your AWS account). If the removal
+policy is set to `RemovalPolicy.DESTROY`, the repository will be deleted as long
+as it does not contain any images.
+
+To override this and force all images to get deleted during repository deletion,
+enable the`autoDeleteImages` option.
+
+```ts
+const repository = new Repository(this, 'MyTempRepo', {
+  removalPolicy: RemovalPolicy.DESTROY,
+  autoDeleteImages: true,
+});
+```
+
 ## Managing the Resource Policy
 
 You can add statements to the resource policy of the repository using the
 `addToResourcePolicy` method. However, be advised that you must not include
-a `resources` section in the `PolicyStatement`. See AWS internal ticket
-`#WRITEME` for details around the ECR and Cfn team working together to
-support `resources` in the future.
+a `resources` section in the `PolicyStatement`.
 
 ```ts
 declare const repository: ecr.Repository;
 repository.addToResourcePolicy(new iam.PolicyStatement({
   actions: ['ecr:GetDownloadUrlForLayer'],
-  // resources: ['*'], // not allowed!
+  // resources: ['*'], // not currently allowed!
   principals: [new iam.AnyPrincipal()],
 }));
 ```

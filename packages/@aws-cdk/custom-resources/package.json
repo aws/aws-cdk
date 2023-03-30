@@ -5,6 +5,14 @@
   "description": "Constructs for implementing CDK custom resources",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "typesVersions": {
+    "<=3.9": {
+      "*": [
+        ".types-compat/ts3.9/*",
+        ".types-compat/ts3.9/*/index.d.ts"
+      ]
+    }
+  },
   "jsii": {
     "outdir": "dist",
     "targets": {

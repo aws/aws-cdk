@@ -193,6 +193,14 @@ export function resolve(obj: any, options: IResolveOptions): any {
   }
 
   //
+  // literal null -- from JsonNull resolution, preserved as-is (semantically meaningful)
+  //
+
+  if (obj === null) {
+    return obj;
+  }
+
+  //
   // tokens - invoke 'resolve' and continue to resolve recursively
   //
 

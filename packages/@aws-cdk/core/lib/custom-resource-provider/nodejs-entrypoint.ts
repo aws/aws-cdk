@@ -47,7 +47,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
     // submit to cfn as success
     await submitResponse('SUCCESS', responseEvent);
-  } catch (e) {
+  } catch (e: any) {
     const resp: Response = {
       ...event,
       Reason: external.includeStackTraces ? e.stack : e.message,
@@ -115,7 +115,10 @@ async function submitResponse(status: 'SUCCESS' | 'FAILED', event: Response) {
     hostname: parsedUrl.hostname,
     path: parsedUrl.path,
     method: 'PUT',
-    headers: { 'content-type': '', 'content-length': responseBody.length },
+    headers: {
+      'content-type': '',
+      'content-length': Buffer.byteLength(responseBody, 'utf8'),
+    },
   };
 
   const retryOptions = {
