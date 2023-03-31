@@ -1,3 +1,110 @@
+# CloudFormation Resource Specification v118.1.0
+
+## New Resource Types
+
+* AWS::DevOpsGuru::LogAnomalyDetectionIntegration
+
+## Attribute Changes
+
+* AWS::ApiGatewayV2::Route RouteId (__added__)
+
+## Property Changes
+
+* AWS::ApiGatewayV2::Route AuthorizationScopes.DuplicatesAllowed (__added__)
+* AWS::Location::Tracker PricingPlan (__deleted__)
+* AWS::Location::Tracker PricingPlanDataSource (__deleted__)
+* AWS::Logs::SubscriptionFilter DestinationArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Logs::SubscriptionFilter Distribution.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Logs::SubscriptionFilter FilterPattern.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::Logs::SubscriptionFilter RoleArn.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+* AWS::OpenSearchServerless::AccessPolicy Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchServerless::AccessPolicy Policy.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchServerless::AccessPolicy Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchServerless::SecurityPolicy Name.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::OpenSearchServerless::SecurityPolicy Type.Required (__changed__)
+  * Old: false
+  * New: true
+* AWS::RDS::GlobalCluster EngineVersion.UpdateType (__changed__)
+  * Old: Immutable
+  * New: Mutable
+
+## Property Type Changes
+
+* AWS::ApiGatewayV2::Route.ParameterConstraints (__removed__)
+* AWS::Batch::JobDefinition.EmptyDir (__removed__)
+* AWS::Batch::JobDefinition.HostPath (__removed__)
+* AWS::Batch::JobDefinition.Resources (__removed__)
+* AWS::Batch::JobDefinition.SecurityContext (__removed__)
+* AWS::Batch::JobDefinition.EksContainerResourceRequirements (__added__)
+* AWS::Batch::JobDefinition.EksContainerSecurityContext (__added__)
+* AWS::Batch::JobDefinition.EksEmptyDir (__added__)
+* AWS::Batch::JobDefinition.EksHostPath (__added__)
+* AWS::Batch::JobDefinition.EksSecret (__added__)
+* AWS::Batch::JobDefinition.EphemeralStorage (__added__)
+* AWS::Batch::JobDefinition.Metadata (__added__)
+* AWS::VpcLattice::Listener.FixedResponse (__added__)
+* AWS::VpcLattice::Rule.FixedResponse (__added__)
+* AWS::Batch::JobDefinition.ContainerProperties EphemeralStorage (__added__)
+* AWS::Batch::JobDefinition.EksContainer Resources.Type (__changed__)
+  * Old: Resources
+  * New: EksContainerResourceRequirements
+* AWS::Batch::JobDefinition.EksContainer SecurityContext.Type (__changed__)
+  * Old: SecurityContext
+  * New: EksContainerSecurityContext
+* AWS::Batch::JobDefinition.EksVolume EmptyDir.Type (__changed__)
+  * Old: EmptyDir
+  * New: EksEmptyDir
+* AWS::Batch::JobDefinition.EksVolume HostPath.Type (__changed__)
+  * Old: HostPath
+  * New: EksHostPath
+* AWS::Batch::JobDefinition.EksVolume Secret.Type (__changed__)
+  * Old: Secret
+  * New: EksSecret
+* AWS::Batch::JobDefinition.PodProperties Metadata (__added__)
+* AWS::VpcLattice::Listener.DefaultAction FixedResponse (__added__)
+* AWS::VpcLattice::Listener.DefaultAction Forward.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::VpcLattice::Rule.Action FixedResponse (__added__)
+* AWS::VpcLattice::Rule.Action Forward.Required (__changed__)
+  * Old: true
+  * New: false
+* AWS::VpcLattice::TargetGroup.HealthCheckConfig ProtocolVersion (__added__)
+* AWS::VpcLattice::TargetGroup.TargetGroupConfig IpAddressType (__added__)
+
+# Serverless Application Model (SAM) Resource Specification v2016-10-31
+
+## New Resource Types
+
+
+## Attribute Changes
+
+
+## Property Changes
+
+
+## Property Type Changes
+
+* AWS::Serverless::Function.CognitoEvent (__added__)
+* AWS::Serverless::Function.EventSource Properties.Types (__changed__)
+  * Added CognitoEvent
+
 # CloudFormation Resource Specification v117.0.0
 
 ## New Resource Types
