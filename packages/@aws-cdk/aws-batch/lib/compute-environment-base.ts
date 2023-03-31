@@ -38,10 +38,9 @@ export interface IComputeEnvironment extends IResource {
    *
    * If you change a ComputeEnvironment from enabled to disabled while it is executing jobs,
    * Jobs in the `STARTED` or `RUNNING` states will not
-   * be interrupted. The ComputeEnvironment will no longer scale instances down;
-   * that is, any instances that were scaled up will remain if the ComputeEnvironment is disabled.
+   * be interrupted. As jobs complete, the ComputeEnvironment will scale instances down to `minvCpus`.
    *
-   * To ensure you aren't billed for unused capacity, remove the ComputeEnvironment from your stack.
+   * To ensure you aren't billed for unused capacity, set `minvCpus` to `0`.
    */
   readonly enabled: boolean;
 }
@@ -74,10 +73,9 @@ export interface ComputeEnvironmentProps {
    *
    * If you change a ComputeEnvironment from enabled to disabled while it is executing jobs,
    * Jobs in the `STARTED` or `RUNNING` states will not
-   * be interrupted. The ComputeEnvironment will no longer scale instances down;
-   * that is, any instances that were scaled up will remain if the ComputeEnvironment is disabled.
+   * be interrupted. As jobs complete, the ComputeEnvironment will scale instances down to `minvCpus`.
    *
-   * To ensure you aren't billed for unused capacity, remove the ComputeEnvironment from your stack.
+   * To ensure you aren't billed for unused capacity, set `minvCpus` to `0`.
    *
    * @default true
    */
