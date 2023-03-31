@@ -21,7 +21,7 @@ class TestStack extends Stack {
       destination: EventDestination.cloudWatchDimensions([{
         source: CloudWatchDimensionSource.MESSAGE_TAG,
         name: 'ses:from-domain',
-        default: 'no_domain',
+        defaultValue: 'no_domain',
       }]),
     });
 

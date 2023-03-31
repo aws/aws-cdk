@@ -177,7 +177,7 @@ export interface CloudWatchDimension {
    * The default value of the dimension that is published to Amazon CloudWatch
    * if you do not provide the value of the dimension when you send an email.
    */
-  readonly default: string;
+  readonly defaultValue: string;
 }
 
 /**
@@ -250,7 +250,7 @@ export class ConfigurationSetEventDestination extends Resource implements IConfi
             dimensionConfigurations: props.destination.dimensions.map(dimension => ({
               dimensionValueSource: dimension.source,
               dimensionName: dimension.name,
-              defaultDimensionValue: dimension.default,
+              defaultDimensionValue: dimension.defaultValue,
             })),
           }
           : undefined,

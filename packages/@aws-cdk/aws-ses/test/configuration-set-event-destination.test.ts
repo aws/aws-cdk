@@ -72,12 +72,12 @@ test('cloudwatch dimensions destination', () => {
       {
         source: CloudWatchDimensionSource.MESSAGE_TAG,
         name: 'ses:from-domain',
-        default: 'no_domain',
+        defaultValue: 'no_domain',
       },
       {
         source: CloudWatchDimensionSource.MESSAGE_TAG,
         name: 'ses:source-ip',
-        default: 'no_ip',
+        defaultValue: 'no_ip',
       },
     ]),
   });
