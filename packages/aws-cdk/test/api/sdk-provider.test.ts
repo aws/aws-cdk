@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as os from 'os';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';

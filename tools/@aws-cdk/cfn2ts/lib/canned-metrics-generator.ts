@@ -25,8 +25,8 @@ import { CodeMaker, toCamelCase } from 'codemaker';
  * ```
  */
 export class CannedMetricsGenerator {
+  public readonly outputFile: string;
   private readonly code = new CodeMaker({ indentationLevel: 2 });
-  private readonly outputFile: string;
 
   constructor(moduleName: string, private readonly namespace: string) {
     this.outputFile = `${moduleName}-canned-metrics.generated.ts`;

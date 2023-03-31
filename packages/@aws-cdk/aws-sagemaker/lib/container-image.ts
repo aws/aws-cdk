@@ -1,5 +1,5 @@
-import * as ecr from '@aws-cdk/aws-ecr';
-import * as assets from '@aws-cdk/aws-ecr-assets';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import { Construct } from 'constructs';
 import { Model } from './model';
 import { hashcode } from './private/util';

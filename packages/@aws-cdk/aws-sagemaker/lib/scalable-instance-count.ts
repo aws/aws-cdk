@@ -1,4 +1,4 @@
-import * as appscaling from '@aws-cdk/aws-applicationautoscaling';
+import * as appscaling from 'aws-cdk-lib/aws-applicationautoscaling';
 import { Construct } from 'constructs';
 
 /**

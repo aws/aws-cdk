@@ -1,5 +1,5 @@
-import { Template } from '@aws-cdk/assertions';
-import * as cdk from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as cdk from 'aws-cdk-lib';
 import { ClusterParameterGroup } from '../lib';
 
 test('create a cluster parameter group', () => {

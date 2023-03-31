@@ -1,6 +1,7 @@
+/* eslint-disable import/order */
 jest.mock('child_process');
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cdk from '@aws-cdk/core';
+import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import * as cdk from 'aws-cdk-lib';
 import * as semver from 'semver';
 import * as sinon from 'sinon';
 import { ImportMock } from 'ts-mock-imports';

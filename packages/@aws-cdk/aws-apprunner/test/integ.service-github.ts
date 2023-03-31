@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { Service, Source, GitHubConnection, ConfigurationSourceType, Runtime } from '../lib';
 
 const app = new cdk.App();

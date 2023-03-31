@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/aws-s3objectlambda",
+  "name": "@aws-cdk/aws-s3objectlambda-alpha",
   "version": "0.0.0",
   "description": "The CDK Construct Library for AWS::S3ObjectLambda",
   "main": "lib/index.js",
@@ -9,17 +9,17 @@
     "projectReferences": true,
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.S3ObjectLambda",
-        "packageId": "Amazon.CDK.AWS.S3ObjectLambda",
+        "namespace": "Amazon.CDK.AWS.S3ObjectLambda.Alpha",
+        "packageId": "Amazon.CDK.AWS.S3ObjectLambda.Alpha",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.s3objectlambda",
+        "package": "software.amazon.awscdk.services.s3objectlambda.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "s3objectlambda"
+          "artifactId": "s3objectlambda-alpha"
         }
       },
       "python": {
@@ -27,8 +27,12 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ],
-        "distName": "aws-cdk.aws-s3objectlambda",
-        "module": "aws_cdk.aws_s3objectlambda"
+        "distName": "aws-cdk.aws-s3objectlambda-alpha",
+        "module": "aws_cdk.aws_s3objectlambda_alpha"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdks3objectlambdaalpha"
       }
     },
     "metadata": {
@@ -54,17 +58,14 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat",
-    "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::S3ObjectLambda",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
@@ -83,26 +84,18 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "jest": "^27.5.1"
-  },
-  "dependencies": {
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "jest": "^27.5.1",
+    "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0"
   },
+  "dependencies": {},
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -114,12 +107,18 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
   },
   "awslint": {
     "exclude": [
-      "attribute-tag:@aws-cdk/aws-s3objectlambda.AccessPoint.accessPointName"
+      "*:*"
     ]
   },
-  "private": true
+  "private": false,
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
+  }
 }

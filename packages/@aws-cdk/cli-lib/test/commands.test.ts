@@ -1,4 +1,4 @@
-import * as core from '@aws-cdk/core';
+import * as core from 'aws-cdk-lib';
 import * as cli from 'aws-cdk/lib';
 import { AwsCdkCli } from '../lib';
 import { RequireApproval, StackActivityProgress } from '../lib/commands';

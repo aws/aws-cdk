@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { bold, reset, green, yellow, red } from 'chalk';
 import { stderr } from './console-listener';
 import { HistoryActivityPrinter } from '../../lib/api/util/cloudformation/stack-activity-monitor';

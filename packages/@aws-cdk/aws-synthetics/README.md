@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are in **developer preview** before they
@@ -165,7 +159,7 @@ new synthetics.Canary(this, 'Asset Canary', {
 });
 
 // To supply the code from a S3 bucket:
-import * as s3 from '@aws-cdk/aws-s3';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 const bucket = new s3.Bucket(this, 'Code Bucket');
 new synthetics.Canary(this, 'Bucket Canary', {
   test: synthetics.Test.custom({
@@ -203,7 +197,7 @@ This can allow for monitoring services that may be internal to a specific VPC. T
 This will automatically attach the appropriate IAM permissions to attach to the VPC. This will also create a Security Group and attach to the default subnets for the VPC unless specified via `vpcSubnets` and `securityGroups`.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 declare const vpc: ec2.IVpc;
 new synthetics.Canary(this, 'Vpc Canary', {
@@ -233,7 +227,7 @@ You can configure a CloudWatch Alarm on a canary metric. Metrics are emitted by 
 Create an alarm that tracks the canary metric:
 
 ```ts
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 declare const canary: synthetics.Canary;
 new cloudwatch.Alarm(this, 'CanaryAlarm', {

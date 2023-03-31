@@ -6,29 +6,47 @@ const fs = require('fs');
 
 const ver = require('./resolve-version');
 const marker = ver.marker;
-const repoVersion = ver.version;
 
-for (const file of process.argv.splice(2)) {
+const files = process.argv.splice(2);
+const packageVersionMap = files.reduce((accum, file) => {
+  const pkg = JSON.parse(fs.readFileSync(file).toString());
+  const version = pkg.stability !== 'stable' ? ver.alphaVersion : ver.version;
+
+  return {
+    ...accum,
+    [pkg.name]: version,
+  };
+}, {});
+
+for (const file of files) {
   const pkg = JSON.parse(fs.readFileSync(file).toString());
 
   if (pkg.version !== marker) {
     throw new Error(`unexpected - all package.json files in this repo should have a version of ${marker}: ${file}`);
   }
 
-  pkg.version = repoVersion;
+  const version = packageVersionMap[pkg.name]
+  console.log(version);
+  pkg.version = version;
 
   processSection(pkg.dependencies || { }, file);
   processSection(pkg.devDependencies || { }, file);
   processSection(pkg.peerDependencies || { }, file);
 
-  console.error(`${file} => ${repoVersion}`);
+  console.error(`${file} => ${version}`);
   fs.writeFileSync(file, JSON.stringify(pkg, undefined, 2));
 }
 
 function processSection(section, file) {
   for (const [ name, version ] of Object.entries(section)) {
     if (version === marker || version === '^' + marker) {
-      section[name] = version.replace(marker, repoVersion);
+      const version = packageVersionMap[name];
+
+      if (!version) {
+        throw new Error(`No package found ${name} within repository, which has version 0.0.0`);
+      }
+
+      section[name] = version.replace(marker, version);
     }
   }
 }

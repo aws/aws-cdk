@@ -1,10 +1,10 @@
-import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2';
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
-import * as iam from '@aws-cdk/aws-iam';
-import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
-import { Stack } from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import * as apigatewayv2 from '@aws-cdk/aws-apigatewayv2-alpha';
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import * as cdk from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { WebSocketIamAuthorizer } from '../../lib';
 
 const app = new cdk.App();

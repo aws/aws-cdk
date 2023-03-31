@@ -1,5 +1,5 @@
-import { HttpApi, HttpRoute, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2';
-import { Stack } from '@aws-cdk/core';
+import { HttpApi, HttpRoute, HttpRouteIntegrationBindOptions, HttpRouteIntegrationConfig, HttpRouteKey } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { Stack } from 'aws-cdk-lib';
 import { HttpPrivateIntegration } from '../../../lib/http/private/integration';
 
 describe('HttpPrivateIntegration', () => {

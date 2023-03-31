@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { blue, yellow } from 'chalk';
 import { CloudWatchLogEventMonitor } from '../../../lib/api/logs/logs-monitor';
 import { sleep } from '../../util';

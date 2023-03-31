@@ -1,10 +1,10 @@
-import * as iam from '@aws-cdk/aws-iam';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import * as cdk from '@aws-cdk/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Content } from './content';
-import { CfnBuild } from './gamelift.generated';
+import { CfnBuild } from 'aws-cdk-lib/aws-gamelift';
 
 /**
  * Your custom-built game server software that runs on GameLift and hosts game sessions for your players.

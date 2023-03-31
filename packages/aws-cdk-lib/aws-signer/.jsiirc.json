@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Signer"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.signer"
+    },
+    "python": {
+      "module": "aws_cdk.aws_signer"
+    }
+  }
+}

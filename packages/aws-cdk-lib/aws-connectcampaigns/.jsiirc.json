@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ConnectCampaigns"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.connectcampaigns"
+    },
+    "python": {
+      "module": "aws_cdk.aws_connectcampaigns"
+    }
+  }
+}

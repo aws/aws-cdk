@@ -1,5 +1,5 @@
-import { App, Stack } from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import { App, Stack } from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import { PlaceIndex } from '../lib';
 

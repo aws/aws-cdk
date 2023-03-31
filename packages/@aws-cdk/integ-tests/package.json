@@ -1,32 +1,36 @@
 {
-  "name": "@aws-cdk/integ-tests",
+  "name": "@aws-cdk/integ-tests-alpha",
   "description": "CDK Integration Testing Constructs",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.integtests",
+        "package": "software.amazon.awscdk.integtests.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-integ-tests"
+          "artifactId": "cdk-integ-tests-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.IntegTests",
-        "packageId": "Amazon.CDK.IntegTests",
+        "namespace": "Amazon.CDK.IntegTests.Alpha",
+        "packageId": "Amazon.CDK.IntegTests.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.integ-tests",
-        "module": "aws_cdk.integ_tests",
+        "distName": "aws-cdk.integ-tests-alpha",
+        "module": "aws_cdk.integ_tests_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkintegtestsalpha"
       }
     },
     "projectReferences": true,
@@ -62,9 +66,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
@@ -73,16 +75,13 @@
     "aws-sdk-mock": "5.6.0",
     "jest": "^27.5.1",
     "nock": "^13.3.0",
-    "sinon": "^9.2.4"
-  },
-  "dependencies": {
-    "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "sinon": "^9.2.4",
+    "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0"
   },
+  "dependencies": {},
   "peerDependencies": {
-    "@aws-cdk/cloud-assembly-schema": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "repository": {
@@ -108,7 +107,7 @@
   },
   "awslint": {
     "exclude": [
-      "construct-ctor:@aws-cdk/integ-tests.DeployAssert.<initializer>"
+      "*:*"
     ]
   },
   "nozem": {
@@ -125,5 +124,11 @@
   },
   "awscdkio": {
     "announce": false
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
   }
 }

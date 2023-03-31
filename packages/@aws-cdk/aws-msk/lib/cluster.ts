@@ -1,18 +1,18 @@
-import * as acmpca from '@aws-cdk/aws-acmpca';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import * as kms from '@aws-cdk/aws-kms';
-import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as core from '@aws-cdk/core';
-import { FeatureFlags } from '@aws-cdk/core';
-import * as cr from '@aws-cdk/custom-resources';
-import { S3_CREATE_DEFAULT_LOGGING_POLICY } from '@aws-cdk/cx-api';
+import * as acmpca from 'aws-cdk-lib/aws-acmpca';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as core from 'aws-cdk-lib';
+import { FeatureFlags } from 'aws-cdk-lib';
+import * as cr from 'aws-cdk-lib/custom-resources';
+import { S3_CREATE_DEFAULT_LOGGING_POLICY } from 'aws-cdk-lib/cx-api';
 import * as constructs from 'constructs';
 import { addressOf } from 'constructs/lib/private/uniqueid';
 import { KafkaVersion } from './';
-import { CfnCluster } from './msk.generated';
+import { CfnCluster } from 'aws-cdk-lib/aws-msk';
 
 /**
  * Represents a MSK Cluster

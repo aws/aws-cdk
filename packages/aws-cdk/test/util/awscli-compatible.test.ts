@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as AWS from 'aws-sdk';
 import { AwsCliCompatible } from '../../lib/api/aws-auth/awscli-compatible';
 import { withMockedClassSingleton } from '../util';

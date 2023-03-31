@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.handler = void 0;
+/* eslint-disable no-console */
+// @ts-ignore
+const client_s3_1 = require("@aws-sdk/client-s3"); // eslint-disable-line import/no-extraneous-dependencies, import/no-unresolved
+const s3 = new client_s3_1.S3Client();
+async function handler() {
+    console.log(s3);
+}
+exports.handler = handler;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZGVwZW5kZW5jaWVzLXNkay12My5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImRlcGVuZGVuY2llcy1zZGstdjMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBQUEsK0JBQStCO0FBQy9CLGFBQWE7QUFDYixrREFBOEMsQ0FBQyw4RUFBOEU7QUFFN0gsTUFBTSxFQUFFLEdBQUcsSUFBSSxvQkFBUSxFQUFFLENBQUM7QUFFbkIsS0FBSyxVQUFVLE9BQU87SUFDM0IsT0FBTyxDQUFDLEdBQUcsQ0FBQyxFQUFFLENBQUMsQ0FBQztBQUNsQixDQUFDO0FBRkQsMEJBRUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKiBlc2xpbnQtZGlzYWJsZSBuby1jb25zb2xlICovXG4vLyBAdHMtaWdub3JlXG5pbXBvcnQgeyBTM0NsaWVudCB9IGZyb20gJ0Bhd3Mtc2RrL2NsaWVudC1zMyc7IC8vIGVzbGludC1kaXNhYmxlLWxpbmUgaW1wb3J0L25vLWV4dHJhbmVvdXMtZGVwZW5kZW5jaWVzLCBpbXBvcnQvbm8tdW5yZXNvbHZlZFxuXG5jb25zdCBzMyA9IG5ldyBTM0NsaWVudCgpO1xuXG5leHBvcnQgYXN5bmMgZnVuY3Rpb24gaGFuZGxlcigpIHtcbiAgY29uc29sZS5sb2coczMpO1xufVxuIl19

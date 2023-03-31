@@ -1,9 +1,9 @@
 import * as path from 'path';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
-import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import * as cdk from '@aws-cdk/core';
-import { IntegTest } from '@aws-cdk/integ-tests';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecr_assets from 'aws-cdk-lib/aws-ecr-assets';
+import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
+import * as cdk from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as sagemaker from '../lib';
 
 /*

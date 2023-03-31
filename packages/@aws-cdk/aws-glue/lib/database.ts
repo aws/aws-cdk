@@ -1,6 +1,6 @@
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '@aws-cdk/core';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnDatabase } from './glue.generated';
+import { CfnDatabase } from 'aws-cdk-lib/aws-glue';
 
 export interface IDatabase extends IResource {
   /**

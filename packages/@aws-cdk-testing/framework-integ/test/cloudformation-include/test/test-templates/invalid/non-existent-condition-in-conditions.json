@@ -1,0 +1,7 @@
+{
+  "Conditions": {
+    "AlwaysTrue": {
+      "Fn::Not": [{ "Condition": "AlwaysFalse" }]
+    }
+  }
+}

@@ -1,0 +1,60 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const aws_lambda_1 = require("aws-cdk-lib/aws-lambda");
+const sfn = require("aws-cdk-lib/aws-stepfunctions");
+const cdk = require("aws-cdk-lib");
+const tasks = require("aws-cdk-lib/aws-stepfunctions-tasks");
+/*
+ * Stack verification steps:
+ * The generated State Machine can be executed from the CLI (or Step Functions console)
+ * and runs with an execution status of `Succeeded`.
+ *
+ * -- aws stepfunctions start-execution --state-machine-arn  <deployed state machine arn> provides execution arn
+ * -- aws stepfunctions describe-execution --execution-arn <from previous command> returns a status of `Succeeded`
+ */
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-run-lambda-integ');
+const submitJobLambda = new aws_lambda_1.Function(stack, 'submitJobLambda', {
+    code: aws_lambda_1.Code.fromInline(`exports.handler = async () => {
+        return {
+          statusCode: '200',
+          body: 'hello, world!'
+        };
+      };`),
+    runtime: aws_lambda_1.Runtime.NODEJS_14_X,
+    handler: 'index.handler',
+});
+const submitJob = new sfn.Task(stack, 'Invoke Handler', {
+    task: new tasks.RunLambdaTask(submitJobLambda),
+    outputPath: '$.Payload',
+});
+const checkJobStateLambda = new aws_lambda_1.Function(stack, 'checkJobStateLambda', {
+    code: aws_lambda_1.Code.fromInline(`exports.handler = async function(event, context) {
+        return {
+          status: event.statusCode === '200' ? 'SUCCEEDED' : 'FAILED'
+        };
+  };`),
+    runtime: aws_lambda_1.Runtime.NODEJS_14_X,
+    handler: 'index.handler',
+});
+const checkJobState = new sfn.Task(stack, 'Check the job state', {
+    task: new tasks.RunLambdaTask(checkJobStateLambda),
+    outputPath: '$.Payload',
+});
+const isComplete = new sfn.Choice(stack, 'Job Complete?');
+const jobFailed = new sfn.Fail(stack, 'Job Failed', {
+    cause: 'Job Failed',
+    error: 'Received a status that was not 200',
+});
+const finalStatus = new sfn.Pass(stack, 'Final step');
+const chain = sfn.Chain.start(submitJob)
+    .next(checkJobState)
+    .next(isComplete
+    .when(sfn.Condition.stringEquals('$.status', 'FAILED'), jobFailed)
+    .when(sfn.Condition.stringEquals('$.status', 'SUCCEEDED'), finalStatus));
+new sfn.StateMachine(stack, 'StateMachine', {
+    definition: chain,
+    timeout: cdk.Duration.seconds(30),
+});
+app.synth();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcucnVuLWxhbWJkYS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImludGVnLnJ1bi1sYW1iZGEudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSx1REFBaUU7QUFDakUscURBQXFEO0FBQ3JELG1DQUFtQztBQUNuQyw2REFBNkQ7QUFFN0Q7Ozs7Ozs7R0FPRztBQUNILE1BQU0sR0FBRyxHQUFHLElBQUksR0FBRyxDQUFDLEdBQUcsRUFBRSxDQUFDO0FBQzFCLE1BQU0sS0FBSyxHQUFHLElBQUksR0FBRyxDQUFDLEtBQUssQ0FBQyxHQUFHLEVBQUUsMENBQTBDLENBQUMsQ0FBQztBQUU3RSxNQUFNLGVBQWUsR0FBRyxJQUFJLHFCQUFRLENBQUMsS0FBSyxFQUFFLGlCQUFpQixFQUFFO0lBQzdELElBQUksRUFBRSxpQkFBSSxDQUFDLFVBQVUsQ0FBQzs7Ozs7U0FLZixDQUFDO0lBQ1IsT0FBTyxFQUFFLG9CQUFPLENBQUMsV0FBVztJQUM1QixPQUFPLEVBQUUsZUFBZTtDQUN6QixDQUFDLENBQUM7QUFFSCxNQUFNLFNBQVMsR0FBRyxJQUFJLEdBQUcsQ0FBQyxJQUFJLENBQUMsS0FBSyxFQUFFLGdCQUFnQixFQUFFO0lBQ3RELElBQUksRUFBRSxJQUFJLEtBQUssQ0FBQyxhQUFhLENBQUMsZUFBZSxDQUFDO0lBQzlDLFVBQVUsRUFBRSxXQUFXO0NBQ3hCLENBQUMsQ0FBQztBQUVILE1BQU0sbUJBQW1CLEdBQUcsSUFBSSxxQkFBUSxDQUFDLEtBQUssRUFBRSxxQkFBcUIsRUFBRTtJQUNyRSxJQUFJLEVBQUUsaUJBQUksQ0FBQyxVQUFVLENBQUM7Ozs7S0FJbkIsQ0FBQztJQUNKLE9BQU8sRUFBRSxvQkFBTyxDQUFDLFdBQVc7SUFDNUIsT0FBTyxFQUFFLGVBQWU7Q0FDekIsQ0FBQyxDQUFDO0FBRUgsTUFBTSxhQUFhLEdBQUcsSUFBSSxHQUFHLENBQUMsSUFBSSxDQUFDLEtBQUssRUFBRSxxQkFBcUIsRUFBRTtJQUMvRCxJQUFJLEVBQUUsSUFBSSxLQUFLLENBQUMsYUFBYSxDQUFDLG1CQUFtQixDQUFDO0lBQ2xELFVBQVUsRUFBRSxXQUFXO0NBQ3hCLENBQUMsQ0FBQztBQUVILE1BQU0sVUFBVSxHQUFHLElBQUksR0FBRyxDQUFDLE1BQU0sQ0FBQyxLQUFLLEVBQUUsZUFBZSxDQUFDLENBQUM7QUFDMUQsTUFBTSxTQUFTLEdBQUcsSUFBSSxHQUFHLENBQUMsSUFBSSxDQUFDLEtBQUssRUFBRSxZQUFZLEVBQUU7SUFDbEQsS0FBSyxFQUFFLFlBQVk7SUFDbkIsS0FBSyxFQUFFLG9DQUFvQztDQUM1QyxDQUFDLENBQUM7QUFDSCxNQUFNLFdBQVcsR0FBRyxJQUFJLEdBQUcsQ0FBQyxJQUFJLENBQUMsS0FBSyxFQUFFLFlBQVksQ0FBQyxDQUFDO0FBRXRELE1BQU0sS0FBSyxHQUFHLEdBQUcsQ0FBQyxLQUFLLENBQUMsS0FBSyxDQUFDLFNBQVMsQ0FBQztLQUNyQyxJQUFJLENBQUMsYUFBYSxDQUFDO0tBQ25CLElBQUksQ0FDSCxVQUFVO0tBQ1AsSUFBSSxDQUFDLEdBQUcsQ0FBQyxTQUFTLENBQUMsWUFBWSxDQUFDLFVBQVUsRUFBRSxRQUFRLENBQUMsRUFBRSxTQUFTLENBQUM7S0FDakUsSUFBSSxDQUFDLEdBQUcsQ0FBQyxTQUFTLENBQUMsWUFBWSxDQUFDLFVBQVUsRUFBRSxXQUFXLENBQUMsRUFBRSxXQUFXLENBQUMsQ0FDMUUsQ0FBQztBQUVKLElBQUksR0FBRyxDQUFDLFlBQVksQ0FBQyxLQUFLLEVBQUUsY0FBYyxFQUFFO0lBQzFDLFVBQVUsRUFBRSxLQUFLO0lBQ2pCLE9BQU8sRUFBRSxHQUFHLENBQUMsUUFBUSxDQUFDLE9BQU8sQ0FBQyxFQUFFLENBQUM7Q0FDbEMsQ0FBQyxDQUFDO0FBRUgsR0FBRyxDQUFDLEtBQUssRUFBRSxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQ29kZSwgRnVuY3Rpb24sIFJ1bnRpbWUgfSBmcm9tICdhd3MtY2RrLWxpYi9hd3MtbGFtYmRhJztcbmltcG9ydCAqIGFzIHNmbiBmcm9tICdhd3MtY2RrLWxpYi9hd3Mtc3RlcGZ1bmN0aW9ucyc7XG5pbXBvcnQgKiBhcyBjZGsgZnJvbSAnYXdzLWNkay1saWInO1xuaW1wb3J0ICogYXMgdGFza3MgZnJvbSAnYXdzLWNkay1saWIvYXdzLXN0ZXBmdW5jdGlvbnMtdGFza3MnO1xuXG4vKlxuICogU3RhY2sgdmVyaWZpY2F0aW9uIHN0ZXBzOlxuICogVGhlIGdlbmVyYXRlZCBTdGF0ZSBNYWNoaW5lIGNhbiBiZSBleGVjdXRlZCBmcm9tIHRoZSBDTEkgKG9yIFN0ZXAgRnVuY3Rpb25zIGNvbnNvbGUpXG4gKiBhbmQgcnVucyB3aXRoIGFuIGV4ZWN1dGlvbiBzdGF0dXMgb2YgYFN1Y2NlZWRlZGAuXG4gKlxuICogLS0gYXdzIHN0ZXBmdW5jdGlvbnMgc3RhcnQtZXhlY3V0aW9uIC0tc3RhdGUtbWFjaGluZS1hcm4gIDxkZXBsb3llZCBzdGF0ZSBtYWNoaW5lIGFybj4gcHJvdmlkZXMgZXhlY3V0aW9uIGFyblxuICogLS0gYXdzIHN0ZXBmdW5jdGlvbnMgZGVzY3JpYmUtZXhlY3V0aW9uIC0tZXhlY3V0aW9uLWFybiA8ZnJvbSBwcmV2aW91cyBjb21tYW5kPiByZXR1cm5zIGEgc3RhdHVzIG9mIGBTdWNjZWVkZWRgXG4gKi9cbmNvbnN0IGFwcCA9IG5ldyBjZGsuQXBwKCk7XG5jb25zdCBzdGFjayA9IG5ldyBjZGsuU3RhY2soYXBwLCAnYXdzLXN0ZXBmdW5jdGlvbnMtdGFza3MtcnVuLWxhbWJkYS1pbnRlZycpO1xuXG5jb25zdCBzdWJtaXRKb2JMYW1iZGEgPSBuZXcgRnVuY3Rpb24oc3RhY2ssICdzdWJtaXRKb2JMYW1iZGEnLCB7XG4gIGNvZGU6IENvZGUuZnJvbUlubGluZShgZXhwb3J0cy5oYW5kbGVyID0gYXN5bmMgKCkgPT4ge1xuICAgICAgICByZXR1cm4ge1xuICAgICAgICAgIHN0YXR1c0NvZGU6ICcyMDAnLFxuICAgICAgICAgIGJvZHk6ICdoZWxsbywgd29ybGQhJ1xuICAgICAgICB9O1xuICAgICAgfTtgKSxcbiAgcnVudGltZTogUnVudGltZS5OT0RFSlNfMTRfWCxcbiAgaGFuZGxlcjogJ2luZGV4LmhhbmRsZXInLFxufSk7XG5cbmNvbnN0IHN1Ym1pdEpvYiA9IG5ldyBzZm4uVGFzayhzdGFjaywgJ0ludm9rZSBIYW5kbGVyJywge1xuICB0YXNrOiBuZXcgdGFza3MuUnVuTGFtYmRhVGFzayhzdWJtaXRKb2JMYW1iZGEpLFxuICBvdXRwdXRQYXRoOiAnJC5QYXlsb2FkJyxcbn0pO1xuXG5jb25zdCBjaGVja0pvYlN0YXRlTGFtYmRhID0gbmV3IEZ1bmN0aW9uKHN0YWNrLCAnY2hlY2tKb2JTdGF0ZUxhbWJkYScsIHtcbiAgY29kZTogQ29kZS5mcm9tSW5saW5lKGBleHBvcnRzLmhhbmRsZXIgPSBhc3luYyBmdW5jdGlvbihldmVudCwgY29udGV4dCkge1xuICAgICAgICByZXR1cm4ge1xuICAgICAgICAgIHN0YXR1czogZXZlbnQuc3RhdHVzQ29kZSA9PT0gJzIwMCcgPyAnU1VDQ0VFREVEJyA6ICdGQUlMRUQnXG4gICAgICAgIH07XG4gIH07YCksXG4gIHJ1bnRpbWU6IFJ1bnRpbWUuTk9ERUpTXzE0X1gsXG4gIGhhbmRsZXI6ICdpbmRleC5oYW5kbGVyJyxcbn0pO1xuXG5jb25zdCBjaGVja0pvYlN0YXRlID0gbmV3IHNmbi5UYXNrKHN0YWNrLCAnQ2hlY2sgdGhlIGpvYiBzdGF0ZScsIHtcbiAgdGFzazogbmV3IHRhc2tzLlJ1bkxhbWJkYVRhc2soY2hlY2tKb2JTdGF0ZUxhbWJkYSksXG4gIG91dHB1dFBhdGg6ICckLlBheWxvYWQnLFxufSk7XG5cbmNvbnN0IGlzQ29tcGxldGUgPSBuZXcgc2ZuLkNob2ljZShzdGFjaywgJ0pvYiBDb21wbGV0ZT8nKTtcbmNvbnN0IGpvYkZhaWxlZCA9IG5ldyBzZm4uRmFpbChzdGFjaywgJ0pvYiBGYWlsZWQnLCB7XG4gIGNhdXNlOiAnSm9iIEZhaWxlZCcsXG4gIGVycm9yOiAnUmVjZWl2ZWQgYSBzdGF0dXMgdGhhdCB3YXMgbm90IDIwMCcsXG59KTtcbmNvbnN0IGZpbmFsU3RhdHVzID0gbmV3IHNmbi5QYXNzKHN0YWNrLCAnRmluYWwgc3RlcCcpO1xuXG5jb25zdCBjaGFpbiA9IHNmbi5DaGFpbi5zdGFydChzdWJtaXRKb2IpXG4gIC5uZXh0KGNoZWNrSm9iU3RhdGUpXG4gIC5uZXh0KFxuICAgIGlzQ29tcGxldGVcbiAgICAgIC53aGVuKHNmbi5Db25kaXRpb24uc3RyaW5nRXF1YWxzKCckLnN0YXR1cycsICdGQUlMRUQnKSwgam9iRmFpbGVkKVxuICAgICAgLndoZW4oc2ZuLkNvbmRpdGlvbi5zdHJpbmdFcXVhbHMoJyQuc3RhdHVzJywgJ1NVQ0NFRURFRCcpLCBmaW5hbFN0YXR1cyksXG4gICk7XG5cbm5ldyBzZm4uU3RhdGVNYWNoaW5lKHN0YWNrLCAnU3RhdGVNYWNoaW5lJywge1xuICBkZWZpbml0aW9uOiBjaGFpbixcbiAgdGltZW91dDogY2RrLkR1cmF0aW9uLnNlY29uZHMoMzApLFxufSk7XG5cbmFwcC5zeW50aCgpO1xuIl19

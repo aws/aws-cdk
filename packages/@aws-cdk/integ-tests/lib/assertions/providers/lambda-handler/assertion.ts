@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Match, Matcher } from '@aws-cdk/assertions/lib/helpers-internal';
+import { Match, Matcher } from 'aws-cdk-lib/assertions/lib/helpers-internal';
 import { CustomResourceHandler } from './base';
 import { AssertionResult, AssertionRequest } from './types';
 

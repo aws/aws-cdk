@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/aws-location",
+  "name": "@aws-cdk/aws-location-alpha",
   "version": "0.0.0",
   "description": "The CDK Construct Library for AWS::Location",
   "main": "lib/index.js",
@@ -9,17 +9,17 @@
     "projectReferences": true,
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Location",
-        "packageId": "Amazon.CDK.AWS.Location",
+        "namespace": "Amazon.CDK.AWS.Location.Alpha",
+        "packageId": "Amazon.CDK.AWS.Location.Alpha",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.location",
+        "package": "software.amazon.awscdk.services.location.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "location"
+          "artifactId": "location-alpha"
         }
       },
       "python": {
@@ -27,8 +27,12 @@
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ],
-        "distName": "aws-cdk.aws-location",
-        "module": "aws_cdk.aws_location"
+        "distName": "aws-cdk.aws-location-alpha",
+        "module": "aws_cdk.aws_location_alpha"
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdklocationalpha"
       }
     },
     "metadata": {
@@ -54,17 +58,14 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat",
-    "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Location",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": "true"
     }
@@ -83,22 +84,18 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
-    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.2"
+    "@types/jest": "^27.5.2",
+    "aws-cdk-lib": "0.0.0",
+    "constructs": "^10.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0"
   },
-  "dependencies": {
-    "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "constructs": "^10.0.0"
-  },
+  "dependencies": {},
   "peerDependencies": {
-    "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -110,7 +107,18 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
   },
-  "private": true
+  "private": false,
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
+  }
 }

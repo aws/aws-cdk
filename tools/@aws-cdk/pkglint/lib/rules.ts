@@ -1719,46 +1719,6 @@ export class NoExperimentalDependents extends ValidationRule {
 
 }
 
-/*
- * Enforces that the aws-cdk-lib README contains all of the core documentation from the @aws-cdk/core README
- * so users of CDKv2 see all of the core documentation when viewing the aws-cdk-lib docs.
- */
-export class AwsCdkLibReadmeMatchesCore extends ValidationRule {
-  public readonly name = 'package-info/README.md/aws-cdk-lib-and-core';
-  private readonly CORE_DOC_SECTION_REGEX = /<\!--BEGIN CORE DOCUMENTATION-->[\s\S]+<\!--END CORE DOCUMENTATION-->/m;
-
-  public validate(pkg: PackageJson): void {
-    if (pkg.json.name !== 'aws-cdk-lib') { return; }
-
-    const coreReadmeFile = path.join(monoRepoRoot(), 'packages', '@aws-cdk', 'core', 'README.md');
-    const readmeFile = path.join(pkg.packageRoot, 'README.md');
-
-    const awsCoreMatch = fs.readFileSync(coreReadmeFile, { encoding: 'utf8' }).match(this.CORE_DOC_SECTION_REGEX);
-    const awsCdkLibReadme = fs.readFileSync(readmeFile, { encoding: 'utf8' });
-    const awsCdkLibMatch = awsCdkLibReadme.match(this.CORE_DOC_SECTION_REGEX);
-
-    const missingSectionMsg = '@aws-cdk/core and aws-cdk-lib READMEs must include section markers (<!--BEGIN/END CORE DOCUMENTATION-->) to define what content should be shared between them';
-    if (!awsCoreMatch) {
-      pkg.report({
-        ruleName: this.name,
-        message: missingSectionMsg,
-      });
-    } else if (!awsCdkLibMatch) {
-      pkg.report({
-        ruleName: this.name,
-        message: missingSectionMsg,
-        fix: () => fs.writeFileSync(readmeFile, [awsCdkLibReadme, awsCoreMatch[0]].join('\n')),
-      });
-    } else if (awsCoreMatch[0] !== awsCdkLibMatch[0]) {
-      pkg.report({
-        ruleName: this.name,
-        message: 'aws-cdk-lib README does not include a core documentation section that matches @aws-cdk/core',
-        fix: () => fs.writeFileSync(readmeFile, awsCdkLibMatch.input!.replace(this.CORE_DOC_SECTION_REGEX, awsCoreMatch[0])),
-      });
-    }
-  }
-}
-
 /**
  * Enforces that the aws-cdk's package.json on the V2 branch does not have the "main"
  * and "types" keys filled.

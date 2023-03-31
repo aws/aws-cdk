@@ -1,7 +1,7 @@
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as codestar from './codestar.generated';
+import * as codestar from 'aws-cdk-lib/aws-codestar';
 
 /**
  * GitHubRepository resource interface

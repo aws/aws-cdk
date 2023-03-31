@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { Template } from '@aws-cdk/assertions';
-import { Runtime } from '@aws-cdk/aws-lambda';
-import { Stack } from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Stack } from 'aws-cdk-lib';
 import { GoFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
 

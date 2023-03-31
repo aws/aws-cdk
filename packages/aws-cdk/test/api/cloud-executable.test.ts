@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import { DefaultSelection } from '../../lib/api/cxapp/cloud-assembly';

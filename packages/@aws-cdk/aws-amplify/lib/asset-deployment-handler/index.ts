@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { IsCompleteResponse } from '@aws-cdk/custom-resources/lib/provider-framework/types';
+import { IsCompleteResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 // aws-sdk available at runtime for lambdas
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { Amplify, S3, config } from 'aws-sdk';

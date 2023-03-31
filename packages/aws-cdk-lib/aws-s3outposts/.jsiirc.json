@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.S3Outposts"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.s3outposts"
+    },
+    "python": {
+      "module": "aws_cdk.aws_s3outposts"
+    }
+  }
+}

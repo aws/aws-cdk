@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { realHandler } from '../../lib/commands/context';
 import { Configuration, Settings, Context } from '../../lib/settings';
 

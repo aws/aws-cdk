@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.dax"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.DAX"
+    },
+    "python": {
+      "module": "aws_cdk.aws_dax"
+    }
+  }
+}

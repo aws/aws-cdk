@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { toYAML } from '../lib/serialize';
 
 describe(toYAML, () => {

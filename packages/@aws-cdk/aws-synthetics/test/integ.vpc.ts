@@ -1,8 +1,8 @@
 /// !cdk-integ canary-vpc
 
 import * as path from 'path';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
 import * as synthetics from '../lib';
 
 /*

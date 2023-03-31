@@ -1,0 +1,41 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const ec2 = require("aws-cdk-lib/aws-ec2");
+const cdk = require("aws-cdk-lib");
+const ecs = require("aws-cdk-lib/aws-ecs");
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-ecs-integ');
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2 });
+const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
+const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
+    memoryLimitMiB: 1024,
+    cpu: 512,
+});
+// new container with firelens log driver, firelens log router will be created automatically.
+const container = taskDefinition.addContainer('nginx', {
+    image: ecs.ContainerImage.fromRegistry('nginx'),
+    logging: ecs.LogDrivers.firelens({
+        options: {
+            Name: 'cloudwatch',
+            region: stack.region,
+            log_group_name: 'ecs-integ-test',
+            auto_create_group: 'true',
+            log_stream_prefix: 'nginx',
+        },
+    }),
+});
+container.addPortMappings({
+    containerPort: 80,
+    protocol: ecs.Protocol.TCP,
+});
+// Create a security group that allows tcp @ port 80
+const securityGroup = new ec2.SecurityGroup(stack, 'websvc-sg', { vpc });
+securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80));
+new ecs.FargateService(stack, 'Service', {
+    cluster,
+    taskDefinition,
+    securityGroup,
+    assignPublicIp: true,
+});
+app.synth();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuZmlyZWxlbnMtY2xvdWR3YXRjaC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImludGVnLmZpcmVsZW5zLWNsb3Vkd2F0Y2gudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSwyQ0FBMkM7QUFDM0MsbUNBQW1DO0FBQ25DLDJDQUEyQztBQUUzQyxNQUFNLEdBQUcsR0FBRyxJQUFJLEdBQUcsQ0FBQyxHQUFHLEVBQUUsQ0FBQztBQUMxQixNQUFNLEtBQUssR0FBRyxJQUFJLEdBQUcsQ0FBQyxLQUFLLENBQUMsR0FBRyxFQUFFLGVBQWUsQ0FBQyxDQUFDO0FBQ2xELE1BQU0sR0FBRyxHQUFHLElBQUksR0FBRyxDQUFDLEdBQUcsQ0FBQyxLQUFLLEVBQUUsS0FBSyxFQUFFLEVBQUUsTUFBTSxFQUFFLENBQUMsRUFBRSxDQUFDLENBQUM7QUFDckQsTUFBTSxPQUFPLEdBQUcsSUFBSSxHQUFHLENBQUMsT0FBTyxDQUFDLEtBQUssRUFBRSxnQkFBZ0IsRUFBRSxFQUFFLEdBQUcsRUFBRSxDQUFDLENBQUM7QUFFbEUsTUFBTSxjQUFjLEdBQUcsSUFBSSxHQUFHLENBQUMscUJBQXFCLENBQUMsS0FBSyxFQUFFLFNBQVMsRUFBRTtJQUNyRSxjQUFjLEVBQUUsSUFBSTtJQUNwQixHQUFHLEVBQUUsR0FBRztDQUNULENBQUMsQ0FBQztBQUVILDZGQUE2RjtBQUM3RixNQUFNLFNBQVMsR0FBRyxjQUFjLENBQUMsWUFBWSxDQUFDLE9BQU8sRUFBRTtJQUNyRCxLQUFLLEVBQUUsR0FBRyxDQUFDLGNBQWMsQ0FBQyxZQUFZLENBQUMsT0FBTyxDQUFDO0lBQy9DLE9BQU8sRUFBRSxHQUFHLENBQUMsVUFBVSxDQUFDLFFBQVEsQ0FBQztRQUMvQixPQUFPLEVBQUU7WUFDUCxJQUFJLEVBQUUsWUFBWTtZQUNsQixNQUFNLEVBQUUsS0FBSyxDQUFDLE1BQU07WUFDcEIsY0FBYyxFQUFFLGdCQUFnQjtZQUNoQyxpQkFBaUIsRUFBRSxNQUFNO1lBQ3pCLGlCQUFpQixFQUFFLE9BQU87U0FDM0I7S0FDRixDQUFDO0NBQ0gsQ0FBQyxDQUFDO0FBRUgsU0FBUyxDQUFDLGVBQWUsQ0FBQztJQUN4QixhQUFhLEVBQUUsRUFBRTtJQUNqQixRQUFRLEVBQUUsR0FBRyxDQUFDLFFBQVEsQ0FBQyxHQUFHO0NBQzNCLENBQUMsQ0FBQztBQUVILG9EQUFvRDtBQUNwRCxNQUFNLGFBQWEsR0FBRyxJQUFJLEdBQUcsQ0FBQyxhQUFhLENBQUMsS0FBSyxFQUFFLFdBQVcsRUFBRSxFQUFFLEdBQUcsRUFBRSxDQUFDLENBQUM7QUFDekUsYUFBYSxDQUFDLGNBQWMsQ0FBQyxHQUFHLENBQUMsSUFBSSxDQUFDLE9BQU8sRUFBRSxFQUFFLEdBQUcsQ0FBQyxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyxDQUFDLENBQUM7QUFDbkUsSUFBSSxHQUFHLENBQUMsY0FBYyxDQUFDLEtBQUssRUFBRSxTQUFTLEVBQUU7SUFDdkMsT0FBTztJQUNQLGNBQWM7SUFDZCxhQUFhO0lBQ2IsY0FBYyxFQUFFLElBQUk7Q0FDckIsQ0FBQyxDQUFDO0FBRUgsR0FBRyxDQUFDLEtBQUssRUFBRSxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICogYXMgZWMyIGZyb20gJ2F3cy1jZGstbGliL2F3cy1lYzInO1xuaW1wb3J0ICogYXMgY2RrIGZyb20gJ2F3cy1jZGstbGliJztcbmltcG9ydCAqIGFzIGVjcyBmcm9tICdhd3MtY2RrLWxpYi9hd3MtZWNzJztcblxuY29uc3QgYXBwID0gbmV3IGNkay5BcHAoKTtcbmNvbnN0IHN0YWNrID0gbmV3IGNkay5TdGFjayhhcHAsICdhd3MtZWNzLWludGVnJyk7XG5jb25zdCB2cGMgPSBuZXcgZWMyLlZwYyhzdGFjaywgJ1ZwYycsIHsgbWF4QXpzOiAyIH0pO1xuY29uc3QgY2x1c3RlciA9IG5ldyBlY3MuQ2x1c3RlcihzdGFjaywgJ0ZhcmdhdGVDbHVzdGVyJywgeyB2cGMgfSk7XG5cbmNvbnN0IHRhc2tEZWZpbml0aW9uID0gbmV3IGVjcy5GYXJnYXRlVGFza0RlZmluaXRpb24oc3RhY2ssICdUYXNrRGVmJywge1xuICBtZW1vcnlMaW1pdE1pQjogMTAyNCxcbiAgY3B1OiA1MTIsXG59KTtcblxuLy8gbmV3IGNvbnRhaW5lciB3aXRoIGZpcmVsZW5zIGxvZyBkcml2ZXIsIGZpcmVsZW5zIGxvZyByb3V0ZXIgd2lsbCBiZSBjcmVhdGVkIGF1dG9tYXRpY2FsbHkuXG5jb25zdCBjb250YWluZXIgPSB0YXNrRGVmaW5pdGlvbi5hZGRDb250YWluZXIoJ25naW54Jywge1xuICBpbWFnZTogZWNzLkNvbnRhaW5lckltYWdlLmZyb21SZWdpc3RyeSgnbmdpbngnKSxcbiAgbG9nZ2luZzogZWNzLkxvZ0RyaXZlcnMuZmlyZWxlbnMoe1xuICAgIG9wdGlvbnM6IHtcbiAgICAgIE5hbWU6ICdjbG91ZHdhdGNoJyxcbiAgICAgIHJlZ2lvbjogc3RhY2sucmVnaW9uLFxuICAgICAgbG9nX2dyb3VwX25hbWU6ICdlY3MtaW50ZWctdGVzdCcsXG4gICAgICBhdXRvX2NyZWF0ZV9ncm91cDogJ3RydWUnLFxuICAgICAgbG9nX3N0cmVhbV9wcmVmaXg6ICduZ2lueCcsXG4gICAgfSxcbiAgfSksXG59KTtcblxuY29udGFpbmVyLmFkZFBvcnRNYXBwaW5ncyh7XG4gIGNvbnRhaW5lclBvcnQ6IDgwLFxuICBwcm90b2NvbDogZWNzLlByb3RvY29sLlRDUCxcbn0pO1xuXG4vLyBDcmVhdGUgYSBzZWN1cml0eSBncm91cCB0aGF0IGFsbG93cyB0Y3AgQCBwb3J0IDgwXG5jb25zdCBzZWN1cml0eUdyb3VwID0gbmV3IGVjMi5TZWN1cml0eUdyb3VwKHN0YWNrLCAnd2Vic3ZjLXNnJywgeyB2cGMgfSk7XG5zZWN1cml0eUdyb3VwLmFkZEluZ3Jlc3NSdWxlKGVjMi5QZWVyLmFueUlwdjQoKSwgZWMyLlBvcnQudGNwKDgwKSk7XG5uZXcgZWNzLkZhcmdhdGVTZXJ2aWNlKHN0YWNrLCAnU2VydmljZScsIHtcbiAgY2x1c3RlcixcbiAgdGFza0RlZmluaXRpb24sXG4gIHNlY3VyaXR5R3JvdXAsXG4gIGFzc2lnblB1YmxpY0lwOiB0cnVlLFxufSk7XG5cbmFwcC5zeW50aCgpO1xuIl19

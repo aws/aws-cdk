@@ -1,8 +1,8 @@
-import { Match, Template } from '@aws-cdk/assertions';
-import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import { Metric } from '@aws-cdk/aws-cloudwatch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import { Duration, Stack } from '@aws-cdk/core';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { Metric } from 'aws-cdk-lib/aws-cloudwatch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { Duration, Stack } from 'aws-cdk-lib';
 import {
   CorsHttpMethod, DomainName,
   HttpApi, HttpAuthorizer, HttpIntegrationType, HttpMethod, HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig,

@@ -33,3 +33,6 @@ junit.xml
 
 # exclude source maps as they only work locally
 *.map
+
+# Nested node_modules
+aws-certificatemanager/lambda-packages/dns_validated_certificate_handler/node_modules

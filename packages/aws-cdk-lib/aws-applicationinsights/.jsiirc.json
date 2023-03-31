@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ApplicationInsights"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.applicationinsights"
+    },
+    "python": {
+      "module": "aws_cdk.aws_applicationinsights"
+    }
+  }
+}

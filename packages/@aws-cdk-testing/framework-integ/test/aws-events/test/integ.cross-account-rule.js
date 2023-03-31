@@ -1,0 +1,83 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/// !cdk-integ *
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+const integ_tests_alpha_1 = require("@aws-cdk/integ-tests-alpha");
+const aws_events_1 = require("aws-cdk-lib/aws-events");
+/**
+ * Basic idea for this test is to create an EventBridge that "connects"
+ *  an SQS queue in one account to another account. Nothing is sent on the
+ *  queue, it's just used to set up the condition where aws-events creates
+ *  a support stack.
+ */
+const app = new aws_cdk_lib_1.App();
+const account = process.env.CDK_INTEG_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT;
+// As the integ-runner doesnt provide a default cross account, we make our own.
+const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '987654321';
+const region = process.env.CDK_INTEG_REGION || process.env.CDK_DEFAULT_REGION;
+const fromCrossAccountStack = new aws_cdk_lib_1.Stack(app, 'FromCrossAccountRuleStack', {
+    env: {
+        account: crossAccount,
+        region,
+    },
+});
+/**
+ * To make this testable, we need to have the stack that stores the event bridge be in
+ *  the same account that the IntegTest stack is deployed into. Otherwise, we have no
+ *  access to the IAM policy that the EventBusPolicy-account-region support stack creates.
+ */
+const toCrossAccountStack = new aws_cdk_lib_1.Stack(app, 'ToCrossAccountRuleStack', {
+    env: {
+        account,
+        region,
+    },
+});
+const queueName = 'IntegTestCrossEnvRule';
+const queue = new aws_cdk_lib_1.CfnResource(toCrossAccountStack, 'Queue', {
+    type: 'AWS::SQS::Queue',
+    properties: {
+        QueueName: queueName,
+        ReceiveMessageWaitTimeSeconds: 20,
+    },
+});
+const target = {
+    bind: () => ({
+        id: 'SQS',
+        arn: aws_cdk_lib_1.Arn.format({
+            resource: queueName,
+            service: 'sqs',
+        }, toCrossAccountStack),
+        targetResource: queue,
+    }),
+};
+new aws_events_1.Rule(fromCrossAccountStack, 'MyRule', {
+    eventPattern: {
+        detail: {
+            foo: ['bar'],
+        },
+        detailType: ['cdk-integ-custom-rule'],
+        source: ['cdk-integ'],
+    },
+    targets: [target],
+});
+toCrossAccountStack.addDependency(fromCrossAccountStack);
+const integ = new integ_tests_alpha_1.IntegTest(app, 'CrossAccountDeploy', {
+    testCases: [
+        toCrossAccountStack,
+    ],
+});
+// We are using the default event bus, don't need to define any parameters for this call.
+const eventVerification = integ.assertions.awsApiCall('EventBridge', 'describeEventBus');
+integ.node.addDependency(toCrossAccountStack);
+eventVerification.provider.addPolicyStatementFromSdkCall('events', 'DescribeEventBus');
+// IAM policy will be created by the support stack, assert that everything created as expected.
+eventVerification.assertAtPath('Policy', integ_tests_alpha_1.ExpectedResult.objectLike({
+    Statement: integ_tests_alpha_1.Match.arrayWith([integ_tests_alpha_1.Match.objectLike({
+            Sid: integ_tests_alpha_1.Match.stringLikeRegexp(`Allow-account-${crossAccount}`),
+            Principal: {
+                AWS: `arn:aws:iam::${crossAccount}:root`,
+            },
+            Resource: integ_tests_alpha_1.Match.stringLikeRegexp(`arn:aws:events:us-east-1:${account}`),
+        })]),
+}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuY3Jvc3MtYWNjb3VudC1ydWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiaW50ZWcuY3Jvc3MtYWNjb3VudC1ydWxlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsZ0JBQWdCO0FBQ2hCLDZDQUEyRDtBQUMzRCxrRUFBOEU7QUFDOUUsdURBQTJEO0FBRTNEOzs7OztHQUtHO0FBRUgsTUFBTSxHQUFHLEdBQUcsSUFBSSxpQkFBRyxFQUFFLENBQUM7QUFFdEIsTUFBTSxPQUFPLEdBQUcsT0FBTyxDQUFDLEdBQUcsQ0FBQyxpQkFBaUIsSUFBSSxPQUFPLENBQUMsR0FBRyxDQUFDLG1CQUFtQixDQUFDO0FBRWpGLCtFQUErRTtBQUMvRSxNQUFNLFlBQVksR0FBRyxPQUFPLENBQUMsR0FBRyxDQUFDLHVCQUF1QixJQUFJLFdBQVcsQ0FBQztBQUN4RSxNQUFNLE1BQU0sR0FBRyxPQUFPLENBQUMsR0FBRyxDQUFDLGdCQUFnQixJQUFJLE9BQU8sQ0FBQyxHQUFHLENBQUMsa0JBQWtCLENBQUM7QUFFOUUsTUFBTSxxQkFBcUIsR0FBRyxJQUFJLG1CQUFLLENBQUMsR0FBRyxFQUFFLDJCQUEyQixFQUFFO0lBQ3hFLEdBQUcsRUFBRTtRQUNILE9BQU8sRUFBRSxZQUFZO1FBQ3JCLE1BQU07S0FDUDtDQUNGLENBQUMsQ0FBQztBQUVIOzs7O0dBSUc7QUFDSCxNQUFNLG1CQUFtQixHQUFHLElBQUksbUJBQUssQ0FBQyxHQUFHLEVBQUUseUJBQXlCLEVBQUU7SUFDcEUsR0FBRyxFQUFFO1FBQ0gsT0FBTztRQUNQLE1BQU07S0FDUDtDQUNGLENBQUMsQ0FBQztBQUNILE1BQU0sU0FBUyxHQUFHLHVCQUF1QixDQUFDO0FBRTFDLE1BQU0sS0FBSyxHQUFHLElBQUkseUJBQVcsQ0FBQyxtQkFBbUIsRUFBRSxPQUFPLEVBQUU7SUFDMUQsSUFBSSxFQUFFLGlCQUFpQjtJQUN2QixVQUFVLEVBQUU7UUFDVixTQUFTLEVBQUUsU0FBUztRQUNwQiw2QkFBNkIsRUFBRSxFQUFFO0tBQ2xDO0NBQ0YsQ0FBQyxDQUFDO0FBRUgsTUFBTSxNQUFNLEdBQWdCO0lBQzFCLElBQUksRUFBRSxHQUFHLEVBQUUsQ0FBQyxDQUFDO1FBQ1gsRUFBRSxFQUFFLEtBQUs7UUFDVCxHQUFHLEVBQUUsaUJBQUcsQ0FBQyxNQUFNLENBQUM7WUFDZCxRQUFRLEVBQUUsU0FBUztZQUNuQixPQUFPLEVBQUUsS0FBSztTQUNmLEVBQUUsbUJBQW1CLENBQUM7UUFDdkIsY0FBYyxFQUFFLEtBQUs7S0FDdEIsQ0FBQztDQUNILENBQUM7QUFFRixJQUFJLGlCQUFJLENBQUMscUJBQXFCLEVBQUUsUUFBUSxFQUFFO0lBQ3hDLFlBQVksRUFBRTtRQUNaLE1BQU0sRUFBRTtZQUNOLEdBQUcsRUFBRSxDQUFDLEtBQUssQ0FBQztTQUNiO1FBQ0QsVUFBVSxFQUFFLENBQUMsdUJBQXVCLENBQUM7UUFDckMsTUFBTSxFQUFFLENBQUMsV0FBVyxDQUFDO0tBQ3RCO0lBQ0QsT0FBTyxFQUFFLENBQUMsTUFBTSxDQUFDO0NBQ2xCLENBQUMsQ0FBQztBQUVILG1CQUFtQixDQUFDLGFBQWEsQ0FBQyxxQkFBcUIsQ0FBQyxDQUFDO0FBRXpELE1BQU0sS0FBSyxHQUFHLElBQUksNkJBQVMsQ0FBQyxHQUFHLEVBQUUsb0JBQW9CLEVBQUU7SUFDckQsU0FBUyxFQUFFO1FBQ1QsbUJBQW1CO0tBQ3BCO0NBQ0YsQ0FBQyxDQUFDO0FBRUgseUZBQXlGO0FBQ3pGLE1BQU0saUJBQWlCLEdBQUcsS0FBSyxDQUFDLFVBQVUsQ0FBQyxVQUFVLENBQUMsYUFBYSxFQUFFLGtCQUFrQixDQUFDLENBQUM7QUFFekYsS0FBSyxDQUFDLElBQUksQ0FBQyxhQUFhLENBQUMsbUJBQW1CLENBQUMsQ0FBQztBQUU5QyxpQkFBaUIsQ0FBQyxRQUFRLENBQUMsNkJBQTZCLENBQUMsUUFBUSxFQUFFLGtCQUFrQixDQUFDLENBQUM7QUFFdkYsK0ZBQStGO0FBQy9GLGlCQUFpQixDQUFDLFlBQVksQ0FBQyxRQUFRLEVBQUUsa0NBQWMsQ0FBQyxVQUFVLENBQUM7SUFDakUsU0FBUyxFQUFFLHlCQUFLLENBQUMsU0FBUyxDQUN4QixDQUFDLHlCQUFLLENBQUMsVUFBVSxDQUFDO1lBQ2hCLEdBQUcsRUFBRSx5QkFBSyxDQUFDLGdCQUFnQixDQUFDLGlCQUFpQixZQUFZLEVBQUUsQ0FBQztZQUM1RCxTQUFTLEVBQUU7Z0JBQ1QsR0FBRyxFQUFFLGdCQUFnQixZQUFZLE9BQU87YUFDekM7WUFDRCxRQUFRLEVBQUUseUJBQUssQ0FBQyxnQkFBZ0IsQ0FBQyw0QkFBNEIsT0FBTyxFQUFFLENBQUM7U0FDeEUsQ0FBQyxDQUFDLENBQ0o7Q0FDRixDQUFDLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8vLyAhY2RrLWludGVnICpcbmltcG9ydCB7IEFwcCwgQXJuLCBDZm5SZXNvdXJjZSwgU3RhY2sgfSBmcm9tICdhd3MtY2RrLWxpYic7XG5pbXBvcnQgeyBFeHBlY3RlZFJlc3VsdCwgSW50ZWdUZXN0LCBNYXRjaCB9IGZyb20gJ0Bhd3MtY2RrL2ludGVnLXRlc3RzLWFscGhhJztcbmltcG9ydCB7IFJ1bGUsIElSdWxlVGFyZ2V0IH0gZnJvbSAnYXdzLWNkay1saWIvYXdzLWV2ZW50cyc7XG5cbi8qKlxuICogQmFzaWMgaWRlYSBmb3IgdGhpcyB0ZXN0IGlzIHRvIGNyZWF0ZSBhbiBFdmVudEJyaWRnZSB0aGF0IFwiY29ubmVjdHNcIlxuICogIGFuIFNRUyBxdWV1ZSBpbiBvbmUgYWNjb3VudCB0byBhbm90aGVyIGFjY291bnQuIE5vdGhpbmcgaXMgc2VudCBvbiB0aGVcbiAqICBxdWV1ZSwgaXQncyBqdXN0IHVzZWQgdG8gc2V0IHVwIHRoZSBjb25kaXRpb24gd2hlcmUgYXdzLWV2ZW50cyBjcmVhdGVzXG4gKiAgYSBzdXBwb3J0IHN0YWNrLlxuICovXG5cbmNvbnN0IGFwcCA9IG5ldyBBcHAoKTtcblxuY29uc3QgYWNjb3VudCA9IHByb2Nlc3MuZW52LkNES19JTlRFR19BQ0NPVU5UIHx8IHByb2Nlc3MuZW52LkNES19ERUZBVUxUX0FDQ09VTlQ7XG5cbi8vIEFzIHRoZSBpbnRlZy1ydW5uZXIgZG9lc250IHByb3ZpZGUgYSBkZWZhdWx0IGNyb3NzIGFjY291bnQsIHdlIG1ha2Ugb3VyIG93bi5cbmNvbnN0IGNyb3NzQWNjb3VudCA9IHByb2Nlc3MuZW52LkNES19JTlRFR19DUk9TU19BQ0NPVU5UIHx8ICc5ODc2NTQzMjEnO1xuY29uc3QgcmVnaW9uID0gcHJvY2Vzcy5lbnYuQ0RLX0lOVEVHX1JFR0lPTiB8fCBwcm9jZXNzLmVudi5DREtfREVGQVVMVF9SRUdJT047XG5cbmNvbnN0IGZyb21Dcm9zc0FjY291bnRTdGFjayA9IG5ldyBTdGFjayhhcHAsICdGcm9tQ3Jvc3NBY2NvdW50UnVsZVN0YWNrJywge1xuICBlbnY6IHtcbiAgICBhY2NvdW50OiBjcm9zc0FjY291bnQsXG4gICAgcmVnaW9uLFxuICB9LFxufSk7XG5cbi8qKlxuICogVG8gbWFrZSB0aGlzIHRlc3RhYmxlLCB3ZSBuZWVkIHRvIGhhdmUgdGhlIHN0YWNrIHRoYXQgc3RvcmVzIHRoZSBldmVudCBicmlkZ2UgYmUgaW5cbiAqICB0aGUgc2FtZSBhY2NvdW50IHRoYXQgdGhlIEludGVnVGVzdCBzdGFjayBpcyBkZXBsb3llZCBpbnRvLiBPdGhlcndpc2UsIHdlIGhhdmUgbm9cbiAqICBhY2Nlc3MgdG8gdGhlIElBTSBwb2xpY3kgdGhhdCB0aGUgRXZlbnRCdXNQb2xpY3ktYWNjb3VudC1yZWdpb24gc3VwcG9ydCBzdGFjayBjcmVhdGVzLlxuICovXG5jb25zdCB0b0Nyb3NzQWNjb3VudFN0YWNrID0gbmV3IFN0YWNrKGFwcCwgJ1RvQ3Jvc3NBY2NvdW50UnVsZVN0YWNrJywge1xuICBlbnY6IHtcbiAgICBhY2NvdW50LFxuICAgIHJlZ2lvbixcbiAgfSxcbn0pO1xuY29uc3QgcXVldWVOYW1lID0gJ0ludGVnVGVzdENyb3NzRW52UnVsZSc7XG5cbmNvbnN0IHF1ZXVlID0gbmV3IENmblJlc291cmNlKHRvQ3Jvc3NBY2NvdW50U3RhY2ssICdRdWV1ZScsIHtcbiAgdHlwZTogJ0FXUzo6U1FTOjpRdWV1ZScsXG4gIHByb3BlcnRpZXM6IHtcbiAgICBRdWV1ZU5hbWU6IHF1ZXVlTmFtZSxcbiAgICBSZWNlaXZlTWVzc2FnZVdhaXRUaW1lU2Vjb25kczogMjAsXG4gIH0sXG59KTtcblxuY29uc3QgdGFyZ2V0OiBJUnVsZVRhcmdldCA9IHtcbiAgYmluZDogKCkgPT4gKHtcbiAgICBpZDogJ1NRUycsXG4gICAgYXJuOiBBcm4uZm9ybWF0KHtcbiAgICAgIHJlc291cmNlOiBxdWV1ZU5hbWUsXG4gICAgICBzZXJ2aWNlOiAnc3FzJyxcbiAgICB9LCB0b0Nyb3NzQWNjb3VudFN0YWNrKSxcbiAgICB0YXJnZXRSZXNvdXJjZTogcXVldWUsXG4gIH0pLFxufTtcblxubmV3IFJ1bGUoZnJvbUNyb3NzQWNjb3VudFN0YWNrLCAnTXlSdWxlJywge1xuICBldmVudFBhdHRlcm46IHtcbiAgICBkZXRhaWw6IHtcbiAgICAgIGZvbzogWydiYXInXSxcbiAgICB9LFxuICAgIGRldGFpbFR5cGU6IFsnY2RrLWludGVnLWN1c3RvbS1ydWxlJ10sXG4gICAgc291cmNlOiBbJ2Nkay1pbnRlZyddLFxuICB9LFxuICB0YXJnZXRzOiBbdGFyZ2V0XSxcbn0pO1xuXG50b0Nyb3NzQWNjb3VudFN0YWNrLmFkZERlcGVuZGVuY3koZnJvbUNyb3NzQWNjb3VudFN0YWNrKTtcblxuY29uc3QgaW50ZWcgPSBuZXcgSW50ZWdUZXN0KGFwcCwgJ0Nyb3NzQWNjb3VudERlcGxveScsIHtcbiAgdGVzdENhc2VzOiBbXG4gICAgdG9Dcm9zc0FjY291bnRTdGFjayxcbiAgXSxcbn0pO1xuXG4vLyBXZSBhcmUgdXNpbmcgdGhlIGRlZmF1bHQgZXZlbnQgYnVzLCBkb24ndCBuZWVkIHRvIGRlZmluZSBhbnkgcGFyYW1ldGVycyBmb3IgdGhpcyBjYWxsLlxuY29uc3QgZXZlbnRWZXJpZmljYXRpb24gPSBpbnRlZy5hc3NlcnRpb25zLmF3c0FwaUNhbGwoJ0V2ZW50QnJpZGdlJywgJ2Rlc2NyaWJlRXZlbnRCdXMnKTtcblxuaW50ZWcubm9kZS5hZGREZXBlbmRlbmN5KHRvQ3Jvc3NBY2NvdW50U3RhY2spO1xuXG5ldmVudFZlcmlmaWNhdGlvbi5wcm92aWRlci5hZGRQb2xpY3lTdGF0ZW1lbnRGcm9tU2RrQ2FsbCgnZXZlbnRzJywgJ0Rlc2NyaWJlRXZlbnRCdXMnKTtcblxuLy8gSUFNIHBvbGljeSB3aWxsIGJlIGNyZWF0ZWQgYnkgdGhlIHN1cHBvcnQgc3RhY2ssIGFzc2VydCB0aGF0IGV2ZXJ5dGhpbmcgY3JlYXRlZCBhcyBleHBlY3RlZC5cbmV2ZW50VmVyaWZpY2F0aW9uLmFzc2VydEF0UGF0aCgnUG9saWN5JywgRXhwZWN0ZWRSZXN1bHQub2JqZWN0TGlrZSh7XG4gIFN0YXRlbWVudDogTWF0Y2guYXJyYXlXaXRoKFxuICAgIFtNYXRjaC5vYmplY3RMaWtlKHtcbiAgICAgIFNpZDogTWF0Y2guc3RyaW5nTGlrZVJlZ2V4cChgQWxsb3ctYWNjb3VudC0ke2Nyb3NzQWNjb3VudH1gKSxcbiAgICAgIFByaW5jaXBhbDoge1xuICAgICAgICBBV1M6IGBhcm46YXdzOmlhbTo6JHtjcm9zc0FjY291bnR9OnJvb3RgLFxuICAgICAgfSxcbiAgICAgIFJlc291cmNlOiBNYXRjaC5zdHJpbmdMaWtlUmVnZXhwKGBhcm46YXdzOmV2ZW50czp1cy1lYXN0LTE6JHthY2NvdW50fWApLFxuICAgIH0pXSxcbiAgKSxcbn0pKTtcbiJdfQ==
