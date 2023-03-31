@@ -137,7 +137,7 @@ export interface EfsVolumeOptions extends EcsVolumeOptions {
    *
    * @default false
    */
-  readonly useJobDefinitionRole?: boolean;
+  readonly useJobRole?: boolean;
 }
 
 /**
@@ -205,7 +205,7 @@ export class EfsVolume extends EcsVolume {
    *
    * @default false
    */
-  public readonly useJobDefinitionRole?: boolean;
+  public readonly useJobRole?: boolean;
 
   constructor(options: EfsVolumeOptions) {
     super(options);
@@ -215,7 +215,7 @@ export class EfsVolume extends EcsVolume {
     this.enableTransitEncryption = options.enableTransitEncryption;
     this.transitEncryptionPort = options.transitEncryptionPort;
     this.accessPointId = options.accessPointId;
-    this.useJobDefinitionRole = options.useJobDefinitionRole;
+    this.useJobRole = options.useJobRole;
   }
 }
 
@@ -592,9 +592,9 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
                   rootDirectory: volume.rootDirectory,
                   transitEncryption: volume.enableTransitEncryption ? 'ENABLED' : (volume.enableTransitEncryption === false ? 'DISABLED' : undefined),
                   transitEncryptionPort: volume.transitEncryptionPort,
-                  authorizationConfig: volume.accessPointId || volume.useJobDefinitionRole ? {
+                  authorizationConfig: volume.accessPointId || volume.useJobRole ? {
                     accessPointId: volume.accessPointId,
-                    iam: volume.useJobDefinitionRole ? 'ENABLED' : (volume.useJobDefinitionRole === false ? 'DISABLED' : undefined),
+                    iam: volume.useJobRole ? 'ENABLED' : (volume.useJobRole === false ? 'DISABLED' : undefined),
                   } : undefined,
                 },
               };

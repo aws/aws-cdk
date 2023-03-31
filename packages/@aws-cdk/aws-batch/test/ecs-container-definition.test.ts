@@ -430,7 +430,7 @@ describe('ecs container', () => {
             rootDirectory: 'efsRootDir',
             enableTransitEncryption: true,
             transitEncryptionPort: 20181,
-            useJobDefinitionRole: true,
+            useJobRole: true,
           }),
           EcsVolume.efs({
             containerPath: '/second/path',
