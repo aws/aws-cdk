@@ -1,7 +1,7 @@
 // Fixture with packages imported, but nothing else
-import { Duration, Stack } from '@aws-cdk/core';
+import { Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as ivs from '@aws-cdk/aws-ivs';
+import * as ivs from '@aws-cdk/aws-ivs-alpha';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {

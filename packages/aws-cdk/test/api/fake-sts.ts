@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as nock from 'nock';
 import * as uuid from 'uuid';
 import * as xmlJs from 'xml-js';

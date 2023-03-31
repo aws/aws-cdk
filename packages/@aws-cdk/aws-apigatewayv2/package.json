@@ -1,7 +1,7 @@
 {
-  "name": "@aws-cdk/aws-apigatewayv2",
+  "name": "@aws-cdk/aws-apigatewayv2-alpha",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "description": "The CDK Construct Library for AWS::APIGatewayv2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,24 +13,28 @@
     },
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Apigatewayv2",
-        "packageId": "Amazon.CDK.AWS.APIGatewayv2",
+        "namespace": "Amazon.CDK.AWS.Apigatewayv2.Alpha",
+        "packageId": "Amazon.CDK.AWS.APIGatewayv2.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.apigatewayv2",
+        "package": "software.amazon.awscdk.services.apigatewayv2.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "apigatewayv2"
+          "artifactId": "apigatewayv2-alpha"
         }
       },
       "python": {
-        "distName": "aws-cdk.aws-apigatewayv2",
-        "module": "aws_cdk.aws_apigatewayv2",
+        "distName": "aws-cdk.aws-apigatewayv2-alpha",
+        "module": "aws_cdk.aws_apigatewayv2_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkapigatewayv2alpha"
       }
     },
     "projectReferences": true,
@@ -57,17 +61,14 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "watch": "cdk-watch",
-    "cfn2ts": "cfn2ts",
     "compat": "cdk-compat",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
-    "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::ApiGatewayV2",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
@@ -85,29 +86,17 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.2"
-  },
-  "dependencies": {
-    "@aws-cdk/aws-certificatemanager": "0.0.0",
-    "@aws-cdk/aws-cloudwatch": "0.0.0",
-    "@aws-cdk/aws-ec2": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "@types/jest": "^27.5.2",
+    "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0"
   },
+  "dependencies": {},
   "peerDependencies": {
-    "@aws-cdk/aws-certificatemanager": "0.0.0",
-    "@aws-cdk/aws-cloudwatch": "0.0.0",
-    "@aws-cdk/aws-ec2": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -115,16 +104,7 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-apigatewayv2.ApiMappingProps",
-      "from-method:@aws-cdk/aws-apigatewayv2.HttpIntegration",
-      "from-method:@aws-cdk/aws-apigatewayv2.HttpRoute",
-      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpIntegrationProps",
-      "props-physical-name:@aws-cdk/aws-apigatewayv2.HttpRouteProps",
-      "from-method:@aws-cdk/aws-apigatewayv2.WebSocketApi",
-      "from-method:@aws-cdk/aws-apigatewayv2.WebSocketIntegration",
-      "from-method:@aws-cdk/aws-apigatewayv2.WebSocketRoute",
-      "props-physical-name:@aws-cdk/aws-apigatewayv2.WebSocketIntegrationProps",
-      "props-physical-name:@aws-cdk/aws-apigatewayv2.WebSocketRouteProps"
+      "*:*"
     ]
   },
   "stability": "experimental",
@@ -144,5 +124,11 @@
   },
   "publishConfig": {
     "tag": "latest"
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
   }
 }

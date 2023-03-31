@@ -1,7 +1,7 @@
-import * as codecommit from '@aws-cdk/aws-codecommit';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import * as codecommit from 'aws-cdk-lib/aws-codecommit';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as constructs from 'constructs';
 import * as cloud9 from '../lib';
 import { ConnectionType } from '../lib';

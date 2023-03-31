@@ -1,8 +1,8 @@
 import {
   IUserPool,
   IUserPoolClient,
-} from '@aws-cdk/aws-cognito';
-import { Stack } from '@aws-cdk/core';
+} from 'aws-cdk-lib/aws-cognito';
+import { Stack } from 'aws-cdk-lib';
 import {
   Construct, Node,
 } from 'constructs';
