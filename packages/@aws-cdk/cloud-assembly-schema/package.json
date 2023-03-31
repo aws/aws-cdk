@@ -65,7 +65,7 @@
     "@types/jest": "^27.5.2",
     "@types/mock-fs": "^4.13.1",
     "@types/semver": "^7.3.13",
-    "jest": "^27.5.1",
+    "jest": "^29.5.0",
     "mock-fs": "^4.14.0",
     "typescript-json-schema": "^0.55.0"
   },
