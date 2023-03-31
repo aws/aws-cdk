@@ -27,7 +27,7 @@ export interface IEksJobDefinition extends IJobDefinition {
    * Otherwise, the Kubernetes pod networking model is enabled.
    * Most AWS Batch workloads are egress-only and don't require the overhead of IP allocation for each pod for incoming connections.
    *
-   * @default false
+   * @default true
    *
    * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#host-namespaces
    * @see https://kubernetes.io/docs/concepts/workloads/pods/#pod-networking
@@ -71,7 +71,7 @@ export interface EksJobDefinitionProps extends JobDefinitionProps {
    * Otherwise, the Kubernetes pod networking model is enabled.
    * Most AWS Batch workloads are egress-only and don't require the overhead of IP allocation for each pod for incoming connections.
    *
-   * @default false
+   * @default true
    *
    * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#host-namespaces
    * @see https://kubernetes.io/docs/concepts/workloads/pods/#pod-networking
