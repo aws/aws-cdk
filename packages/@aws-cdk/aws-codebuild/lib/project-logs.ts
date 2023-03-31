@@ -56,6 +56,13 @@ export interface CloudWatchLoggingOptions {
    * @default true
    */
   readonly enabled?: boolean;
+
+  /**
+   * Suppresses the automatic creation of an AWS::Logs::ResourcePolicy object triggered by agnostic environments.
+   *
+   * @default false
+   */
+  readonly suppressResourcePolicy?: boolean;
 }
 
 /**

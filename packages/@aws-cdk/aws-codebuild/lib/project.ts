@@ -1452,11 +1452,16 @@ export class Project extends ProjectBase {
     if (props.cloudWatch) {
       const cloudWatchLogs = props.cloudWatch;
       const status = (cloudWatchLogs.enabled ?? true) ? 'ENABLED' : 'DISABLED';
+      const suppressResourcePolicy = cloudWatchLogs.suppressResourcePolicy ?? false;
 
       if (status === 'ENABLED' && !(cloudWatchLogs.logGroup)) {
         throw new Error('Specifying a LogGroup is required if CloudWatch logging for CodeBuild is enabled');
       }
       cloudWatchLogs.logGroup?.grantWrite(this);
+
+      if ( suppressResourcePolicy ) {
+        cloudWatchLogs.logGroup?.node.tryRemoveChild('Policy'); // Remove the ResourceLogs policy created by the grantWrite() method.
+      }
 
       cloudwatchConfig = {
         status,
