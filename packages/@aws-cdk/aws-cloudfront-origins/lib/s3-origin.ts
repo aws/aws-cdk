@@ -4,6 +4,8 @@ import * as s3 from '@aws-cdk/aws-s3';
 import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { HttpOrigin } from './http-origin';
+// eslint-disable-next-line import/order
+import { DistributionPolicySetter } from '@aws-cdk/aws-cloudfront/lib/private/distribution-policy-setter';
 
 /**
  * Resource policy modification settings for S3 origins.
@@ -129,30 +131,30 @@ class S3BucketOrigin extends cloudfront.OriginBase {
 
   private bindOAC(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
     if (this.autoResourcePolicy != S3OriginAutoResourcePolicy.NONE) {
-      if (cdk.Stack.of(this.bucket) != cdk.Stack.of(scope)) {
-        // The bucket policy must be mangaed by the same stack as the CloudFront distribution.
-        // If we do not check for this, it will create a circular cross-stack dependency.
-        throw new Error('Cannot edit cross-stack bucket policy due to circular dependency, set autoResourcePolicy to false');
-      }
       const readonly = this.autoResourcePolicy == S3OriginAutoResourcePolicy.READ_ONLY;
       const dist = scope.node.scope as cloudfront.Distribution;
       const lazyDistArn = cdk.Lazy.string({ produce: () => dist.distributionArn });
-      const added = this.bucket.addToResourcePolicy(new iam.PolicyStatement({
-        principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
-        actions: readonly ? ['s3:GetObject'] : ['s3:GetObject', 's3:PutObject'],
-        resources: [this.bucket.arnForObjects('*')],
-        conditions: { StringEquals: { 'aws:SourceArn': lazyDistArn } },
-      }));
-      if (!added.statementAdded) {
-        throw new Error('Cannot edit non-CDK-managed policy on imported buckets, set autoResourcePolicy to false');
+      if (cdk.Stack.of(this.bucket) == cdk.Stack.of(scope)) {
+        // same stack - this "just works", the distribution does not depend on
+        // the resource policy (although it absolutely should, ideally)
+        const added = this.bucket.addToResourcePolicy(new iam.PolicyStatement({
+          principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
+          actions: readonly ? ['s3:GetObject'] : ['s3:GetObject', 's3:PutObject'],
+          resources: [this.bucket.arnForObjects('*')],
+          conditions: { StringEquals: { 'aws:SourceArn': lazyDistArn } },
+        }));
+        if (!added.statementAdded) {
+          throw new Error('Cannot apply autoResourcePolicy to imported buckets');
+        }
+      } else {
+        if (!DistributionPolicySetter.configureBucket(dist, this.bucket, !readonly)) {
+          throw new Error('Cannot apply autoResourcePolicy to imported buckets');
+        }
       }
-      // Buckets work because the bucket policies are only installed after the bucket
-      // is created, so the bucket policy can have a dependency on the distribution
-      // which depends on the bucket. But KMS keys need their policy at creation time,
-      // and there is no way to break the circular dependency with the distribution...
-      // unless we write a custom resource Lambda that modifies the key policy "later"?
       if (this.bucket.encryptionKey) {
-        throw new Error('Cannot edit KMS key policy due to circular dependency, set autoResourcePolicy to false');
+        if (!DistributionPolicySetter.configureKey(dist, this.bucket.encryptionKey, !readonly)) {
+          throw new Error('Cannot apply autoResourcePolicy to imported KMS keys');
+        }
       }
     }
     let oac = this.originAccessControl ?? true;
