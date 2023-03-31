@@ -12,6 +12,14 @@ interface IEcsJobDefinition extends IJobDefinition {
    * The container that this job will run
    */
   readonly container: IEcsContainerDefinition
+
+  /**
+   * Whether to propogate tags from the JobDefinition
+   * to the ECS task that Batch spawns
+   *
+   * @default false
+   */
+  readonly propagateTags?: boolean;
 }
 
 /**
@@ -30,6 +38,14 @@ export interface EcsJobDefinitionProps extends JobDefinitionProps {
    * The container that this job will run
    */
   readonly container: IEcsContainerDefinition
+
+  /**
+   * Whether to propogate tags from the JobDefinition
+   * to the ECS task that Batch spawns
+   *
+   * @default false
+   */
+  readonly propagateTags?: boolean;
 }
 
 /**
@@ -56,6 +72,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
   }
 
   readonly container: IEcsContainerDefinition
+  public readonly propagateTags?: boolean;
 
   public readonly jobDefinitionArn: string;
   public readonly jobDefinitionName: string;
@@ -64,6 +81,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
     super(scope, id, props);
 
     this.container = props.container;
+    this.propagateTags = props?.propagateTags;
 
     const resource = new CfnJobDefinition(this, 'Resource', {
       ...baseJobDefinitionProperties(this),
@@ -71,6 +89,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
       jobDefinitionName: props.jobDefinitionName,
       containerProperties: this.container?._renderContainerDefinition(),
       platformCapabilities: this.renderPlatformCapabilities(),
+      propagateTags: this.propagateTags,
     });
 
     this.jobDefinitionArn = this.getResourceArnAttribute(resource.ref, {

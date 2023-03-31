@@ -29,6 +29,14 @@ interface IMultiNodeJobDefinition extends IJobDefinition {
   readonly mainNode?: number;
 
   /**
+   * Whether to propogate tags from the JobDefinition
+   * to the ECS task that Batch spawns
+   *
+   * @default false
+   */
+  readonly propagateTags?: boolean;
+
+  /**
    * Add a container to this multinode job
    */
   addContainer(container: MultiNodeContainer): void;
@@ -84,6 +92,14 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
    * @default 0
    */
   readonly mainNode?: number;
+
+  /**
+   * Whether to propogate tags from the JobDefinition
+   * to the ECS task that Batch spawns
+   *
+   * @default false
+   */
+  readonly propagateTags?: boolean;
 }
 
 /**
@@ -111,6 +127,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   public readonly containers: MultiNodeContainer[];
   public readonly instanceType: ec2.InstanceType;
   public readonly mainNode?: number;
+  public readonly propagateTags?: boolean;
 
   public readonly jobDefinitionArn: string;
   public readonly jobDefinitionName: string;
@@ -121,11 +138,13 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     this.containers = props.containers ?? [];
     this.mainNode = props.mainNode;
     this.instanceType = props.instanceType;
+    this.propagateTags = props?.propagateTags;
 
     const resource = new CfnJobDefinition(this, 'Resource', {
       ...baseJobDefinitionProperties(this),
       type: 'multinode',
       jobDefinitionName: props.jobDefinitionName,
+      propagateTags: this.propagateTags,
       nodeProperties: {
         mainNode: this.mainNode ?? 0,
         nodeRangeProperties: Lazy.any({

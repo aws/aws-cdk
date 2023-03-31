@@ -106,6 +106,7 @@
                     "platformCapabilities": [
                       "EC2"
                     ],
+                    "propagateTags": true,
                     "retryStrategy": {},
                     "timeout": {}
                   }

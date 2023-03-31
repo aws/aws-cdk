@@ -18,6 +18,7 @@ new batch.MultiNodeJobDefinition(stack, 'SingleContainerMultiNodeJob', {
       memory: Size.mebibytes(2048),
     }),
   }],
+  propagateTags: true,
 });
 
 const multinodeJob = new batch.MultiNodeJobDefinition(stack, 'MultiContainerMultiNodeJob', {

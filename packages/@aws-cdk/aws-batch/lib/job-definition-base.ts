@@ -33,14 +33,6 @@ export interface IJobDefinition extends IResource {
   readonly parameters?: { [key:string]: any };
 
   /**
-   * Whether to propogate tags from the JobDefinition
-   * to the ECS task that Batch spawns
-   *
-   * @default false
-   */
-  readonly propagateTags?: boolean;
-
-  /**
    * The number of times to retry a job.
    * The job is retried on failure the same number of attempts as the value.
    *
@@ -101,14 +93,6 @@ export interface JobDefinitionProps {
    * @default none
    */
   readonly parameters?: { [key:string]: any };
-
-  /**
-   * Whether to propogate tags from the JobDefinition
-   * to the ECS task that Batch spawns
-   *
-   * @default false
-   */
-  readonly propagateTags?: boolean;
 
   /**
    * The number of times to retry a job.
@@ -257,7 +241,6 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
   public readonly abstract jobDefinitionName: string;
 
   public readonly parameters?: { [key:string]: any };
-  public readonly propagateTags?: boolean;
   public readonly retryAttempts?: number;
   public readonly retryStrategies: RetryStrategy[];
   public readonly schedulingPriority?: number;
@@ -269,7 +252,6 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
     });
 
     this.parameters = props?.parameters;
-    this.propagateTags = props?.propagateTags;
     this.retryAttempts = props?.retryAttempts;
     this.retryStrategies = props?.retryStrategies ?? [];
     this.schedulingPriority = props?.schedulingPriority;
@@ -287,7 +269,6 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
 export function baseJobDefinitionProperties(baseJobDefinition: JobDefinitionBase): CfnJobDefinitionProps {
   return {
     parameters: baseJobDefinition.parameters,
-    propagateTags: baseJobDefinition.propagateTags,
     retryStrategy: {
       attempts: baseJobDefinition.retryAttempts,
       evaluateOnExit: Lazy.any({

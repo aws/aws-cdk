@@ -55,6 +55,7 @@
     "PlatformCapabilities": [
      "EC2"
     ],
+    "PropagateTags": true,
     "RetryStrategy": {},
     "Timeout": {}
    }

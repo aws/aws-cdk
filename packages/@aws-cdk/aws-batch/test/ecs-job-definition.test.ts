@@ -4,6 +4,26 @@ import { Size, Stack } from '@aws-cdk/core';
 import { Compatibility, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition } from '../lib';
 
 
+test('EcsJobDefinition respects propagateTags', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new EcsJobDefinition(stack, 'JobDefn', {
+    propagateTags: true,
+    container: new EcsEc2ContainerDefinition(stack, 'EcsContainer', {
+      cpu: 256,
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memory: Size.mebibytes(2048),
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+    PropagateTags: true,
+  });
+});
+
 test('EcsJobDefinition uses Compatibility.EC2 for EC2 containers', () => {
   // GIVEN
   const stack = new Stack();

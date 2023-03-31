@@ -82,7 +82,7 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
 
   test('JobDefinition respects name', () => {
     // WHEN
-    new JobDefinition(stack, 'ECSJobDefn', {
+    new JobDefinition(stack, 'JobDefn', {
       ...defaultProps,
       jobDefinitionName: 'myEcsJob',
     });
@@ -96,7 +96,7 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
 
   test('JobDefinition respects parameters', () => {
     // WHEN
-    new JobDefinition(stack, 'ECSJobDefn', {
+    new JobDefinition(stack, 'JobDefn', {
       ...defaultProps,
       parameters: {
         foo: 'bar',
@@ -112,23 +112,9 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
     });
   });
 
-  test('JobDefinition respects propagateTags', () => {
-    // WHEN
-    new JobDefinition(stack, 'ECSJobDefn', {
-      ...defaultProps,
-      propagateTags: true,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
-      ...expectedProps,
-      PropagateTags: true,
-    });
-  });
-
   test('JobDefinition respects retryAttempts', () => {
     // WHEN
-    new JobDefinition(stack, 'ECSJobDefn', {
+    new JobDefinition(stack, 'JobDefn', {
       ...defaultProps,
       retryAttempts: 8,
     });
@@ -144,7 +130,7 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
 
   test('JobDefinition respects retryStrategies', () => {
     // WHEN
-    new JobDefinition(stack, 'ECSJobDefn', {
+    new JobDefinition(stack, 'JobDefn', {
       ...defaultProps,
       retryStrategies: [
         RetryStrategy.of(Action.EXIT, Reason.CANNOT_PULL_CONTAINER),
@@ -188,7 +174,7 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
 
   test('JobDefinition respects schedulingPriority', () => {
     // WHEN
-    new JobDefinition(stack, 'ECSJobDefn', {
+    new JobDefinition(stack, 'JobDefn', {
       ...defaultProps,
       schedulingPriority: 10,
     });
@@ -202,7 +188,7 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
 
   test('JobDefinition respects schedulingPriority', () => {
     // WHEN
-    new JobDefinition(stack, 'ECSJobDefn', {
+    new JobDefinition(stack, 'JobDefn', {
       ...defaultProps,
       timeout: Duration.minutes(10),
     });
@@ -218,7 +204,7 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
 
   test('JobDefinition respects addRetryStrategy()', () => {
     // WHEN
-    const jobDefn = new JobDefinition(stack, 'ECSJobDefn', {
+    const jobDefn = new JobDefinition(stack, 'JobDefn', {
       ...defaultProps,
     });
 
