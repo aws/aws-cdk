@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getClusterVersionConfig = void 0;
+const lambda_layer_kubectl_v24_1 = require("@aws-cdk/lambda-layer-kubectl-v24");
+const eks = require("aws-cdk-lib/aws-eks");
+function getClusterVersionConfig(scope) {
+    return {
+        version: eks.KubernetesVersion.V1_24,
+        // Crazy type-casting is required because KubectlLayer peer depends on
+        // types from aws-cdk-lib, but we run integration tests in the @aws-cdk/
+        // v1-style directory, not in the aws-cdk-lib v2-style directory.
+        kubectlLayer: new lambda_layer_kubectl_v24_1.KubectlV24Layer(scope, 'KubectlLayer'),
+    };
+}
+exports.getClusterVersionConfig = getClusterVersionConfig;
+;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWctdGVzdHMta3ViZXJuZXRlcy12ZXJzaW9uLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiaW50ZWctdGVzdHMta3ViZXJuZXRlcy12ZXJzaW9uLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUNBLGdGQUFvRTtBQUVwRSwyQ0FBMkM7QUFFM0MsU0FBZ0IsdUJBQXVCLENBQUMsS0FBZ0I7SUFDdEQsT0FBTztRQUNMLE9BQU8sRUFBRSxHQUFHLENBQUMsaUJBQWlCLENBQUMsS0FBSztRQUNwQyxzRUFBc0U7UUFDdEUsd0VBQXdFO1FBQ3hFLGlFQUFpRTtRQUNqRSxZQUFZLEVBQUUsSUFBSSwwQ0FBZSxDQUFDLEtBQUssRUFBRSxjQUFjLENBQW9DO0tBQzVGLENBQUM7QUFDSixDQUFDO0FBUkQsMERBUUM7QUFBQSxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICogYXMgbGFtYmRhIGZyb20gJ2F3cy1jZGstbGliL2F3cy1sYW1iZGEnO1xuaW1wb3J0IHsgS3ViZWN0bFYyNExheWVyIH0gZnJvbSAnQGF3cy1jZGsvbGFtYmRhLWxheWVyLWt1YmVjdGwtdjI0JztcbmltcG9ydCB7IENvbnN0cnVjdCB9IGZyb20gJ2NvbnN0cnVjdHMnO1xuaW1wb3J0ICogYXMgZWtzIGZyb20gJ2F3cy1jZGstbGliL2F3cy1la3MnO1xuXG5leHBvcnQgZnVuY3Rpb24gZ2V0Q2x1c3RlclZlcnNpb25Db25maWcoc2NvcGU6IENvbnN0cnVjdCkge1xuICByZXR1cm4ge1xuICAgIHZlcnNpb246IGVrcy5LdWJlcm5ldGVzVmVyc2lvbi5WMV8yNCxcbiAgICAvLyBDcmF6eSB0eXBlLWNhc3RpbmcgaXMgcmVxdWlyZWQgYmVjYXVzZSBLdWJlY3RsTGF5ZXIgcGVlciBkZXBlbmRzIG9uXG4gICAgLy8gdHlwZXMgZnJvbSBhd3MtY2RrLWxpYiwgYnV0IHdlIHJ1biBpbnRlZ3JhdGlvbiB0ZXN0cyBpbiB0aGUgQGF3cy1jZGsvXG4gICAgLy8gdjEtc3R5bGUgZGlyZWN0b3J5LCBub3QgaW4gdGhlIGF3cy1jZGstbGliIHYyLXN0eWxlIGRpcmVjdG9yeS5cbiAgICBrdWJlY3RsTGF5ZXI6IG5ldyBLdWJlY3RsVjI0TGF5ZXIoc2NvcGUsICdLdWJlY3RsTGF5ZXInKSBhcyB1bmtub3duIGFzIGxhbWJkYS5JTGF5ZXJWZXJzaW9uLFxuICB9O1xufTsiXX0=

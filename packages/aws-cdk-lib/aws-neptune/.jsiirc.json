@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Neptune"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.neptune"
+    },
+    "python": {
+      "module": "aws_cdk.aws_neptune"
+    }
+  }
+}

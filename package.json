@@ -29,7 +29,6 @@
     "jsii-reflect": "1.78.1",
     "jsii-rosetta": "~5.0.0",
     "lerna": "^4.0.0",
-    "@aws-cdk/remodel": "0.0.0",
     "patch-package": "^6.5.1",
     "semver": "^6.3.0",
     "standard-version": "^9.5.0",

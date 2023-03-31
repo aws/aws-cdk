@@ -1,9 +1,9 @@
 import * as path from 'path';
-import { Template } from '@aws-cdk/assertions';
-import * as iam from '@aws-cdk/aws-iam';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as gamelift from '../lib';
 
 describe('build', () => {

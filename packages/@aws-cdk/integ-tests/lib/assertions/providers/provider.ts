@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Duration, CfnResource, AssetStaging, Stack, FileAssetPackaging, Token, Lazy, Reference } from '@aws-cdk/core';
+import { Duration, CfnResource, AssetStaging, Stack, FileAssetPackaging, Token, Lazy, Reference } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 let SDK_METADATA: any = undefined;

@@ -1,9 +1,0 @@
-{
-  "lerna": "^4.0.0",
-  "npmClient": "yarn",
-  "packages": [
-    "*"
-  ],
-  "rejectCycles": "true",
-  "version": "independent"
-}
