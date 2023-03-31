@@ -12,7 +12,7 @@ export async function handler(event: AwsApiInput) {
   try {
     const response = await awsService[event.action](event.parameters).promise();
     console.log('Response: %j', response);
-  } catch (e) {
+  } catch (e: any) {
     console.log(e);
     if (!event.catchErrorPattern || !new RegExp(event.catchErrorPattern).test(e.code)) {
       throw e;

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as ec2 from '@aws-cdk/aws-ec2';
 import * as ecr from '@aws-cdk/aws-ecr';
 import * as ecr_assets from '@aws-cdk/aws-ecr-assets';
@@ -1087,6 +1087,69 @@ test('specifying a vpcConnector should assign the service to it and set the egre
       },
     ],
     VpcConnectorName: 'MyVpcConnector',
+  });
+});
+
+test('autoDeploymentsEnabled flag is set true', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  const dockerAsset = new ecr_assets.DockerImageAsset(stack, 'Assets', {
+    directory: path.join(__dirname, './docker.assets'),
+  });
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromAsset({
+      imageConfiguration: { port: 8000 },
+      asset: dockerAsset,
+    }),
+    autoDeploymentsEnabled: true,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AutoDeploymentsEnabled: true,
+    },
+  });
+});
+
+test('autoDeploymentsEnabled flag is set false', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromGitHub({
+      repositoryUrl: 'https://github.com/aws-containers/hello-app-runner',
+      branch: 'main',
+      configurationSource: apprunner.ConfigurationSourceType.REPOSITORY,
+      connection: apprunner.GitHubConnection.fromConnectionArn('MOCK'),
+    }),
+    autoDeploymentsEnabled: false,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AutoDeploymentsEnabled: false,
+    },
+  });
+});
+
+test('autoDeploymentsEnabled flag is NOT set', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    SourceConfiguration: {
+      AutoDeploymentsEnabled: Match.absent(),
+    },
   });
 });
 

@@ -201,7 +201,7 @@ export class SdkProvider {
     try {
       await sdk.forceCredentialRetrieval();
       return { sdk, didAssumeRole: true };
-    } catch (e) {
+    } catch (e: any) {
       if (isUnrecoverableAwsError(e)) {
         throw e;
       }
@@ -281,11 +281,11 @@ export class SdkProvider {
         }
 
         return await new SDK(creds, this.defaultRegion, this.sdkOptions).currentAccount();
-      } catch (e) {
+      } catch (e: any) {
         // Treat 'ExpiredToken' specially. This is a common situation that people may find themselves in, and
         // they are complaining about if we fail 'cdk synth' on them. We loudly complain in order to show that
         // the current situation is probably undesirable, but we don't fail.
-        if ((e as any).code === 'ExpiredToken') {
+        if (e.code === 'ExpiredToken') {
           warning('There are expired AWS credentials in your environment. The CDK app will synth without current account information.');
           return undefined;
         }
@@ -479,7 +479,7 @@ function readIfPossible(filename: string): string | undefined {
   try {
     if (!fs.pathExistsSync(filename)) { return undefined; }
     return fs.readFileSync(filename, { encoding: 'utf-8' });
-  } catch (e) {
+  } catch (e: any) {
     debug(e);
     return undefined;
   }
@@ -493,7 +493,7 @@ function readIfPossible(filename: string): string | undefined {
 function safeUsername() {
   try {
     return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
-  } catch (e) {
+  } catch {
     return 'noname';
   }
 }

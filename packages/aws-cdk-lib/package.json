@@ -4,6 +4,14 @@
   "description": "Version 2 of the AWS Cloud Development Kit library",
   "main": "index.js",
   "types": "index.d.ts",
+  "typesVersions": {
+    "<=3.9": {
+      "*": [
+        ".types-compat/ts3.9/*",
+        ".types-compat/ts3.9/*/index.d.ts"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
@@ -102,9 +110,13 @@
     "minimatch",
     "punycode",
     "semver",
+    "table",
     "yaml"
   ],
   "dependencies": {
+    "@aws-cdk/asset-awscli-v1": "^2.2.97",
+    "@aws-cdk/asset-node-proxy-agent-v5": "^2.0.77",
+    "@aws-cdk/asset-kubectl-v20": "^2.1.1",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^9.1.0",
@@ -113,10 +125,8 @@
     "minimatch": "^3.1.2",
     "punycode": "^2.3.0",
     "semver": "^7.3.8",
-    "yaml": "1.10.2",
-    "@aws-cdk/asset-awscli-v1": "^2.2.97",
-    "@aws-cdk/asset-node-proxy-agent-v5": "^2.0.77",
-    "@aws-cdk/asset-kubectl-v20": "^2.1.1"
+    "table": "^6.8.1",
+    "yaml": "1.10.2"
   },
   "devDependencies": {
     "@aws-cdk/alexa-ask": "0.0.0",
@@ -388,7 +398,7 @@
     "esbuild": "^0.17.11",
     "fs-extra": "^9.1.0",
     "ts-node": "^9.1.1",
-    "typescript": "~3.8.3"
+    "typescript": "~4.9.5"
   },
   "peerDependencies": {
     "constructs": "^10.0.0"
@@ -473,6 +483,7 @@
     "./aws-codestarconnections": "./aws-codestarconnections/index.js",
     "./aws-codestarnotifications": "./aws-codestarnotifications/index.js",
     "./aws-cognito": "./aws-cognito/index.js",
+    "./aws-comprehend": "./aws-comprehend/index.js",
     "./aws-config": "./aws-config/index.js",
     "./aws-connect": "./aws-connect/index.js",
     "./aws-connectcampaigns": "./aws-connectcampaigns/index.js",
@@ -534,6 +545,7 @@
     "./aws-imagebuilder": "./aws-imagebuilder/index.js",
     "./aws-inspector": "./aws-inspector/index.js",
     "./aws-inspectorv2": "./aws-inspectorv2/index.js",
+    "./aws-internetmonitor": "./aws-internetmonitor/index.js",
     "./aws-iot": "./aws-iot/index.js",
     "./aws-iot1click": "./aws-iot1click/index.js",
     "./aws-iotanalytics": "./aws-iotanalytics/index.js",
@@ -546,6 +558,7 @@
     "./aws-iottwinmaker": "./aws-iottwinmaker/index.js",
     "./aws-iotwireless": "./aws-iotwireless/index.js",
     "./aws-ivs": "./aws-ivs/index.js",
+    "./aws-ivschat": "./aws-ivschat/index.js",
     "./aws-kafkaconnect": "./aws-kafkaconnect/index.js",
     "./aws-kendra": "./aws-kendra/index.js",
     "./aws-kendraranking": "./aws-kendraranking/index.js",
@@ -647,9 +660,11 @@
     "./aws-stepfunctions-tasks": "./aws-stepfunctions-tasks/index.js",
     "./aws-supportapp": "./aws-supportapp/index.js",
     "./aws-synthetics": "./aws-synthetics/index.js",
+    "./aws-systemsmanagersap": "./aws-systemsmanagersap/index.js",
     "./aws-timestream": "./aws-timestream/index.js",
     "./aws-transfer": "./aws-transfer/index.js",
     "./aws-voiceid": "./aws-voiceid/index.js",
+    "./aws-vpclattice": "./aws-vpclattice/index.js",
     "./aws-waf": "./aws-waf/index.js",
     "./aws-wafregional": "./aws-wafregional/index.js",
     "./aws-wafv2": "./aws-wafv2/index.js",

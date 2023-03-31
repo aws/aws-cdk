@@ -61,5 +61,5 @@ export abstract class HttpPrivateIntegration extends HttpRouteIntegration {
     return vpcLink;
   }
 
-  public abstract bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig;
+  public abstract override bind(options: HttpRouteIntegrationBindOptions): HttpRouteIntegrationConfig;
 }
