@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
-import { IntegTest } from '@aws-cdk/integ-tests';
+import * as cdk from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as iotevents from '../lib';
 
 class TestStack extends cdk.Stack {

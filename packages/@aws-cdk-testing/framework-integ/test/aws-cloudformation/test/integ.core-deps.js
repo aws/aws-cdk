@@ -1,0 +1,69 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/*
+ * Real replaceDependency use case to test
+ *
+ * TestStack verification steps:
+ * - Deploy with `--no-clean`
+ * - Verify that the CloudFormation stack LogRetention CfnResource dependencies list CustomPolicy, not DefaultPolicy
+ *
+ * TestNestedStack verification steps:
+ * - Deploy with `--no-clean`
+ * - Verify that Stack2 lists Stack1 in DependsOn
+ */
+const iam = require("aws-cdk-lib/aws-iam");
+const lambda = require("aws-cdk-lib/aws-lambda");
+const aws_logs_1 = require("aws-cdk-lib/aws-logs");
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+const integ = require("@aws-cdk/integ-tests-alpha");
+class TestStack extends aws_cdk_lib_1.Stack {
+    constructor(scope, id) {
+        super(scope, id);
+        new lambda.Function(this, 'MyLambda', {
+            code: new lambda.InlineCode('foo'),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.NODEJS_14_X,
+            logRetention: aws_logs_1.RetentionDays.ONE_DAY,
+        });
+        const logRetentionFunction = this.node.tryFindChild('LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a');
+        const serviceRole = logRetentionFunction.node.tryFindChild('ServiceRole');
+        const defaultPolicy = serviceRole.node.tryFindChild('DefaultPolicy').node.defaultChild;
+        const customPolicy = new iam.CfnManagedPolicy(this, 'CustomPolicy', {
+            policyDocument: defaultPolicy.policyDocument,
+            roles: defaultPolicy.roles,
+        });
+        const logRetentionResource = logRetentionFunction.node.tryFindChild('Resource');
+        // Without replacing the dependency, Cfn will reject the template because it references this non-existent logical id
+        logRetentionResource.replaceDependency(defaultPolicy, customPolicy);
+        serviceRole.node.tryRemoveChild('DefaultPolicy');
+    }
+}
+class TestNestedStack extends aws_cdk_lib_1.Stack {
+    constructor(scope, id) {
+        super(scope, id);
+        const stack1 = new aws_cdk_lib_1.NestedStack(this, 'Stack1');
+        const stack2 = new aws_cdk_lib_1.NestedStack(this, 'Stack2');
+        const resource1 = new lambda.Function(stack1, 'Lambda1', {
+            code: new lambda.InlineCode('foo'),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.NODEJS_14_X,
+        }).node.defaultChild;
+        const resource2 = new lambda.Function(stack2, 'Lambda2', {
+            code: new lambda.InlineCode('foo'),
+            handler: 'index.handler',
+            runtime: lambda.Runtime.NODEJS_14_X,
+        }).node.defaultChild;
+        // The following two statements should cancel each other out
+        resource1.addDependency(resource2);
+        resource1.removeDependency(resource2);
+        resource2.addDependency(resource1);
+    }
+}
+const app = new aws_cdk_lib_1.App();
+const stack = new TestStack(app, 'replace-depends-on-test');
+const nestedStack = new TestNestedStack(app, 'nested-stack-depends-test');
+new integ.IntegTest(app, 'DependsOnTest', {
+    testCases: [stack, nestedStack],
+});
+app.synth();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuY29yZS1kZXBzLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiaW50ZWcuY29yZS1kZXBzLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUE7Ozs7Ozs7Ozs7R0FVRztBQUNILDJDQUEyQztBQUMzQyxpREFBaUQ7QUFDakQsbURBQXFEO0FBQ3JELDZDQUFtRTtBQUNuRSxvREFBb0Q7QUFHcEQsTUFBTSxTQUFVLFNBQVEsbUJBQUs7SUFDM0IsWUFBWSxLQUFnQixFQUFFLEVBQVU7UUFDdEMsS0FBSyxDQUFDLEtBQUssRUFBRSxFQUFFLENBQUMsQ0FBQztRQUNqQixJQUFJLE1BQU0sQ0FBQyxRQUFRLENBQUMsSUFBSSxFQUFFLFVBQVUsRUFBRTtZQUNwQyxJQUFJLEVBQUUsSUFBSSxNQUFNLENBQUMsVUFBVSxDQUFDLEtBQUssQ0FBQztZQUNsQyxPQUFPLEVBQUUsZUFBZTtZQUN4QixPQUFPLEVBQUUsTUFBTSxDQUFDLE9BQU8sQ0FBQyxXQUFXO1lBQ25DLFlBQVksRUFBRSx3QkFBYSxDQUFDLE9BQU87U0FDcEMsQ0FBQyxDQUFDO1FBQ0gsTUFBTSxvQkFBb0IsR0FBRyxJQUFJLENBQUMsSUFBSSxDQUFDLFlBQVksQ0FBQyw4Q0FBOEMsQ0FBRSxDQUFDO1FBQ3JHLE1BQU0sV0FBVyxHQUFHLG9CQUFvQixDQUFDLElBQUksQ0FBQyxZQUFZLENBQUMsYUFBYSxDQUFhLENBQUM7UUFDdEYsTUFBTSxhQUFhLEdBQUcsV0FBVyxDQUFDLElBQUksQ0FBQyxZQUFZLENBQUMsZUFBZSxDQUFFLENBQUMsSUFBSSxDQUFDLFlBQThCLENBQUM7UUFDMUcsTUFBTSxZQUFZLEdBQUcsSUFBSSxHQUFHLENBQUMsZ0JBQWdCLENBQUMsSUFBSSxFQUFFLGNBQWMsRUFBRTtZQUNsRSxjQUFjLEVBQUUsYUFBYSxDQUFDLGNBQWM7WUFDNUMsS0FBSyxFQUFFLGFBQWEsQ0FBQyxLQUFLO1NBQzNCLENBQUMsQ0FBQztRQUNILE1BQU0sb0JBQW9CLEdBQUcsb0JBQW9CLENBQUMsSUFBSSxDQUFDLFlBQVksQ0FBQyxVQUFVLENBQWdCLENBQUM7UUFDL0Ysb0hBQW9IO1FBQ3BILG9CQUFvQixDQUFDLGlCQUFpQixDQUFDLGFBQWEsRUFBRSxZQUFZLENBQUMsQ0FBQztRQUNwRSxXQUFXLENBQUMsSUFBSSxDQUFDLGNBQWMsQ0FBQyxlQUFlLENBQUMsQ0FBQztJQUNuRCxDQUFDO0NBQ0Y7QUFFRCxNQUFNLGVBQWdCLFNBQVEsbUJBQUs7SUFDakMsWUFBWSxLQUFnQixFQUFFLEVBQVU7UUFDdEMsS0FBSyxDQUFDLEtBQUssRUFBRSxFQUFFLENBQUMsQ0FBQztRQUNqQixNQUFNLE1BQU0sR0FBRyxJQUFJLHlCQUFXLENBQUMsSUFBSSxFQUFFLFFBQVEsQ0FBQyxDQUFDO1FBQy9DLE1BQU0sTUFBTSxHQUFHLElBQUkseUJBQVcsQ0FBQyxJQUFJLEVBQUUsUUFBUSxDQUFDLENBQUM7UUFDL0MsTUFBTSxTQUFTLEdBQUcsSUFBSSxNQUFNLENBQUMsUUFBUSxDQUFDLE1BQU0sRUFBRSxTQUFTLEVBQUU7WUFDdkQsSUFBSSxFQUFFLElBQUksTUFBTSxDQUFDLFVBQVUsQ0FBQyxLQUFLLENBQUM7WUFDbEMsT0FBTyxFQUFFLGVBQWU7WUFDeEIsT0FBTyxFQUFFLE1BQU0sQ0FBQyxPQUFPLENBQUMsV0FBVztTQUNwQyxDQUFDLENBQUMsSUFBSSxDQUFDLFlBQTRCLENBQUM7UUFDckMsTUFBTSxTQUFTLEdBQUcsSUFBSSxNQUFNLENBQUMsUUFBUSxDQUFDLE1BQU0sRUFBRSxTQUFTLEVBQUU7WUFDdkQsSUFBSSxFQUFFLElBQUksTUFBTSxDQUFDLFVBQVUsQ0FBQyxLQUFLLENBQUM7WUFDbEMsT0FBTyxFQUFFLGVBQWU7WUFDeEIsT0FBTyxFQUFFLE1BQU0sQ0FBQyxPQUFPLENBQUMsV0FBVztTQUNwQyxDQUFDLENBQUMsSUFBSSxDQUFDLFlBQTRCLENBQUM7UUFFckMsNERBQTREO1FBQzVELFNBQVMsQ0FBQyxhQUFhLENBQUMsU0FBUyxDQUFDLENBQUM7UUFDbkMsU0FBUyxDQUFDLGdCQUFnQixDQUFDLFNBQVMsQ0FBQyxDQUFDO1FBRXRDLFNBQVMsQ0FBQyxhQUFhLENBQUMsU0FBUyxDQUFDLENBQUM7SUFDckMsQ0FBQztDQUNGO0FBRUQsTUFBTSxHQUFHLEdBQUcsSUFBSSxpQkFBRyxFQUFFLENBQUM7QUFDdEIsTUFBTSxLQUFLLEdBQUcsSUFBSSxTQUFTLENBQUMsR0FBRyxFQUFFLHlCQUF5QixDQUFDLENBQUM7QUFDNUQsTUFBTSxXQUFXLEdBQUcsSUFBSSxlQUFlLENBQUMsR0FBRyxFQUFFLDJCQUEyQixDQUFDLENBQUM7QUFFMUUsSUFBSSxLQUFLLENBQUMsU0FBUyxDQUFDLEdBQUcsRUFBRSxlQUFlLEVBQUU7SUFDeEMsU0FBUyxFQUFFLENBQUMsS0FBSyxFQUFFLFdBQVcsQ0FBQztDQUNoQyxDQUFDLENBQUM7QUFFSCxHQUFHLENBQUMsS0FBSyxFQUFFLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKlxuICogUmVhbCByZXBsYWNlRGVwZW5kZW5jeSB1c2UgY2FzZSB0byB0ZXN0XG4gKlxuICogVGVzdFN0YWNrIHZlcmlmaWNhdGlvbiBzdGVwczpcbiAqIC0gRGVwbG95IHdpdGggYC0tbm8tY2xlYW5gXG4gKiAtIFZlcmlmeSB0aGF0IHRoZSBDbG91ZEZvcm1hdGlvbiBzdGFjayBMb2dSZXRlbnRpb24gQ2ZuUmVzb3VyY2UgZGVwZW5kZW5jaWVzIGxpc3QgQ3VzdG9tUG9saWN5LCBub3QgRGVmYXVsdFBvbGljeVxuICpcbiAqIFRlc3ROZXN0ZWRTdGFjayB2ZXJpZmljYXRpb24gc3RlcHM6XG4gKiAtIERlcGxveSB3aXRoIGAtLW5vLWNsZWFuYFxuICogLSBWZXJpZnkgdGhhdCBTdGFjazIgbGlzdHMgU3RhY2sxIGluIERlcGVuZHNPblxuICovXG5pbXBvcnQgKiBhcyBpYW0gZnJvbSAnYXdzLWNkay1saWIvYXdzLWlhbSc7XG5pbXBvcnQgKiBhcyBsYW1iZGEgZnJvbSAnYXdzLWNkay1saWIvYXdzLWxhbWJkYSc7XG5pbXBvcnQgeyBSZXRlbnRpb25EYXlzIH0gZnJvbSAnYXdzLWNkay1saWIvYXdzLWxvZ3MnO1xuaW1wb3J0IHsgQXBwLCBTdGFjaywgQ2ZuUmVzb3VyY2UsIE5lc3RlZFN0YWNrIH0gZnJvbSAnYXdzLWNkay1saWInO1xuaW1wb3J0ICogYXMgaW50ZWcgZnJvbSAnQGF3cy1jZGsvaW50ZWctdGVzdHMtYWxwaGEnO1xuaW1wb3J0IHsgQ29uc3RydWN0IH0gZnJvbSAnY29uc3RydWN0cyc7XG5cbmNsYXNzIFRlc3RTdGFjayBleHRlbmRzIFN0YWNrIHtcbiAgY29uc3RydWN0b3Ioc2NvcGU6IENvbnN0cnVjdCwgaWQ6IHN0cmluZykge1xuICAgIHN1cGVyKHNjb3BlLCBpZCk7XG4gICAgbmV3IGxhbWJkYS5GdW5jdGlvbih0aGlzLCAnTXlMYW1iZGEnLCB7XG4gICAgICBjb2RlOiBuZXcgbGFtYmRhLklubGluZUNvZGUoJ2ZvbycpLFxuICAgICAgaGFuZGxlcjogJ2luZGV4LmhhbmRsZXInLFxuICAgICAgcnVudGltZTogbGFtYmRhLlJ1bnRpbWUuTk9ERUpTXzE0X1gsXG4gICAgICBsb2dSZXRlbnRpb246IFJldGVudGlvbkRheXMuT05FX0RBWSxcbiAgICB9KTtcbiAgICBjb25zdCBsb2dSZXRlbnRpb25GdW5jdGlvbiA9IHRoaXMubm9kZS50cnlGaW5kQ2hpbGQoJ0xvZ1JldGVudGlvbmFhZTBhYTNjNWI0ZDRmODdiMDJkODViMjAxZWZkZDhhJykhO1xuICAgIGNvbnN0IHNlcnZpY2VSb2xlID0gbG9nUmV0ZW50aW9uRnVuY3Rpb24ubm9kZS50cnlGaW5kQ2hpbGQoJ1NlcnZpY2VSb2xlJykgYXMgaWFtLlJvbGU7XG4gICAgY29uc3QgZGVmYXVsdFBvbGljeSA9IHNlcnZpY2VSb2xlLm5vZGUudHJ5RmluZENoaWxkKCdEZWZhdWx0UG9saWN5JykhLm5vZGUuZGVmYXVsdENoaWxkISBhcyBpYW0uQ2ZuUG9saWN5O1xuICAgIGNvbnN0IGN1c3RvbVBvbGljeSA9IG5ldyBpYW0uQ2ZuTWFuYWdlZFBvbGljeSh0aGlzLCAnQ3VzdG9tUG9saWN5Jywge1xuICAgICAgcG9saWN5RG9jdW1lbnQ6IGRlZmF1bHRQb2xpY3kucG9saWN5RG9jdW1lbnQsXG4gICAgICByb2xlczogZGVmYXVsdFBvbGljeS5yb2xlcyxcbiAgICB9KTtcbiAgICBjb25zdCBsb2dSZXRlbnRpb25SZXNvdXJjZSA9IGxvZ1JldGVudGlvbkZ1bmN0aW9uLm5vZGUudHJ5RmluZENoaWxkKCdSZXNvdXJjZScpIGFzIENmblJlc291cmNlO1xuICAgIC8vIFdpdGhvdXQgcmVwbGFjaW5nIHRoZSBkZXBlbmRlbmN5LCBDZm4gd2lsbCByZWplY3QgdGhlIHRlbXBsYXRlIGJlY2F1c2UgaXQgcmVmZXJlbmNlcyB0aGlzIG5vbi1leGlzdGVudCBsb2dpY2FsIGlkXG4gICAgbG9nUmV0ZW50aW9uUmVzb3VyY2UucmVwbGFjZURlcGVuZGVuY3koZGVmYXVsdFBvbGljeSwgY3VzdG9tUG9saWN5KTtcbiAgICBzZXJ2aWNlUm9sZS5ub2RlLnRyeVJlbW92ZUNoaWxkKCdEZWZhdWx0UG9saWN5Jyk7XG4gIH1cbn1cblxuY2xhc3MgVGVzdE5lc3RlZFN0YWNrIGV4dGVuZHMgU3RhY2sge1xuICBjb25zdHJ1Y3RvcihzY29wZTogQ29uc3RydWN0LCBpZDogc3RyaW5nKSB7XG4gICAgc3VwZXIoc2NvcGUsIGlkKTtcbiAgICBjb25zdCBzdGFjazEgPSBuZXcgTmVzdGVkU3RhY2sodGhpcywgJ1N0YWNrMScpO1xuICAgIGNvbnN0IHN0YWNrMiA9IG5ldyBOZXN0ZWRTdGFjayh0aGlzLCAnU3RhY2syJyk7XG4gICAgY29uc3QgcmVzb3VyY2UxID0gbmV3IGxhbWJkYS5GdW5jdGlvbihzdGFjazEsICdMYW1iZGExJywge1xuICAgICAgY29kZTogbmV3IGxhbWJkYS5JbmxpbmVDb2RlKCdmb28nKSxcbiAgICAgIGhhbmRsZXI6ICdpbmRleC5oYW5kbGVyJyxcbiAgICAgIHJ1bnRpbWU6IGxhbWJkYS5SdW50aW1lLk5PREVKU18xNF9YLFxuICAgIH0pLm5vZGUuZGVmYXVsdENoaWxkISBhcyBDZm5SZXNvdXJjZTtcbiAgICBjb25zdCByZXNvdXJjZTIgPSBuZXcgbGFtYmRhLkZ1bmN0aW9uKHN0YWNrMiwgJ0xhbWJkYTInLCB7XG4gICAgICBjb2RlOiBuZXcgbGFtYmRhLklubGluZUNvZGUoJ2ZvbycpLFxuICAgICAgaGFuZGxlcjogJ2luZGV4LmhhbmRsZXInLFxuICAgICAgcnVudGltZTogbGFtYmRhLlJ1bnRpbWUuTk9ERUpTXzE0X1gsXG4gICAgfSkubm9kZS5kZWZhdWx0Q2hpbGQhIGFzIENmblJlc291cmNlO1xuXG4gICAgLy8gVGhlIGZvbGxvd2luZyB0d28gc3RhdGVtZW50cyBzaG91bGQgY2FuY2VsIGVhY2ggb3RoZXIgb3V0XG4gICAgcmVzb3VyY2UxLmFkZERlcGVuZGVuY3kocmVzb3VyY2UyKTtcbiAgICByZXNvdXJjZTEucmVtb3ZlRGVwZW5kZW5jeShyZXNvdXJjZTIpO1xuXG4gICAgcmVzb3VyY2UyLmFkZERlcGVuZGVuY3kocmVzb3VyY2UxKTtcbiAgfVxufVxuXG5jb25zdCBhcHAgPSBuZXcgQXBwKCk7XG5jb25zdCBzdGFjayA9IG5ldyBUZXN0U3RhY2soYXBwLCAncmVwbGFjZS1kZXBlbmRzLW9uLXRlc3QnKTtcbmNvbnN0IG5lc3RlZFN0YWNrID0gbmV3IFRlc3ROZXN0ZWRTdGFjayhhcHAsICduZXN0ZWQtc3RhY2stZGVwZW5kcy10ZXN0Jyk7XG5cbm5ldyBpbnRlZy5JbnRlZ1Rlc3QoYXBwLCAnRGVwZW5kc09uVGVzdCcsIHtcbiAgdGVzdENhc2VzOiBbc3RhY2ssIG5lc3RlZFN0YWNrXSxcbn0pO1xuXG5hcHAuc3ludGgoKTtcbiJdfQ==

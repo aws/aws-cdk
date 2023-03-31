@@ -1,7 +1,7 @@
 import * as path from 'path';
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
-import { IntegTest } from '@aws-cdk/integ-tests';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as sagemaker from '../lib';
 
 /*
