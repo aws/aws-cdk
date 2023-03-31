@@ -69,13 +69,8 @@ node ./scripts/check-yarn-lock.js
 BUILD_INDICATOR=".BUILD_COMPLETED"
 rm -rf $BUILD_INDICATOR
 
-# Speed up build by reusing calculated tree hashes
-# On dev machine, this speeds up the TypeScript part of the build by ~30%.
-export MERKLE_BUILD_CACHE=$(mktemp -d)
-trap "rm -rf $MERKLE_BUILD_CACHE" EXIT
-
 if [ "$run_tests" == "true" ]; then
-    runtarget="$runtarget+test"
+    runtarget="$runtarget,test"
 fi
 
 # Limit top-level concurrency to available CPUs - 1 to limit CPU load.
@@ -83,7 +78,7 @@ concurrency=$(node -p 'Math.max(1, require("os").cpus().length - 1)')
 
 echo "============================================================================================="
 echo "building..."
-time lerna run $bail --stream --concurrency=$concurrency $runtarget || fail
+time npx lerna run $bail --concurrency=$concurrency $runtarget --skip-nx-cache || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
