@@ -95,8 +95,10 @@ method `tryBundle()` which should return `true` if local bundling was performed.
 If `false` is returned, docker bundling will be done:
 
 ```ts
-class MyBundle implements ILocalBundling {
-  public tryBundle(outputDir: string, options: BundlingOptions) {
+import * as cdk from '@aws-cdk/core';
+
+class MyBundle implements cdk.ILocalBundling {
+  public tryBundle(outputDir: string, options: cdk.BundlingOptions) {
     const canRunLocally = true // replace with actual logic
     if (canRunLocally) {
       // perform local bundling here
@@ -106,12 +108,12 @@ class MyBundle implements ILocalBundling {
   }
 }
 
-new assets.Asset(this, 'BundledAsset', {
+new Asset(this, 'BundledAsset', {
   path: '/path/to/asset',
   bundling: {
     local: new MyBundle(),
     // Docker bundling fallback
-    image: DockerImage.fromRegistry('alpine'),
+    image: cdk.DockerImage.fromRegistry('alpine'),
     entrypoint: ['/bin/sh', '-c'],
     command: ['bundle'],
   },
@@ -129,12 +131,14 @@ is the default behavior for `bundling.outputType` (`BundlingOutput.AUTO_DISCOVER
 Use `BundlingOutput.NOT_ARCHIVED` if the bundling output must always be zipped:
 
 ```ts
-const asset = new assets.Asset(this, 'BundledAsset', {
+import * as cdk from '@aws-cdk/core';
+
+const asset = new Asset(this, 'BundledAsset', {
   path: '/path/to/asset',
   bundling: {
-    image: DockerImage.fromRegistry('alpine'),
+    image: cdk.DockerImage.fromRegistry('alpine'),
     command: ['command-that-produces-an-archive.sh'],
-    outputType: BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.
+    outputType: cdk.BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.
   },
 });
 ```
@@ -150,10 +154,12 @@ This can be done using [BundlingOptions](https://docs.aws.amazon.com/cdk/api/v2/
 Some optional properties to pass to the docker bundling
 
 ```ts
-const asset = new assets.Asset(this, 'BundledAsset', {
+import * as lambda from '@aws-cdk/aws-lambda';
+
+const asset = new Asset(this, 'BundledAsset', {
   path: '/path/to/asset',
   bundling: {
-    image: ambda.Runtime.PYTHON_3_9.bundlingImage,,
+    image: lambda.Runtime.PYTHON_3_9.bundlingImage,
     command: [
       'bash', '-c',
       'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'
