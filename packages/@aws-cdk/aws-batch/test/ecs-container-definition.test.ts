@@ -8,7 +8,7 @@ import * as logs from '@aws-cdk/aws-logs';
 import { Secret } from '@aws-cdk/aws-secretsmanager';
 import { Size, Stack } from '@aws-cdk/core';
 import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
-import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, UlimitName } from '../lib';
+import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, UlimitName } from '../lib';
 import { CfnJobDefinitionProps } from '../lib/batch.generated';
 
 
@@ -39,7 +39,7 @@ const defaultExpectedProps: CfnJobDefinitionProps = {
 let stack: Stack;
 let pascalCaseExpectedProps: any;
 
-describe('ecs container', () => {
+describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', (ContainerDefinition) => {
   // GIVEN
   beforeEach(() => {
     stack = new Stack();
@@ -49,7 +49,7 @@ describe('ecs container', () => {
   test('ecs container defaults', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
       }),
     });
@@ -63,7 +63,7 @@ describe('ecs container', () => {
   test('respects command', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
         command: ['echo', 'foo'],
       }),
@@ -79,29 +79,10 @@ describe('ecs container', () => {
     });
   });
 
-  test('respects privileged', () => {
-    // WHEN
-    new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
-        ...defaultContainerProps,
-        privileged: true,
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
-      ...pascalCaseExpectedProps,
-      ContainerProperties: {
-        ...pascalCaseExpectedProps.ContainerProperties,
-        Privileged: true,
-      },
-    });
-  });
-
   test('respects environment', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
         privileged: true,
         environment: {
@@ -126,7 +107,7 @@ describe('ecs container', () => {
   test('respects executionRole', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
         privileged: true,
         executionRole: new Role(stack, 'execRole', {
@@ -147,43 +128,10 @@ describe('ecs container', () => {
     });
   });
 
-  test('respects gpu', () => {
-    // WHEN
-    new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
-        ...defaultContainerProps,
-        privileged: true,
-        gpu: 12,
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
-      ...pascalCaseExpectedProps,
-      ContainerProperties: {
-        ...pascalCaseExpectedProps.ContainerProperties,
-        ResourceRequirements: [
-          {
-            Type: 'MEMORY',
-            Value: '2048',
-          },
-          {
-            Type: 'VCPU',
-            Value: '256',
-          },
-          {
-            Type: 'GPU',
-            Value: '12',
-          },
-        ],
-      },
-    });
-  });
-
   test('respects jobRole', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
         privileged: true,
         jobRole: new Role(stack, 'jobRole', {
@@ -207,7 +155,7 @@ describe('ecs container', () => {
   test('respects linuxParameters', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
         privileged: true,
         linuxParameters: new LinuxParameters(stack, 'linuxParameters', {
@@ -234,10 +182,10 @@ describe('ecs container', () => {
     });
   });
 
-  test('respects logDriver', () => {
+  test('respects logging and creates an execution role for EC2 and Fargate containers', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
         logging: ecs.LogDriver.awsLogs({
           datetimeFormat: 'format',
@@ -252,11 +200,14 @@ describe('ecs container', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
       ...pascalCaseExpectedProps,
       ContainerProperties: {
+        ExecutionRoleArn: {
+          'Fn::GetAtt': ['EcsContainerExecutionRole3B199293', 'Arn'],
+        },
         ...pascalCaseExpectedProps.ContainerProperties,
         LogConfiguration: {
           Options: {
             'awslogs-datetime-format': 'format',
-            'awslogs-group': { Ref: 'EcsEc2ContainerLogGroup7855929B' },
+            'awslogs-group': { Ref: 'EcsContainerLogGroup6C5D5962' },
             'awslogs-multiline-pattern': 'pattern',
             'awslogs-region': { Ref: 'AWS::Region' },
             'awslogs-stream-prefix': 'hello',
@@ -264,12 +215,23 @@ describe('ecs container', () => {
         },
       },
     });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'ecs-tasks.amazonaws.com' },
+        }],
+        Version: '2012-10-17',
+      },
+    });
   });
 
   test('respects readonlyRootFilesystem', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
         readonlyRootFilesystem: true,
       }),
@@ -288,7 +250,7 @@ describe('ecs container', () => {
   test('respects secrets', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
         secrets: [
           new Secret(stack, 'testSecret'),
@@ -366,7 +328,7 @@ describe('ecs container', () => {
   test('respects user', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
         user: 'foo',
       }),
@@ -382,41 +344,10 @@ describe('ecs container', () => {
     });
   });
 
-  test('respects ulimits', () => {
-    // WHEN
-    new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
-        ...defaultContainerProps,
-        ulimits: [
-          {
-            hardLimit: 100,
-            name: UlimitName.CORE,
-            softLimit: 10,
-          },
-        ],
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
-      ...pascalCaseExpectedProps,
-      ContainerProperties: {
-        ...pascalCaseExpectedProps.ContainerProperties,
-        Ulimits: [
-          {
-            HardLimit: 100,
-            Name: 'core',
-            SoftLimit: 10,
-          },
-        ],
-      },
-    });
-  });
-
   test('respects efs volumes', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
         volumes: [
           EcsVolume.efs({
@@ -490,7 +421,7 @@ describe('ecs container', () => {
   test('respects host volumes', () => {
     // WHEN
     new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
         volumes: [
           EcsVolume.host({
@@ -528,7 +459,7 @@ describe('ecs container', () => {
   test('respects addVolume() with an EfsVolume', () => {
     // GIVEN
     const jobDefn = new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
       }),
     });
@@ -566,7 +497,7 @@ describe('ecs container', () => {
   test('respects addVolume() with a host volume', () => {
     // GIVEN
     const jobDefn = new EcsJobDefinition(stack, 'ECSJobDefn', {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
         ...defaultContainerProps,
       }),
     });
@@ -597,6 +528,14 @@ describe('ecs container', () => {
       },
     });
   });
+});
+
+describe('EC2 containers', () => {
+  // GIVEN
+  beforeEach(() => {
+    stack = new Stack();
+    pascalCaseExpectedProps = capitalizePropertyNames(stack, defaultExpectedProps);
+  });
 
   test('respects addUlimit()', () => {
     // GIVEN
@@ -623,6 +562,128 @@ describe('ecs container', () => {
           SoftLimit: 1,
           Name: 'sigpending',
         }],
+      },
+    });
+  });
+
+  test('respects ulimits', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+        ulimits: [
+          {
+            hardLimit: 100,
+            name: UlimitName.CORE,
+            softLimit: 10,
+          },
+        ],
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Ulimits: [
+          {
+            HardLimit: 100,
+            Name: 'core',
+            SoftLimit: 10,
+          },
+        ],
+      },
+    });
+  });
+
+  test('respects privileged', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+        privileged: true,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Privileged: true,
+      },
+    });
+  });
+
+  test('respects gpu', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+        privileged: true,
+        gpu: 12,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        ResourceRequirements: [
+          {
+            Type: 'MEMORY',
+            Value: '2048',
+          },
+          {
+            Type: 'VCPU',
+            Value: '256',
+          },
+          {
+            Type: 'GPU',
+            Value: '12',
+          },
+        ],
+      },
+    });
+  });
+});
+
+describe('Fargate containers', () => {
+  // GIVEN
+  beforeEach(() => {
+    stack = new Stack();
+    pascalCaseExpectedProps = capitalizePropertyNames(stack, defaultExpectedProps);
+  });
+
+  test('create executionRole by default', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+        ...defaultContainerProps,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        ExecutionRoleArn: {
+          'Fn::GetAtt': ['EcsFargateContainerExecutionRole3286EAFE', 'Arn'],
+        },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: { Service: 'ecs-tasks.amazonaws.com' },
+        }],
+        Version: '2012-10-17',
       },
     });
   });

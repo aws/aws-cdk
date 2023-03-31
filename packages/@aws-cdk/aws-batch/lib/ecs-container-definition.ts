@@ -314,15 +314,6 @@ export interface IEcsContainerDefinition extends IConstruct {
   readonly jobRole?: iam.IRole;
 
   /**
-   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
-   *
-   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
-   *
-   * @default a Role will be created
-   */
-  readonly executionRole?: iam.IRole;
-
-  /**
    * Linux-specific modifications that are applied to the container, such as details for device mappings.
    *
    * @default none
@@ -428,15 +419,6 @@ export interface EcsContainerDefinitionProps {
   readonly jobRole?: iam.IRole;
 
   /**
-   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
-   *
-   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
-   *
-   * @default - a Role will be created
-   */
-  readonly executionRole?: iam.IRole;
-
-  /**
    * Linux-specific modifications that are applied to the container, such as details for device mappings.
    *
    * @default none
@@ -491,13 +473,14 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly command?: string[];
   public readonly environment?: { [key:string]: string };
   public readonly jobRole?: iam.IRole;
-  public readonly executionRole?: iam.IRole;
   public readonly linuxParameters?: LinuxParameters;
   public readonly logDriverConfig?: ecs.LogDriverConfig;
   public readonly readonlyRootFilesystem?: boolean;
   public readonly secrets?: secretsmanager.ISecret[];
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
+
+  public abstract readonly executionRole?: iam.IRole;
 
   private readonly imageConfig: ecs.ContainerImageConfig;
 
@@ -509,24 +492,26 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.command = props.command;
     this.environment = props.environment;
     this.jobRole = props.jobRole;
-    this.executionRole = props.executionRole ?? new iam.Role(this, 'ExecutionRole', {
-      assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-      // needed for cross-account access with TagParameterContainerImage
-      roleName: PhysicalName.GENERATE_IF_NEEDED,
-    });
-
     this.linuxParameters = props.linuxParameters;
     this.memory = props.memory;
 
-    if (props.logging) {
-      this.logDriverConfig = props.logging.bind(this, {
-        ...this as any,
-        // TS!
-        taskDefinition: {
-          obtainExecutionRole: () => this.executionRole,
-        },
-      });
-    }
+    // Lazy so this.executionRole can be filled by subclasses
+    this.logDriverConfig = Lazy.any({
+      produce: () => {
+        if (props.logging) {
+          return props.logging.bind(this, {
+            ...this as any,
+            // TS!
+            taskDefinition: {
+              obtainExecutionRole: () => this.executionRole,
+            },
+          });
+        }
+
+        return undefined;
+      },
+    }) as any;
+
     this.readonlyRootFilesystem = props.readonlyRootFilesystem ?? false;
     this.secrets = props.secrets;
     this.user = props.user;
@@ -768,6 +753,15 @@ export interface IEcsEc2ContainerDefinition extends IEcsContainerDefinition {
   readonly gpu?: number;
 
   /**
+   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
+   *
+   * @default - a Role will be created if logging is specified, no role otherwise
+   */
+  readonly executionRole?: iam.IRole;
+
+  /**
    * Add a ulimit to this container
    */
   addUlimit(ulimit: Ulimit): void;
@@ -799,21 +793,40 @@ export interface EcsEc2ContainerDefinitionProps extends EcsContainerDefinitionPr
    * @default - no gpus
    */
   readonly gpu?: number;
+
+  /**
+   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
+   *
+   * @default - a Role will be created if logging is specified, no role otherwise
+   */
+  readonly executionRole?: iam.IRole;
 }
 
 /**
  * A container orchestrated by ECS that uses EC2 resources
  */
 export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implements IEcsEc2ContainerDefinition {
-  readonly privileged?: boolean;
-  readonly ulimits: Ulimit[];
-  readonly gpu?: number;
+  public readonly privileged?: boolean;
+  public readonly ulimits: Ulimit[];
+  public readonly gpu?: number;
+
+  /**
+   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
+   *
+   * @default - a Role will be created if logging is specified, no role otherwise
+   */
+  public readonly executionRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: EcsEc2ContainerDefinitionProps) {
     super(scope, id, props);
     this.privileged = props.privileged;
     this.ulimits = props.ulimits ?? [];
     this.gpu = props.gpu;
+    this.executionRole = props.executionRole ?? (this.logDriverConfig ? createExecutionRole(this, 'ExecutionRole') : undefined);
   }
 
   /**
@@ -884,6 +897,15 @@ export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition 
    * @default LATEST
    */
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
+
+  /**
+   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
+   *
+   * @default - a Role will be created
+   */
+  readonly executionRole: iam.IRole;
 }
 
 /**
@@ -907,19 +929,38 @@ export interface EcsFargateContainerDefinitionProps extends EcsContainerDefiniti
    * @default LATEST
    */
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
+
+  /**
+   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
+   *
+   * @default - a Role will be created
+   */
+  readonly executionRole?: iam.IRole;
 }
 
 /**
  * A container orchestrated by ECS that uses Fargate resources
  */
 export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase implements IEcsFargateContainerDefinition {
-  readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
-  readonly assignPublicIp?: boolean;
+  public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
+  public readonly assignPublicIp?: boolean;
+
+  /**
+   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
+   *
+   * @default - a Role will be created
+   */
+  public readonly executionRole: iam.IRole;
 
   constructor(scope: Construct, id: string, props: EcsFargateContainerDefinitionProps) {
     super(scope, id, props);
     this.assignPublicIp = props.assignPublicIp;
     this.fargatePlatformVersion = props.fargatePlatformVersion;
+    this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole');
   }
 
   /**
@@ -936,4 +977,12 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
       },
     };
   };
+}
+
+function createExecutionRole(scope: Construct, id: string): iam.IRole {
+  return new iam.Role(scope, id, {
+    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+    // needed for cross-account access with TagParameterContainerImage
+    roleName: PhysicalName.GENERATE_IF_NEEDED,
+  });
 }
