@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import * as core from '../../lib';
+import { Resource, IResource } from '../../lib';
 import { ConstructTree } from '../../lib/validation/private/construct-tree';
 import { ReportTrace } from '../../lib/validation/private/trace';
 
@@ -40,6 +41,20 @@ describe('ReportTrace', () => {
           libraryVersion: expect.any(String),
           location: expect.stringMatching(/new MyStack \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
           path: 'MyStack/MyConstruct',
+          child: {
+            id: 'MyL2Resource',
+            construct: expect.stringMatching(/Resource/),
+            libraryVersion: expect.any(String),
+            location: expect.stringMatching(/new MyConstruct \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
+            path: 'MyStack/MyConstruct/MyL2Resource',
+            child: {
+              id: 'Resource',
+              construct: expect.stringMatching(/CfnResource/),
+              libraryVersion: expect.any(String),
+              location: expect.stringMatching(/new MyL2Resource \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
+              path: 'MyStack/MyConstruct/MyL2Resource/Resource',
+            },
+          },
         },
       });
     } finally {
@@ -73,20 +88,47 @@ describe('ReportTrace', () => {
         libraryVersion: expect.any(String),
         location: "Run with '--debug' to include location info",
         path: 'MyStack/MyConstruct',
+        child: {
+          id: 'MyL2Resource',
+          construct: expect.stringMatching(/Resource/),
+          libraryVersion: expect.any(String),
+          location: "Run with '--debug' to include location info",
+          path: 'MyStack/MyConstruct/MyL2Resource',
+          child: {
+            id: 'Resource',
+            construct: expect.stringMatching(/CfnResource/),
+            libraryVersion: expect.any(String),
+            location: "Run with '--debug' to include location info",
+            path: 'MyStack/MyConstruct/MyL2Resource/Resource',
+          },
+        },
       },
     });
   });
 });
 
-class MyConstruct extends Construct {
+interface IMyL2Resource extends IResource {}
+
+class MyL2Resource extends Resource implements IMyL2Resource {
+  public readonly constructPath: string;
   constructor(scope: Construct, id: string) {
     super(scope, id);
-    new core.CfnResource(this, 'Resource', {
+    const resource = new core.CfnResource(this, 'Resource', {
       type: 'AWS::CDK::TestResource',
       properties: {
         testProp1: 'testValue',
       },
     });
+    this.constructPath = resource.node.path;
+  }
+}
+
+class MyConstruct extends Construct {
+  public readonly constructPath: string;
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    const myResource = new MyL2Resource(this, 'MyL2Resource');
+    this.constructPath = myResource.constructPath;
   }
 }
 
@@ -95,6 +137,6 @@ class MyStack extends core.Stack {
   constructor(scope: Construct, id: string, props?: core.StackProps) {
     super(scope, id, props);
     const myConstruct = new MyConstruct(this, 'MyConstruct');
-    this.constructPath = myConstruct.node.path;
+    this.constructPath = myConstruct.constructPath;
   }
 }
