@@ -20,7 +20,7 @@ export interface IPlacementGroup extends IResource {
    *
    * @default 0
    */
-  partitions?: number;
+  readonly partitions?: number;
 
   /**
    * Places instances on distinct hardware. Spread placement groups are recommended for applications
@@ -159,9 +159,9 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
     return new Import(scope, id);
   }
 
-  partitions?: number;
-  spreadLevel?: PlacementGroupSpreadLevel;
-  strategy?: PlacementGroupStrategy;
+  public readonly partitions?: number;
+  public readonly spreadLevel?: PlacementGroupSpreadLevel;
+  public readonly strategy?: PlacementGroupStrategy;
 
   public readonly placementGroupName: string;
 
