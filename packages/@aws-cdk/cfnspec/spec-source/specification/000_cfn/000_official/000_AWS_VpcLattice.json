@@ -1,30 +1,13 @@
 {
-  "$version": "118.1.0",
+  "$version": "117.0.0",
   "PropertyTypes": {
     "AWS::VpcLattice::Listener.DefaultAction": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-listener-defaultaction.html",
       "Properties": {
-        "FixedResponse": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-listener-defaultaction.html#cfn-vpclattice-listener-defaultaction-fixedresponse",
-          "Required": false,
-          "Type": "FixedResponse",
-          "UpdateType": "Mutable"
-        },
         "Forward": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-listener-defaultaction.html#cfn-vpclattice-listener-defaultaction-forward",
-          "Required": false,
-          "Type": "Forward",
-          "UpdateType": "Mutable"
-        }
-      }
-    },
-    "AWS::VpcLattice::Listener.FixedResponse": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-listener-fixedresponse.html",
-      "Properties": {
-        "StatusCode": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-listener-fixedresponse.html#cfn-vpclattice-listener-fixedresponse-statuscode",
-          "PrimitiveType": "Integer",
           "Required": true,
+          "Type": "Forward",
           "UpdateType": "Mutable"
         }
       }
@@ -62,27 +45,10 @@
     "AWS::VpcLattice::Rule.Action": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-action.html",
       "Properties": {
-        "FixedResponse": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-action.html#cfn-vpclattice-rule-action-fixedresponse",
-          "Required": false,
-          "Type": "FixedResponse",
-          "UpdateType": "Mutable"
-        },
         "Forward": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-action.html#cfn-vpclattice-rule-action-forward",
-          "Required": false,
-          "Type": "Forward",
-          "UpdateType": "Mutable"
-        }
-      }
-    },
-    "AWS::VpcLattice::Rule.FixedResponse": {
-      "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-fixedresponse.html",
-      "Properties": {
-        "StatusCode": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-rule-fixedresponse.html#cfn-vpclattice-rule-fixedresponse-statuscode",
-          "PrimitiveType": "Integer",
           "Required": true,
+          "Type": "Forward",
           "UpdateType": "Mutable"
         }
       }
@@ -318,12 +284,6 @@
           "Required": false,
           "UpdateType": "Mutable"
         },
-        "ProtocolVersion": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-targetgroup-healthcheckconfig.html#cfn-vpclattice-targetgroup-healthcheckconfig-protocolversion",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Mutable"
-        },
         "UnhealthyThresholdCount": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-targetgroup-healthcheckconfig.html#cfn-vpclattice-targetgroup-healthcheckconfig-unhealthythresholdcount",
           "PrimitiveType": "Integer",
@@ -368,12 +328,6 @@
           "Required": false,
           "Type": "HealthCheckConfig",
           "UpdateType": "Mutable"
-        },
-        "IpAddressType": {
-          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-targetgroup-targetgroupconfig.html#cfn-vpclattice-targetgroup-targetgroupconfig-ipaddresstype",
-          "PrimitiveType": "String",
-          "Required": false,
-          "UpdateType": "Immutable"
         },
         "Port": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-vpclattice-targetgroup-targetgroupconfig.html#cfn-vpclattice-targetgroup-targetgroupconfig-port",
