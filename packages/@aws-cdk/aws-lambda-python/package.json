@@ -1,7 +1,7 @@
 {
-  "name": "@aws-cdk/aws-lambda-python",
+  "name": "@aws-cdk/aws-lambda-python-alpha",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "description": "The CDK Construct Library for AWS Lambda in Python",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,24 +9,28 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.lambda.python",
+        "package": "software.amazon.awscdk.services.lambda.python.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "lambda-python"
+          "artifactId": "lambda-python-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Lambda.Python",
-        "packageId": "Amazon.CDK.AWS.Lambda.Python",
+        "namespace": "Amazon.CDK.AWS.Lambda.Python.Alpha",
+        "packageId": "Amazon.CDK.AWS.Lambda.Python.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-lambda-python",
-        "module": "aws_cdk.aws_lambda_python",
+        "distName": "aws-cdk.aws-lambda-python-alpha",
+        "module": "aws_cdk.aws_lambda_python_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdklambdapythonalpha"
       }
     },
     "projectReferences": true,
@@ -72,24 +76,18 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
-    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^27.5.2"
+    "@types/jest": "^27.5.2",
+    "aws-cdk-lib": "0.0.0",
+    "constructs": "^10.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0"
   },
-  "dependencies": {
-    "@aws-cdk/aws-ec2": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "constructs": "^10.0.0"
-  },
+  "dependencies": {},
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-ec2": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -106,6 +104,17 @@
     ]
   },
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
+  },
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
   }
 }

@@ -1,5 +1,5 @@
-import { Template } from '@aws-cdk/assertions';
-import { App, Stack } from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import { App, Stack } from 'aws-cdk-lib';
 import * as glue from '../lib';
 
 let stack: Stack;

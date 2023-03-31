@@ -1,6 +1,6 @@
-import { Template } from '@aws-cdk/assertions';
-import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import { Stack } from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { Stack } from 'aws-cdk-lib';
 import { DomainName, HttpApi, ApiMapping, WebSocketApi } from '../../lib';
 
 const domainName = 'example.com';

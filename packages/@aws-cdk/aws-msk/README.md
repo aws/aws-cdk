@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
@@ -89,7 +83,7 @@ const cluster = msk.Cluster.fromClusterArn(this, 'Cluster',
 To enable client authentication with TLS set the `certificateAuthorityArns` property to reference your ACM Private CA. [More info on Private CAs.](https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html)
 
 ```ts
-import * as acmpca from '@aws-cdk/aws-acmpca';
+import * as acmpca from 'aws-cdk-lib/aws-acmpca';
 
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'Cluster', {
@@ -156,7 +150,7 @@ Enable client authentication with [IAM](https://docs.aws.amazon.com/msk/latest/d
 as well as enable client authentication with TLS by setting the `certificateAuthorityArns` property to reference your ACM Private CA. [More info on Private CAs.](https://docs.aws.amazon.com/msk/latest/developerguide/msk-authentication.html)
 
 ```ts
-import * as acmpca from '@aws-cdk/aws-acmpca';
+import * as acmpca from 'aws-cdk-lib/aws-acmpca';
 
 declare const vpc: ec2.Vpc;
 const cluster = new msk.Cluster(this, 'Cluster', {

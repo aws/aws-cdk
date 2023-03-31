@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
@@ -146,7 +147,7 @@ export function testAssembly(assembly: TestAssembly): cxapi.CloudAssembly {
  * to how they are stored on disk (upper cased). In real synthesis this is done
  * by a special tags formatter.
  *
- * @see @aws-cdk/core/lib/stack.ts
+ * @see aws-cdk-lib/lib/stack.ts
  */
 function patchStackTags(metadata: { [path: string]: cxschema.MetadataEntry[] }): { [path: string]: cxschema.MetadataEntry[] } {
 

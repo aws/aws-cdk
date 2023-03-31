@@ -1,7 +1,7 @@
-import { HttpApi } from '@aws-cdk/aws-apigatewayv2';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { HttpApi } from '@aws-cdk/aws-apigatewayv2-alpha';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { HttpNlbIntegration } from '../../lib';
 
 const app = new App();

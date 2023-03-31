@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.KafkaConnect"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.kafkaconnect"
+    },
+    "python": {
+      "module": "aws_cdk.aws_kafkaconnect"
+    }
+  }
+}
