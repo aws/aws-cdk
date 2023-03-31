@@ -91,7 +91,7 @@
     "@types/jest": "^27.5.2",
     "aws-cdk": "0.0.0",
     "constructs": "^10.0.0",
-    "jest": "^29.5.0",
+    "jest": "^27.5.1",
     "ts-node": "^10.9.1"
   },
   "repository": {
