@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { IEcsContainerDefinition } from './ecs-container-definition';
 import { Compatibility } from './ecs-job-definition';
-import { IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
+import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 
 
 interface IMultiNodeJobDefinition extends IJobDefinition {
@@ -123,7 +123,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     this.instanceType = props.instanceType;
 
     const resource = new CfnJobDefinition(this, 'Resource', {
-      ...this.resourceProps,
+      ...baseJobDefinitionProperties(this),
       type: 'multinode',
       jobDefinitionName: props.jobDefinitionName,
       nodeProperties: {

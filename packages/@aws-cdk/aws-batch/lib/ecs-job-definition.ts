@@ -2,7 +2,7 @@ import { ArnFormat, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { EcsEc2ContainerDefinition, IEcsContainerDefinition } from './ecs-container-definition';
-import { IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
+import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 
 /**
  * A JobDefinition that uses ECS orchestration
@@ -66,7 +66,7 @@ export class EcsJobDefinition extends JobDefinitionBase implements IEcsJobDefini
     this.container = props.container;
 
     const resource = new CfnJobDefinition(this, 'Resource', {
-      ...this.resourceProps,
+      ...baseJobDefinitionProperties(this),
       type: 'container',
       jobDefinitionName: props.jobDefinitionName,
       containerProperties: this.container?._renderContainerDefinition(),

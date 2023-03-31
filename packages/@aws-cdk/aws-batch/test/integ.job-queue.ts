@@ -42,7 +42,6 @@ queue.addComputeEnvironment(
   2,
 );
 
-
 new integ.IntegTest(app, 'BatchEcsJobDefinitionTest', {
   testCases: [stack],
 });

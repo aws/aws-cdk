@@ -263,9 +263,6 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
   public readonly schedulingPriority?: number;
   public readonly timeout?: Duration;
 
-
-  protected resourceProps: CfnJobDefinitionProps;
-
   constructor(scope: Construct, id: string, props?: JobDefinitionProps) {
     super(scope, id, {
       physicalName: props?.jobDefinitionName,
@@ -277,35 +274,40 @@ export abstract class JobDefinitionBase extends Resource implements IJobDefiniti
     this.retryStrategies = props?.retryStrategies ?? [];
     this.schedulingPriority = props?.schedulingPriority;
     this.timeout = props?.timeout;
-
-    this.resourceProps = {
-      parameters: this.parameters,
-      propagateTags: this.propagateTags,
-      retryStrategy: {
-        attempts: this.retryAttempts,
-        evaluateOnExit: Lazy.any({
-          produce: () => {
-            if (this.retryStrategies.length === 0) {
-              return undefined;
-            }
-            return this.retryStrategies.map((strategy) => {
-              return {
-                action: strategy.action,
-                ...strategy.on,
-              };
-            });
-          },
-        }),
-      },
-      schedulingPriority: this.schedulingPriority,
-      timeout: {
-        attemptDurationSeconds: this.timeout?.toSeconds(),
-      },
-      type: 'dummy',
-    };
   }
 
   addRetryStrategy(strategy: RetryStrategy): void {
     this.retryStrategies.push(strategy);
   }
+}
+
+/**
+ * @internal
+ */
+export function baseJobDefinitionProperties(baseJobDefinition: JobDefinitionBase): CfnJobDefinitionProps {
+  return {
+    parameters: baseJobDefinition.parameters,
+    propagateTags: baseJobDefinition.propagateTags,
+    retryStrategy: {
+      attempts: baseJobDefinition.retryAttempts,
+      evaluateOnExit: Lazy.any({
+        produce: () => {
+          if (baseJobDefinition.retryStrategies.length === 0) {
+            return undefined;
+          }
+          return baseJobDefinition.retryStrategies.map((strategy) => {
+            return {
+              action: strategy.action,
+              ...strategy.on,
+            };
+          });
+        },
+      }),
+    },
+    schedulingPriority: baseJobDefinition.schedulingPriority,
+    timeout: {
+      attemptDurationSeconds: baseJobDefinition.timeout?.toSeconds(),
+    },
+    type: 'dummy',
+  };
 }

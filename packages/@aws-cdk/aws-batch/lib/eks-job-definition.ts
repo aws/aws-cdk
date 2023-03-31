@@ -2,7 +2,7 @@ import { ArnFormat, Lazy, Stack } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnJobDefinition } from './batch.generated';
 import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
-import { IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
+import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 
 /**
  * A JobDefinition that uses Eks orchestration
@@ -12,7 +12,6 @@ export interface IEksJobDefinition extends IJobDefinition {
    * The container this Job Definition will run
    */
   readonly container: EksContainerDefinition;
-
 
   /**
    * The DNS Policy of the pod used by this Job Definition
@@ -158,7 +157,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
     this.serviceAccount = props.serviceAccount;
 
     const resource = new CfnJobDefinition(this, 'Resource', {
-      ...this.resourceProps,
+      ...baseJobDefinitionProperties(this),
       type: 'container',
       jobDefinitionName: props.jobDefinitionName,
       eksProperties: {

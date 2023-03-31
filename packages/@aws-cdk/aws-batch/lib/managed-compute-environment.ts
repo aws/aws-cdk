@@ -1198,22 +1198,22 @@ function validateVCpus(id: string, minvCpus: number, maxvCpus: number): void {
   }
 }
 
-function baseManagedResourceProperties(props: ManagedComputeEnvironmentBase, subnetIds: string[]) {
+function baseManagedResourceProperties(baseComputeEnvironment: ManagedComputeEnvironmentBase, subnetIds: string[]) {
   return {
-    serviceRole: props.serviceRole?.roleArn,
-    state: props.enabled ? 'ENABLED' : 'DISABLED',
+    serviceRole: baseComputeEnvironment.serviceRole?.roleArn,
+    state: baseComputeEnvironment.enabled ? 'ENABLED' : 'DISABLED',
     computeResources: {
-      maxvCpus: props.maxvCpus,
+      maxvCpus: baseComputeEnvironment.maxvCpus,
       type: 'managed',
-      updateToLatestImageVersion: props.updateToLatestImageVersion,
-      securityGroupIds: props.securityGroups.map((securityGroup) => securityGroup.securityGroupId),
+      updateToLatestImageVersion: baseComputeEnvironment.updateToLatestImageVersion,
+      securityGroupIds: baseComputeEnvironment.securityGroups.map((securityGroup) => securityGroup.securityGroupId),
       subnets: subnetIds,
     },
     updatePolicy: {
-      terminateJobsOnUpdate: props.terminateOnUpdate,
-      jobExecutionTimeoutMinutes: props.updateTimeout?.toMinutes(),
+      terminateJobsOnUpdate: baseComputeEnvironment.terminateOnUpdate,
+      jobExecutionTimeoutMinutes: baseComputeEnvironment.updateTimeout?.toMinutes(),
     },
-    replaceComputeEnvironment: props.replaceComputeEnvironment,
+    replaceComputeEnvironment: baseComputeEnvironment.replaceComputeEnvironment,
     type: 'managed',
   };
 }
