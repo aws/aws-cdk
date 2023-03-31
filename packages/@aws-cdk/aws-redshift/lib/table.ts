@@ -306,7 +306,7 @@ export class Table extends TableBase {
   private validateDistKeyColumns(columns: Column[]): void {
     try {
       getDistKeyColumn(columns);
-    } catch (err) {
+    } catch {
       throw new Error('Only one column can be configured as distKey.');
     }
   }

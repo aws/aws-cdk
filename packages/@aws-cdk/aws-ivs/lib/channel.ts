@@ -1,4 +1,5 @@
 import * as core from '@aws-cdk/core';
+import { Lazy, Names } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { CfnChannel } from './ivs.generated';
 import { StreamKey } from './stream-key';
@@ -93,11 +94,11 @@ export interface ChannelProps {
   readonly latencyMode?: LatencyMode;
 
   /**
-   * Channel name.
+   * A name for the channel.
    *
-   * @default - None
+   * @default Automatically generated name
    */
-  readonly name?: string;
+  readonly channelName?: string;
 
   /**
    * The channel type, which determines the allowable resolution and bitrate.
@@ -152,17 +153,19 @@ export class Channel extends ChannelBase {
 
   constructor(scope: Construct, id: string, props: ChannelProps = {}) {
     super(scope, id, {
-      physicalName: props.name,
+      physicalName: props.channelName ?? Lazy.string({
+        produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '-_' }),
+      }),
     });
 
-    if (props.name && !core.Token.isUnresolved(props.name) && !/^[a-zA-Z0-9-_]*$/.test(props.name)) {
-      throw new Error(`name must contain only numbers, letters, hyphens and underscores, got: '${props.name}'`);
+    if (this.physicalName && !core.Token.isUnresolved(this.physicalName) && !/^[a-zA-Z0-9-_]*$/.test(this.physicalName)) {
+      throw new Error(`channelName must contain only numbers, letters, hyphens and underscores, got: '${this.physicalName}'`);
     }
 
     const resource = new CfnChannel(this, 'Resource', {
       authorized: props.authorized,
       latencyMode: props.latencyMode,
-      name: props.name,
+      name: this.physicalName,
       type: props.type,
     });
 
