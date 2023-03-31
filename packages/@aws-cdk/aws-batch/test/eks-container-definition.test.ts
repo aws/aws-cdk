@@ -155,7 +155,7 @@ describe('eks container', () => {
     new EksJobDefinition(stack, 'ECSJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
-        memoryLimitMiB: 2048,
+        memoryLimit: Size.mebibytes(2048),
       }),
     });
 
@@ -178,12 +178,12 @@ describe('eks container', () => {
     });
   });
 
-  test('respects memoryReservationMiB', () => {
+  test('respects memoryReservation', () => {
     // WHEN
     new EksJobDefinition(stack, 'ECSJobDefn', {
       container: new EksContainerDefinition(stack, 'EcsEc2Container', {
         ...defaultContainerProps,
-        memoryReservationMiB: 2048,
+        memoryReservation: Size.mebibytes(2048),
       }),
     });
 
@@ -269,8 +269,8 @@ describe('eks container', () => {
         ...defaultContainerProps,
         cpuLimit: 256,
         cpuReservation: 128,
-        memoryLimitMiB: 2048,
-        memoryReservationMiB: 2048,
+        memoryLimit: Size.mebibytes(2048),
+        memoryReservation: Size.mebibytes(2048),
         gpuLimit: 20,
         gpuReservation: 10,
       }),

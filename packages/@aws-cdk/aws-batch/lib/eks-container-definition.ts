@@ -79,7 +79,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * Must be larger that 4 MiB
    *
-   * At least one of memoryLimitMiB and memoryReservationMiB is required
+   * At least one of `memoryLimit` and `memoryReservation` is required
    *
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
@@ -89,7 +89,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default - No memory limit
    */
-  readonly memoryLimitMiB?: number;
+  readonly memoryLimit?: Size;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
@@ -103,8 +103,8 @@ export interface IEksContainerDefinition extends IConstruct {
    * parameter (if applicable), or all of the available memory on the container
    * instance, whichever comes first.
    *
-   * At least one of `memoryLimitMiB` and `memoryReservationMiB` is required.
-   * If both are specified, then `memoryLimitMib` must be equal to `memoryReservationMiB`
+   * At least one of `memoryLimit` and `memoryReservation` is required.
+   * If both are specified, then `memoryLimit` must be equal to `memoryReservation`
    *
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
@@ -114,7 +114,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * @default - No memory reserved
    */
-  readonly memoryReservationMiB?: number;
+  readonly memoryReservation?: Size;
 
   /**
    * The hard limit of CPUs to present to this container.
@@ -359,7 +359,7 @@ export interface EksContainerDefinitionProps {
    *
    * Must be larger that 4 MiB
    *
-   * At least one of memoryLimitMiB and memoryReservationMiB is required
+   * At least one of `memoryLimit` and `memoryReservation` is required
    *
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
@@ -369,7 +369,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - No memory limit
    */
-  readonly memoryLimitMiB?: number;
+  readonly memoryLimit?: Size;
 
   /**
    * The soft limit (in MiB) of memory to reserve for the container.
@@ -383,8 +383,8 @@ export interface EksContainerDefinitionProps {
    * parameter (if applicable), or all of the available memory on the container
    * instance, whichever comes first.
    *
-   * At least one of `memoryLimitMiB` and `memoryReservationMiB` is required.
-   * If both are specified, then `memoryLimitMib` must be equal to `memoryReservationMiB`
+   * At least one of `memoryLimit` and `memoryReservation` is required.
+   * If both are specified, then `memoryLimit` must be equal to `memoryReservation`
    *
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
@@ -394,7 +394,7 @@ export interface EksContainerDefinitionProps {
    *
    * @default - No memory reserved
    */
-  readonly memoryReservationMiB?: number;
+  readonly memoryReservation?: Size;
 
   /**
    * The hard limit of CPUs to present to this container.
@@ -538,8 +538,8 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
   public readonly env?: { [key:string]: string };
   public readonly imagePullPolicy?: ImagePullPolicy;
   public readonly name?: string;
-  public readonly memoryLimitMiB?: number;
-  public readonly memoryReservationMiB?: number;
+  public readonly memoryLimit?: Size;
+  public readonly memoryReservation?: Size;
   public readonly cpuLimit?: number;
   public readonly cpuReservation?: number;
   public readonly gpuLimit?: number;
@@ -562,8 +562,8 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
     this.env = props.env;
     this.imagePullPolicy = props.imagePullPolicy;
     this.name = props.name;
-    this.memoryLimitMiB = props.memoryLimitMiB;
-    this.memoryReservationMiB = props.memoryReservationMiB;
+    this.memoryLimit = props.memoryLimit;
+    this.memoryReservation = props.memoryReservation;
     this.cpuLimit = props.cpuLimit;
     this.cpuReservation = props.cpuReservation;
     this.gpuLimit = props.gpuLimit;
@@ -601,12 +601,12 @@ export class EksContainerDefinition extends Construct implements IEksContainerDe
       resources: {
         limits: {
           'cpu': this.cpuLimit,
-          'memory': this.memoryLimitMiB ? this.memoryLimitMiB + 'Mi' : undefined,
+          'memory': this.memoryLimit ? this.memoryLimit.toMebibytes() + 'Mi' : undefined,
           'nvidia.com/gpu': this.gpuLimit,
         },
         requests: {
           'cpu': this.cpuReservation,
-          'memory': this.memoryReservationMiB ? this.memoryReservationMiB + 'Mi' : undefined,
+          'memory': this.memoryReservation ? this.memoryReservation.toMebibytes() + 'Mi' : undefined,
           'nvidia.com/gpu': this.gpuReservation,
         },
       },

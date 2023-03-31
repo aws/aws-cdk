@@ -213,7 +213,7 @@ describe('ecs container', () => {
         linuxParameters: new LinuxParameters(stack, 'linuxParameters', {
           initProcessEnabled: true,
           maxSwap: Size.kibibytes(4096),
-          sharedMemorySize: 256,
+          sharedMemorySize: Size.mebibytes(256),
           swappiness: 30,
         }),
       }),

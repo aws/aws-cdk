@@ -18,7 +18,7 @@ export interface LinuxParametersProps {
    *
    * @default No shared memory.
    */
-  readonly sharedMemorySize?: number;
+  readonly sharedMemorySize?: cdk.Size;
 
   /**
    * The total amount of swap memory a container can use. This parameter
@@ -59,7 +59,7 @@ export class LinuxParameters extends Construct {
   /**
    * The shared memory size (in MiB). Not valid for Fargate launch type
    */
-  protected readonly sharedMemorySize?: number;
+  protected readonly sharedMemorySize?: cdk.Size;
 
   /**
    * The max swap memory
@@ -97,14 +97,6 @@ export class LinuxParameters extends Construct {
 
   private validateProps(props: LinuxParametersProps) {
     if (
-      !cdk.Token.isUnresolved(props.sharedMemorySize) &&
-      props.sharedMemorySize !== undefined &&
-      (!Number.isInteger(props.sharedMemorySize) || props.sharedMemorySize < 0)
-    ) {
-      throw new Error(`sharedMemorySize: Must be an integer greater than 0; received ${props.sharedMemorySize}.`);
-    }
-
-    if (
       !cdk.Token.isUnresolved(props.swappiness) &&
       props.swappiness !== undefined &&
       (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)
@@ -137,7 +129,7 @@ export class LinuxParameters extends Construct {
   public renderLinuxParameters(): CfnJobDefinition.LinuxParametersProperty {
     return {
       initProcessEnabled: this.initProcessEnabled,
-      sharedMemorySize: this.sharedMemorySize,
+      sharedMemorySize: this.sharedMemorySize?.toMebibytes(),
       maxSwap: this.maxSwap?.toMebibytes(),
       swappiness: this.swappiness,
       devices: cdk.Lazy.any({ produce: () => this.devices.map(renderDevice) }, { omitEmptyArray: true }),
