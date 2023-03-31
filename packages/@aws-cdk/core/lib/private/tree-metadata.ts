@@ -86,6 +86,47 @@ export class TreeMetadata extends Construct {
   }
 
   /**
+   * Each node will only have 1 level up (node.parent.parent will always be undefined)
+   * so we need to reconstruct the node making sure the parents are set
+   */
+  private getNodeWithParents(node: Node): Node {
+    if (!this._tree) {
+      throw new Error(`attempting to get node branch for ${node.path}, but the tree has not been created yet!`);
+    }
+    let tree = node;
+    if (node.parent) {
+      tree = {
+        ...node,
+        parent: this.getNodeWithParents(this._tree[node.parent.path]),
+      };
+    }
+    return tree;
+  }
+
+  /**
+   * Construct a new tree with only the nodes that we care about.
+   * Normally each node can contain many child nodes, but we only care about the
+   * tree that leads to a specific construct so drop any nodes not in that path
+   *
+   * @param node Node the current tree node
+   * @param child Node the previous tree node and the current node's child node
+   * @returns Node the new tree
+   */
+  private renderTreeWithChildren(node: Node, child?: Node): Node {
+    if (node.parent) {
+      return this.renderTreeWithChildren(node.parent, node);
+    } else if (child) {
+      return {
+        ...node,
+        children: {
+          [child.id]: child,
+        },
+      };
+    }
+    return node;
+  }
+
+  /**
    * This gets a specific "branch" of the tree for a given construct path.
    * It will return the root Node of the tree with non-relevant branches filtered
    * out (i.e. node children that don't traverse to the given construct path)
@@ -97,24 +138,8 @@ export class TreeMetadata extends Construct {
       throw new Error(`attempting to get node branch for ${constructPath}, but the tree has not been created yet!`);
     }
     const tree = this._tree[constructPath];
-    const newTree: Node = {
-      id: tree.id,
-      path: tree.path,
-      attributes: tree.attributes,
-      constructInfo: tree.constructInfo,
-      // need to re-add the parent because the current node
-      // won't have the parent's parent
-      parent: tree.parent ? this._tree[tree.parent.path] : undefined,
-    };
-    // need the properties to be mutable
-    let branch = newTree as any;
-    do {
-      branch.parent.children = {
-        [branch.id]: branch,
-      };
-      branch = branch.parent;
-    } while (branch.parent);
-    return branch;
+    const treeWithParents = this.getNodeWithParents(tree);
+    return this.renderTreeWithChildren(treeWithParents);
   }
 
   private synthAttributes(construct: IConstruct): { [key: string]: any } | undefined {
