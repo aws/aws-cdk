@@ -125,14 +125,26 @@ export class ConstructTree {
         } else {
           trace = construct.node.defaultChild?.node.metadata.find(meta => !!meta.trace)?.trace ?? [];
         }
-        // the top item is never pointing to anything relevant
-        trace.shift();
         // take just the items we need and reverse it since we are
-        // displaying to trace bottom up
+        // displaying the trace bottom up
         return Object.create(trace.slice(0, size));
       }
     }
     return [];
+  }
+
+  /**
+   * Only the `CfnResource` constructs contain the trace information
+   * So we need to go down the tree and find that resource (its always the last one)
+   *
+   * @param node Node the entire tree where the bottom is the violating resource
+   * @return Node the bottom of the tree which will be the violating resource
+   */
+  private getNodeWithTrace(node: Node): Node {
+    if (node.children) {
+      return this.getNodeWithTrace(this.getChild(node.children));
+    }
+    return node;
   }
 
   /**
@@ -149,23 +161,11 @@ export class ConstructTree {
 
     const size = this.nodeSize(node);
 
-    // the first time through the node will
-    // be the root of the tree. We need to go
-    // down the tree until we get to the bottom which
-    // will be the resource with the violation and it
-    // will contain the trace info
-    let child = node;
-    if (!locations) {
-      do {
-        if (child.children) {
-          child = this.getChild(child.children);
-        }
-      } while (child.children);
-    }
-    const metadata = (locations ?? this.getTraceMetadata(size, child));
+    const nodeWithTrace = this.getNodeWithTrace(node);
+    const metadata = (locations ?? this.getTraceMetadata(size, nodeWithTrace));
     const thisLocation = metadata.pop();
 
-    let constructTrace: ConstructTrace = {
+    const constructTrace: ConstructTrace = {
       id: node.id,
       path: node.path,
       // the "child" trace will be the "parent" node
@@ -190,7 +190,7 @@ export class ConstructTree {
   }
 
   /**
-   * Get the size of a Node
+   * Get the size of a Node, i.e. how many levels is it
    */
   private nodeSize(node: Node): number {
     let size = 1;
