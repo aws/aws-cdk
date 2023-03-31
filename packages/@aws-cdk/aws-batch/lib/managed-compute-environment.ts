@@ -630,7 +630,13 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedComputeEnvironmentBa
     this.images = props.images;
     this.allocationStrategy = determineAllocationStrategy(id, props.allocationStrategy, this.spot);
     this.spotBidPercentage = props.spotBidPercentage;
-    this.spotFleetRole = props.spotFleetRole ?? (this.spot ? createSpotFleetRole(this) : undefined);
+
+    this.spotFleetRole = props.spotFleetRole ?? (
+      this.spot && this.allocationStrategy === AllocationStrategy.BEST_FIT
+        ? createSpotFleetRole(this)
+        : undefined
+    );
+
     this.instanceTypes = props.instanceTypes ?? [];
     this.instanceClasses = props.instanceClasses ?? [];
 
@@ -770,15 +776,6 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
   readonly instanceRole?: iam.IRole;
 
   /**
-   * The service-linked role that Spot Fleet needs to launch instances on your behalf.
-   *
-   * @see https://docs.aws.amazon.com/batch/latest/userguide/spot_fleet_IAM_role.html
-   *
-   * @default - a new role will be created
-   */
-  readonly spotFleetRole?: iam.IRole;
-
-  /**
    * The Launch Template that this Compute Environment
    * will use to provision EC2 Instances.
    *
@@ -915,15 +912,6 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
   readonly instanceRole?: iam.IRole;
 
   /**
-   * The service-linked role that Spot Fleet needs to launch instances on your behalf.
-   *
-   * @see https://docs.aws.amazon.com/batch/latest/userguide/spot_fleet_IAM_role.html
-   *
-   * @default - a new role will be created
-   */
-  readonly spotFleetRole?: iam.IRole;
-
-  /**
    * The Launch Template that this Compute Environment
    * will use to provision EC2 Instances.
    *
@@ -973,7 +961,6 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
   public readonly images?: EksMachineImage[];
   public readonly allocationStrategy?: AllocationStrategy;
   public readonly spotBidPercentage?: number;
-  public readonly spotFleetRole?: iam.IRole | undefined;
   public readonly instanceTypes: ec2.InstanceType[];
   public readonly instanceClasses: ec2.InstanceClass[];
   public readonly instanceRole?: iam.IRole;
@@ -995,7 +982,6 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
       throw new Error(`ManagedEc2EksComputeEnvironment '${id}' uses invalid allocation strategy 'AllocationStrategy.BEST_FIT'`);
     }
     this.spotBidPercentage = props.spotBidPercentage;
-    this.spotFleetRole = props.spotFleetRole ?? (this.spot ? createSpotFleetRole(this) : undefined);
     this.instanceTypes = props.instanceTypes ?? [];
     this.instanceClasses = props.instanceClasses ?? [];
 
@@ -1008,7 +994,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
     this.placementGroup = props.placementGroup;
 
     validateVCpus(id, this.minvCpus, this.maxvCpus);
-    validateSpotConfig(id, this.spot, this.spotBidPercentage, this.spotFleetRole);
+    validateSpotConfig(id, this.spot, this.spotBidPercentage);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     const resource = new CfnComputeEnvironment(this, 'Resource', {
@@ -1024,7 +1010,6 @@ export class ManagedEc2EksComputeEnvironment extends ManagedComputeEnvironmentBa
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({ produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses) }),
         type: this.spot ? 'SPOT' : 'EC2',
-        spotIamFleetRole: this.spotFleetRole?.roleArn,
         allocationStrategy: this.allocationStrategy,
         bidPercentage: this.spotBidPercentage,
         launchTemplate: this.launchTemplate ? {

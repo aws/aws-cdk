@@ -168,7 +168,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
-  test('spot => AllocationStrategy.SPOT_CAPACITY_OPTIMIZED and a default spot fleet role is created', () => {
+  test('spot => AllocationStrategy.SPOT_CAPACITY_OPTIMIZED', () => {
     // WHEN
     new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
@@ -183,7 +183,6 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
         ...defaultComputeResources,
         Type: 'SPOT',
         AllocationStrategy: 'SPOT_CAPACITY_OPTIMIZED',
-        SpotIamFleetRole: { 'Fn::GetAtt': ['MyCESpotFleetRole70BE30A0', 'Arn'] },
       },
     });
   });
@@ -565,30 +564,6 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
-  test('respects spotFleetRole', () => {
-    // WHEN
-    new ComputeEnvironment(stack, 'MyCE', {
-      ...defaultProps,
-      spot: true,
-      spotFleetRole: new Role(stack, 'SpotFleetRole', {
-        assumedBy: new ArnPrincipal('arn:aws:iam:123456789012:magicuser/foobar'),
-      }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
-      ...expectedProps,
-      ComputeResources: {
-        ...defaultComputeResources,
-        AllocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
-        Type: 'SPOT',
-        SpotIamFleetRole: {
-          'Fn::GetAtt': ['SpotFleetRole6D4F7558', 'Arn'],
-        },
-      },
-    });
-  });
-
   test('can be imported from arn', () => {
     // WHEN
     const ce = ManagedEc2EcsComputeEnvironment.fromManagedEc2EcsComputeEnvironmentArn(stack, 'import', 'arn:aws:batch:us-east-1:123456789012:compute-environment/ce-name');
@@ -667,18 +642,6 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotBidPercentage' < 0/);
   });
 
-  test('throws when spotFleetRole is specified without spot', () => {
-    // WHEN
-    expect(() => {
-      new ComputeEnvironment(stack, 'MyCE', {
-        ...defaultProps,
-        spotFleetRole: new Role(stack, 'SpotFleetRole', {
-          assumedBy: new ArnPrincipal('arn:aws:iam:123456789012:magicuser/foobar'),
-        }),
-      });
-    }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotFleetRole' without specifying 'spot'/);
-  });
-
   test('throws error when minvCpus > maxvCpus', () => {
     // THEN
     expect(() => {
@@ -724,6 +687,30 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
     };
   });
 
+  test('respects spotFleetRole', () => {
+    // WHEN
+    new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+      ...defaultEcsProps,
+      spot: true,
+      spotFleetRole: new Role(stack, 'SpotFleetRole', {
+        assumedBy: new ArnPrincipal('arn:aws:iam:123456789012:magicuser/foobar'),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...pascalCaseExpectedEcsProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        AllocationStrategy: AllocationStrategy.SPOT_CAPACITY_OPTIMIZED,
+        Type: 'SPOT',
+        SpotIamFleetRole: {
+          'Fn::GetAtt': ['SpotFleetRole6D4F7558', 'Arn'],
+        },
+      },
+    });
+  });
+
   test('image types are correctly rendered as EC2ConfigurationObjects', () => {
     // WHEN
     new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
@@ -766,6 +753,39 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
         AllocationStrategy: 'BEST_FIT',
       },
     });
+  });
+
+  test('spot and AllocationStrategy.BEST_FIT => a default spot fleet role is created', () => {
+    // WHEN
+    new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      spot: true,
+      allocationStrategy: AllocationStrategy.BEST_FIT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...pascalCaseExpectedEcsProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        Type: 'SPOT',
+        AllocationStrategy: 'BEST_FIT',
+        SpotIamFleetRole: { 'Fn::GetAtt': ['MyCESpotFleetRole70BE30A0', 'Arn'] },
+      },
+    });
+  });
+
+  test('throws when spotFleetRole is specified without spot', () => {
+    // WHEN
+    expect(() => {
+      new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+        ...defaultEcsProps,
+        spotFleetRole: new Role(stack, 'SpotFleetRole', {
+          assumedBy: new ArnPrincipal('arn:aws:iam:123456789012:magicuser/foobar'),
+        }),
+      });
+    }).toThrow(/Managed ComputeEnvironment 'MyCE' specifies 'spotFleetRole' without specifying 'spot'/);
   });
 });
 
