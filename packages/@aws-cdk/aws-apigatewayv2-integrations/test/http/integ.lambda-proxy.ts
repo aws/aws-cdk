@@ -1,6 +1,6 @@
-import { HttpApi } from '@aws-cdk/aws-apigatewayv2';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { HttpApi } from '@aws-cdk/aws-apigatewayv2-alpha';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { HttpLambdaIntegration } from '../../lib';
 
 /*

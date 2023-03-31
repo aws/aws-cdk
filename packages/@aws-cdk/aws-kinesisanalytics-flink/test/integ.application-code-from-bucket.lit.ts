@@ -1,6 +1,6 @@
 import * as path from 'path';
-import * as assets from '@aws-cdk/aws-s3-assets';
-import * as core from '@aws-cdk/core';
+import * as assets from 'aws-cdk-lib/aws-s3-assets';
+import * as core from 'aws-cdk-lib';
 import * as flink from '../lib';
 
 const app = new core.App();

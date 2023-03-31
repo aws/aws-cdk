@@ -1,32 +1,36 @@
 {
-  "name": "@aws-cdk/cli-lib",
+  "name": "@aws-cdk/cli-lib-alpha",
   "description": "AWS CDK Programmatic CLI library",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "main": "lib/main.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.Cli.Lib",
-        "packageId": "Amazon.CDK.Cli.Lib",
+        "namespace": "Amazon.CDK.Cli.Lib.Alpha",
+        "packageId": "Amazon.CDK.Cli.Lib.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.cli.lib",
+        "package": "software.amazon.awscdk.cli.lib.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cdk-cli-lib"
+          "artifactId": "cdk-cli-lib-alpha"
         }
       },
       "python": {
-        "distName": "aws-cdk.cli-lib",
-        "module": "aws_cdk.cli_lib",
+        "distName": "aws-cdk.cli-lib-alpha",
+        "module": "aws_cdk.cli_lib_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkclilibalpha"
       }
     },
     "projectReferences": true,
@@ -58,7 +62,7 @@
   },
   "awslint": {
     "exclude": [
-      "construct-ctor:@aws-cdk/cli-lib.AwsCdkCli"
+      "*:*"
     ]
   },
   "cdk-build": {
@@ -82,8 +86,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/node-bundle": "0.0.0",
+    "aws-cdk-lib": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
     "aws-cdk": "0.0.0",
@@ -112,5 +115,13 @@
   },
   "awscdkio": {
     "announce": false
-  }
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
+  },
+  "dependencies": {},
+  "peerDependencies": {}
 }

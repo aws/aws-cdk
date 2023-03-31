@@ -1,8 +1,8 @@
-import { IVpc } from '@aws-cdk/aws-ec2';
-import { Resource, Token } from '@aws-cdk/core';
+import { IVpc } from 'aws-cdk-lib/aws-ec2';
+import { Resource, Token } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IFirewallRuleGroup } from './firewall-rule-group';
-import { CfnFirewallRuleGroupAssociation } from './route53resolver.generated';
+import { CfnFirewallRuleGroupAssociation } from 'aws-cdk-lib/aws-route53resolver';
 
 /**
  * Options for a Firewall Rule Group Association

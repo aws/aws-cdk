@@ -2,13 +2,20 @@ import * as fs from 'fs-extra';
 import * as glob from 'glob';
 import * as path from 'path';
 
+let awsCdkLibPath: string;
 const modules: string[] = [];
+const awsCdkLibModules: string[] = [];
 
 export function findModulePath(fuzz: string): string {
   discoverModules();
 
   const regex = new RegExp(`[-_/]${fuzz}$`)
-  const matched = modules.filter(m => regex.test(m));
+  const matched = [
+    ...modules.filter(m => regex.test(m)),
+    ...(awsCdkLibModules.some(m => regex.test(m)) ? [awsCdkLibPath] : []),
+  ];
+  console.log({ matched });
+
   if (matched.length === 0) {
     throw new Error(`No module with name '${fuzz}' in the repo`);
   } else if (matched.length > 1) {
@@ -27,16 +34,32 @@ function discoverModules() {
     const repoRoot = process.env.REPO_ROOT;
     const lernaConfig = require(path.join(repoRoot, 'lerna.json'));
     const searchPaths: string[] = lernaConfig.packages;
+    awsCdkLibPath = path.join(repoRoot, 'packages', 'aws-cdk-lib');
     searchPaths.forEach(p => {
       const globMatches = glob.sync(path.join(repoRoot, p, 'package.json'));
       const trimmed = globMatches.map(m => path.dirname(m));
       modules.push(...trimmed);
     });
+    discoverAwsCdkLibModules();
 
-    if (modules.length === 0) {
+    if (modules.length === 0 || awsCdkLibModules.length === 0) {
       throw new Error('unexpected: discovered no modules. ' +
         'Check that you have set REPO_ROOT correctly.');
     }
+  }
+}
+
+function discoverAwsCdkLibModules() {
+  if (!process.env.REPO_ROOT) {
+    throw new Error('env REPO_ROOT must be set');
+  }
+
+  if (awsCdkLibModules.length === 0) {
+    const pkgJson = fs.readJsonSync(path.join(awsCdkLibPath, 'package.json'));
+    Object.keys(pkgJson.exports ?? {}).forEach((exportKey) => {
+      const formatted = exportKey.replace('./', '');
+      awsCdkLibModules.push(formatted);
+    });
   }
 }
 

@@ -25,7 +25,6 @@ phases:
   build:
     commands:
       - /bin/bash ./build.sh
-      - /bin/bash ./scripts/transform.sh
       # After compilation, run Rosetta (using the cache if available).
       # This will print errors, and fail the build if there are compilation errors in any packages marked as 'strict'.
       - /bin/bash ./scripts/run-rosetta.sh

@@ -1,10 +1,10 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ContainerImage } from './container-image';
 import { ModelData } from './model-data';
-import { CfnModel } from './sagemaker.generated';
+import { CfnModel } from 'aws-cdk-lib/aws-sagemaker';
 
 /**
  * Interface that defines a Model resource.

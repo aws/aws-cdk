@@ -1,0 +1,38 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const sfn = require("aws-cdk-lib/aws-stepfunctions");
+const cdk = require("aws-cdk-lib");
+const aws_stepfunctions_tasks_1 = require("aws-cdk-lib/aws-stepfunctions-tasks");
+/*
+ * Stack verification steps:
+ * * aws stepfunctions start-execution --state-machine-arn <deployed state machine arn> : should return execution arn
+ * * aws stepfunctions describe-execution --execution-arn <exection-arn generated before> : should return status as SUCCEEDED and a query-execution-id
+ * * aws athena get-query-execution --query-execution-id <query-execution-id generated before> : should return QueryExecution
+ */
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-athena-start-query-execution-integ');
+const startQueryExecutionJob = new aws_stepfunctions_tasks_1.AthenaStartQueryExecution(stack, 'Start Athena Query', {
+    queryString: sfn.JsonPath.stringAt('$.queryString'),
+    queryExecutionContext: {
+        databaseName: 'mydatabase',
+    },
+    resultConfiguration: {
+        encryptionConfiguration: {
+            encryptionOption: aws_stepfunctions_tasks_1.EncryptionOption.S3_MANAGED,
+        },
+        outputLocation: {
+            bucketName: 'query-results-bucket',
+            objectKey: 'folder',
+        },
+    },
+});
+const chain = sfn.Chain.start(startQueryExecutionJob);
+const sm = new sfn.StateMachine(stack, 'StateMachine', {
+    definition: chain,
+    timeout: cdk.Duration.seconds(30),
+});
+new cdk.CfnOutput(stack, 'stateMachineArn', {
+    value: sm.stateMachineArn,
+});
+app.synth();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuc3RhcnQtcXVlcnktZXhlY3V0aW9uLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiaW50ZWcuc3RhcnQtcXVlcnktZXhlY3V0aW9uLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEscURBQXFEO0FBQ3JELG1DQUFtQztBQUNuQyxpRkFBa0c7QUFFbEc7Ozs7O0dBS0c7QUFDSCxNQUFNLEdBQUcsR0FBRyxJQUFJLEdBQUcsQ0FBQyxHQUFHLEVBQUUsQ0FBQztBQUMxQixNQUFNLEtBQUssR0FBRyxJQUFJLEdBQUcsQ0FBQyxLQUFLLENBQUMsR0FBRyxFQUFFLDREQUE0RCxDQUFDLENBQUM7QUFFL0YsTUFBTSxzQkFBc0IsR0FBRyxJQUFJLG1EQUF5QixDQUFDLEtBQUssRUFBRSxvQkFBb0IsRUFBRTtJQUN4RixXQUFXLEVBQUUsR0FBRyxDQUFDLFFBQVEsQ0FBQyxRQUFRLENBQUMsZUFBZSxDQUFDO0lBQ25ELHFCQUFxQixFQUFFO1FBQ3JCLFlBQVksRUFBRSxZQUFZO0tBQzNCO0lBQ0QsbUJBQW1CLEVBQUU7UUFDbkIsdUJBQXVCLEVBQUU7WUFDdkIsZ0JBQWdCLEVBQUUsMENBQWdCLENBQUMsVUFBVTtTQUM5QztRQUNELGNBQWMsRUFBRTtZQUNkLFVBQVUsRUFBRSxzQkFBc0I7WUFDbEMsU0FBUyxFQUFFLFFBQVE7U0FDcEI7S0FDRjtDQUNGLENBQUMsQ0FBQztBQUdILE1BQU0sS0FBSyxHQUFHLEdBQUcsQ0FBQyxLQUFLLENBQUMsS0FBSyxDQUFDLHNCQUFzQixDQUFDLENBQUM7QUFFdEQsTUFBTSxFQUFFLEdBQUcsSUFBSSxHQUFHLENBQUMsWUFBWSxDQUFDLEtBQUssRUFBRSxjQUFjLEVBQUU7SUFDckQsVUFBVSxFQUFFLEtBQUs7SUFDakIsT0FBTyxFQUFFLEdBQUcsQ0FBQyxRQUFRLENBQUMsT0FBTyxDQUFDLEVBQUUsQ0FBQztDQUNsQyxDQUFDLENBQUM7QUFFSCxJQUFJLEdBQUcsQ0FBQyxTQUFTLENBQUMsS0FBSyxFQUFFLGlCQUFpQixFQUFFO0lBQzFDLEtBQUssRUFBRSxFQUFFLENBQUMsZUFBZTtDQUMxQixDQUFDLENBQUM7QUFHSCxHQUFHLENBQUMsS0FBSyxFQUFFLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBzZm4gZnJvbSAnYXdzLWNkay1saWIvYXdzLXN0ZXBmdW5jdGlvbnMnO1xuaW1wb3J0ICogYXMgY2RrIGZyb20gJ2F3cy1jZGstbGliJztcbmltcG9ydCB7IEF0aGVuYVN0YXJ0UXVlcnlFeGVjdXRpb24sIEVuY3J5cHRpb25PcHRpb24gfSBmcm9tICdhd3MtY2RrLWxpYi9hd3Mtc3RlcGZ1bmN0aW9ucy10YXNrcyc7XG5cbi8qXG4gKiBTdGFjayB2ZXJpZmljYXRpb24gc3RlcHM6XG4gKiAqIGF3cyBzdGVwZnVuY3Rpb25zIHN0YXJ0LWV4ZWN1dGlvbiAtLXN0YXRlLW1hY2hpbmUtYXJuIDxkZXBsb3llZCBzdGF0ZSBtYWNoaW5lIGFybj4gOiBzaG91bGQgcmV0dXJuIGV4ZWN1dGlvbiBhcm5cbiAqICogYXdzIHN0ZXBmdW5jdGlvbnMgZGVzY3JpYmUtZXhlY3V0aW9uIC0tZXhlY3V0aW9uLWFybiA8ZXhlY3Rpb24tYXJuIGdlbmVyYXRlZCBiZWZvcmU+IDogc2hvdWxkIHJldHVybiBzdGF0dXMgYXMgU1VDQ0VFREVEIGFuZCBhIHF1ZXJ5LWV4ZWN1dGlvbi1pZFxuICogKiBhd3MgYXRoZW5hIGdldC1xdWVyeS1leGVjdXRpb24gLS1xdWVyeS1leGVjdXRpb24taWQgPHF1ZXJ5LWV4ZWN1dGlvbi1pZCBnZW5lcmF0ZWQgYmVmb3JlPiA6IHNob3VsZCByZXR1cm4gUXVlcnlFeGVjdXRpb25cbiAqL1xuY29uc3QgYXBwID0gbmV3IGNkay5BcHAoKTtcbmNvbnN0IHN0YWNrID0gbmV3IGNkay5TdGFjayhhcHAsICdhd3Mtc3RlcGZ1bmN0aW9ucy10YXNrcy1hdGhlbmEtc3RhcnQtcXVlcnktZXhlY3V0aW9uLWludGVnJyk7XG5cbmNvbnN0IHN0YXJ0UXVlcnlFeGVjdXRpb25Kb2IgPSBuZXcgQXRoZW5hU3RhcnRRdWVyeUV4ZWN1dGlvbihzdGFjaywgJ1N0YXJ0IEF0aGVuYSBRdWVyeScsIHtcbiAgcXVlcnlTdHJpbmc6IHNmbi5Kc29uUGF0aC5zdHJpbmdBdCgnJC5xdWVyeVN0cmluZycpLFxuICBxdWVyeUV4ZWN1dGlvbkNvbnRleHQ6IHtcbiAgICBkYXRhYmFzZU5hbWU6ICdteWRhdGFiYXNlJyxcbiAgfSxcbiAgcmVzdWx0Q29uZmlndXJhdGlvbjoge1xuICAgIGVuY3J5cHRpb25Db25maWd1cmF0aW9uOiB7XG4gICAgICBlbmNyeXB0aW9uT3B0aW9uOiBFbmNyeXB0aW9uT3B0aW9uLlMzX01BTkFHRUQsXG4gICAgfSxcbiAgICBvdXRwdXRMb2NhdGlvbjoge1xuICAgICAgYnVja2V0TmFtZTogJ3F1ZXJ5LXJlc3VsdHMtYnVja2V0JyxcbiAgICAgIG9iamVjdEtleTogJ2ZvbGRlcicsXG4gICAgfSxcbiAgfSxcbn0pO1xuXG5cbmNvbnN0IGNoYWluID0gc2ZuLkNoYWluLnN0YXJ0KHN0YXJ0UXVlcnlFeGVjdXRpb25Kb2IpO1xuXG5jb25zdCBzbSA9IG5ldyBzZm4uU3RhdGVNYWNoaW5lKHN0YWNrLCAnU3RhdGVNYWNoaW5lJywge1xuICBkZWZpbml0aW9uOiBjaGFpbixcbiAgdGltZW91dDogY2RrLkR1cmF0aW9uLnNlY29uZHMoMzApLFxufSk7XG5cbm5ldyBjZGsuQ2ZuT3V0cHV0KHN0YWNrLCAnc3RhdGVNYWNoaW5lQXJuJywge1xuICB2YWx1ZTogc20uc3RhdGVNYWNoaW5lQXJuLFxufSk7XG5cblxuYXBwLnN5bnRoKCk7XG4iXX0=

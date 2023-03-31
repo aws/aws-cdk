@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.AppConfig"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.appconfig"
+    },
+    "python": {
+      "module": "aws_cdk.aws_appconfig"
+    }
+  }
+}

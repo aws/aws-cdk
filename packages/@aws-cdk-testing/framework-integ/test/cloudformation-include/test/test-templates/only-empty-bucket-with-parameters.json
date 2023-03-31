@@ -1,0 +1,45 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "My template description",
+  "Parameters": {
+    "Param": {
+      "Description": "The description of the parameter",
+      "Type": "String",
+      "Default": ""
+    }
+  },
+  "Conditions": {
+    "Cond1": {
+      "Fn::Equals": ["a", "b"]
+    }
+  },
+  "Outputs": {
+    "Output1": {
+      "Value": {
+        "Fn::If": [
+          "Cond1",
+          { "Fn::Base64": "Output1Value" },
+          { "Fn::GetAtt": ["Bucket", "DualStackDomainName"] }
+        ]
+      }
+    }
+  },
+  "Metadata": {
+    "Instances" : {
+      "Description" : "Information about the instances"
+    }
+  },
+  "Mappings" : {
+    "Mapping01" : {
+      "Key01" : {
+        "Name" : "Value01"
+      }
+    }
+  },
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket"
+    }
+  }
+}
