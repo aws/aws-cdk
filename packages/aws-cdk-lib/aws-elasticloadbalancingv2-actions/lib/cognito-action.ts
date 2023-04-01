@@ -1,6 +1,6 @@
-import * as cognito from '@aws-cdk/aws-cognito';
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { Duration } from '@aws-cdk/core';
+import * as cognito from '../../aws-cognito';
+import * as elbv2 from '../../aws-elasticloadbalancingv2';
+import { Duration } from '../../core';
 
 /**
  * Properties for AuthenticateCognitoAction

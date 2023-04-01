@@ -1,6 +1,6 @@
-import { Template } from '@aws-cdk/assertions';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
+import { Template } from '../../../assertions';
+import * as ec2 from '../../../aws-ec2';
+import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
 
 let stack: cdk.Stack;

@@ -1,8 +1,8 @@
-import { Template } from '@aws-cdk/assertions';
-import * as cognito from '@aws-cdk/aws-cognito';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import { Duration, Stack } from '@aws-cdk/core';
+import { Template } from '../../assertions';
+import * as cognito from '../../aws-cognito';
+import * as ec2 from '../../aws-ec2';
+import * as elbv2 from '../../aws-elasticloadbalancingv2';
+import { Duration, Stack } from '../../core';
 import * as actions from '../lib';
 
 test('Cognito Action', () => {

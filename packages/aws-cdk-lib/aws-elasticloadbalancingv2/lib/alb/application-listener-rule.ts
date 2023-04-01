@@ -1,9 +1,9 @@
-import * as cdk from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { IApplicationListener } from './application-listener';
 import { ListenerAction } from './application-listener-action';
 import { IApplicationTargetGroup } from './application-target-group';
 import { ListenerCondition } from './conditions';
+import * as cdk from '../../../core';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 

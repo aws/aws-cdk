@@ -1,7 +1,7 @@
-import { Duration } from '@aws-cdk/core';
 import { Construct } from 'constructs';
 import { INetworkListener } from './network-listener';
 import { INetworkTargetGroup } from './network-target-group';
+import { Duration } from '../../../core';
 import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 

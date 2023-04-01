@@ -1,7 +1,7 @@
-import { Duration, SecretValue, Tokenization } from '@aws-cdk/core';
 import { Construct, IConstruct } from 'constructs';
 import { IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
+import { Duration, SecretValue, Tokenization } from '../../../core';
 import { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 
