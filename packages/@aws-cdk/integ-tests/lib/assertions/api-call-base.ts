@@ -1,4 +1,4 @@
-import { CustomResource, Reference } from '@aws-cdk/core';
+import { CustomResource, Reference } from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
 import { ExpectedResult } from './common';
 import { AssertionsProvider } from './providers';

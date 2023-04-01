@@ -1,11 +1,11 @@
-import { Template, Match } from '@aws-cdk/assertions';
-import * as iam from '@aws-cdk/aws-iam';
-import * as kms from '@aws-cdk/aws-kms';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
 import * as glue from '../lib';
 import { PartitionIndex } from '../lib';
-import { CfnTable } from '../lib/glue.generated';
+import { CfnTable } from 'aws-cdk-lib/aws-glue';
 
 test('unpartitioned JSON table', () => {
   const app = new cdk.App();

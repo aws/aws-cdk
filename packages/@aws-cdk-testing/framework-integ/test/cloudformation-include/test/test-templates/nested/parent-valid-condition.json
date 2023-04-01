@@ -1,0 +1,24 @@
+{
+  "Conditions": {
+    "AlwaysFalseCond": {
+      "Fn::Equals": [
+        {
+          "Ref": "AWS::Region"
+        },
+        "completely-made-up-region"
+      ]
+    }
+  },
+  "Resources": {
+    "ChildStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://cfn-templates-set.s3.amazonaws.com/grandchild-import-stack.json",
+        "Parameters": {
+          "MyBucketParameter": "some-magic-bucket-name"
+        }
+      },
+      "Condition": "AlwaysFalseCond"
+    }
+  }
+}

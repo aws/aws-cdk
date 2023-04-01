@@ -1,5 +1,5 @@
 /// !cdk-integ integ-servicecatalogappregistry-application
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import * as appreg from '../lib';
 
 const app = new cdk.App();

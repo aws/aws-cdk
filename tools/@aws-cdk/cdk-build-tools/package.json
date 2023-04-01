@@ -57,7 +57,7 @@
     "fs-extra": "^9.1.0",
     "jest": "^27.5.1",
     "jest-junit": "^13.2.0",
-    "jsii": "~5.0.0",
+    "jsii": "~5.0.2",
     "jsii-pacmak": "1.78.1",
     "jsii-reflect": "1.78.1",
     "markdownlint-cli": "^0.33.0",

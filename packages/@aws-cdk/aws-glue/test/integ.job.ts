@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import * as glue from '../lib';
 
 /**
