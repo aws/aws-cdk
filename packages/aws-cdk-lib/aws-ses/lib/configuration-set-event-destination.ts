@@ -10,7 +10,7 @@ import { CfnConfigurationSetEventDestination } from './ses.generated';
  */
 export interface IConfigurationSetEventDestination extends IResource {
   /**
-   * The ID of the configuration set even destination
+   * The ID of the configuration set event destination
    *
    * @attribute
    */
