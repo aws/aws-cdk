@@ -13,8 +13,9 @@ describe('findModulePath', () => {
   });
 
   test('single fuzzy match', () => {
-    expect(relative(findModulePath('lambda'))).toEqual('packages/@aws-cdk/aws-lambda');
-    expect(relative(findModulePath('s3'))).toEqual('packages/@aws-cdk/aws-s3');
+    expect(relative(findModulePath('lambda'))).toEqual('packages/aws-cdk-lib');
+    expect(relative(findModulePath('s3'))).toEqual('packages/aws-cdk-lib');
+    expect(relative(findModulePath('gamelift'))).toEqual('packages/@aws-cdk/aws-gamelift');
     expect(relative(findModulePath('cdk-build-tools'))).toEqual('tools/@aws-cdk/cdk-build-tools');
   });
 
@@ -34,8 +35,7 @@ describe('findModulePath', () => {
 
 describe('moduleStability', () => {
   test('happy', () => {
-    expect(moduleStability(absolute('packages/@aws-cdk/aws-lambda'))).toEqual('stable');
-    expect(moduleStability(absolute('packages/@aws-cdk/aws-s3'))).toEqual('stable');
+    expect(moduleStability(absolute('packages/aws-cdk-lib'))).toEqual('stable');
 
     // The list of experimental modules is constantly changing. Comment out the assertion.
     // expect(moduleStability(absolute('packages/@aws-cdk/aws-apigatewayv2'))).toEqual('experimental');

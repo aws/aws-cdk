@@ -1,8 +1,8 @@
-import { Match, Template } from '@aws-cdk/assertions';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as kms from '@aws-cdk/aws-kms';
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as cdk from '@aws-cdk/core';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as cdk from 'aws-cdk-lib';
 import * as redshift from '../lib';
 
 describe('cluster user', () => {

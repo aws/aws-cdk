@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+const integ = require("@aws-cdk/integ-tests-alpha");
+const aws_ses_1 = require("aws-cdk-lib/aws-ses");
+class TestStack extends aws_cdk_lib_1.Stack {
+    constructor(scope, id, props) {
+        super(scope, id, props);
+        new aws_ses_1.VdmAttributes(this, 'Vdm');
+    }
+}
+const app = new aws_cdk_lib_1.App();
+new integ.IntegTest(app, 'VdmAttribtuesInteg', {
+    testCases: [new TestStack(app, 'cdk-integ-ses-vdm-attributes')],
+});
+app.synth();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcudmRtLWF0dHJpYnV0ZXMuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbnRlZy52ZG0tYXR0cmlidXRlcy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLDZDQUFxRDtBQUNyRCxvREFBb0Q7QUFFcEQsaURBQW9EO0FBRXBELE1BQU0sU0FBVSxTQUFRLG1CQUFLO0lBQzNCLFlBQVksS0FBZ0IsRUFBRSxFQUFVLEVBQUUsS0FBa0I7UUFDMUQsS0FBSyxDQUFDLEtBQUssRUFBRSxFQUFFLEVBQUUsS0FBSyxDQUFDLENBQUM7UUFFeEIsSUFBSSx1QkFBYSxDQUFDLElBQUksRUFBRSxLQUFLLENBQUMsQ0FBQztJQUNqQyxDQUFDO0NBQ0Y7QUFFRCxNQUFNLEdBQUcsR0FBRyxJQUFJLGlCQUFHLEVBQUUsQ0FBQztBQUV0QixJQUFJLEtBQUssQ0FBQyxTQUFTLENBQUMsR0FBRyxFQUFFLG9CQUFvQixFQUFFO0lBQzdDLFNBQVMsRUFBRSxDQUFDLElBQUksU0FBUyxDQUFDLEdBQUcsRUFBRSw4QkFBOEIsQ0FBQyxDQUFDO0NBQ2hFLENBQUMsQ0FBQztBQUVILEdBQUcsQ0FBQyxLQUFLLEVBQUUsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IEFwcCwgU3RhY2ssIFN0YWNrUHJvcHMgfSBmcm9tICdhd3MtY2RrLWxpYic7XG5pbXBvcnQgKiBhcyBpbnRlZyBmcm9tICdAYXdzLWNkay9pbnRlZy10ZXN0cy1hbHBoYSc7XG5pbXBvcnQgeyBDb25zdHJ1Y3QgfSBmcm9tICdjb25zdHJ1Y3RzJztcbmltcG9ydCB7IFZkbUF0dHJpYnV0ZXMgfSBmcm9tICdhd3MtY2RrLWxpYi9hd3Mtc2VzJztcblxuY2xhc3MgVGVzdFN0YWNrIGV4dGVuZHMgU3RhY2sge1xuICBjb25zdHJ1Y3RvcihzY29wZTogQ29uc3RydWN0LCBpZDogc3RyaW5nLCBwcm9wcz86IFN0YWNrUHJvcHMpIHtcbiAgICBzdXBlcihzY29wZSwgaWQsIHByb3BzKTtcblxuICAgIG5ldyBWZG1BdHRyaWJ1dGVzKHRoaXMsICdWZG0nKTtcbiAgfVxufVxuXG5jb25zdCBhcHAgPSBuZXcgQXBwKCk7XG5cbm5ldyBpbnRlZy5JbnRlZ1Rlc3QoYXBwLCAnVmRtQXR0cmlidHVlc0ludGVnJywge1xuICB0ZXN0Q2FzZXM6IFtuZXcgVGVzdFN0YWNrKGFwcCwgJ2Nkay1pbnRlZy1zZXMtdmRtLWF0dHJpYnV0ZXMnKV0sXG59KTtcblxuYXBwLnN5bnRoKCk7XG4iXX0=
