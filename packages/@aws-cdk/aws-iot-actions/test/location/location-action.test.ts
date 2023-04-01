@@ -1,8 +1,8 @@
-import { Match, Template } from '@aws-cdk/assertions';
-import * as iam from '@aws-cdk/aws-iam';
-import * as iot from '@aws-cdk/aws-iot';
-import { CfnTracker } from '@aws-cdk/aws-location';
-import * as cdk from '@aws-cdk/core';
+import * as iot from '@aws-cdk/aws-iot-alpha';
+import * as cdk from 'aws-cdk-lib';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as location from 'aws-cdk-lib/aws-location';
 import * as actions from '../../lib';
 
 test('Default location action', () => {
@@ -11,7 +11,7 @@ test('Default location action', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const tracker = new CfnTracker(stack, 'MyTracker', { trackerName: 'myTracker' });
+  const tracker = new location.CfnTracker(stack, 'MyTracker', { trackerName: 'myTracker' });
 
   // WHEN
   topicRule.addAction(
@@ -81,7 +81,7 @@ test('can set timestamp of location', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT * FROM 'device/+/data'"),
   });
-  const tracker = new CfnTracker(stack, 'MyTracker', { trackerName: 'myTracker' });
+  const tracker = new location.CfnTracker(stack, 'MyTracker', { trackerName: 'myTracker' });
 
   // WHEN
   topicRule.addAction(
@@ -117,7 +117,7 @@ test('can set role', () => {
   const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
     sql: iot.IotSql.fromStringAsVer20160323("SELECT topic(2) as device_id FROM 'device/+/data'"),
   });
-  const tracker = new CfnTracker(stack, 'MyTracker', { trackerName: 'myTracker' });
+  const tracker = new location.CfnTracker(stack, 'MyTracker', { trackerName: 'myTracker' });
 
   const role = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/ForTest');
 
