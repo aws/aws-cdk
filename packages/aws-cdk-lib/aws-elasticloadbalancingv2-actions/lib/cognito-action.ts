@@ -1,4 +1,5 @@
 import * as cognito from '../../aws-cognito';
+import { Port } from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import { Duration } from '../../core';
 
@@ -88,5 +89,6 @@ export class AuthenticateCognitoAction extends elbv2.ListenerAction {
         sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
       },
     }, options.next);
+    this._bindHook = (_scope, listener) => listener.connections.allowToAnyIpv4(Port.tcp(443), 'Allow to IdP endpoint');
   }
 }

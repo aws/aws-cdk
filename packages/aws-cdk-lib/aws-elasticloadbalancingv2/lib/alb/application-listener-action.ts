@@ -1,7 +1,8 @@
-import { Duration, SecretValue, Tokenization } from '../../../core';
 import { Construct, IConstruct } from 'constructs';
 import { IApplicationListener } from './application-listener';
 import { IApplicationTargetGroup } from './application-target-group';
+import { Port } from '../../../aws-ec2';
+import { Duration, SecretValue, Tokenization } from '../../../core';
 import { CfnListener } from '../elasticloadbalancingv2.generated';
 import { IListenerAction } from '../shared/listener-action';
 
@@ -28,7 +29,7 @@ export class ListenerAction implements IListenerAction {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-authenticate-users.html#oidc-requirements
    */
   public static authenticateOidc(options: AuthenticateOidcOptions): ListenerAction {
-    return new ListenerAction({
+    const listenerAction = new ListenerAction({
       type: 'authenticate-oidc',
       authenticateOidcConfig: {
         authorizationEndpoint: options.authorizationEndpoint,
@@ -44,6 +45,8 @@ export class ListenerAction implements IListenerAction {
         sessionTimeout: options.sessionTimeout?.toSeconds().toString(),
       },
     }, options.next);
+    listenerAction._bindHook = (_scope, listener) => listener.connections.allowToAnyIpv4(Port.tcp(443), 'Allow to IdP endpoint');
+    return listenerAction;
   }
 
   /**
@@ -153,6 +156,12 @@ export class ListenerAction implements IListenerAction {
   }
 
   /**
+   * Optional hook for binding.
+   * @internal
+   */
+  protected _bindHook?: (scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) => void;
+
+  /**
    * Create an instance of ListenerAction
    *
    * The default class should be good enough for most cases and
@@ -173,6 +182,7 @@ export class ListenerAction implements IListenerAction {
    * Called when the action is being used in a listener
    */
   public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
+    this._bindHook?.(scope, listener, associatingConstruct);
     this.next?.bind(scope, listener, associatingConstruct);
   }
 
