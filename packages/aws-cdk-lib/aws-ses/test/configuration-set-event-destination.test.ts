@@ -1,6 +1,6 @@
-import { Template } from '@aws-cdk/assertions';
-import * as sns from '@aws-cdk/aws-sns';
-import { Stack } from '@aws-cdk/core';
+import { Template } from '../../assertions';
+import * as sns from '../../aws-sns';
+import { Stack } from '../../core';
 import { CloudWatchDimensionSource, ConfigurationSet, ConfigurationSetEventDestination, EventDestination } from '../lib';
 
 let stack: Stack;
