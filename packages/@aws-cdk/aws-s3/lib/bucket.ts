@@ -204,8 +204,9 @@ export interface IBucket extends IResource {
    *
    * @param identity The principal
    * @param objectsKeyPattern Restrict the permission to a certain key pattern (default '*')
+   * @param allowedActionPatterns Restrict the permissions to certain list of action patterns
    */
-  grantWrite(identity: iam.IGrantable, objectsKeyPattern?: any): iam.Grant;
+  grantWrite(identity: iam.IGrantable, objectsKeyPattern?: any, allowedActionPatterns?: string[]): iam.Grant;
 
   /**
    * Grants s3:PutObject* and s3:Abort* permissions for this bucket to an IAM principal.
@@ -771,8 +772,9 @@ export abstract class BucketBase extends Resource implements IBucket {
       this.arnForObjects(objectsKeyPattern));
   }
 
-  public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*') {
-    return this.grant(identity, this.writeActions, perms.KEY_WRITE_ACTIONS,
+  public grantWrite(identity: iam.IGrantable, objectsKeyPattern: any = '*', allowedActionPatterns: string[] = []) {
+    const grantedWriteActions = allowedActionPatterns.length > 0 ? allowedActionPatterns : this.writeActions;
+    return this.grant(identity, grantedWriteActions, perms.KEY_WRITE_ACTIONS,
       this.bucketArn,
       this.arnForObjects(objectsKeyPattern));
   }

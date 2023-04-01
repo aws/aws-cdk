@@ -1,10 +1,10 @@
 /* eslint-disable max-len */
 /* eslint-disable no-console */
-import { IsCompleteResponse, OnEventResponse } from '../types';
 import * as cfnResponse from './cfn-response';
 import * as consts from './consts';
 import { invokeFunction, startExecution } from './outbound';
 import { getEnv, log } from './util';
+import { IsCompleteResponse, OnEventResponse } from '../types';
 
 // use consts for handler names to compiler-enforce the coupling with construction code.
 export = {
@@ -151,7 +151,7 @@ function parseJsonPayload(payload: any): any {
   const text = payload.toString();
   try {
     return JSON.parse(text);
-  } catch (e) {
+  } catch {
     throw new Error(`return values from user-handlers must be JSON objects. got: "${text}"`);
   }
 }

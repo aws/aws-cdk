@@ -595,7 +595,7 @@
     },
     "EnableIAMDatabaseAuthentication": true,
     "Engine": "postgres",
-    "EngineVersion": "11.12",
+    "EngineVersion": "15.2",
     "MasterUsername": {
      "Fn::Join": [
       "",
