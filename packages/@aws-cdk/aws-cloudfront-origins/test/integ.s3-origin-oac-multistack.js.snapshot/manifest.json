@@ -1,27 +1,27 @@
 {
   "version": "31.0.0",
   "artifacts": {
-    "s3origin-oac.assets": {
+    "oacmulti1.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "s3origin-oac.assets.json",
+        "file": "oacmulti1.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "s3origin-oac": {
+    "oacmulti1": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "s3origin-oac.template.json",
+        "templateFile": "oacmulti1.template.json",
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a47cde545ead85d9625b0337e93dcf63b8415c304d9500af14d6753ec7b4365.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b0935451dfa260f24c316b45ad524218f432cb00a953b6c28f19bbf679c1cd6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "s3origin-oac.assets"
+          "oacmulti1.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,107 +30,173 @@
         }
       },
       "dependencies": [
-        "s3origin-oac.assets"
+        "oacmulti1.assets"
       ],
       "metadata": {
-        "/s3origin-oac/Bucket/Resource": [
+        "/oacmulti1/Bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket83908E77"
           }
         ],
-        "/s3origin-oac/Bucket/Policy/Resource": [
+        "/oacmulti1/Bucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketPolicyE9A3008A"
           }
         ],
-        "/s3origin-oac/BucketKMS/Key/Resource": [
+        "/oacmulti1/BucketKMS/Key/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketKMSKeyCAB5A69D"
           }
         ],
-        "/s3origin-oac/BucketKMS/Resource": [
+        "/oacmulti1/BucketKMS/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketKMS6F50E1CE"
           }
         ],
-        "/s3origin-oac/BucketKMS/Policy/Resource": [
+        "/oacmulti1/BucketKMS/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BucketKMSPolicy86072B94"
           }
         ],
-        "/s3origin-oac/OACNeverSign/Resource": [
+        "/oacmulti1/PolicySetterRoleD30B3451CF91158A7CD35B67599D566D/Role": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "OACNeverSign93357AE1"
+            "data": "PolicySetterRoleD30B3451CF91158A7CD35B67599D566DRole66B1FE77"
           }
         ],
-        "/s3origin-oac/Dist/Resource": [
+        "/oacmulti1/Exports/Output{\"Fn::GetAtt\":[\"Bucket83908E77\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DistB3B78991"
+            "data": "ExportsOutputFnGetAttBucket83908E77Arn063C8555"
           }
         ],
-        "/s3origin-oac/Dist/PolicySetter1/CustomResource/Default": [
+        "/oacmulti1/Exports/Output{\"Fn::GetAtt\":[\"BucketKMS6F50E1CE\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DistPolicySetter1CustomResourceD490063B"
+            "data": "ExportsOutputFnGetAttBucketKMS6F50E1CEArn46806169"
           }
         ],
-        "/s3origin-oac/OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CF/Resource": [
+        "/oacmulti1/Exports/Output{\"Fn::GetAtt\":[\"BucketKMSKeyCAB5A69D\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
+            "data": "ExportsOutputFnGetAttBucketKMSKeyCAB5A69DArnBE1B734F"
           }
         ],
-        "/s3origin-oac/PolicySetterRoleBE2A9A12670B7315BEB492754791DF75/Role": [
+        "/oacmulti1/Exports/Output{\"Fn::GetAtt\":[\"Bucket83908E77\",\"RegionalDomainName\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PolicySetterRoleBE2A9A12670B7315BEB492754791DF75Role57985506"
+            "data": "ExportsOutputFnGetAttBucket83908E77RegionalDomainName2BE53631"
           }
         ],
-        "/s3origin-oac/PolicySetterProviderBE2A9A12670B7315BEB492754791DF75CustomResourceProvider/Handler": [
+        "/oacmulti1/Exports/Output{\"Fn::GetAtt\":[\"BucketKMS6F50E1CE\",\"RegionalDomainName\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "PolicySetterProviderBE2A9A12670B7315BEB492754791DF75CustomResourceProviderHandler0EE1A04C"
+            "data": "ExportsOutputFnGetAttBucketKMS6F50E1CERegionalDomainName2B5BDDE9"
           }
         ],
-        "/s3origin-oac/DistNoPolicy/Resource": [
+        "/oacmulti1/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DistNoPolicyC5896EBB"
+            "data": "ExportsOutputRefBucket83908E7781C90AC0"
           }
         ],
-        "/s3origin-oac/DistRWPolicy/Resource": [
+        "/oacmulti1/Exports/Output{\"Fn::GetAtt\":[\"PolicySetterRoleD30B3451CF91158A7CD35B67599D566DRole66B1FE77\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DistRWPolicy5EAF946C"
+            "data": "ExportsOutputFnGetAttPolicySetterRoleD30B3451CF91158A7CD35B67599D566DRole66B1FE77ArnFB08605E"
           }
         ],
-        "/s3origin-oac/DistRWPolicy/PolicySetter1/CustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DistRWPolicyPolicySetter1CustomResource3C6A1236"
-          }
-        ],
-        "/s3origin-oac/BootstrapVersion": [
+        "/oacmulti1/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/s3origin-oac/CheckBootstrapVersion": [
+        "/oacmulti1/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "s3origin-oac"
+      "displayName": "oacmulti1"
+    },
+    "oacmulti2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "oacmulti2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "oacmulti2": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "oacmulti2.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0ab323b2ca33e95b42708c8d70fa442b83613ea1b88eaa6039d27465e8140da.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "oacmulti2.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "oacmulti1",
+        "oacmulti2.assets"
+      ],
+      "metadata": {
+        "/oacmulti2/Dist/PolicySetter1/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistPolicySetter1CustomResourceD490063B"
+          }
+        ],
+        "/oacmulti2/Dist/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DistB3B78991"
+          }
+        ],
+        "/oacmulti2/PolicySetterProviderD30B3451CF91158A7CD35B67599D566DCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PolicySetterProviderD30B3451CF91158A7CD35B67599D566DCustomResourceProviderHandlerD9E2933D"
+          }
+        ],
+        "/oacmulti2/OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CF/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
+          }
+        ],
+        "/oacmulti2/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/oacmulti2/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "oacmulti2"
     },
     "CloudFrontS3OriginOACTestDefaultTestDeployAssert62DBC588.assets": {
       "type": "cdk:asset-manifest",

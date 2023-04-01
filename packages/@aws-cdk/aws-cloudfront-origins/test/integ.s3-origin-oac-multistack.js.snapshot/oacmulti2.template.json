@@ -1,0 +1,226 @@
+{
+ "Resources": {
+  "DistPolicySetter1CustomResourceD490063B": {
+   "Type": "Custom::CDKCloudFrontDistributionPolicySetter",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "PolicySetterProviderD30B3451CF91158A7CD35B67599D566DCustomResourceProviderHandlerD9E2933D",
+      "Arn"
+     ]
+    },
+    "distribution": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "DistB3B78991"
+       }
+      ]
+     ]
+    },
+    "readOnlyArns": [
+     {
+      "Fn::ImportValue": "oacmulti1:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+     }
+    ],
+    "readWriteArns": [
+     {
+      "Fn::ImportValue": "oacmulti1:ExportsOutputFnGetAttBucketKMS6F50E1CEArn46806169"
+     },
+     {
+      "Fn::ImportValue": "oacmulti1:ExportsOutputFnGetAttBucketKMSKeyCAB5A69DArnBE1B734F"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DistB3B78991": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "CacheBehaviors": [
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "0/*",
+       "TargetOriginId": "oacmulti2DistOrigin2D8BB3040",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "1/*",
+       "TargetOriginId": "oacmulti2DistOrigin30A5968F5",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "2/*",
+       "TargetOriginId": "oacmulti2DistOrigin4EBCB1182",
+       "ViewerProtocolPolicy": "allow-all"
+      }
+     ],
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "oacmulti2DistOrigin12E55B092",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "DomainName": {
+        "Fn::ImportValue": "oacmulti1:ExportsOutputFnGetAttBucket83908E77RegionalDomainName2BE53631"
+       },
+       "Id": "oacmulti2DistOrigin12E55B092",
+       "OriginAccessControlId": {
+        "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
+       },
+       "S3OriginConfig": {}
+      },
+      {
+       "DomainName": {
+        "Fn::ImportValue": "oacmulti1:ExportsOutputFnGetAttBucketKMS6F50E1CERegionalDomainName2B5BDDE9"
+       },
+       "Id": "oacmulti2DistOrigin2D8BB3040",
+       "OriginAccessControlId": {
+        "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
+       },
+       "S3OriginConfig": {}
+      },
+      {
+       "DomainName": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::ImportValue": "oacmulti1:ExportsOutputRefBucket83908E7781C90AC0"
+          },
+          ".s3.",
+          {
+           "Ref": "AWS::Region"
+          },
+          ".",
+          {
+           "Ref": "AWS::URLSuffix"
+          }
+         ]
+        ]
+       },
+       "Id": "oacmulti2DistOrigin30A5968F5",
+       "OriginAccessControlId": {
+        "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
+       },
+       "S3OriginConfig": {}
+      },
+      {
+       "DomainName": {
+        "Fn::Join": [
+         "",
+         [
+          "s3origin-oac-test-bucket.s3.",
+          {
+           "Ref": "AWS::Region"
+          },
+          ".",
+          {
+           "Ref": "AWS::URLSuffix"
+          }
+         ]
+        ]
+       },
+       "Id": "oacmulti2DistOrigin4EBCB1182",
+       "OriginAccessControlId": {
+        "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
+       },
+       "S3OriginConfig": {}
+      }
+     ]
+    }
+   }
+  },
+  "PolicySetterProviderD30B3451CF91158A7CD35B67599D566DCustomResourceProviderHandlerD9E2933D": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "4485729abbaa35138967aa41107932ee600a9d6b27a560e0dfeb9ced4595903b.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::ImportValue": "oacmulti1:ExportsOutputFnGetAttPolicySetterRoleD30B3451CF91158A7CD35B67599D566DRole66B1FE77ArnFB08605E"
+    },
+    "Runtime": "nodejs16.x",
+    "Environment": {
+     "Variables": {
+      "AWS_STS_REGIONAL_ENDPOINTS": "regional",
+      "CDK_STACK_NAME": "oacmulti2"
+     }
+    }
+   }
+  },
+  "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "oacmulti2OriginAccessControlEFE0CA7DB170D0C7D8E8DC4943CF6C44F77B",
+     "OriginAccessControlOriginType": "s3",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

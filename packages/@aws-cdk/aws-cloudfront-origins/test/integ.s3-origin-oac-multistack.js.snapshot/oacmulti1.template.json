@@ -1,0 +1,350 @@
+{
+ "Resources": {
+  "Bucket83908E77": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:grant-distribution-ro:a6c9e748e49bfc560bd68feb959d634f",
+      "Value": "1"
+     },
+     {
+      "Key": "aws-cdk:allow-policy-setter:d30b3451cf91158a7cd35b67599d566d",
+      "Value": "1"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "BucketPolicyE9A3008A": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "Bucket83908E77"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucketPolicy",
+        "s3:GetBucketTagging",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "PolicySetterRoleD30B3451CF91158A7CD35B67599D566DRole66B1FE77",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "Bucket83908E77",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "BucketKMSKeyCAB5A69D": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:GetKeyPolicy",
+        "kms:ListResourceTags",
+        "kms:PutKeyPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "PolicySetterRoleD30B3451CF91158A7CD35B67599D566DRole66B1FE77",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Created by oacmulti1/BucketKMS",
+    "Tags": [
+     {
+      "Key": "aws-cdk:grant-distribution-rw:a6c9e748e49bfc560bd68feb959d634f",
+      "Value": "1"
+     },
+     {
+      "Key": "aws-cdk:allow-policy-setter:d30b3451cf91158a7cd35b67599d566d",
+      "Value": "1"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "BucketKMS6F50E1CE": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "KMSMasterKeyID": {
+         "Fn::GetAtt": [
+          "BucketKMSKeyCAB5A69D",
+          "Arn"
+         ]
+        },
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "aws-cdk:grant-distribution-rw:a6c9e748e49bfc560bd68feb959d634f",
+      "Value": "1"
+     },
+     {
+      "Key": "aws-cdk:allow-policy-setter:d30b3451cf91158a7cd35b67599d566d",
+      "Value": "1"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "BucketKMSPolicy86072B94": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "BucketKMS6F50E1CE"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucketPolicy",
+        "s3:GetBucketTagging",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "PolicySetterRoleD30B3451CF91158A7CD35B67599D566DRole66B1FE77",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "BucketKMS6F50E1CE",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PolicySetterRoleD30B3451CF91158A7CD35B67599D566DRole66B1FE77": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "kms:GetKeyPolicy",
+          "kms:PutKeyPolicy",
+          "kms:ListResourceTags",
+          "s3:GetBucketPolicy",
+          "s3:PutBucketPolicy",
+          "s3:GetBucketTagging"
+         ],
+         "Resource": "*",
+         "Condition": {
+          "StringEquals": {
+           "aws:ResourceTag/aws-cdk:allow-policy-setter:d30b3451cf91158a7cd35b67599d566d": "1"
+          }
+         }
+        },
+        {
+         "Effect": "Allow",
+         "Action": "cloudformation:DescribeStackResources",
+         "Resource": "*"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttBucket83908E77Arn063C8555": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Bucket83908E77",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "oacmulti1:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+   }
+  },
+  "ExportsOutputFnGetAttBucketKMS6F50E1CEArn46806169": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BucketKMS6F50E1CE",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "oacmulti1:ExportsOutputFnGetAttBucketKMS6F50E1CEArn46806169"
+   }
+  },
+  "ExportsOutputFnGetAttBucketKMSKeyCAB5A69DArnBE1B734F": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BucketKMSKeyCAB5A69D",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "oacmulti1:ExportsOutputFnGetAttBucketKMSKeyCAB5A69DArnBE1B734F"
+   }
+  },
+  "ExportsOutputFnGetAttBucket83908E77RegionalDomainName2BE53631": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Bucket83908E77",
+     "RegionalDomainName"
+    ]
+   },
+   "Export": {
+    "Name": "oacmulti1:ExportsOutputFnGetAttBucket83908E77RegionalDomainName2BE53631"
+   }
+  },
+  "ExportsOutputFnGetAttBucketKMS6F50E1CERegionalDomainName2B5BDDE9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BucketKMS6F50E1CE",
+     "RegionalDomainName"
+    ]
+   },
+   "Export": {
+    "Name": "oacmulti1:ExportsOutputFnGetAttBucketKMS6F50E1CERegionalDomainName2B5BDDE9"
+   }
+  },
+  "ExportsOutputRefBucket83908E7781C90AC0": {
+   "Value": {
+    "Ref": "Bucket83908E77"
+   },
+   "Export": {
+    "Name": "oacmulti1:ExportsOutputRefBucket83908E7781C90AC0"
+   }
+  },
+  "ExportsOutputFnGetAttPolicySetterRoleD30B3451CF91158A7CD35B67599D566DRole66B1FE77ArnFB08605E": {
+   "Value": {
+    "Fn::GetAtt": [
+     "PolicySetterRoleD30B3451CF91158A7CD35B67599D566DRole66B1FE77",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "oacmulti1:ExportsOutputFnGetAttPolicySetterRoleD30B3451CF91158A7CD35B67599D566DRole66B1FE77ArnFB08605E"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

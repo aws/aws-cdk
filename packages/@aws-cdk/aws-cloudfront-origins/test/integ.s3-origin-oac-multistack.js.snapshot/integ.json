@@ -3,7 +3,8 @@
   "testCases": {
     "CloudFrontS3OriginOACTest/DefaultTest": {
       "stacks": [
-        "s3origin-oac"
+        "oacmulti1",
+        "oacmulti2"
       ],
       "assertionStack": "CloudFrontS3OriginOACTest/DefaultTest/DeployAssert",
       "assertionStackName": "CloudFrontS3OriginOACTestDefaultTestDeployAssert62DBC588"

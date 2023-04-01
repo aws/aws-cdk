@@ -2,14 +2,6 @@
  "Resources": {
   "Bucket83908E77": {
    "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "aws-cdk:auto-delete-objects",
-      "Value": "true"
-     }
-    ]
-   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -21,44 +13,6 @@
     },
     "PolicyDocument": {
      "Statement": [
-      {
-       "Action": [
-        "s3:DeleteObject*",
-        "s3:GetBucket*",
-        "s3:List*"
-       ],
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::GetAtt": [
-          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
-          "Arn"
-         ]
-        }
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "Bucket83908E77",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "Bucket83908E77",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      },
       {
        "Action": "s3:GetObject",
        "Condition": {
@@ -77,7 +31,7 @@
             },
             ":distribution/",
             {
-             "Ref": "DistDefaultFA5D01D0"
+             "Ref": "DistB3B78991"
             }
            ]
           ]
@@ -149,6 +103,152 @@
          ]
         ]
        }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "BucketKMSKeyCAB5A69D": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:GetKeyPolicy",
+        "kms:ListResourceTags",
+        "kms:PutKeyPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "PolicySetterRoleBE2A9A12670B7315BEB492754791DF75Role57985506",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Created by s3origin-oac/BucketKMS",
+    "Tags": [
+     {
+      "Key": "aws-cdk:grant-distribution-ro:b5db32fd5b0c29d4f5d29e99c225cace",
+      "Value": "1"
+     },
+     {
+      "Key": "aws-cdk:grant-distribution-ro:5e8c3a1685d906af0ac685a3a4d2ef23",
+      "Value": "1"
+     },
+     {
+      "Key": "aws-cdk:allow-policy-setter:be2a9a12670b7315beb492754791df75",
+      "Value": "1"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "BucketKMS6F50E1CE": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "KMSMasterKeyID": {
+         "Fn::GetAtt": [
+          "BucketKMSKeyCAB5A69D",
+          "Arn"
+         ]
+        },
+        "SSEAlgorithm": "aws:kms"
+       }
+      }
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "BucketKMSPolicy86072B94": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "BucketKMS6F50E1CE"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:GetObject",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":cloudfront::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":distribution/",
+            {
+             "Ref": "DistB3B78991"
+            }
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "BucketKMS6F50E1CE",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
       },
       {
        "Action": "s3:GetObject",
@@ -185,7 +285,7 @@
          [
           {
            "Fn::GetAtt": [
-            "Bucket83908E77",
+            "BucketKMS6F50E1CE",
             "Arn"
            ]
           },
@@ -199,26 +299,146 @@
     }
    }
   },
-  "BucketAutoDeleteObjectsCustomResourceBAFD23C2": {
-   "Type": "Custom::S3AutoDeleteObjects",
+  "OACNeverSign93357AE1": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "s3originoacOACNeverSignDCFC8EEA",
+     "OriginAccessControlOriginType": "s3",
+     "SigningBehavior": "never",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  },
+  "DistB3B78991": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "CacheBehaviors": [
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "0/*",
+       "TargetOriginId": "s3originoacDistOrigin24C0EB751",
+       "ViewerProtocolPolicy": "allow-all"
+      },
+      {
+       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+       "Compress": true,
+       "PathPattern": "1/*",
+       "TargetOriginId": "s3originoacDistOrigin393D6A56D",
+       "ViewerProtocolPolicy": "allow-all"
+      }
+     ],
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "s3originoacDistOrigin1FDA0F11F",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "DomainName": {
+        "Fn::GetAtt": [
+         "Bucket83908E77",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "s3originoacDistOrigin1FDA0F11F",
+       "OriginAccessControlId": {
+        "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
+       },
+       "S3OriginConfig": {}
+      },
+      {
+       "DomainName": {
+        "Fn::GetAtt": [
+         "Bucket83908E77",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "s3originoacDistOrigin24C0EB751",
+       "OriginAccessControlId": {
+        "Ref": "OACNeverSign93357AE1"
+       },
+       "S3OriginConfig": {}
+      },
+      {
+       "DomainName": {
+        "Fn::GetAtt": [
+         "BucketKMS6F50E1CE",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "s3originoacDistOrigin393D6A56D",
+       "OriginAccessControlId": {
+        "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
+       },
+       "S3OriginConfig": {}
+      }
+     ]
+    }
+   }
+  },
+  "DistPolicySetter1CustomResourceD490063B": {
+   "Type": "Custom::CDKCloudFrontDistributionPolicySetter",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "PolicySetterProviderBE2A9A12670B7315BEB492754791DF75CustomResourceProviderHandler0EE1A04C",
       "Arn"
      ]
     },
-    "BucketName": {
-     "Ref": "Bucket83908E77"
-    }
+    "distribution": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "DistB3B78991"
+       }
+      ]
+     ]
+    },
+    "readOnlyArns": [
+     {
+      "Fn::GetAtt": [
+       "BucketKMSKeyCAB5A69D",
+       "Arn"
+      ]
+     }
+    ],
+    "readWriteArns": []
    },
    "DependsOn": [
-    "BucketPolicyE9A3008A"
+    "BucketKMSKeyCAB5A69D"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+  "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "s3originoacOriginAccessContrEFE0CA7DB170D0C7D8E8DC4943CF2076AF28",
+     "OriginAccessControlOriginType": "s3",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  },
+  "PolicySetterRoleBE2A9A12670B7315BEB492754791DF75Role57985506": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -237,159 +457,70 @@
      {
       "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
      }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "kms:GetKeyPolicy",
+          "kms:PutKeyPolicy",
+          "kms:ListResourceTags",
+          "s3:GetBucketPolicy",
+          "s3:PutBucketPolicy",
+          "s3:GetBucketTagging"
+         ],
+         "Resource": "*",
+         "Condition": {
+          "StringEquals": {
+           "aws:ResourceTag/aws-cdk:allow-policy-setter:be2a9a12670b7315beb492754791df75": "1"
+          }
+         }
+        },
+        {
+         "Effect": "Allow",
+         "Action": "cloudformation:DescribeStackResources",
+         "Resource": "*"
+        }
+       ]
+      }
+     }
     ]
    }
   },
-  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+  "PolicySetterProviderBE2A9A12670B7315BEB492754791DF75CustomResourceProviderHandler0EE1A04C": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "40aa87cdf43c4095cec18bc443965f22ab2f8c1ace47e482a0ba4e35d83b0cc9.zip"
+     "S3Key": "4485729abbaa35138967aa41107932ee600a9d6b27a560e0dfeb9ced4595903b.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
     "Handler": "__entrypoint__.handler",
     "Role": {
      "Fn::GetAtt": [
-      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "PolicySetterRoleBE2A9A12670B7315BEB492754791DF75Role57985506",
       "Arn"
      ]
     },
-    "Runtime": "nodejs14.x",
-    "Description": {
-     "Fn::Join": [
-      "",
-      [
-       "Lambda function for auto-deleting objects in ",
-       {
-        "Ref": "Bucket83908E77"
-       },
-       " S3 bucket."
-      ]
-     ]
+    "Runtime": "nodejs16.x",
+    "Environment": {
+     "Variables": {
+      "AWS_STS_REGIONAL_ENDPOINTS": "regional",
+      "CDK_STACK_NAME": "s3origin-oac"
+     }
     }
    },
    "DependsOn": [
-    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    "PolicySetterRoleBE2A9A12670B7315BEB492754791DF75Role57985506"
    ]
-  },
-  "OACNeverSign93357AE1": {
-   "Type": "AWS::CloudFront::OriginAccessControl",
-   "Properties": {
-    "OriginAccessControlConfig": {
-     "Name": "s3originoac1OACNeverSign149329B5",
-     "OriginAccessControlOriginType": "s3",
-     "SigningBehavior": "never",
-     "SigningProtocol": "sigv4"
-    }
-   }
-  },
-  "DistDefaultFA5D01D0": {
-   "Type": "AWS::CloudFront::Distribution",
-   "Properties": {
-    "DistributionConfig": {
-     "CacheBehaviors": [
-      {
-       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
-       "Compress": true,
-       "PathPattern": "0/*",
-       "TargetOriginId": "s3originoac1DistDefaultOrigin29F927ED7",
-       "ViewerProtocolPolicy": "allow-all"
-      },
-      {
-       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
-       "Compress": true,
-       "PathPattern": "1/*",
-       "TargetOriginId": "s3originoac1DistDefaultOrigin32A302443",
-       "ViewerProtocolPolicy": "allow-all"
-      },
-      {
-       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
-       "Compress": true,
-       "PathPattern": "2/*",
-       "TargetOriginId": "s3originoac1DistDefaultOrigin428E3D9E3",
-       "ViewerProtocolPolicy": "allow-all"
-      }
-     ],
-     "DefaultCacheBehavior": {
-      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
-      "Compress": true,
-      "TargetOriginId": "s3originoac1DistDefaultOrigin1EAFF2C45",
-      "ViewerProtocolPolicy": "allow-all"
-     },
-     "Enabled": true,
-     "HttpVersion": "http2",
-     "IPV6Enabled": true,
-     "Origins": [
-      {
-       "DomainName": {
-        "Fn::GetAtt": [
-         "Bucket83908E77",
-         "RegionalDomainName"
-        ]
-       },
-       "Id": "s3originoac1DistDefaultOrigin1EAFF2C45",
-       "OriginAccessControlId": {
-        "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
-       },
-       "S3OriginConfig": {}
-      },
-      {
-       "DomainName": {
-        "Fn::GetAtt": [
-         "Bucket83908E77",
-         "RegionalDomainName"
-        ]
-       },
-       "Id": "s3originoac1DistDefaultOrigin29F927ED7",
-       "OriginAccessControlId": {
-        "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
-       },
-       "S3OriginConfig": {}
-      },
-      {
-       "DomainName": {
-        "Fn::GetAtt": [
-         "Bucket83908E77",
-         "RegionalDomainName"
-        ]
-       },
-       "Id": "s3originoac1DistDefaultOrigin32A302443",
-       "OriginAccessControlId": {
-        "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
-       },
-       "S3OriginConfig": {}
-      },
-      {
-       "DomainName": {
-        "Fn::GetAtt": [
-         "Bucket83908E77",
-         "RegionalDomainName"
-        ]
-       },
-       "Id": "s3originoac1DistDefaultOrigin428E3D9E3",
-       "OriginAccessControlId": {
-        "Ref": "OACNeverSign93357AE1"
-       },
-       "S3OriginConfig": {}
-      }
-     ]
-    }
-   }
-  },
-  "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28": {
-   "Type": "AWS::CloudFront::OriginAccessControl",
-   "Properties": {
-    "OriginAccessControlConfig": {
-     "Name": "s3originoac1OriginAccessContEFE0CA7DB170D0C7D8E8DC4943CF08146470",
-     "OriginAccessControlOriginType": "s3",
-     "SigningBehavior": "always",
-     "SigningProtocol": "sigv4"
-    }
-   }
   },
   "DistNoPolicyC5896EBB": {
    "Type": "AWS::CloudFront::Distribution",
@@ -400,28 +531,28 @@
        "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
        "Compress": true,
        "PathPattern": "0/*",
-       "TargetOriginId": "s3originoac1DistNoPolicyOrigin21D41D317",
+       "TargetOriginId": "s3originoacDistNoPolicyOrigin2CFC99924",
        "ViewerProtocolPolicy": "allow-all"
       },
       {
        "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
        "Compress": true,
        "PathPattern": "1/*",
-       "TargetOriginId": "s3originoac1DistNoPolicyOrigin37FFA8314",
+       "TargetOriginId": "s3originoacDistNoPolicyOrigin3E11E2BE9",
        "ViewerProtocolPolicy": "allow-all"
       },
       {
        "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
        "Compress": true,
        "PathPattern": "2/*",
-       "TargetOriginId": "s3originoac1DistNoPolicyOrigin4E5B59189",
+       "TargetOriginId": "s3originoacDistNoPolicyOrigin4A23B73F9",
        "ViewerProtocolPolicy": "allow-all"
       }
      ],
      "DefaultCacheBehavior": {
       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
       "Compress": true,
-      "TargetOriginId": "s3originoac1DistNoPolicyOrigin140F4B9A7",
+      "TargetOriginId": "s3originoacDistNoPolicyOrigin1D1D9199A",
       "ViewerProtocolPolicy": "allow-all"
      },
      "Enabled": true,
@@ -435,7 +566,7 @@
          "RegionalDomainName"
         ]
        },
-       "Id": "s3originoac1DistNoPolicyOrigin140F4B9A7",
+       "Id": "s3originoacDistNoPolicyOrigin1D1D9199A",
        "OriginAccessControlId": {
         "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
        },
@@ -444,11 +575,11 @@
       {
        "DomainName": {
         "Fn::GetAtt": [
-         "Bucket83908E77",
+         "BucketKMS6F50E1CE",
          "RegionalDomainName"
         ]
        },
-       "Id": "s3originoac1DistNoPolicyOrigin21D41D317",
+       "Id": "s3originoacDistNoPolicyOrigin2CFC99924",
        "OriginAccessControlId": {
         "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
        },
@@ -470,7 +601,7 @@
          ]
         ]
        },
-       "Id": "s3originoac1DistNoPolicyOrigin37FFA8314",
+       "Id": "s3originoacDistNoPolicyOrigin3E11E2BE9",
        "OriginAccessControlId": {
         "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
        },
@@ -495,7 +626,7 @@
          ]
         ]
        },
-       "Id": "s3originoac1DistNoPolicyOrigin4E5B59189",
+       "Id": "s3originoacDistNoPolicyOrigin4A23B73F9",
        "OriginAccessControlId": {
         "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
        },
@@ -514,14 +645,14 @@
        "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
        "Compress": true,
        "PathPattern": "0/*",
-       "TargetOriginId": "s3originoac1DistRWPolicyOrigin27A3089D1",
+       "TargetOriginId": "s3originoacDistRWPolicyOrigin22279FB7E",
        "ViewerProtocolPolicy": "allow-all"
       }
      ],
      "DefaultCacheBehavior": {
       "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
       "Compress": true,
-      "TargetOriginId": "s3originoac1DistRWPolicyOrigin12C2C2C74",
+      "TargetOriginId": "s3originoacDistRWPolicyOrigin179B95CE8",
       "ViewerProtocolPolicy": "allow-all"
      },
      "Enabled": true,
@@ -535,7 +666,7 @@
          "RegionalDomainName"
         ]
        },
-       "Id": "s3originoac1DistRWPolicyOrigin12C2C2C74",
+       "Id": "s3originoacDistRWPolicyOrigin179B95CE8",
        "OriginAccessControlId": {
         "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
        },
@@ -544,11 +675,11 @@
       {
        "DomainName": {
         "Fn::GetAtt": [
-         "Bucket83908E77",
+         "BucketKMS6F50E1CE",
          "RegionalDomainName"
         ]
        },
-       "Id": "s3originoac1DistRWPolicyOrigin27A3089D1",
+       "Id": "s3originoacDistRWPolicyOrigin22279FB7E",
        "OriginAccessControlId": {
         "Ref": "OriginAccessControlACB7EFE0CA7DB170D0C7D8E8DC4943CFAFE70B28"
        },
@@ -557,27 +688,50 @@
      ]
     }
    }
-  }
- },
- "Outputs": {
-  "ExportsOutputFnGetAttBucket83908E77RegionalDomainName2BE53631": {
-   "Value": {
-    "Fn::GetAtt": [
-     "Bucket83908E77",
-     "RegionalDomainName"
-    ]
-   },
-   "Export": {
-    "Name": "s3origin-oac-1:ExportsOutputFnGetAttBucket83908E77RegionalDomainName2BE53631"
-   }
   },
-  "ExportsOutputRefBucket83908E7781C90AC0": {
-   "Value": {
-    "Ref": "Bucket83908E77"
+  "DistRWPolicyPolicySetter1CustomResource3C6A1236": {
+   "Type": "Custom::CDKCloudFrontDistributionPolicySetter",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "PolicySetterProviderBE2A9A12670B7315BEB492754791DF75CustomResourceProviderHandler0EE1A04C",
+      "Arn"
+     ]
+    },
+    "distribution": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":cloudfront::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":distribution/",
+       {
+        "Ref": "DistRWPolicy5EAF946C"
+       }
+      ]
+     ]
+    },
+    "readOnlyArns": [
+     {
+      "Fn::GetAtt": [
+       "BucketKMSKeyCAB5A69D",
+       "Arn"
+      ]
+     }
+    ],
+    "readWriteArns": []
    },
-   "Export": {
-    "Name": "s3origin-oac-1:ExportsOutputRefBucket83908E7781C90AC0"
-   }
+   "DependsOn": [
+    "BucketKMSKeyCAB5A69D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {

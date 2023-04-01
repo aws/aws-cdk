@@ -26,7 +26,7 @@ function makeDistribution(stack: cdk.Stack, id: string, first: cloudfront.IOrigi
 
 const app = new cdk.App();
 
-const stack1 = new cdk.Stack(app, 's3origin-oac');
+const stack1 = new cdk.Stack(app, 'oacmulti1');
 const bucket = new s3.Bucket(stack1, 'Bucket', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 const bucketByName = s3.Bucket.fromBucketName(stack1, 'BucketHardcoded', 's3origin-oac-test-bucket');
 const bucketImport = s3.Bucket.fromBucketName(stack1, 'BucketImported', bucket.bucketName);
@@ -37,29 +37,14 @@ const bucketWithKMS = new s3.Bucket(stack1, 'BucketKMS', {
 });
 bucketWithKMS.encryptionKey?.applyRemovalPolicy(cdk.RemovalPolicy.DESTROY);
 
-const oacCustom = new cloudfront.OriginAccessControl(stack1, 'OACNeverSign', {
-  originType: cloudfront.OriginAccessControlOriginType.S3,
-  signingBehavior: cloudfront.OriginAccessControlSigningBehavior.NEVER,
-});
-
-makeDistribution(stack1, 'Dist',
+const stack2 = new cdk.Stack(app, 'oacmulti2');
+makeDistribution(stack2, 'Dist',
   new TestS3OriginOAC(bucket),
-  new TestS3OriginOAC(bucket, undefined, oacCustom),
-  new TestS3OriginOAC(bucketWithKMS),
-);
-
-makeDistribution(stack1, 'DistNoPolicy',
-  new TestS3OriginOAC(bucket, false),
-  new TestS3OriginOAC(bucketWithKMS, false),
-  new TestS3OriginOAC(bucketByName, origins.S3OriginAutoResourcePolicy.NONE),
-  new TestS3OriginOAC(bucketImport, origins.S3OriginAutoResourcePolicy.NONE),
-);
-
-makeDistribution(stack1, 'DistRWPolicy',
-  new TestS3OriginOAC(bucket, origins.S3OriginAutoResourcePolicy.READ_WRITE),
-  new TestS3OriginOAC(bucketWithKMS, true),
+  new TestS3OriginOAC(bucketWithKMS, origins.S3OriginAutoResourcePolicy.READ_WRITE),
+  new TestS3OriginOAC(bucketImport, false),
+  new TestS3OriginOAC(bucketByName, false),
 );
 
 new integ.IntegTest(app, 'CloudFrontS3OriginOACTest', {
-  testCases: [stack1],
+  testCases: [stack1, stack2],
 });
