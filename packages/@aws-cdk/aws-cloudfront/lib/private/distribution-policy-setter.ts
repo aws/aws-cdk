@@ -19,14 +19,14 @@ function computePolicySetterTagName(distribution: Distribution, resourceStack: S
   return `aws-cdk:allow-policy-setter:${uniqueHash}`;
 }
 
-function computeSafetyCheckTagName(distribution: Distribution, resourceStack: Stack, writeAccess: boolean) {
-  // NOTE: This logic must be duplicated exactly in the lamda function implementation.
+function computeSafetyCheckTagName(distribution: Distribution, writeAccess: boolean) {
+  // NOTE: This logic must be duplicated exactly in the lambda function implementation.
   // We use a lazy evaluation because we want to defer getLogicalId, in case of renaming.
   return Lazy.string({
     produce: () => {
       let distLogicalId = distribution.stack.getLogicalId(distribution.node.defaultChild as CfnDistribution);
-      let verificationText = computeStackPairHash(distribution, resourceStack) + '|' + distLogicalId;
-      let verificationHash = createHash('sha256').update(verificationText).digest('hex').slice(-32);
+      let hashtext = distribution.stack.stackName + '|' + distLogicalId;
+      let verificationHash = createHash('sha256').update(hashtext).digest('hex').slice(-32);
       return `aws-cdk:grant-distribution-${writeAccess ? 'rw' : 'ro'}:${verificationHash}`;
     },
   });
@@ -46,8 +46,8 @@ function getOrCreateProvider(distribution: Distribution, resourceStack: Stack) {
   }
 
   const tagName = computePolicySetterTagName(distribution, resourceStack);
-  const conditionStringEquals: any = { };
-  conditionStringEquals['aws:ResourceTag/' + tagName] = '1';
+  const tagCheckStringEquals: any = { };
+  tagCheckStringEquals['aws:ResourceTag/' + tagName] = '1';
 
   return CustomResourceProvider.getOrCreateProvider(
     distribution.stack,
@@ -55,11 +55,11 @@ function getOrCreateProvider(distribution: Distribution, resourceStack: Stack) {
     {
       codeDirectory: path.join(__dirname, 'distribution-policy-setter-handler'),
       runtime: CustomResourceProviderRuntime.NODEJS_16_X,
+      environment: { CDK_STACK_NAME: distribution.stack.stackName },
       roleParent: roleParent,
       policyStatements: [
         {
           Effect: 'Allow',
-          Resource: '*',
           Action: [
             'kms:GetKeyPolicy',
             'kms:PutKeyPolicy',
@@ -68,7 +68,13 @@ function getOrCreateProvider(distribution: Distribution, resourceStack: Stack) {
             's3:PutBucketPolicy',
             's3:GetBucketTagging',
           ],
-          Condition: { StringEquals: conditionStringEquals },
+          Resource: '*',
+          Condition: { StringEquals: tagCheckStringEquals },
+        },
+        {
+          Effect: 'Allow',
+          Action: 'cloudformation:DescribeStackResources',
+          Resource: '*',
         },
       ],
     },
@@ -87,11 +93,10 @@ export class DistributionPolicySetter extends Construct {
       return false;
     }
 
-    const tagNameForDistribution = computeSafetyCheckTagName(scope, bucket.stack, writeAccess);
-    const tagNameForLambdaPermission = computePolicySetterTagName(scope, bucket.stack);
-
+    const tagNameForDistribution = computeSafetyCheckTagName(scope, writeAccess);
     if (cfnbucket.tags.tagValues()[tagNameForDistribution]) {
-      return true; // already tagged, permissions already granted to this distribution
+      // Already tagged, permissions already granted to this distribution
+      return true;
     }
 
     // If the necessary cross-resource policy has not already been added, add it.
@@ -99,7 +104,7 @@ export class DistributionPolicySetter extends Construct {
     const added = bucket.addToResourcePolicy(new PolicyStatement({
       effect: Effect.ALLOW,
       principals: [new ArnPrincipal(lazyArn)],
-      actions: ['s3:GetBucketPolicy', 's3:PutBucketPolicy'],
+      actions: ['s3:GetBucketPolicy', 's3:PutBucketPolicy', 's3:GetBucketTagging'],
       resources: [bucket.bucketArn],
     }));
     if (!added.statementAdded) {
@@ -121,6 +126,7 @@ export class DistributionPolicySetter extends Construct {
     setter.node.addDependency(bucket.policy!);
 
     // Make sure that the lambda role has permission to access this resource
+    const tagNameForLambdaPermission = computePolicySetterTagName(scope, bucket.stack);
     cfnbucket.tags.setTag(tagNameForLambdaPermission, '1');
 
     // Make sure the check-tag is set, or the lambda will refuse to modify the policy
@@ -139,18 +145,17 @@ export class DistributionPolicySetter extends Construct {
       return false;
     }
 
-    const tagNameForDistribution = computeSafetyCheckTagName(scope, key.stack, writeAccess);
-    const tagNameForLambdaPermission = computePolicySetterTagName(scope, key.stack);
-
+    const tagNameForDistribution = computeSafetyCheckTagName(scope, writeAccess);
     if (cfnkey.tags.tagValues()[tagNameForDistribution]) {
-      return true; // already tagged, permissions already granted to this distribution
+      // Already tagged, permissions already granted to this distribution
+      return true;
     }
 
     const lazyArn = Lazy.string({ produce: () => getOrCreateProvider(scope, key.stack).roleArn });
     const added = key.addToResourcePolicy(new PolicyStatement({
       effect: Effect.ALLOW,
       principals: [new ArnPrincipal(lazyArn)],
-      actions: ['kms:GetKeyPolicy', 'kms:PutKeyPolicy'],
+      actions: ['kms:GetKeyPolicy', 'kms:PutKeyPolicy', 'kms:ListResourceTags'],
       resources: ['*'],
     }));
     if (!added.statementAdded) {
@@ -170,6 +175,7 @@ export class DistributionPolicySetter extends Construct {
     setter.node.addDependency(cfnkey);
 
     // Make sure that the lambda role has permission to access this resource
+    const tagNameForLambdaPermission = computePolicySetterTagName(scope, key.stack);
     cfnkey.tags.setTag(tagNameForLambdaPermission, '1');
 
     // Make sure the check-tag is set, or the lambda will refuse to modify the policy

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 import { createHash, randomUUID } from 'crypto';
-import { S3, KMS, HttpResponse } from 'aws-sdk';
+import { CloudFormation, HttpResponse, KMS, S3 } from 'aws-sdk';
 
 // S3 handles cross-region redirection, can use a global API object
 const s3 = new S3();
@@ -53,12 +53,12 @@ function checkSuccessOrLogResponse(resp: HttpResponse | undefined | null) {
 }
 
 function generatePhysicalResourceId() {
-  return 'awscdk:distribution-policy-setter:' + randomUUID();
+  return 'awscdk:distribution-policy-setter:' + randomUUID().replace('-', '');
 }
 
 function generatePolicySid(physicalResourceId: string) {
-  const hash = createHash('sha256').update(physicalResourceId).digest('hex').slice(-32);
-  return 'DoNotEditCDKAutoPolicy' + hash;
+  const hash = physicalResourceId.split(':').at(-1);
+  return 'CDKDistributionPolicySetter' + hash?.toUpperCase();
 }
 
 interface ParsedArn {
@@ -148,24 +148,58 @@ function addOrReplacePolicyStatement(
   }
 }
 
+async function lookupDistributionLogicalIdFromArn(distArn: string, stackId: string) {
+  const distId = distArn.split('distribution/').at(-1);
+  if (!distId || !distId.match(/^[0-9A-Z]+$/)) {
+    throw new Error('invalid distribution arn ' + distArn);
+  }
+  const cf = new CloudFormation({ apiVersion: '2010-05-15', region: parseArn(stackId)?.region });
+  const describe = await cf.describeStackResources({ PhysicalResourceId: distId }).promise();
+  if (!checkSuccessOrLogResponse(describe.$response.httpResponse)) {
+    throw new Error('unable to call describeStackResources on distribution id');
+  }
+  const found = describe.StackResources?.find(
+    e => e.ResourceType === 'AWS::CloudFront::Distribution' && e.StackId === stackId,
+  );
+  return found?.LogicalResourceId ?? null;
+}
+
 async function processArns(
   uniqueSid: string,
   distribution: string,
   arnsRO: string[],
   arnsRW: string[],
   deleteOnly: boolean,
+  tagNameRO: string,
+  tagNameRW: string,
 ) {
   for (const dryRun of [true, false]) {
     const pairWith = (b:boolean) => ((e: string): [string, boolean] => [e, b]);
     const mapped = arnsRO.map(pairWith(false)).concat(arnsRW.map(pairWith(true)));
     for (const [arn, writeAccess] of mapped) {
       console.log('processing ' + arn + (writeAccess ? ' (read-write)' : ' (read-only)') + (dryRun ? ' [DRY RUN]' : ''));
+
       const arnParts = parseArn(arn);
       if (!arnParts) {
         throw new Error('unparseable arn ' + arn);
       }
       const arnResource = arnParts.resource ?? '';
+
+      const safetyCheckTag = writeAccess ?
+        ((k: string) => k === tagNameRW) :
+        ((k: string) => k === tagNameRW || k === tagNameRO);
+
       if (arnParts.service === 's3' && arnResource.length > 0 && !arnResource.includes('/')) {
+        const s3tags = await s3.getBucketTagging({ Bucket: arnResource }).promise();
+        if (!checkSuccessOrLogResponse(s3tags.$response.httpResponse)) {
+          throw new Error('unable to verify distribution safety-check tag for ' + arn);
+        }
+        const foundtag = s3tags?.TagSet?.map(e => e.Key)?.find(safetyCheckTag);
+        if (!foundtag) {
+          throw new Error('no matching distribution safety-check tag for ' + arn);
+        }
+        console.log('verified distribution safety-check tag ' + foundtag + ' for ' + arn);
+
         const desired: PermissionGrantStatement = {
           Sid: uniqueSid,
           Effect: 'Allow',
@@ -183,7 +217,25 @@ async function processArns(
           }
           console.log('successfully modified ' + arn);
         }
+
       } else if (arnParts.service === 'kms' && arnParts.region && arnResource.startsWith('key/')) {
+        const kms = getKMSForRegion(arnParts.region);
+
+        for (let marker = undefined;;) {
+          const kmstags = await kms.listResourceTags({ KeyId: arn, Marker: marker }).promise();
+          if (!checkSuccessOrLogResponse(kmstags.$response.httpResponse)) {
+            throw new Error('unable to verify distribution safety-check tag for ' + arn);
+          }
+          const foundkey = kmstags.Tags?.map(e => e.TagKey)?.find(safetyCheckTag);
+          if (foundkey) {
+            console.log('verified distribution safety-check tag ' + foundkey + ' for ' + arn);
+            break;
+          }
+          if (!kmstags.Truncated || !kmstags.NextMarker) {
+            throw new Error('no matching distribution safety-check tag for ' + arn);
+          }
+        }
+
         const desired: PermissionGrantStatement = {
           Sid: uniqueSid,
           Effect: 'Allow',
@@ -192,7 +244,6 @@ async function processArns(
           Resource: arn,
           Condition: { StringEquals: { 'aws:SourceArn': distribution } },
         };
-        const kms = getKMSForRegion(arnParts.region);
         const get = await kms.getKeyPolicy({ KeyId: arn, PolicyName: 'default' }).promise();
         const parsed = parsePolicyJSON(get.Policy, arn);
         if (addOrReplacePolicyStatement(parsed.Statement, desired, deleteOnly, arn) && !dryRun) {
@@ -202,6 +253,7 @@ async function processArns(
           }
           console.log('successfully modified ' + arn);
         }
+
       } else {
         throw new Error('unknown service for ' + arn);
       }
@@ -214,8 +266,6 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   function isStringArray(x: any) : x is string[] {
     return Array.isArray(x) && x.every(e => typeof e === 'string');
   }
-
-  let physicalId = String((event as any).PhysicalResourceId ?? generatePhysicalResourceId());
 
   const dist = event.ResourceProperties.distribution;
   const arnsRO = event.ResourceProperties.readOnlyArns;
@@ -235,19 +285,33 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     throw new Error('invalid cross-account permission grant');
   }
 
-  // If updating and the ARNs have changed, replace the physical ID
+  let physicalId = String((event as any).PhysicalResourceId ?? generatePhysicalResourceId());
+
+  // If updating and params have changed, replace the physical ID
   // to trigger a CloudFormation Delete request for the previous ID
-  // if (and only if) the update succeeds - a safe two-step commit!
+  // when (and if) the update succeeds - a safe two-phase commit.
   if (event.RequestType === 'Update') {
     const update = event as AWSLambda.CloudFormationCustomResourceUpdateEvent;
+    const olddist = update.OldResourceProperties.distribution ?? '';
     const oldarnsRO = update.OldResourceProperties.readOnlyArns ?? [];
     const oldarnsRW = update.OldResourceProperties.readWriteArns ?? [];
-    if (JSON.stringify(oldarnsRO) !== JSON.stringify(arnsRO) ||
-        JSON.stringify(oldarnsRW) !== JSON.stringify(arnsRW)) {
-      console.log('arns changed, generating new physical id');
+    if (JSON.stringify([dist, arnsRO, arnsRW]) !== JSON.stringify([olddist, oldarnsRO, oldarnsRW])) {
+      console.log('parameters changed, generating new physical id');
       physicalId = generatePhysicalResourceId();
     }
   }
+
+  // Look up logical ID from distribution ID, verify against our stack ID
+  const distLogicalId = await lookupDistributionLogicalIdFromArn(dist, event.StackId);
+  if (!distLogicalId) {
+    throw new Error('unable to locate distribution in stack');
+  }
+
+  // NOTE: This logic must be duplicated exactly from computeSafetyCheckTagName
+  const safetyCheckText = process.env.CDK_STACK_NAME + '|' + distLogicalId;
+  const safetyCheckHash = createHash('sha256').update(safetyCheckText).digest('hex').slice(-32);
+  const tagNameRO = `aws-cdk:grant-distribution-ro:${safetyCheckHash}`;
+  const tagNameRW = `aws-cdk:grant-distribution-rw:${safetyCheckHash}`;
 
   const dedupeSet = new Set<string>();
   const hasNeverSeen = (e: string) => !dedupeSet.has(e) && !!dedupeSet.add(e);
@@ -255,9 +319,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   const dedupedRW = arnsRW.filter(hasNeverSeen);
   const dedupedRO = arnsRO.filter(hasNeverSeen);
 
-  const uniqueSid = generatePolicySid(physicalId);
+  const policySid = generatePolicySid(physicalId);
   const deleteOnly = event.RequestType === 'Delete';
-  await processArns(uniqueSid, dist, dedupedRO, dedupedRW, deleteOnly);
+  await processArns(policySid, dist, dedupedRO, dedupedRW, deleteOnly, tagNameRO, tagNameRW);
 
   return {
     PhysicalResourceId: physicalId,
