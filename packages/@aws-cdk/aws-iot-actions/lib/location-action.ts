@@ -1,7 +1,6 @@
-import * as iam from '@aws-cdk/aws-iam';
-import * as iot from '@aws-cdk/aws-iot';
-import { CfnTopicRule } from '@aws-cdk/aws-iot';
-import { CfnTracker } from '@aws-cdk/aws-location';
+import * as iot from '@aws-cdk/aws-iot-alpha';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as location from 'aws-cdk-lib/aws-location';
 import { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
 
@@ -110,7 +109,7 @@ export class LocationAction implements iot.IAction {
    * @param tracker The Amazon Location tracker to which to write data.
    * @param props Optional properties to not use default
    */
-  constructor(private readonly tracker: CfnTracker, props: LocationActionProps) {
+  constructor(private readonly tracker: location.CfnTracker, props: LocationActionProps) {
     this.deviceId = props.deviceId;
     this.latitude = props.latitude;
     this.longitude = props.longitude;
@@ -130,7 +129,7 @@ export class LocationAction implements iot.IAction {
       }),
     );
     // TODO: remove when this bug has been fixed! https://github.com/aws/aws-cdk/issues/22732
-    const topicRule = rule.node.defaultChild as CfnTopicRule;
+    const topicRule = rule.node.defaultChild as iot.CfnTopicRule;
     topicRule.addOverride('Properties.TopicRulePayload.Actions.0', {
       Location: {
         DeviceId: this.deviceId,
