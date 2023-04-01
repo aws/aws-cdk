@@ -1,7 +1,7 @@
-import { HttpApi, VpcLink } from '@aws-cdk/aws-apigatewayv2';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as servicediscovery from '@aws-cdk/aws-servicediscovery';
-import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { HttpApi, VpcLink } from '@aws-cdk/aws-apigatewayv2-alpha';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { HttpServiceDiscoveryIntegration } from '../../lib';
 
 const app = new App();

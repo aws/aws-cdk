@@ -5,4 +5,3 @@ export * from './target-application';
 export * from './common';
 
 // AWS::ServiceCatalogAppRegistry CloudFormation Resources:
-export * from './servicecatalogappregistry.generated';

@@ -622,10 +622,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'synthesize':
       case 'synth':
+        const quiet = configuration.settings.get(['quiet']) ?? args.quiet;
         if (args.exclusively) {
-          return cli.synth(args.STACKS, args.exclusively, args.quiet, args.validation, argv.json);
+          return cli.synth(args.STACKS, args.exclusively, quiet, args.validation, argv.json);
         } else {
-          return cli.synth(args.STACKS, true, args.quiet, args.validation, argv.json);
+          return cli.synth(args.STACKS, true, quiet, args.validation, argv.json);
         }
 
       case 'notices':

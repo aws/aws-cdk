@@ -1,4 +1,4 @@
-import { md5hash as coreMd5 } from '@aws-cdk/core/lib/helpers-internal';
+import { md5hash as coreMd5 } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 export function md5hash(obj: any): string {
   if (!obj || (typeof(obj) === 'object' && Object.keys(obj).length === 0)) {

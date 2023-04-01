@@ -1,12 +1,12 @@
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as core from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as core from 'aws-cdk-lib';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as flink from '../lib';
 
 describe('Application', () => {

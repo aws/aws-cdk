@@ -119,6 +119,8 @@
       "@aws-cdk/core/minimatch/**",
       "@aws-cdk/core/table",
       "@aws-cdk/core/table/**",
+      "@aws-cdk/core/yaml",
+      "@aws-cdk/core/yaml/**",
       "@aws-cdk/cx-api/semver",
       "@aws-cdk/cx-api/semver/**",
       "@aws-cdk/pipelines/aws-sdk",
