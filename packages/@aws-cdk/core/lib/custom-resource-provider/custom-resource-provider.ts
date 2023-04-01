@@ -34,6 +34,15 @@ export interface CustomResourceProviderProps {
   readonly runtime: CustomResourceProviderRuntime;
 
   /**
+   * An optional override for synthesizing the lambda execution role in a different stack.
+   * Moving role synthesis to an earlier stack can help break circular stack dependencies.
+   *
+   * @default - the lambda execution role is created in the same stack
+   *
+   */
+  readonly roleParent?: Construct;
+
+  /**
    * A set of IAM policy statements to include in the inline policy of the
    * provider's lambda function.
    *
@@ -238,7 +247,12 @@ export class CustomResourceProvider extends Construct {
       }
     }
 
-    const config = getPrecreatedRoleConfig(this, `${this.node.path}/Role`);
+    let roleParent = props.roleParent ?? this;
+    if (roleParent.node.tryFindChild('Role')) {
+      throw new Error('roleParent already contains a construct with the id "Role"');
+    }
+
+    const config = getPrecreatedRoleConfig(roleParent, `${roleParent.node.path}/Role`);
     const assumeRolePolicyDoc = [{ Action: 'sts:AssumeRole', Effect: 'Allow', Principal: { Service: 'lambda.amazonaws.com' } }];
     const managedPolicyArn = 'arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole';
 
@@ -249,7 +263,7 @@ export class CustomResourceProvider extends Construct {
       // gives policyStatements a chance to resolve
       this.node.addValidation({
         validate: () => {
-          PolicySynthesizer.getOrCreate(this).addRole(`${this.node.path}/Role`, {
+          PolicySynthesizer.getOrCreate(roleParent).addRole(`${roleParent.node.path}/Role`, {
             missing: !config.precreatedRoleName,
             roleName: config.precreatedRoleName ?? id+'Role',
             managedPolicies: [{ managedPolicyArn: managedPolicyArn }],
@@ -267,7 +281,7 @@ export class CustomResourceProvider extends Construct {
       });
     }
     if (!config.preventSynthesis) {
-      this._role = new CfnResource(this, 'Role', {
+      this._role = new CfnResource(roleParent, 'Role', {
         type: 'AWS::IAM::Role',
         properties: {
           AssumeRolePolicyDocument: {

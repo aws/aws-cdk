@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 import { createHash, randomUUID } from 'crypto';
-import { S3, KMS } from 'aws-sdk';
+import { S3, KMS, HttpResponse } from 'aws-sdk';
 
 // S3 handles cross-region redirection, can use a global API object
 const s3 = new S3();
@@ -29,6 +29,7 @@ interface BareMinimumPolicy {
   [key: string]: any;
 }
 
+// We are a lot stricter about our own generated statements
 interface PermissionGrantStatement {
   Sid: string;
   Effect: 'Allow';
@@ -38,16 +39,17 @@ interface PermissionGrantStatement {
   Condition: { StringEquals: { 'aws:SourceArn': string } };
 }
 
-interface ArnParts {
-  partition?: string;
-  service?: string;
-  region?: string;
-  account?: string,
-  resource?: string;
-}
-
-function isStringArray(x: any) : x is string[] {
-  return Array.isArray(x) && x.every(e => typeof e === 'string');
+function checkSuccessOrLogResponse(resp: HttpResponse | undefined | null) {
+  if (resp && resp.statusCode >= 200 && resp.statusCode <= 299) {
+    return true;
+  }
+  if (resp) {
+    console.log(`ERROR: ${resp.statusCode} ${resp.statusMessage}`);
+    console.log(resp.body.toString());
+  } else {
+    console.log('ERROR: no response');
+  }
+  return false;
 }
 
 function generatePhysicalResourceId() {
@@ -59,8 +61,15 @@ function generatePolicySid(physicalResourceId: string) {
   return 'DoNotEditCDKAutoPolicy' + hash;
 }
 
-function parseArn(arn: string) : ArnParts | null {
-  const re = /^arn:(?<partition>[^:]+)?:(?<service>[^:]+)?:(?<region>[^:]+)?:(?<account>[0-9]{12})?:(?<resource>.+)?$/;
+interface ParsedArn {
+  partition?: string;
+  service?: string;
+  region?: string;
+  account?: string,
+  resource?: string;
+}
+function parseArn(arn: string) : ParsedArn | null {
+  const re = /^arn:(?<partition>[^:]+)?:(?<service>[^:]+)?:(?<region>[^:]+)?:(?<account>[^:]+)?:(?<resource>.+)?$/;
   return arn.match(re)?.groups ?? null;
 }
 
@@ -112,7 +121,7 @@ function replacePropertiesWith(dst: BareMinimumStatement, src: BareMinimumStatem
   return didAnything;
 }
 
-// returns false if no changes were made to statements
+// modifies array in place; returns false if no changes were made to statements
 function addOrReplacePolicyStatement(
   s: BareMinimumStatement[],
   desired: BareMinimumStatement & PermissionGrantStatement,
@@ -169,7 +178,7 @@ async function processArns(
         const parsed = parsePolicyJSON(get.Policy, arn);
         if (addOrReplacePolicyStatement(parsed.Statement, desired, deleteOnly, arn) && !dryRun) {
           const put = await s3.putBucketPolicy({ Bucket: arnResource, Policy: JSON.stringify(parsed) }).promise();
-          if (put.$response.httpResponse.statusCode != 200) {
+          if (!checkSuccessOrLogResponse(put.$response.httpResponse)) {
             throw new Error('unable to put new JSON policy document for ' + arn);
           }
           console.log('successfully modified ' + arn);
@@ -188,7 +197,7 @@ async function processArns(
         const parsed = parsePolicyJSON(get.Policy, arn);
         if (addOrReplacePolicyStatement(parsed.Statement, desired, deleteOnly, arn) && !dryRun) {
           const put = await kms.putKeyPolicy({ KeyId: arn, PolicyName: 'default', Policy: JSON.stringify(parsed) }).promise();
-          if (put.$response.httpResponse.statusCode != 200) {
+          if (!checkSuccessOrLogResponse(put.$response.httpResponse)) {
             throw new Error('unable to put new JSON policy document for ' + arn);
           }
           console.log('successfully modified ' + arn);
@@ -201,6 +210,10 @@ async function processArns(
 }
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
+
+  function isStringArray(x: any) : x is string[] {
+    return Array.isArray(x) && x.every(e => typeof e === 'string');
+  }
 
   let physicalId = String((event as any).PhysicalResourceId ?? generatePhysicalResourceId());
 
