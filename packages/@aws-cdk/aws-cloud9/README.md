@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
@@ -83,7 +77,7 @@ new cloud9.Ec2Environment(this, 'Cloud9Env2', {
 Use `clonedRepositories` to clone one or multiple AWS Codecommit repositories into the environment:
 
 ```ts
-import * as codecommit from '@aws-cdk/aws-codecommit';
+import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 
 // create a codecommit repository to clone into the cloud9 environment
 const repoNew = new codecommit.Repository(this, 'RepoNew', {
@@ -128,7 +122,7 @@ new cloud9.Ec2Environment(this, 'C9Env', {
 To specify a specific IAM User as the environment owner, use `Owner.user()`. The user should have the `AWSCloud9Administrator` managed policy
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 const user = new iam.User(this, 'user');
 user.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCloud9Administrator'));
