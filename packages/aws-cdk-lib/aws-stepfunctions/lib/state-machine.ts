@@ -7,6 +7,8 @@ import { StateGraph } from './state-graph';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnStateMachine } from './stepfunctions.generated';
 import { IChainable } from './types';
+import { IPrincipal } from '../../aws-iam';
+import * as s3_assets from '../../aws-s3-assets';
 
 /**
  * Two types of state machines are available in AWS Step Functions: EXPRESS AND STANDARD.
@@ -90,8 +92,19 @@ export interface StateMachineProps {
 
   /**
    * Definition for this state machine
+   * @deprecated use definitionBody: DefinitionBody.fromChainable()
    */
-  readonly definition: IChainable;
+  readonly definition?: IChainable;
+
+  /**
+   * Definition for this state machine
+   */
+  readonly definitionBody?: DefinitionBody;
+
+  /**
+   * substitutions for the definition body aas a key-value map
+   */
+  readonly definitionSubstitutions?: { [key: string]: string };
 
   /**
    * The execution role for the state machine service
@@ -401,6 +414,10 @@ export class StateMachine extends StateMachineBase {
       physicalName: props.stateMachineName,
     });
 
+    if (props.definition && props.definitionBody) {
+      throw new Error('Cannot specify definition and definitionBody at the same time');
+    }
+
     if (props.stateMachineName !== undefined) {
       this.validateStateMachineName(props.stateMachineName);
     }
@@ -409,8 +426,7 @@ export class StateMachine extends StateMachineBase {
       assumedBy: new iam.ServicePrincipal('states.amazonaws.com'),
     });
 
-    const graph = new StateGraph(props.definition.startState, `State Machine ${id} definition`);
-    graph.timeout = props.timeout;
+    const definitionBody = props.definitionBody ?? DefinitionBody.fromChainable(props.definition!);
 
     this.stateMachineType = props.stateMachineType ?? StateMachineType.STANDARD;
 
@@ -418,17 +434,14 @@ export class StateMachine extends StateMachineBase {
       stateMachineName: this.physicalName,
       stateMachineType: props.stateMachineType ?? undefined,
       roleArn: this.role.roleArn,
-      definitionString: Stack.of(this).toJsonString(graph.toGraphJson()),
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
       tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
+      ...definitionBody.bind(this, this.role, props),
+      definitionSubstitutions: props.definitionSubstitutions,
     });
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
 
     resource.node.addDependency(this.role);
-
-    for (const statement of graph.policyStatements) {
-      this.addToRolePolicy(statement);
-    }
 
     this.stateMachineName = this.getResourceNameAttribute(resource.attrName);
     this.stateMachineArn = this.getResourceArnAttribute(resource.ref, {
@@ -621,4 +634,85 @@ export interface IStateMachine extends IResource, iam.IGrantable {
    * @default - sum over 5 minutes
    */
   metricTime(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
+}
+
+/**
+ * Partial object from the StateMachine L1 construct properties containing definition information
+ */
+export interface DefinitionConfig {
+  readonly definition?: any;
+  readonly definitionString?: string;
+  readonly definitionS3Location?: CfnStateMachine.S3LocationProperty;
+}
+
+
+export abstract class DefinitionBody {
+
+  public static fromFile(path: string, options: s3_assets.AssetOptions): DefinitionBody {
+    return new FileDefinitionBody(path, options);
+  }
+
+  public static fromString(definition: string): DefinitionBody {
+    return new StringDefinitionBody(definition);
+  }
+
+  public static fromChainable(chainable: IChainable): DefinitionBody {
+    return new ChainDefinitionBody(chainable);
+  }
+
+  public abstract bind(scope: Construct, sfnPrincipal: IPrincipal, sfnProps: StateMachineProps): DefinitionConfig;
+
+}
+
+export class FileDefinitionBody extends DefinitionBody {
+
+  constructor(public readonly path: string, private readonly options: s3_assets.AssetOptions = { }) {
+    super();
+  }
+
+  public bind(scope: Construct, _sfnPrincipal: IPrincipal, _sfnProps: StateMachineProps): DefinitionConfig {
+    const asset = new s3_assets.Asset(scope, 'DefinitionBody', {
+      path: this.path,
+      ...this.options,
+    });
+    return {
+      definitionS3Location: {
+        bucket: asset.s3BucketName,
+        key: asset.s3ObjectKey,
+      },
+    };
+  }
+
+}
+
+export class StringDefinitionBody extends DefinitionBody {
+
+  constructor(public readonly body: string) {
+    super();
+  }
+
+  public bind(_scope: Construct, _sfnPrincipal: IPrincipal, _sfnProps: StateMachineProps): DefinitionConfig {
+    return {
+      definitionString: this.body,
+    };
+  }
+}
+
+export class ChainDefinitionBody extends DefinitionBody {
+
+  constructor(public readonly chainable: IChainable) {
+    super();
+  }
+
+  public bind(scope: Construct, sfnPrincipal: IPrincipal, sfnProps: StateMachineProps): DefinitionConfig {
+    const graph = new StateGraph(this.chainable.startState, 'State Machine definition');
+    graph.timeout = sfnProps.timeout;
+    for (const statement of graph.policyStatements) {
+      sfnPrincipal.addToPrincipalPolicy(statement);
+    }
+    return {
+      definitionString: Stack.of(scope).toJsonString(graph.toGraphJson()),
+    };
+  }
+
 }
