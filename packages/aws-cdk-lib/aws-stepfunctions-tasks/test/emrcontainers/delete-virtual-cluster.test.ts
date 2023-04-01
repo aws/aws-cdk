@@ -92,7 +92,7 @@ describe('Valid policy statements and resources are passed ', () => {
     });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -134,7 +134,7 @@ describe('Valid policy statements and resources are passed ', () => {
     });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -179,7 +179,7 @@ describe('Valid policy statements and resources are passed ', () => {
     });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN

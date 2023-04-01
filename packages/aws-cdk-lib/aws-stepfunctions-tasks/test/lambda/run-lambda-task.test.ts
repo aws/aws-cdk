@@ -1,6 +1,6 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as lambda from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '../../../core';
 import * as tasks from '../../lib';
 
@@ -28,7 +28,7 @@ describeDeprecated('run lambda task', () => {
       }),
     });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({
@@ -70,7 +70,7 @@ describeDeprecated('run lambda task', () => {
       }),
     });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({
@@ -104,7 +104,7 @@ describeDeprecated('run lambda task', () => {
       task: new tasks.RunLambdaTask(fn),
     });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({
@@ -138,7 +138,7 @@ describeDeprecated('run lambda task', () => {
       }),
     });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({

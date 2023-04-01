@@ -748,7 +748,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     const task = new EmrContainersStartJobRun(stack, 'EMR Containers Start Job Run', defaultProps);
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -828,7 +828,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -902,7 +902,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -951,7 +951,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     const task = new EmrContainersStartJobRun(stack, 'Task', defaultProps);
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN
@@ -983,7 +983,7 @@ describe('Invoke EMR Containers Start Job Run with ', () => {
     const task = new EmrContainersStartJobRun(stack, 'Task', defaultProps);
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN

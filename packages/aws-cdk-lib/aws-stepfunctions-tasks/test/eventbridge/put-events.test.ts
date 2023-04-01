@@ -142,7 +142,7 @@ describe('Put Events', () => {
           source: 'my.source',
         }],
       });
-    // THEN
+      // THEN
     }).toThrowError('Task Token is required in `entries`. Use JsonPath.taskToken to set the token.');
   });
 
@@ -157,7 +157,7 @@ describe('Put Events', () => {
           source: 'my.source',
         }],
       });
-    // THEN
+      // THEN
     }).toThrowError('Unsupported service integration pattern');
   });
 
@@ -235,7 +235,7 @@ describe('Put Events', () => {
         source: 'my.source',
       }],
     });
-    new sfn.StateMachine(stack, 'State Machine', { definition: task });
+    new sfn.StateMachine(stack, 'State Machine', { definitionBody: sfn.DefinitionBody.fromChainable(task) });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {

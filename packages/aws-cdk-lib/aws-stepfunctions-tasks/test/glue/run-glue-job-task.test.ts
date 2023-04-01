@@ -1,6 +1,6 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../../assertions';
 import * as sfn from '../../../aws-stepfunctions';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Duration, Stack } from '../../../core';
 import * as tasks from '../../lib';
 
@@ -16,7 +16,7 @@ describeDeprecated('RunGlueJobTask', () => {
       task: new tasks.RunGlueJobTask(jobName),
     });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({
@@ -59,7 +59,7 @@ describeDeprecated('RunGlueJobTask', () => {
       }),
     });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     expect(stack.resolve(task.toStateJson())).toEqual({
@@ -96,7 +96,7 @@ describeDeprecated('RunGlueJobTask', () => {
       }),
     });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -115,7 +115,7 @@ describeDeprecated('RunGlueJobTask', () => {
       }),
     });
     new sfn.StateMachine(stack, 'SM', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {

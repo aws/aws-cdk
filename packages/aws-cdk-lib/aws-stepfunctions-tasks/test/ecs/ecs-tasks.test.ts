@@ -1,9 +1,9 @@
+import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import * as sfn from '../../../aws-stepfunctions';
-import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Stack } from '../../../core';
 import * as tasks from '../../lib';
 
@@ -78,7 +78,7 @@ describeDeprecated('ecs-tasks', () => {
     });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: runTask,
+      definitionBody: sfn.DefinitionBody.fromChainable(runTask),
     });
 
     // THEN
@@ -191,7 +191,7 @@ describeDeprecated('ecs-tasks', () => {
     });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: runTask,
+      definitionBody: sfn.DefinitionBody.fromChainable(runTask),
     });
 
     // THEN
@@ -292,7 +292,7 @@ describeDeprecated('ecs-tasks', () => {
     const runTask = new sfn.Task(stack, 'Run', { task: ec2Task });
 
     new sfn.StateMachine(stack, 'SM', {
-      definition: runTask,
+      definitionBody: sfn.DefinitionBody.fromChainable(runTask),
     });
 
     // THEN

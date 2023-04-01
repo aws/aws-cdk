@@ -193,7 +193,7 @@ describe('Start Query Execution', () => {
     });
 
     new sfn.StateMachine(stack, 'StateMachine', {
-      definition: task,
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
     });
 
     // THEN

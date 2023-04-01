@@ -150,7 +150,7 @@ function minimalPipeline(stack: Stack): codepipeline.IStage {
   const sourceOutput = new codepipeline.Artifact();
   const startState = new stepfunction.Pass(stack, 'StartState');
   const simpleStateMachine = new stepfunction.StateMachine(stack, 'SimpleStateMachine', {
-    definition: startState,
+    definitionBody: stepfunction.DefinitionBody.fromChainable(startState),
   });
   const pipeline = new codepipeline.Pipeline(stack, 'MyPipeline');
   const sourceStage = pipeline.addStage({
