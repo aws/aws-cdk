@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
@@ -190,7 +184,7 @@ You can provide a specific log group to specify where the CDK will create the lo
 where log events will be sent:
 
 ```ts
-import * as logs from '@aws-cdk/aws-logs';
+import * as logs from 'aws-cdk-lib/aws-logs';
 
 const logGroup = new logs.LogGroup(this, 'Log Group');
 declare const bucket: s3.Bucket;
@@ -237,7 +231,7 @@ metric configurations for any metric provided by Kinesis Data Firehose; the conf
 are pre-populated with the correct dimensions for the delivery stream.
 
 ```ts
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 declare const deliveryStream: firehose.DeliveryStream;
 
 // Alarm that triggers when the per-second average of incoming bytes exceeds 90% of the current service limit

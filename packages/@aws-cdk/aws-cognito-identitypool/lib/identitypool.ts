@@ -1,20 +1,20 @@
 import {
   CfnIdentityPool,
-} from '@aws-cdk/aws-cognito';
+} from 'aws-cdk-lib/aws-cognito';
 import {
   IOpenIdConnectProvider,
   ISamlProvider,
   Role,
   FederatedPrincipal,
   IRole,
-} from '@aws-cdk/aws-iam';
+} from 'aws-cdk-lib/aws-iam';
 import {
   Resource,
   IResource,
   Stack,
   ArnFormat,
   Lazy,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
 import {
   Construct,
 } from 'constructs';

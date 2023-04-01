@@ -123,7 +123,7 @@ async function getNestedStackArn(
   try {
     const stackResources = await listStackResources?.listStackResources();
     return stackResources?.find(sr => sr.LogicalResourceId === nestedStackLogicalId)?.PhysicalResourceId;
-  } catch (e) {
+  } catch (e: any) {
     if (e.message.startsWith('Stack with id ') && e.message.endsWith(' does not exist')) {
       return;
     }

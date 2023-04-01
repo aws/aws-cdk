@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "PipelineWithCustomStepStackOutputTest/DefaultTest": {
+      "stacks": [
+        "StackOutputPipelineStack"
+      ],
+      "assertionStack": "PipelineWithCustomStepStackOutputTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PipelineWithCustomStepStackOutputTestDefaultTestDeployAssert6C17E8C5"
+    }
+  }
+}
