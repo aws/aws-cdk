@@ -1,7 +1,7 @@
 {
-  "name": "@aws-cdk/aws-iot",
+  "name": "@aws-cdk/aws-iot-alpha",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "description": "The CDK Construct Library for AWS::IoT",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,24 +9,28 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.iot",
+        "package": "software.amazon.awscdk.services.iot.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "iot"
+          "artifactId": "iot-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.IoT",
-        "packageId": "Amazon.CDK.AWS.IoT",
+        "namespace": "Amazon.CDK.AWS.IoT.Alpha",
+        "packageId": "Amazon.CDK.AWS.IoT.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-iot",
-        "module": "aws_cdk.aws_iot",
+        "distName": "aws-cdk.aws-iot-alpha",
+        "module": "aws_cdk.aws_iot_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkiotalpha"
       }
     },
     "projectReferences": true,
@@ -52,17 +56,14 @@
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "cfn2ts": "cfn2ts",
     "build+test+package": "yarn build+test && yarn package",
     "build+test": "yarn build && yarn test",
     "compat": "cdk-compat",
-    "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::IoT",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
@@ -80,22 +81,20 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
-    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "aws-cdk-lib": "0.0.0",
+    "constructs": "^10.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0"
   },
-  "dependencies": {
-    "@aws-cdk/core": "0.0.0",
-    "constructs": "^10.0.0"
-  },
+  "dependencies": {},
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/core": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -103,7 +102,7 @@
   },
   "awslint": {
     "exclude": [
-      "no-unused-type:@aws-cdk/aws-iot.ActionConfig"
+      "*:*"
     ]
   },
   "stability": "experimental",
@@ -113,5 +112,11 @@
   },
   "publishConfig": {
     "tag": "latest"
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
   }
 }

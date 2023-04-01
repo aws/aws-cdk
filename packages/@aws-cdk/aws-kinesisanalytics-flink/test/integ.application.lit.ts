@@ -1,7 +1,7 @@
 ///! show
 import * as path from 'path';
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as core from '@aws-cdk/core';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as core from 'aws-cdk-lib';
 import * as flink from '../lib';
 
 const app = new core.App();
