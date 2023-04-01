@@ -1,6 +1,6 @@
-import { Annotations, Template } from '@aws-cdk/assertions';
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import { Annotations, Template } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as appreg from '../lib';
 
@@ -39,8 +39,7 @@ describe('Application', () => {
       description: description,
     });
 
-    Template.fromStack(stack).hasOutput('MyApplicationApplicationManagerUrlB79EF34D', {});
-    expect(application.applicationManagerUrl?.value).toContain('AWS_AppRegistry_Application-testApplication');
+    expect(application.applicationManagerUrl).toContain('AWS_AppRegistry_Application-testApplication');
     Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::Application', {
       Description: description,
     });
@@ -161,6 +160,31 @@ describe('Application', () => {
       });
     }),
 
+    test('associate new attribute group', () => {
+      application.addAttributeGroup('AttributeGroup', {
+        attributeGroupName: 'AttributeGroupName',
+        attributes: {},
+        description: 'Description for Attribute Group',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation', {
+        Application: { 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Id'] },
+        AttributeGroup: { 'Fn::GetAtt': ['MyApplicationAttributeGroup0BD166B6', 'Id'] },
+      });
+
+      Template.fromStack(stack).templateMatches({
+        Resources: {
+          MyApplicationAttributeGroup0BD166B6: {
+            Type: 'AWS::ServiceCatalogAppRegistry::AttributeGroup',
+            Properties: {
+              Name: 'AttributeGroupName',
+              Attributes: {},
+            },
+          },
+        },
+      });
+    }),
+
     test('duplicate attribute group association are idempotent', () => {
       const attributeGroup = new appreg.AttributeGroup(stack, 'AttributeGroup', {
         attributeGroupName: 'attributeGroupName',
@@ -245,18 +269,21 @@ describe('Application', () => {
 
     test('fails for sharing application without principals', () => {
       expect(() => {
-        application.shareApplication({});
+        application.shareApplication('MyShareId', {
+          name: 'MyShare',
+        });
       }).toThrow(/An entity must be provided for the share/);
     });
 
     test('share application with an organization', () => {
-      application.shareApplication({
+      application.shareApplication('MyShareId', {
+        name: 'MyShare',
         organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare5bb637032063',
+        Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -264,13 +291,14 @@ describe('Application', () => {
     });
 
     test('share application with an account', () => {
-      application.shareApplication({
+      application.shareApplication('MyShareId', {
+        name: 'MyShare',
         accounts: ['123456789012'],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare5bb637032063',
+        Name: 'MyShare',
         Principals: ['123456789012'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -280,13 +308,14 @@ describe('Application', () => {
     test('share application with an IAM role', () => {
       const myRole = iam.Role.fromRoleArn(stack, 'MyRole', 'arn:aws:iam::123456789012:role/myRole');
 
-      application.shareApplication({
+      application.shareApplication('MyShareId', {
+        name: 'MyShare',
         roles: [myRole],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare5bb637032063',
+        Name: 'MyShare',
         Principals: ['arn:aws:iam::123456789012:role/myRole'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -296,13 +325,14 @@ describe('Application', () => {
     test('share application with an IAM user', () => {
       const myUser = iam.User.fromUserArn(stack, 'MyUser', 'arn:aws:iam::123456789012:user/myUser');
 
-      application.shareApplication({
+      application.shareApplication('MyShareId', {
+        name: 'MyShare',
         users: [myUser],
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare5bb637032063',
+        Name: 'MyShare',
         Principals: ['arn:aws:iam::123456789012:user/myUser'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -310,14 +340,15 @@ describe('Application', () => {
     });
 
     test('share application with organization, give explicit read only access to an application', () => {
-      application.shareApplication({
+      application.shareApplication('MyShareId', {
+        name: 'MyShare',
         organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         sharePermission: appreg.SharePermission.READ_ONLY,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare5bb637032063',
+        Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly'],
@@ -325,14 +356,15 @@ describe('Application', () => {
     });
 
     test('share application with organization, allow access to associate resources and attribute group with an application', () => {
-      application.shareApplication({
+      application.shareApplication('MyShareId', {
+        name: 'MyShare',
         organizationArns: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         sharePermission: appreg.SharePermission.ALLOW_ACCESS,
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::RAM::ResourceShare', {
         AllowExternalPrincipals: false,
-        Name: 'RAMShare5bb637032063',
+        Name: 'MyShare',
         Principals: ['arn:aws:organizations::123456789012:organization/o-70oi5564q1'],
         ResourceArns: [{ 'Fn::GetAtt': ['MyApplication5C63EC1D', 'Arn'] }],
         PermissionArns: ['arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation'],

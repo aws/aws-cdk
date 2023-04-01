@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { Writable } from 'stream';
 import { StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';

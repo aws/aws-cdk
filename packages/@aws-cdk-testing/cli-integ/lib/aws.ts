@@ -74,7 +74,7 @@ export class AwsClients {
   public async stackStatus(stackName: string): Promise<string | undefined> {
     try {
       return (await this.cloudFormation('describeStacks', { StackName: stackName })).Stacks?.[0].StackStatus;
-    } catch (e) {
+    } catch (e: any) {
       if (isStackMissingError(e)) { return undefined; }
       throw e;
     }
@@ -113,7 +113,7 @@ export class AwsClients {
       await this.s3('deleteBucket', {
         Bucket: bucketName,
       });
-    } catch (e) {
+    } catch (e: any) {
       if (isBucketMissingError(e)) { return; }
       throw e;
     }
@@ -126,15 +126,16 @@ export class AwsClients {
  * Create the correct client, do the call and resole the promise().
  */
 async function awsCall<
-  A extends AWS.Service,
-  B extends keyof ServiceCalls<A>,
->(ctor: new (config: any) => A, config: any, call: B, request: First<ServiceCalls<A>[B]>): Promise<Second<ServiceCalls<A>[B]>> {
+  Svc extends AWS.Service,
+  Calls extends ServiceCalls<Svc>,
+  Call extends keyof Calls,
+>(ctor: new (config: any) => Svc, config: any, call: Call, request: First<Calls[Call]>): Promise<Second<Calls[Call]>> {
   const cfn = new ctor(config);
-  const response = cfn[call](request);
+  const response = ((cfn as any)[call] as any)(request);
   try {
     return response.promise();
-  } catch (e) {
-    const newErr = new Error(`${call}(${JSON.stringify(request)}): ${e.message}`);
+  } catch (e: any) {
+    const newErr = new Error(`${String(call)}(${JSON.stringify(request)}): ${e.message}`);
     (newErr as any).code = e.code;
     throw newErr;
   }
@@ -210,7 +211,7 @@ export async function retry<A>(output: NodeJS.WritableStream, operation: string,
       const ret = await block();
       output.write(`💈 ${operation}: succeeded after ${i} attempts\n`);
       return ret;
-    } catch (e) {
+    } catch (e: any) {
       if (e.abort || Date.now() > deadline.getTime( )) {
         throw new Error(`${operation}: did not succeed after ${i} attempts: ${e}`);
       }
