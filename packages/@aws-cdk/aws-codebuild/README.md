@@ -411,6 +411,9 @@ CodeBuild lets you specify an S3 Bucket, CloudWatch Log Group or both to receive
 
 By default, logs will go to cloudwatch.
 
+When using a cross-account, CodeBuild IAM role within an account-agnostic stack, the Project Construct will create a CloudWatch Resource Policy.
+This resource policy can be suppressed by using the "suppressResourcePolicy" option under the "logigng.cloudWatch" option.
+
 ### CloudWatch Logs Example
 
 ```ts

@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "AssetBuildSpecTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codebuild-suppress-resource-policy"
+      ],
+      "assertionStack": "AssetBuildSpecTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AssetBuildSpecTestDefaultTestDeployAssertC826AACC"
+    }
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "version": "31.0.0",
+  "artifacts": {
+    "aws-cdk-codebuild-suppress-resource-policy.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-codebuild-suppress-resource-policy.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-codebuild-suppress-resource-policy": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codebuild-suppress-resource-policy.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a23e2711bc68aad6d069769f9534c89ad53a69f07d404f27221fba8721acb0a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-codebuild-suppress-resource-policy.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-codebuild-suppress-resource-policy.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-codebuild-suppress-resource-policy/FakeImportedRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FakeImportedRole75EB1D0D"
+          }
+        ],
+        "/aws-cdk-codebuild-suppress-resource-policy/SomeRole/PolicyawscdkcodebuildsuppressresourcepolicySomeRoleC3048147/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SomeRolePolicyawscdkcodebuildsuppressresourcepolicySomeRoleC30481470B38533F"
+          }
+        ],
+        "/aws-cdk-codebuild-suppress-resource-policy/my-log-group-label/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myloggrouplabel0A41AD36"
+          }
+        ],
+        "/aws-cdk-codebuild-suppress-resource-policy/BuildProjectRemovedResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildProjectRemovedResourcePolicy53456906"
+          }
+        ],
+        "/aws-cdk-codebuild-suppress-resource-policy/my-log-group-label2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myloggrouplabel2465DAEED"
+          }
+        ],
+        "/aws-cdk-codebuild-suppress-resource-policy/my-log-group-label2/Policy/ResourcePolicy": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myloggrouplabel2PolicyResourcePolicy75CD15E6"
+          }
+        ],
+        "/aws-cdk-codebuild-suppress-resource-policy/BuildProjectWithResourcePolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BuildProjectWithResourcePolicy35FF8F82"
+          }
+        ],
+        "/aws-cdk-codebuild-suppress-resource-policy/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-codebuild-suppress-resource-policy/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codebuild-suppress-resource-policy"
+    },
+    "AssetBuildSpecTestDefaultTestDeployAssertC826AACC.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AssetBuildSpecTestDefaultTestDeployAssertC826AACC.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AssetBuildSpecTestDefaultTestDeployAssertC826AACC": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AssetBuildSpecTestDefaultTestDeployAssertC826AACC.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AssetBuildSpecTestDefaultTestDeployAssertC826AACC.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AssetBuildSpecTestDefaultTestDeployAssertC826AACC.assets"
+      ],
+      "metadata": {
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AssetBuildSpecTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
