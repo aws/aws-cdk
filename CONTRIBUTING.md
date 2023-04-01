@@ -100,7 +100,7 @@ time, you can execute the following to build it and it's dependencies.
 
 ```console
 $ cd packages/aws-cdk-lib
-$ ../../../scripts/buildup
+$ ../../scripts/buildup
 ```
 
 Note: The `buildup` command is resumable. If your build fails, you can fix the issue and run `buildup --resume` to
