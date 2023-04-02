@@ -116,16 +116,22 @@ new batch.JobQueue(stack, 'batch-with-launch-template-id', {
 
 const repo = new ecr.Repository(stack, 'batch-job-repo');
 const secret = new secretsmanager.Secret(stack, 'batch-secret');
+const linuxParams = new ecs.LinuxParameters(stack, 'batch-job-linux-parameters', {
+  initProcessEnabled: true,
+  sharedMemorySize: 1,
+})
 
 new batch.JobDefinition(stack, 'batch-job-def-from-ecr', {
   container: {
     image: new ecs.EcrImage(repo, 'latest'),
+    linuxParams: linuxParams,
   },
 });
 
 new batch.JobDefinition(stack, 'batch-job-def-from-', {
   container: {
     image: ecs.ContainerImage.fromRegistry('docker/whalesay'),
+    linuxParams: linuxParams,
   },
 });
 
@@ -141,6 +147,7 @@ new batch.JobDefinition(stack, 'batch-job-def-fargate', {
     secrets: {
       SECRET: ecs.Secret.fromSecretsManager(secret),
     },
+    linuxParams: linuxParams,
   },
 });
 
