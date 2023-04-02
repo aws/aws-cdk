@@ -57,14 +57,14 @@
     "fs-extra": "^9.1.0",
     "jest": "^27.5.1",
     "jest-junit": "^13.2.0",
-    "jsii": "1.75.0",
-    "jsii-pacmak": "1.75.0",
-    "jsii-reflect": "1.75.0",
+    "jsii": "~5.0.2",
+    "jsii-pacmak": "1.78.1",
+    "jsii-reflect": "1.78.1",
     "markdownlint-cli": "^0.33.0",
     "nyc": "^15.1.0",
     "semver": "^7.3.8",
     "ts-jest": "^27.1.5",
-    "typescript": "~3.9.10",
+    "typescript": "~4.9.5",
     "yargs": "^16.2.0"
   },
   "keywords": [

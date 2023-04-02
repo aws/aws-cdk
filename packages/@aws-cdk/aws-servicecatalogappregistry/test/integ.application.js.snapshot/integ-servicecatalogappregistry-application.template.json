@@ -4,7 +4,7 @@
    "Type": "AWS::ServiceCatalogAppRegistry::Application",
    "Properties": {
     "Name": "TestApplication",
-    "Description": "Test application description"
+    "Description": "My application description"
    }
   },
   "TestApplicationResourceAssociationd232b63e52a8414E905D": {
@@ -39,10 +39,50 @@
     }
    }
   },
-  "TestApplicationRAMShare3dc6227daec11BF3E108": {
+  "TestApplicationmyAnotherAttributeGroup375F79DB": {
+   "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
+   "Properties": {
+    "Attributes": {
+     "stage": "alpha",
+     "teamMembers": [
+      "markI",
+      "markII",
+      "markIII"
+     ],
+     "public": false,
+     "publishYear": 2021,
+     "plannedRoadMap": {
+      "alpha": "some time",
+      "beta": "another time",
+      "gamma": "penultimate time",
+      "release": "go time"
+     }
+    },
+    "Name": "myAnotherAttributeGroup",
+    "Description": "my another attribute group description"
+   }
+  },
+  "TestApplicationAttributeGroupAssociationb6f47e836a8c4FCAC29E": {
+   "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
+   "Properties": {
+    "Application": {
+     "Fn::GetAtt": [
+      "TestApplication2FBC585F",
+      "Id"
+     ]
+    },
+    "AttributeGroup": {
+     "Fn::GetAtt": [
+      "TestApplicationmyAnotherAttributeGroup375F79DB",
+      "Id"
+     ]
+    }
+   }
+  },
+  "TestApplicationMyShareIdE1044482": {
    "Type": "AWS::RAM::ResourceShare",
    "Properties": {
-    "Name": "RAMShare3dc6227daec1",
+    "Name": "MyShare",
     "AllowExternalPrincipals": false,
     "PermissionArns": [
      "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly"
@@ -118,23 +158,6 @@
      ],
      "Version": "2012-10-17"
     }
-   }
-  }
- },
- "Outputs": {
-  "TestApplicationApplicationManagerUrlE1058321": {
-   "Description": "Application manager url for the application created.",
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "https://",
-      {
-       "Ref": "AWS::Region"
-      },
-      ".console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-TestApplication"
-     ]
-    ]
    }
   }
  },

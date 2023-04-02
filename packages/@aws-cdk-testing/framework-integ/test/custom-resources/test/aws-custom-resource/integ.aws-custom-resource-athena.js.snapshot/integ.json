@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "CustomResourceAthena/DefaultTest": {
+      "stacks": [
+        "aws-cdk-customresources-athena"
+      ],
+      "assertionStack": "CustomResourceAthena/DefaultTest/DeployAssert",
+      "assertionStackName": "CustomResourceAthenaDefaultTestDeployAssert7AE6A475"
+    }
+  }
+}

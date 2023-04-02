@@ -1,7 +1,7 @@
-import * as core from '@aws-cdk/core';
+import * as core from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IChannel } from './channel';
-import { CfnStreamKey } from './ivs.generated';
+import { CfnStreamKey } from 'aws-cdk-lib/aws-ivs';
 
 /**
  * Represents an IVS Stream Key

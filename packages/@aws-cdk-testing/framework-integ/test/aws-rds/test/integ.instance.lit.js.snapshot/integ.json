@@ -1,0 +1,14 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "integ.instance.lit": {
+      "stacks": [
+        "aws-cdk-rds-instance"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

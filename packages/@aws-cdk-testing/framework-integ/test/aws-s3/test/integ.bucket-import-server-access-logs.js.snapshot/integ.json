@@ -1,0 +1,12 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "ServerAccessLogsImportTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3-access-logs-delivery"
+      ],
+      "assertionStack": "ServerAccessLogsImportTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ServerAccessLogsImportTestDefaultTestDeployAssert076DA7F5"
+    }
+  }
+}

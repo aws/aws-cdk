@@ -2,6 +2,76 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.72.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.71.0-alpha.0...v2.72.0-alpha.0) (2023-03-29)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **servicecatalogappregistry:** This commit involves share replacement during the deployment of `ApplicationAssociator` due to share construct id update. After this change, frequent share replacements due to structural change in `Application` construct should be avoided. `Application.shareApplication` starts to require construct id (first argument) and share name (added in `ShareOption`) as input.
+* **ivs:** Renamed ChannelProps.name to ChannelProps.channelName
+* Renamed PlaybackKeyPairProps.name to PlaybackKeyPairProps.playbackKeyPairName
+* Channel now generates a physical name if one is not provided
+* PlaybackKeyPair now generates a physical name if one is not provided
+
+### Bug Fixes
+
+* **integ-runner:** update workflow doesn't support resource replacement ([#24720](https://github.com/aws/aws-cdk/issues/24720)) ([07d3aa7](https://github.com/aws/aws-cdk/commit/07d3aa74e6c1a7b3b7ddf298cf3cc4b7ff180b48))
+* **ivs:** Not a standard physical name pattern ([#24706](https://github.com/aws/aws-cdk/issues/24706)) ([7d17fe3](https://github.com/aws/aws-cdk/commit/7d17fe32d20cd847733bffdd899c4659a7b0003c))
+* **servicecatalogappregistry:** RAM Share is replaced on every change to Application ([#24760](https://github.com/aws/aws-cdk/issues/24760)) ([8977d0d](https://github.com/aws/aws-cdk/commit/8977d0d2b567c9fcf32076b66f2dcb7f993bb22a))
+
+## [2.71.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.70.0-alpha.0...v2.71.0-alpha.0) (2023-03-28)
+
+## [2.70.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.69.0-alpha.0...v2.70.0-alpha.0) (2023-03-22)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **servicecatalogappregistry:** This commit contains destructive changes to the RAM Share.
+Since the application RAM share name is calculated by the application construct, where one method is added. Integration test detects a breaking change where RAM share will be created. Integration test snapshot is updated to cater this destructive change.
+
+### Features
+
+* **servicecatalogappregistry:** add attribute groups to an application ([#24672](https://github.com/aws/aws-cdk/issues/24672)) ([7baffa2](https://github.com/aws/aws-cdk/commit/7baffa239a7904cd73ac73537101ed5bd40aa9a0))
+
+## [2.69.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.68.0-alpha.0...v2.69.0-alpha.0) (2023-03-14)
+
+
+### Features
+
+* **kinesisanalytics-flink:** VPC support for Flink applications ([#24442](https://github.com/aws/aws-cdk/issues/24442)) ([7c7ad6d](https://github.com/aws/aws-cdk/commit/7c7ad6d18bd0d48a30858c1964d27d8a02b274ae)), closes [40aws-cdk/aws-lambda/lib/function.ts#L170](https://github.com/40aws-cdk/aws-lambda/lib/function.ts/issues/L170) [#21104](https://github.com/aws/aws-cdk/issues/21104)
+
+## [2.68.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.67.0-alpha.0...v2.68.0-alpha.0) (2023-03-08)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **servicecatalogappregistry:** This commit contains destructive changes to the RAM Share.
+Since the application RAM share name is calculated by the application construct, where one property is removed. Integration test detects a breaking change where RAM share will be created. Integration test snapshot is updated to cater this destructive change.
+
+### Features
+
+* **msk:** add Kafka version 3.3.2 ([#24440](https://github.com/aws/aws-cdk/issues/24440)) ([1b2014e](https://github.com/aws/aws-cdk/commit/1b2014eef9e3f2190b2cce79c55f635cc1f167e3)), closes [#24432](https://github.com/aws/aws-cdk/issues/24432)
+* **redshift:** column compression encodings and comments can now be customised ([#24177](https://github.com/aws/aws-cdk/issues/24177)) ([1ca3e00](https://github.com/aws/aws-cdk/commit/1ca3e0027323e84aacade4d9bd058bbc5687a7ab)), closes [#24165](https://github.com/aws/aws-cdk/issues/24165) [#23597](https://github.com/aws/aws-cdk/issues/23597) [#22506](https://github.com/aws/aws-cdk/issues/22506)
+* **redshift:** columns require an id attribute (under feature flag) ([#24272](https://github.com/aws/aws-cdk/issues/24272)) ([9a07ab0](https://github.com/aws/aws-cdk/commit/9a07ab008d1b6d23e9a302921f1a5165a21fb128)), closes [#24234](https://github.com/aws/aws-cdk/issues/24234)
+
+
+### Bug Fixes
+
+* **servicecatalogappregistry:** allow disabling automatic CfnOutput ([#24483](https://github.com/aws/aws-cdk/issues/24483)) ([3db1a0d](https://github.com/aws/aws-cdk/commit/3db1a0d0bcf615871a225919eed235b78904e144)), closes [#23779](https://github.com/aws/aws-cdk/issues/23779)
+* **servicecatalogappregistry:** Associate an application with attribute group ([#24378](https://github.com/aws/aws-cdk/issues/24378)) ([d1264c1](https://github.com/aws/aws-cdk/commit/d1264c1c414257fb8dd5288fdc24cfe9605cdf90))
+
+## [2.67.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.66.1-alpha.0...v2.67.0-alpha.0) (2023-03-02)
+
+
+### Features
+
+* **msk:** add Kafka versions 3.1.1, 3.2.0, and  and 3.3.1 ([#23918](https://github.com/aws/aws-cdk/issues/23918)) ([53a1d5f](https://github.com/aws/aws-cdk/commit/53a1d5fd81eabf5e9d846411754a554549f9f62c)), closes [#23899](https://github.com/aws/aws-cdk/issues/23899)
+
+
+### Bug Fixes
+
+* **servicecatalogappregistry:** applicationName can not be changed after deployment ([#24409](https://github.com/aws/aws-cdk/issues/24409)) ([6aa763f](https://github.com/aws/aws-cdk/commit/6aa763f100e5561f4554627116a458abba930480))
+
 ## [2.66.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.66.0-alpha.0...v2.66.1-alpha.0) (2023-02-23)
 
 ## [2.66.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.65.0-alpha.0...v2.66.0-alpha.0) (2023-02-21)

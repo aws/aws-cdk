@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IApplication } from './application';
 import { CheckedStageStackAssociator } from './aspects/stack-associator';
@@ -24,7 +24,9 @@ export interface ApplicationAssociatorProps {
  * in case of a `Pipeline` stack, stage underneath the pipeline will not automatically be associated and
  * needs to be associated separately.
  *
- * If cross account stack is detected, then this construct will automatically share the application to consumer accounts.
+ * If cross account stack is detected and `associateCrossAccountStacks` in `TargetApplicationOptions` is `true`,
+ * then the application will automatically be shared with the consumer accounts to allow associations.
+ * Otherwise, the application will not be shared.
  * Cross account feature will only work for non environment agnostic stacks.
  */
 export class ApplicationAssociator extends Construct {
@@ -33,6 +35,7 @@ export class ApplicationAssociator extends Construct {
    */
   private readonly application: IApplication;
   private readonly associatedStages: Set<cdk.Stage> = new Set();
+  private readonly associateCrossAccountStacks?: boolean;
 
   constructor(scope: cdk.App, id: string, props: ApplicationAssociatorProps) {
     super(scope, id);
@@ -42,8 +45,12 @@ export class ApplicationAssociator extends Construct {
     }
 
     const targetApplication = props.applications[0];
-    this.application = targetApplication.bind(scope).application;
-    cdk.Aspects.of(scope).add(new CheckedStageStackAssociator(this));
+    const targetBindResult = targetApplication.bind(scope);
+    this.application = targetBindResult.application;
+    this.associateCrossAccountStacks = targetBindResult.associateCrossAccountStacks;
+    cdk.Aspects.of(scope).add(new CheckedStageStackAssociator(this, {
+      associateCrossAccountStacks: this.associateCrossAccountStacks,
+    }));
   }
 
   /**
@@ -52,7 +59,9 @@ export class ApplicationAssociator extends Construct {
    */
   public associateStage(stage: cdk.Stage): cdk.Stage {
     this.associatedStages.add(stage);
-    cdk.Aspects.of(stage).add(new CheckedStageStackAssociator(this));
+    cdk.Aspects.of(stage).add(new CheckedStageStackAssociator(this, {
+      associateCrossAccountStacks: this.associateCrossAccountStacks,
+    }));
     return stage;
   }
 
@@ -68,7 +77,7 @@ export class ApplicationAssociator extends Construct {
    * Get the AppRegistry application.
    *
    */
-  public appRegistryApplication(): IApplication {
+  public get appRegistryApplication(): IApplication {
     return this.application;
   }
 }

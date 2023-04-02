@@ -1,0 +1,11 @@
+// Fixture with packages imported, but nothing else
+import { SecretValue, Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import * as amplify from 'aws-cdk-lib/aws-amplify';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// here
+  }
+}
