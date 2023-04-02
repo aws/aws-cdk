@@ -1,6 +1,6 @@
-import { Template } from '@aws-cdk/assertions';
-import { HttpApi } from '@aws-cdk/aws-apigatewayv2';
-import { Stack } from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import { HttpApi } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { Stack } from 'aws-cdk-lib';
 import { DummyRouteIntegration } from './integration';
 import { HttpJwtAuthorizer } from '../../lib';
 

@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
@@ -39,7 +33,7 @@ enables organizations to create and manage repositories of applications and asso
 The `@aws-cdk/aws-servicecatalogappregistry` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
 ```ts nofixture
-import * as appreg from '@aws-cdk/aws-servicecatalogappregistry';
+import * as appreg from '@aws-cdk/aws-servicecatalogappregistry-alpha';
 ```
 
 ## Application
@@ -122,25 +116,9 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 If you want to associate an Attribute Group with application created by `ApplicationAssociator`, then use as shown in the example below:
 
 ```ts
-import * as cdk from "@aws-cdk/core";
+import * as cdk from "aws-cdk-lib";
 
 const app = new App();
-
-class CustomAppRegistryAttributeGroup extends cdk.Stack {
-  public readonly attributeGroup: appreg.AttributeGroup
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
-    super(scope, id, props);
-    const myAttributeGroup = new appreg.AttributeGroup(app, 'MyFirstAttributeGroup', {
-      attributeGroupName: 'MyAttributeGroupName',
-      description: 'Test attribute group',
-      attributes: {},
-    });
-
-    this.attributeGroup = myAttributeGroup;
-  }
-}
-
-const customAttributeGroup = new CustomAppRegistryAttributeGroup(app, 'AppRegistryAttributeGroup');
 
 const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplication', {
   applications: [appreg.TargetApplication.createApplicationStack({
@@ -154,7 +132,11 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 
 // Associate application to the attribute group.
-customAttributeGroup.attributeGroup.associateWith(associatedApp.appRegistryApplication());
+associatedApp.appRegistryApplication.addAttributeGroup('MyAttributeGroup' , {
+  attributeGroupName: 'MyAttributeGroupName',
+  description: 'Test attribute group',
+  attributes: {},
+});
 
 ```
 
@@ -163,9 +145,9 @@ ApplicationAssociator will not be able to find them. Call `associateStage` on ea
 Pipeline, as shown in the example below:
 
 ```ts
-import * as cdk from "@aws-cdk/core";
-import * as codepipeline from "@aws-cdk/pipelines";
-import * as codecommit from "@aws-cdk/aws-codecommit";
+import * as cdk from "aws-cdk-lib";
+import * as codepipeline from "aws-cdk-lib/pipelines";
+import * as codecommit from "aws-cdk-lib/aws-codecommit";
 declare const repo: codecommit.Repository;
 declare const pipeline: codepipeline.CodePipeline;
 declare const beta: cdk.Stage;
@@ -297,11 +279,12 @@ You can share your AppRegistry applications and attribute groups with AWS Organi
 ### Sharing an application
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const application: appreg.Application;
 declare const myRole: iam.IRole;
 declare const myUser: iam.IUser;
-application.shareApplication({
+application.shareApplication('MyShareId', {
+  name:'MyShare',
   accounts: ['123456789012'],
   organizationArns: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
   roles: [myRole],
@@ -312,9 +295,10 @@ application.shareApplication({
 E.g., sharing an application with multiple accounts and allowing the accounts to associate resources to the application.
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const application: appreg.Application;
-application.shareApplication({
+application.shareApplication('MyShareId', {
+  name: 'MyShare',
   accounts: ['123456789012', '234567890123'],
   sharePermission: appreg.SharePermission.ALLOW_ACCESS,
 });
@@ -323,11 +307,12 @@ application.shareApplication({
 ### Sharing an attribute group
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const attributeGroup: appreg.AttributeGroup;
 declare const myRole: iam.IRole;
 declare const myUser: iam.IUser;
-attributeGroup.shareAttributeGroup({
+attributeGroup.shareAttributeGroup('MyShareId', {
+  name: 'MyShare',
   accounts: ['123456789012'],
   organizationArns: ['arn:aws:organizations::123456789012:organization/o-my-org-id'],
   roles: [myRole],
@@ -338,9 +323,10 @@ attributeGroup.shareAttributeGroup({
 E.g., sharing an application with multiple accounts and allowing the accounts to associate applications to the attribute group.
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const attributeGroup: appreg.AttributeGroup;
-attributeGroup.shareAttributeGroup({
+attributeGroup.shareAttributeGroup('MyShareId', {
+  name: 'MyShare',
   accounts: ['123456789012', '234567890123'],
   sharePermission: appreg.SharePermission.ALLOW_ACCESS,
 });

@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import * as iam from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 /**
  * Supported permissions for sharing applications or attribute groups with principals using AWS RAM.
@@ -20,6 +20,11 @@ export enum SharePermission {
  * The options that are passed into a share of an Application or Attribute Group.
  */
 export interface ShareOptions {
+  /**
+   * Name of the share.
+   *
+   */
+  readonly name: string;
   /**
    * A list of AWS accounts that the application will be shared with.
    *

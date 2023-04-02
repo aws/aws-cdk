@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IApplication } from './application';
 import { CheckedStageStackAssociator } from './aspects/stack-associator';
@@ -77,7 +77,7 @@ export class ApplicationAssociator extends Construct {
    * Get the AppRegistry application.
    *
    */
-  public appRegistryApplication(): IApplication {
+  public get appRegistryApplication(): IApplication {
     return this.application;
   }
 }

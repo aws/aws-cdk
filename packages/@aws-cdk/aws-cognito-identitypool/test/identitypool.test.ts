@@ -1,10 +1,10 @@
 import {
   Template,
-} from '@aws-cdk/assertions';
+} from 'aws-cdk-lib/assertions';
 import {
   UserPool,
   UserPoolIdentityProvider,
-} from '@aws-cdk/aws-cognito';
+} from 'aws-cdk-lib/aws-cognito';
 import {
   Role,
   ServicePrincipal,
@@ -16,11 +16,11 @@ import {
   PolicyStatement,
   Effect,
   PolicyDocument,
-} from '@aws-cdk/aws-iam';
+} from 'aws-cdk-lib/aws-iam';
 import {
   Fn,
   Stack,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
 import {
   IdentityPool,
   IdentityPoolProviderUrl,

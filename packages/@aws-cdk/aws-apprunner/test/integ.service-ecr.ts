@@ -1,6 +1,6 @@
 import * as path from 'path';
-import * as assets from '@aws-cdk/aws-ecr-assets';
-import * as cdk from '@aws-cdk/core';
+import * as assets from 'aws-cdk-lib/aws-ecr-assets';
+import * as cdk from 'aws-cdk-lib';
 import { Service, Source } from '../lib';
 
 
@@ -18,6 +18,7 @@ const service3 = new Service(stack, 'Service3', {
     imageConfiguration: { port: 8000 },
     asset: imageAsset,
   }),
+  autoDeploymentsEnabled: true,
 });
 new cdk.CfnOutput(stack, 'URL3', { value: `https://${service3.serviceUrl}` });
 

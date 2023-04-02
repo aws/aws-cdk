@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { IntegManifest, Manifest } from '@aws-cdk/cloud-assembly-schema';
+import { IntegManifest, Manifest } from 'aws-cdk-lib/cloud-assembly-schema';
 
 export class IntegManifestWriter {
   public static readonly DEFAULT_FILENAME = 'integ.json';
@@ -16,7 +16,7 @@ function getFinalLocation(filePath: string): string {
     return st.isDirectory()
       ? path.join(filePath, IntegManifestWriter.DEFAULT_FILENAME)
       : filePath;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') {
       return filePath;
     }
