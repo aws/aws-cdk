@@ -1,7 +1,7 @@
 import * as sqs from '../../../aws-sqs';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { SqsSendMessage } from '../../lib/sqs/send-message';
+import { SqsSendMessage, SqsMessageAttributeDataType } from '../../lib/sqs/send-message';
 
 describe('SqsSendMessage', () => {
   let stack: cdk.Stack;
