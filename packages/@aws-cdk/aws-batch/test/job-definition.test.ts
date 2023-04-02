@@ -136,7 +136,10 @@ describe('Batch Job Definition', () => {
           },
         ],
         InstanceType: jobDefProps.container.instanceType ? jobDefProps.container.instanceType.toString() : '',
-        LinuxParameters: {},
+        LinuxParameters: {
+          initProcessEnabled: true,
+          sharedMemorySize: 1,
+        },
         LogConfiguration: {
           LogDriver: 'awslogs',
           Options: {

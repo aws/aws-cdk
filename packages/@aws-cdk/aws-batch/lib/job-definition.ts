@@ -474,7 +474,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
     });
 
     // add read secrets permission to execution role
-    if ( props.container.secrets && props.container.executionRole ) {
+    if (props.container.secrets && props.container.executionRole) {
       const executionRole = props.container.executionRole;
       Object.values(props.container.secrets).forEach((secret) => {
         secret.grantRead(executionRole);
@@ -565,9 +565,7 @@ export class JobDefinition extends Resource implements IJobDefinition {
       instanceType: container.instanceType && container.instanceType.toString(),
       jobRoleArn: container.jobRole && container.jobRole.roleArn,
       executionRoleArn: container.executionRole && container.executionRole.roleArn,
-      linuxParameters: container.linuxParams
-        ? { devices: container.linuxParams.renderLinuxParameters().devices }
-        : undefined,
+      linuxParameters: container.linuxParams ? container.linuxParams.renderLinuxParameters() : undefined,
       logConfiguration: container.logConfiguration ? {
         logDriver: container.logConfiguration.logDriver,
         options: container.logConfiguration.options,
