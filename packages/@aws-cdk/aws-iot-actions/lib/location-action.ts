@@ -1,5 +1,6 @@
 import * as iot from '@aws-cdk/aws-iot-alpha';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
 import * as location from 'aws-cdk-lib/aws-location';
 import { CommonActionProps } from './common-action-props';
 import { singletonActionRole } from './private/role';
@@ -129,7 +130,7 @@ export class LocationAction implements iot.IAction {
       }),
     );
     // TODO: remove when this bug has been fixed! https://github.com/aws/aws-cdk/issues/22732
-    const topicRule = rule.node.defaultChild as iot.CfnTopicRule;
+    const topicRule = rule.node.defaultChild as CfnTopicRule;
     topicRule.addOverride('Properties.TopicRulePayload.Actions.0', {
       Location: {
         DeviceId: this.deviceId,

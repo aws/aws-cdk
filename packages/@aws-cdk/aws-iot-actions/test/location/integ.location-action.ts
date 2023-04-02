@@ -1,7 +1,7 @@
-import * as iot from '@aws-cdk/aws-iot';
-import { CfnTracker } from '@aws-cdk/aws-location';
-import * as cdk from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import * as iot from '@aws-cdk/aws-iot-alpha';
+import * as location from 'aws-cdk-lib/aws-location';
+import * as cdk from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as actions from '../../lib';
 
 const app = new cdk.App();
@@ -13,7 +13,7 @@ const topicRule = new iot.TopicRule(stack, 'TopicRule', {
   ),
 });
 
-const tracker = new CfnTracker(stack, 'MyTracker', {
+const tracker = new location.CfnTracker(stack, 'MyTracker', {
   trackerName: 'myTracker',
 });
 
