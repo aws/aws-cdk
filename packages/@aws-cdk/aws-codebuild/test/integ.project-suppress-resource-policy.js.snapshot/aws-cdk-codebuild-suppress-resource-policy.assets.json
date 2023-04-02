@@ -1,7 +1,7 @@
 {
   "version": "31.0.0",
   "files": {
-    "7a23e2711bc68aad6d069769f9534c89ad53a69f07d404f27221fba8721acb0a": {
+    "af73afa7ce7276962c29223f8ba8818a6b417d6b5afd4af4b9f8d61dfd62c55e": {
       "source": {
         "path": "aws-cdk-codebuild-suppress-resource-policy.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7a23e2711bc68aad6d069769f9534c89ad53a69f07d404f27221fba8721acb0a.json",
+          "objectKey": "af73afa7ce7276962c29223f8ba8818a6b417d6b5afd4af4b9f8d61dfd62c55e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

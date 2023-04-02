@@ -244,7 +244,11 @@
      "Fn::Join": [
       "",
       [
-       "arn:aws:iam::848135204948:role/",
+       "arn:aws:iam::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":role/",
        {
         "Ref": "FakeImportedRole75EB1D0D"
        }
@@ -286,7 +290,11 @@
      "Fn::Join": [
       "",
       [
-       "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"848135204948\"},\"Resource\":\"",
+       "{\"Statement\":[{\"Action\":[\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       "\"},\"Resource\":\"",
        {
         "Fn::GetAtt": [
          "myloggrouplabel2465DAEED",
@@ -317,7 +325,11 @@
      "Fn::Join": [
       "",
       [
-       "arn:aws:iam::848135204948:role/",
+       "arn:aws:iam::",
+       {
+        "Ref": "AWS::AccountId"
+       },
+       ":role/",
        {
         "Ref": "FakeImportedRole75EB1D0D"
        }
