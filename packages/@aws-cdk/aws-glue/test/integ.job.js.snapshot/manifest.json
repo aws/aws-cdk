@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "29.0.0",
   "artifacts": {
     "aws-glue-job.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0985af21379e9d6e1cba091105ecb533ee38a96b4c738816daf17d951a0752b4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b553fef631f82898c826f3c20e1de0d155dbd3a35339ef92d0893052a5be69ce.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -213,6 +213,24 @@
             "data": "ShellJob390C141361"
           }
         ],
+        "/aws-glue-job/RayJob/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RayJobServiceRole51433C3D"
+          }
+        ],
+        "/aws-glue-job/RayJob/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RayJobServiceRoleDefaultPolicyA615640D"
+          }
+        ],
+        "/aws-glue-job/RayJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RayJob2F7864D9"
+          }
+        ],
         "/aws-glue-job/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -223,78 +241,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "EtlJobServiceRole837F781B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJobServiceRole837F781B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EtlJobServiceRoleDefaultPolicy8BFE343B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJobServiceRoleDefaultPolicy8BFE343B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EtlJobSparkUIBucketBF23744B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJobSparkUIBucketBF23744B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EtlJob7FC88E45": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJob7FC88E45",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EtlJobSuccessMetricRuleA72A3EF6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EtlJobSuccessMetricRuleA72A3EF6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "StreamingJobServiceRole1B4B8BF9": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StreamingJobServiceRole1B4B8BF9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "StreamingJobServiceRoleDefaultPolicyA0CC4C68": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StreamingJobServiceRoleDefaultPolicyA0CC4C68",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "StreamingJob3783CC17": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StreamingJob3783CC17",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

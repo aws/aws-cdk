@@ -460,6 +460,10 @@ A stack dependency has the following implications:
     automatically deploy `stackB`.
   - `stackB`'s deployment will be performed *before* `stackA`'s deployment.
 
+### CfnResource Dependencies
+
+To make declaring dependencies between `CfnResource` objects easier, you can declare dependencies from one `CfnResource` object on another by using the `cfnResource1.addDependency(cfnResource2)` method. This method will work for resources both within the same stack and across stacks as it detects the relative location of the two resources and adds the dependency either to the resource or between the relevant stacks, as appropriate. If more complex logic is in needed, you can similarly remove, replace, or view dependencies between `CfnResource` objects with the `CfnResource` `removeDependency`, `replaceDependency`, and `obtainDependencies` methods, respectively.
+
 ## Custom Resources
 
 Custom Resources are CloudFormation resources that are implemented by arbitrary
@@ -510,7 +514,7 @@ various provider types (ordered from low-level to high-level):
 
 Legend:
 
-- **Compute type**: which type of compute can is used to execute the handler.
+- **Compute type**: which type of compute can be used to execute the handler.
 - **Error Handling**: whether errors thrown by handler code are automatically
   trapped and a FAILED response is submitted to CloudFormation. If this is
   "Manual", developers must take care of trapping errors. Otherwise, events
@@ -885,16 +889,58 @@ rawBucket.cfnOptions.metadata = {
 ```
 
 Resource dependencies (the `DependsOn` attribute) is modified using the
-`cfnResource.addDependsOn` method:
+`cfnResource.addDependency` method:
 
 ```ts
 const resourceA = new CfnResource(this, 'ResourceA', resourceProps);
 const resourceB = new CfnResource(this, 'ResourceB', resourceProps);
 
-resourceB.addDependsOn(resourceA);
+resourceB.addDependency(resourceA);
 ```
 
 [cfn-resource-attributes]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-product-attribute-reference.html
+
+#### CreationPolicy
+
+Some resources support a [CreationPolicy][creation-policy] to be specified as a CfnOption.
+
+The creation policy is invoked only when AWS CloudFormation creates the associated resource. Currently, the only AWS CloudFormation resources that support creation policies are `CfnAutoScalingGroup`, `CfnInstance`, `CfnWaitCondition` and `CfnFleet`.
+
+The `CfnFleet` resource from the `aws-appstream` module supports specifying `startFleet` as
+a property of the creationPolicy on the resource options. Setting it to true will make AWS CloudFormation wait until the fleet is started before continuing with the creation of
+resources that depend on the fleet resource.
+
+```ts
+const fleet = new CfnFleet(stack, 'Fleet', {
+  instanceType: 'stream.standard.small',
+  name: 'Fleet',
+  computeCapacity: {
+    desiredInstances: 1,
+  },
+  imageName: 'AppStream-AmazonLinux2-09-21-2022',
+});
+fleet.cfnOptions.creationPolicy = {
+  startFleet: true,
+};
+```
+
+The properties passed to the level 2 constructs `AutoScalingGroup` and `Instance` from the
+`aws-ec2` module abstract what is passed into the `CfnOption` properties `resourceSignal` and
+`autoScalingCreationPolicy`, but when using level 1 constructs you can specify these yourself.
+
+The CfnWaitCondition resource from the `aws-cloudformation` module suppports the `resourceSignal`.
+The format of the timeout is `PT#H#M#S`. In the example below AWS Cloudformation will wait for
+3 success signals to occur within 15 minutes before the status of the resource will be set to 
+`CREATE_COMPLETE`.
+
+```ts
+resource.cfnOptions.resourceSignal = {
+  count: 3,
+  timeout: 'PR15M',
+}
+```
+
+[creation-policy]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-creationpolicy.html
 
 ### Intrinsic Functions and Condition Expressions
 
@@ -1255,5 +1301,119 @@ Any IAM Roles or Users created within this Stage will have the default
 permissions boundary attached.
 
 For more details see the [Permissions Boundary](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_iam-readme.html#permissions-boundaries) section in the IAM guide.
+
+## Policy Validation
+
+If you or your organization use (or would like to use) any policy validation tool, such as
+[CloudFormation
+Guard](https://docs.aws.amazon.com/cfn-guard/latest/ug/what-is-guard.html) or
+[OPA](https://www.openpolicyagent.org/), to define constraints on your
+CloudFormation template, you can incorporate them into the CDK application.
+By using the appropriate plugin, you can make the CDK application check the
+generated CloudFormation templates against your policies immediately after
+synthesis. If there are any violations, the synthesis will fail and a report
+will be printed to the console or to a file (see below).
+
+> **Note**
+> This feature is considered experimental, and both the plugin API and the
+> format of the validation report are subject to change in the future.
+
+### For application developers
+
+To use one or more validation plugins in your application, use the
+`policyValidationBeta1` property of `Stage`:
+
+```ts
+// globally for the entire app (an app is a stage)
+const app = new App({
+  policyValidationBeta1: [
+    // These hypothetical classes implement IValidationPlugin:
+    new ThirdPartyPluginX(), 
+    new ThirdPartyPluginY(),
+  ],
+});
+
+// only apply to a particular stage
+const prodStage = new Stage(app, 'ProdStage', {
+  policyValidationBeta1: [...],
+});
+```
+
+Immediately after synthesis, all plugins registered this way will be invoked to
+validate all the templates generated in the scope you defined. In particular, if
+you register the templates in the `App` object, all templates will be subject to
+validation.
+
+> **Warning**
+> Other than modifying the cloud assembly, plugins can do anything that your CDK
+> application can. They can read data from the filesystem, access the network
+> etc. It's your responsibility as the consumer of a plugin to verify that it is
+> secure to use.
+
+By default, the report will be printed in a human readable format. If you want a
+report in JSON format, enable it using the `@aws-cdk/core:validationReportJson` 
+context passing it directly to the application:
+
+```ts
+const app = new App({ 
+  context: { '@aws-cdk/core:validationReportJson': true }, 
+});
+```
+
+Alternatively, you can set this context key-value pair using the `cdk.json` or
+`cdk.context.json` files in your project directory (see
+[Runtime context](https://docs.aws.amazon.com/cdk/v2/guide/context.html)).
+
+If you choose the JSON format, the CDK will print the policy validation report
+to a file called `policy-validation-report.json` in the cloud assembly
+directory. For the default, human-readable format, the report will be printed to
+the standard output.
+
+### For plugin authors
+
+The communication protocol between the CDK core module and your policy tool is
+defined by the `IValidationPluginBeta1` interface. To create a new plugin you must
+write a class that implements this interface. There are two things you need to
+implement: the plugin name (by overriding the `name` property), and the
+`validate()` method.
+
+The framework will call `validate()`, passing an `IValidationContextBeta1` object.
+The location of the templates to be validated is given by `templatePaths`. The
+plugin should return an instance of `ValidationPluginReportBeta1`. This object
+represents the report that the user wil receive at the end of the synthesis.
+
+```ts
+validate(context: ValidationContextBeta1): ValidationReportBeta1 {
+  // First read the templates using context.templatePaths...
+
+  // ...then perform the validation, and then compose and return the report.
+  // Using hard-coded values here for better clarity:
+  return {
+    success: false,
+    violations: [{
+      ruleName: 'CKV_AWS_117',
+      recommendation: 'Ensure that AWS Lambda function is configured inside a VPC',
+      fix: 'https://docs.bridgecrew.io/docs/ensure-that-aws-lambda-function-is-configured-inside-a-vpc-1',
+      violatingResources: [{
+        resourceName: 'MyFunction3BAA72D1',
+        templatePath: '/home/johndoe/myapp/cdk.out/MyService.template.json',
+        locations: 'Properties/VpcConfig',
+      }],
+    }],
+  };
+}
+```
+
+Note that plugins are not allowed to modify anything in the cloud assembly. Any
+attempt to do so will result in synthesis failure.
+
+If your plugin depends on an external tool, keep in mind that some developers may
+not have that tool installed in their workstations yet. To minimize friction, we
+highly recommend that you provide some installation script along with your
+plugin package, to automate the whole process. Better yet, run that script as
+part of the installation of your package. With `npm`, for example, you can run
+add it to the `postinstall`
+[script](https://docs.npmjs.com/cli/v9/using-npm/scripts) in the `package.json`
+file.
 
 <!--END CORE DOCUMENTATION-->

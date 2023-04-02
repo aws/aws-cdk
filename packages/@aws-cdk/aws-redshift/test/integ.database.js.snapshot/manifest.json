@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "30.1.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-redshift-cluster-database.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,22 +17,24 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/784177efbde5b0ae9662ffc9f5f85895be269347870d0564efaa1281f8a1c38e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/297bfa1758edc6b71a084153702165132d111eb7914b4bf8ed951da4b98faede.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "aws-cdk-redshift-cluster-database.assets"
-        ],
+        "additionalDependencies": ["aws-cdk-redshift-cluster-database.assets"],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
-      "dependencies": [
-        "aws-cdk-redshift-cluster-database.assets"
-      ],
+      "dependencies": ["aws-cdk-redshift-cluster-database.assets"],
       "metadata": {
+        "/aws-cdk-redshift-cluster-database/custom-kms-key/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "customkmskey377C6F9A"
+          }
+        ],
         "/aws-cdk-redshift-cluster-database/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -177,12 +173,6 @@
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/aws-cdk-redshift-cluster-database/custom-kms-key/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "customkmskey377C6F9A"
-          }
-        ],
         "/aws-cdk-redshift-cluster-database/Cluster/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -216,10 +206,7 @@
         "/aws-cdk-redshift-cluster-database/Cluster/ParameterGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterParameterGroup879806FD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ClusterParameterGroup879806FD"
           }
         ],
         "/aws-cdk-redshift-cluster-database/User/Secret/Resource": [
@@ -338,6 +325,59 @@
         ]
       },
       "displayName": "aws-cdk-redshift-cluster-database"
+    },
+    "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48.assets"
+      ],
+      "metadata": {
+        "/redshift-cluster-database-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/redshift-cluster-database-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "redshift-cluster-database-integ/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

@@ -1,12 +1,12 @@
 import { EOL } from 'os';
-import * as kms from '@aws-cdk/aws-kms';
-import * as cdk from '@aws-cdk/core';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { AcceleratorType } from './accelerator-type';
 import { InstanceType } from './instance-type';
 import { IModel } from './model';
 import { sameEnv } from './private/util';
-import { CfnEndpointConfig } from './sagemaker.generated';
+import { CfnEndpointConfig } from 'aws-cdk-lib/aws-sagemaker';
 
 /**
  * The interface for a SageMaker EndpointConfig resource.
@@ -138,7 +138,7 @@ export interface EndpointConfigProps {
 
   /**
    * A list of instance production variants. You can always add more variants later by calling
-   * {@link EndpointConfig#addInstanceProductionVariant}.
+   * `EndpointConfig#addInstanceProductionVariant`.
    *
    * @default - none
    */

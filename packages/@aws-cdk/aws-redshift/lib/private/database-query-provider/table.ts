@@ -1,15 +1,16 @@
 /* eslint-disable-next-line import/no-unresolved */
 import * as AWSLambda from 'aws-lambda';
-import { Column } from '../../table';
 import { executeStatement } from './redshift-data';
 import { ClusterProps, TableAndClusterProps, TableSortStyle } from './types';
 import { areColumnsEqual, getDistKeyColumn, getSortKeyColumns } from './util';
+import { Column } from '../../table';
 
 export async function handler(props: TableAndClusterProps, event: AWSLambda.CloudFormationCustomResourceEvent) {
   const tableNamePrefix = props.tableName.prefix;
   const tableNameSuffix = props.tableName.generateSuffix === 'true' ? `${event.RequestId.substring(0, 8)}` : '';
   const tableColumns = props.tableColumns;
   const tableAndClusterProps = props;
+  const useColumnIds = props.useColumnIds;
 
   if (event.RequestType === 'Create') {
     const tableName = await createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
@@ -23,6 +24,7 @@ export async function handler(props: TableAndClusterProps, event: AWSLambda.Clou
       tableNamePrefix,
       tableNameSuffix,
       tableColumns,
+      useColumnIds,
       tableAndClusterProps,
       event.OldResourceProperties as TableAndClusterProps,
     );
@@ -40,7 +42,7 @@ async function createTable(
   tableAndClusterProps: TableAndClusterProps,
 ): Promise<string> {
   const tableName = tableNamePrefix + tableNameSuffix;
-  const tableColumnsString = tableColumns.map(column => `${column.name} ${column.dataType}`).join();
+  const tableColumnsString = tableColumns.map(column => `${column.name} ${column.dataType}${getEncodingColumnString(column)}`).join();
 
   let statement = `CREATE TABLE ${tableName} (${tableColumnsString})`;
 
@@ -60,6 +62,16 @@ async function createTable(
   }
 
   await executeStatement(statement, tableAndClusterProps);
+
+  for (const column of tableColumns) {
+    if (column.comment) {
+      await executeStatement(`COMMENT ON COLUMN ${tableName}.${column.name} IS '${column.comment}'`, tableAndClusterProps);
+    }
+  }
+  if (tableAndClusterProps.tableComment) {
+    await executeStatement(`COMMENT ON TABLE ${tableName} IS '${tableAndClusterProps.tableComment}'`, tableAndClusterProps);
+  }
+
   return tableName;
 }
 
@@ -72,6 +84,7 @@ async function updateTable(
   tableNamePrefix: string,
   tableNameSuffix: string,
   tableColumns: Column[],
+  useColumnIds: boolean,
   tableAndClusterProps: TableAndClusterProps,
   oldResourceProperties: TableAndClusterProps,
 ): Promise<string> {
@@ -88,15 +101,57 @@ async function updateTable(
   }
 
   const oldTableColumns = oldResourceProperties.tableColumns;
-  if (!oldTableColumns.every(oldColumn => tableColumns.some(column => column.name === oldColumn.name && column.dataType === oldColumn.dataType))) {
-    return createTable(tableNamePrefix, tableNameSuffix, tableColumns, tableAndClusterProps);
+  const columnDeletions = oldTableColumns.filter(oldColumn => (
+    tableColumns.every(column => {
+      if (useColumnIds) {
+        return oldColumn.id ? oldColumn.id !== column.id : oldColumn.name !== column.name;
+      }
+      return oldColumn.name !== column.name;
+    })
+  ));
+  if (columnDeletions.length > 0) {
+    alterationStatements.push(...columnDeletions.map(column => `ALTER TABLE ${tableName} DROP COLUMN ${column.name}`));
   }
 
   const columnAdditions = tableColumns.filter(column => {
-    return !oldTableColumns.some(oldColumn => column.name === oldColumn.name && column.dataType === oldColumn.dataType);
+    return !oldTableColumns.some(oldColumn => {
+      if (useColumnIds) {
+        return oldColumn.id ? oldColumn.id === column.id : oldColumn.name === column.name;
+      }
+      return oldColumn.name === column.name;
+    });
   }).map(column => `ADD ${column.name} ${column.dataType}`);
   if (columnAdditions.length > 0) {
     alterationStatements.push(...columnAdditions.map(addition => `ALTER TABLE ${tableName} ${addition}`));
+  }
+
+  const columnEncoding = tableColumns.filter(column => {
+    return oldTableColumns.some(oldColumn => column.name === oldColumn.name && column.encoding !== oldColumn.encoding);
+  }).map(column => `ALTER COLUMN ${column.name} ENCODE ${column.encoding || 'AUTO'}`);
+  if (columnEncoding.length > 0) {
+    alterationStatements.push(`ALTER TABLE ${tableName} ${columnEncoding.join(', ')}`);
+  }
+
+  const columnComments = tableColumns.filter(column => {
+    return oldTableColumns.some(oldColumn => column.name === oldColumn.name && column.comment !== oldColumn.comment);
+  }).map(column => `COMMENT ON COLUMN ${tableName}.${column.name} IS ${column.comment ? `'${column.comment}'` : 'NULL'}`);
+  if (columnComments.length > 0) {
+    alterationStatements.push(...columnComments);
+  }
+
+  if (useColumnIds) {
+    const columnNameUpdates = tableColumns.reduce((updates, column) => {
+      const oldColumn = oldTableColumns.find(oldCol => oldCol.id && oldCol.id === column.id);
+      if (oldColumn && oldColumn.name !== column.name) {
+        updates[oldColumn.name] = column.name;
+      }
+      return updates;
+    }, {} as Record<string, string>);
+    if (Object.keys(columnNameUpdates).length > 0) {
+      alterationStatements.push(...Object.entries(columnNameUpdates).map(([oldName, newName]) => (
+        `ALTER TABLE ${tableName} RENAME COLUMN ${oldName} TO ${newName}`
+      )));
+    }
   }
 
   const oldDistStyle = oldResourceProperties.distStyle;
@@ -140,6 +195,12 @@ async function updateTable(
     }
   }
 
+  const oldComment = oldResourceProperties.tableComment;
+  const newComment = tableAndClusterProps.tableComment;
+  if (oldComment !== newComment) {
+    alterationStatements.push(`COMMENT ON TABLE ${tableName} IS ${newComment ? `'${newComment}'` : 'NULL'}`);
+  }
+
   await Promise.all(alterationStatements.map(statement => executeStatement(statement, tableAndClusterProps)));
 
   return tableName;
@@ -147,4 +208,11 @@ async function updateTable(
 
 function getSortKeyColumnsString(sortKeyColumns: Column[]) {
   return sortKeyColumns.map(column => column.name).join();
+}
+
+function getEncodingColumnString(column: Column): string {
+  if (column.encoding) {
+    return ` ENCODE ${column.encoding}`;
+  }
+  return '';
 }

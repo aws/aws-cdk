@@ -1,16 +1,38 @@
-import { CfnResourceShare } from '@aws-cdk/aws-ram';
-import * as cdk from '@aws-cdk/core';
-import { Names } from '@aws-cdk/core';
+import { CfnResourceShare } from 'aws-cdk-lib/aws-ram';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { StageStackAssociator } from './aspects/stack-associator';
-import { IAttributeGroup } from './attribute-group';
+import { AttributeGroup, IAttributeGroup } from './attribute-group';
 import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
 import { isAccountUnresolved } from './private/utils';
 import { InputValidator } from './private/validation';
-import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from './servicecatalogappregistry.generated';
+import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from 'aws-cdk-lib/aws-servicecatalogappregistry';
 
 const APPLICATION_READ_ONLY_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly';
 const APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation';
+
+/**
+ * Properties for a Service Catalog AppRegistry Attribute Group
+ */
+export interface AttributeGroupAssociationProps {
+  /**
+   * Name for attribute group.
+   *
+   */
+  readonly attributeGroupName: string;
+
+  /**
+   * Description for attribute group.
+   * @default - No description provided
+   */
+  readonly description?: string;
+
+  /**
+   * A JSON of nested key-value pairs that represent the attributes in the group.
+   * Attributes maybe an empty JSON '{}', but must be explicitly stated.
+   */
+  readonly attributes: { [key: string]: any };
+}
 
 /**
  * A Service Catalog AppRegistry Application.
@@ -42,6 +64,14 @@ export interface IApplication extends cdk.IResource {
   associateAttributeGroup(attributeGroup: IAttributeGroup): void;
 
   /**
+   * Create an attribute group and associate this application with the created attribute group.
+   *
+   * @param id name of the AttributeGroup construct to be created.
+   * @param attributeGroupProps AppRegistry attribute group props
+   */
+  addAttributeGroup(id: string, attributeGroupProps: AttributeGroupAssociationProps): IAttributeGroup;
+
+  /**
    * Associate this application with a CloudFormation stack.
    *
    * @deprecated Use `associateApplicationWithStack` instead.
@@ -59,9 +89,10 @@ export interface IApplication extends cdk.IResource {
   /**
    * Share this application with other IAM entities, accounts, or OUs.
    *
+   * @param id The construct name for the share.
    * @param shareOptions The options for the share.
    */
-  shareApplication(shareOptions: ShareOptions): void;
+  shareApplication(id: string, shareOptions: ShareOptions): void;
 
   /**
    * Associate this application with all stacks under the construct node.
@@ -100,6 +131,8 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   /**
    * Associate an attribute group with application
    * If the attribute group is already associated, it will ignore duplicate request.
+   *
+   * @deprecated Use `AttributeGroup.associateWith` instead.
    */
   public associateAttributeGroup(attributeGroup: IAttributeGroup): void {
     if (!this.associatedAttributeGroups.has(attributeGroup.node.addr)) {
@@ -110,6 +143,23 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
       });
       this.associatedAttributeGroups.add(attributeGroup.node.addr);
     }
+  }
+
+  /**
+   * Create an attribute group and associate this application with the created attribute group.
+   */
+  public addAttributeGroup(id: string, props: AttributeGroupAssociationProps): IAttributeGroup {
+    const attributeGroup = new AttributeGroup(this, id, {
+      attributeGroupName: props.attributeGroupName,
+      attributes: props.attributes,
+      description: props.description,
+    });
+    new CfnAttributeGroupAssociation(this, `AttributeGroupAssociation${this.generateUniqueHash(attributeGroup.node.addr)}`, {
+      application: this.applicationId,
+      attributeGroup: attributeGroup.attributeGroupId,
+    });
+    this.associatedAttributeGroups.add(attributeGroup.node.addr);
+    return attributeGroup;
   }
 
   /**
@@ -134,7 +184,6 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   /**
    * Associate stack with the application in the stack passed as parameter.
    *
-   * If the stack is already associated, it will ignore duplicate request.
    * A stack can only be associated with one application.
    */
   public associateApplicationWithStack(stack: cdk.Stack): void {
@@ -146,7 +195,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
       });
 
       this.associatedResources.add(stack.node.addr);
-      if (stack !== cdk.Stack.of(this) && this.isSameAccount(stack) && !this.isStageScope(stack)) {
+      if (stack !== cdk.Stack.of(this) && this.isSameAccount(stack) && !this.isStageScope(stack) && !stack.nested) {
         stack.addDependency(cdk.Stack.of(this));
       }
     }
@@ -156,13 +205,13 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
    * Share an application with accounts, organizations and OUs, and IAM roles and users.
    * The application will become available to end users within those principals.
    *
+   * @param id The construct name for the share.
    * @param shareOptions The options for the share.
    */
-  public shareApplication(shareOptions: ShareOptions): void {
+  public shareApplication(id: string, shareOptions: ShareOptions): void {
     const principals = getPrincipalsforSharing(shareOptions);
-    const shareName = `RAMShare${hashValues(Names.nodeUniqueId(this.node), this.node.children.length.toString())}`;
-    new CfnResourceShare(this, shareName, {
-      name: shareName,
+    new CfnResourceShare(this, id, {
+      name: shareOptions.name,
       allowExternalPrincipals: false,
       principals: principals,
       resourceArns: [this.applicationArn],
@@ -171,14 +220,16 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication {
   }
 
   /**
-   * Associate all stacks present in construct's aspect with application.
+   * Associate all stacks present in construct's aspect with application, including cross-account stacks.
    *
    * NOTE: This method won't automatically register stacks under pipeline stages,
    * and requires association of each pipeline stage by calling this method with stage Construct.
    *
    */
   public associateAllStacksInScope(scope: Construct): void {
-    cdk.Aspects.of(scope).add(new StageStackAssociator(this));
+    cdk.Aspects.of(scope).add(new StageStackAssociator(this, {
+      associateCrossAccountStacks: true,
+    }));
   }
 
   /**
@@ -251,6 +302,11 @@ export class Application extends ApplicationBase {
     });
   }
 
+  /**
+   * Application manager URL for the Application.
+   * @attribute
+   */
+  public readonly applicationManagerUrl?: string;
   public readonly applicationArn: string;
   public readonly applicationId: string;
   public readonly applicationName?: string;
@@ -270,6 +326,9 @@ export class Application extends ApplicationBase {
     this.applicationId = application.attrId;
     this.applicationName = props.applicationName;
     this.nodeAddress = cdk.Names.nodeUniqueId(application.node);
+
+    this.applicationManagerUrl =
+        `https://${this.env.region}.console.aws.amazon.com/systems-manager/appmanager/application/AWS_AppRegistry_Application-${this.applicationName}`;
   }
 
   protected generateUniqueHash(resourceAddress: string): string {

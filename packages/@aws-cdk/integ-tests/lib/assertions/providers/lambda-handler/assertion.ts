@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { Match, Matcher } from '@aws-cdk/assertions/lib/helpers-internal';
+import { Match, Matcher } from 'aws-cdk-lib/assertions/lib/helpers-internal';
 import { CustomResourceHandler } from './base';
 import { AssertionResult, AssertionRequest } from './types';
 
@@ -19,10 +19,7 @@ export class AssertionHandler extends CustomResourceHandler<AssertionRequest, As
         failed: true,
         assertion: JSON.stringify({
           status: 'fail',
-          message: [
-            ...matchResult.toHumanStrings(),
-            JSON.stringify(matchResult.target, undefined, 2),
-          ].join('\n'),
+          message: matchResult.renderMismatch(),
         }),
       };
       if (request.failDeployment) {
@@ -60,6 +57,7 @@ class MatchCreator {
    *   Messages: [{
    *     Body: Match.objectLike({
    *       Elements: Match.arrayWith([{ Asdf: 3 }]),
+   *       Payload: Match.serializedJson({ key: 'value' }),
    *     }),
    *   }],
    * });
@@ -73,6 +71,9 @@ class MatchCreator {
    *           Elements: {
    *             $ArrayWith: [{ Asdf: 3 }],
    *           },
+   *           Payload: {
+   *             $SerializedJson: { key: 'value' }
+   *           }
    *         },
    *       },
    *     }],
@@ -89,6 +90,9 @@ class MatchCreator {
    *       Elements: {
    *         $ArrayWith: [{ Asdf: 3 }],
    *       },
+   *       Payload: {
+   *         $SerializedJson: { key: 'value' }
+   *       }
    *     },
    *   },
    * }
@@ -97,6 +101,7 @@ class MatchCreator {
    * {
    *   Body: Match.objectLike({
    *     Elements: Match.arrayWith([{ Asdf: 3 }]),
+   *     Payload: Match.serializedJson({ key: 'value' }),
    *   }),
    * }
    */
@@ -111,6 +116,8 @@ class MatchCreator {
             return Match.objectLike(v[nested]);
           case '$StringLike':
             return Match.stringLikeRegexp(v[nested]);
+          case '$SerializedJson':
+            return Match.serializedJson(v[nested]);
           default:
             return v;
         }
@@ -130,7 +137,7 @@ function decodeCall(call?: string) {
   try {
     const parsed = JSON.parse(call);
     return parsed;
-  } catch (e) {
+  } catch {
     return call;
   }
 }

@@ -120,3 +120,74 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy`
+
+Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
+rather than using the canned \`LogDeliveryWrite\` ACL. ACLs do not work when Object Ownership is
+enabled on the bucket.
+
+This flag uses a Bucket Policy statement to allow Server Access Log delivery, following best
+practices for S3.
+
+https://docs.aws.amazon.com/AmazonS3/latest/userguide/enable-server-access-logging.html
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true
+  }
+}
+```
+
+* `@aws-cdk/aws-rds:databaseProxyUniqueResourceName`
+
+Enable this feature flag to use unique resource names for each `DatabaseProxy`.
+
+Previously, the default behavior for `DatabaseProxy` was to use `id` of the constructor for `dbProxyName`.
+In this case, users couldn't deploy `DatabaseProxy`s that have the same `id` in the same region.
+
+This is a feature flag as the old behavior was technically incorrect, but users may have come to depend on it.
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true
+  }
+}
+```
+
+* `@aws-cdk/aws-redshift:columnId`
+
+Enable this feature flag to allow the CDK to track changes in Redshift columns through their `id` attribute. This is a breaking change, as the `name` attribute was currently being used to track changes to Redshift columns.
+
+Enabling this feature flag comes at a risk for existing Redshift columns, as the `name` attribute of a redshift column was currently being used. Therefore, to change a Redshift columns' `name` will essentially create a new column and delete the old one. This will cause data loss. If you choose to enable this flag, ensure that upon intial deployment (the first deployment after setting this feature flag), the `name` attribute of every column is not changed. After the intial deployment, you can freely change the `name` attribute of a column.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-redshift:columnId": true
+  }
+}
+```
+
+* `@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2`
+
+Enable this feature flag to use the \`AmazonEMRServicePolicy_v2\` managed policies for the EMR service role.
+
+This is a feature flag as the old behavior will be deprecated, but some resources may require manual
+intervention since they might not have the appropriate tags propagated automatically.
+
+https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-managed-iam-policies.html
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true
+  }
+}
+```

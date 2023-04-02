@@ -1,0 +1,19 @@
+{
+  "version": "30.1.0",
+  "files": {
+    "9990535320d190a5d21dd4894139418daf53e1f802d41a8187e5767814212f4f": {
+      "source": {
+        "path": "StackOutputPipelineStackAppStageStackB810E610.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9990535320d190a5d21dd4894139418daf53e1f802d41a8187e5767814212f4f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

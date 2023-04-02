@@ -1,11 +1,12 @@
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Alias, AliasOptions } from './alias';
-import { GameLiftMetrics } from './gamelift-canned-metrics.generated';
-import { CfnFleet } from './gamelift.generated';
+import { IGameSessionQueueDestination } from './game-session-queue';
+import { GameLiftMetrics } from 'aws-cdk-lib/aws-gamelift/lib/gamelift-canned-metrics.generated';
+import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 
 
 /**
@@ -140,7 +141,7 @@ export interface ResourceCreationLimitPolicy {
 /**
  * Represents a Gamelift fleet
  */
-export interface IFleet extends cdk.IResource, iam.IGrantable {
+export interface IFleet extends cdk.IResource, iam.IGrantable, IGameSessionQueueDestination {
   /**
    * The Identifier of the fleet.
    *
@@ -533,6 +534,13 @@ export abstract class FleetBase extends cdk.Resource implements IFleet {
       ...fn({ FleetId: this.fleetId }),
       ...props,
     }).attachTo(this);
+  }
+
+  /**
+   * The ARN to put into the destination field of a game session queue
+   */
+  public get resourceArnForDestination() {
+    return this.fleetArn;
   }
 
   /**

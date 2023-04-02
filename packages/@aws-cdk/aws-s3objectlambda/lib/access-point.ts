@@ -1,9 +1,9 @@
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as core from '@aws-cdk/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as core from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnAccessPoint } from './s3objectlambda.generated';
+import { CfnAccessPoint } from 'aws-cdk-lib/aws-s3objectlambda';
 
 /**
  * The interface that represents the AccessPoint resource.
@@ -98,20 +98,20 @@ abstract class AccessPointBase extends core.Resource implements IAccessPoint {
   public abstract readonly accessPointCreationDate: string;
   public abstract readonly accessPointName: string;
 
-  /** Implement the {@link IAccessPoint.domainName} field. */
+  /** Implement the `IAccessPoint.domainName` field. */
   get domainName(): string {
     const urlSuffix = this.stack.urlSuffix;
     return `${this.accessPointName}-${this.env.account}.s3-object-lambda.${urlSuffix}`;
   }
 
-  /** Implement the {@link IAccessPoint.regionalDomainName} field. */
+  /** Implement the `IAccessPoint.regionalDomainName` field. */
   get regionalDomainName(): string {
     const urlSuffix = this.stack.urlSuffix;
     const region = this.env.region;
     return `${this.accessPointName}-${this.env.account}.s3-object-lambda.${region}.${urlSuffix}`;
   }
 
-  /** Implement the {@link IAccessPoint.virtualHostedUrlForObject} method. */
+  /** Implement the `IAccessPoint.virtualHostedUrlForObject` method. */
   public virtualHostedUrlForObject(key?: string, options?: s3.VirtualHostedStyleUrlOptions): string {
     const domainName = options?.regional ?? true ? this.regionalDomainName : this.domainName;
     const prefix = `https://${domainName}`;

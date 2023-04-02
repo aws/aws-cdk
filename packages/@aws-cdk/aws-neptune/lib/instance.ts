@@ -1,15 +1,15 @@
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IDatabaseCluster } from './cluster';
 import { Endpoint } from './endpoint';
-import { CfnDBInstance } from './neptune.generated';
+import { CfnDBInstance } from 'aws-cdk-lib/aws-neptune';
 import { IParameterGroup } from './parameter-group';
 
 /**
  * Possible Instances Types to use in Neptune cluster
- * used for defining {@link DatabaseInstanceProps.instanceType}.
+ * used for defining `DatabaseInstanceProps.instanceType`.
  */
 export class InstanceType {
 

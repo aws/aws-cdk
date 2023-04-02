@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are in **developer preview** before they
@@ -42,7 +36,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
   environmentVariables: {
     stage: 'prod',
   },
@@ -110,6 +104,29 @@ const schedule = synthetics.Schedule.cron({
 
 If you want the canary to run just once upon deployment, you can use `Schedule.once()`.
 
+
+### Canary DeleteLambdaResourcesOnCanaryDeletion
+
+You can specify whether the AWS CloudFormation is to also delete the Lambda functions and layers used by this canary, when the canary is deleted.
+
+This can be provisioned by setting the `enableAutoDeleteLambdas` property to `true` when we define the canary.
+
+```ts
+const stack = new Stack();
+
+const canary = new synthetics.Canary(stack, 'Canary', {
+  test: synthetics.Test.custom({
+    handler: 'index.handler',
+    code: synthetics.Code.fromInline('/* Synthetics handler code'),
+  }),
+  enableAutoDeleteLambdas: true,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
+});
+```
+
+Synthetic Canaries create additional resources under the hood beyond Lambda functions. Setting `enableAutoDeleteLambdas: true` will take care of
+cleaning up Lambda functions on deletion, but you still have to manually delete other resources like S3 buckets and CloudWatch logs.
+
 ### Configuring the Canary Script
 
 To configure the script the canary executes, use the `test` property. The `test` property accepts a `Test` instance that can be initialized by the `Test` class static methods. Currently, the only implemented method is `Test.custom()`, which allows you to bring your own code. In the future, other methods will be added. `Test.custom()` accepts `code` and `handler` properties -- both are required by Synthetics to create a lambda function on your behalf.
@@ -129,7 +146,7 @@ new synthetics.Canary(this, 'Inline Canary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 
 // To supply the code from your local filesystem:
@@ -138,18 +155,18 @@ new synthetics.Canary(this, 'Asset Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 
 // To supply the code from a S3 bucket:
-import * as s3 from '@aws-cdk/aws-s3';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 const bucket = new s3.Bucket(this, 'Code Bucket');
 new synthetics.Canary(this, 'Bucket Canary', {
   test: synthetics.Test.custom({
     code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 ```
 
@@ -175,12 +192,12 @@ new synthetics.Canary(this, 'Bucket Canary', {
 
 ### Running a canary on a VPC
 
-You can specify what [VPC a canary executes in](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html). 
-This can allow for monitoring services that may be internal to a specific VPC. To place a canary within a VPC, you can specify the `vpc` property with the desired `VPC` to place then canary in. 
+You can specify what [VPC a canary executes in](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html).
+This can allow for monitoring services that may be internal to a specific VPC. To place a canary within a VPC, you can specify the `vpc` property with the desired `VPC` to place then canary in.
 This will automatically attach the appropriate IAM permissions to attach to the VPC. This will also create a Security Group and attach to the default subnets for the VPC unless specified via `vpcSubnets` and `securityGroups`.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 declare const vpc: ec2.IVpc;
 new synthetics.Canary(this, 'Vpc Canary', {
@@ -188,7 +205,7 @@ new synthetics.Canary(this, 'Vpc Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
   vpc,
 });
 ```
@@ -210,7 +227,7 @@ You can configure a CloudWatch Alarm on a canary metric. Metrics are emitted by 
 Create an alarm that tracks the canary metric:
 
 ```ts
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 declare const canary: synthetics.Canary;
 new cloudwatch.Alarm(this, 'CanaryAlarm', {

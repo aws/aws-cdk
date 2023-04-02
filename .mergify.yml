@@ -1,6 +1,7 @@
 # See https://doc.mergify.io
 queue_rules:
   - name: default
+    update_method: merge
     conditions:
       - status-success~=AWS CodeBuild us-east-1
 
@@ -10,7 +11,7 @@ pull_request_rules:
       label:
         add: [ contribution/core ]
     conditions:
-      - author~=^(RomainMuller|rix0rrr|Jerry-AWS|MrArnoldPalmer|iliapolo|uttarasridhar|otaviomacedo|madeline-k|kaizencc|comcalvi|corymhall|peterwoodworth|ryparker|TheRealAmazonKendra|yuth|vinayak-kukreja|Naumel|mrgrain|pahud|cgarvis|kellertk|HBobertz)$
+      - author~=^(RomainMuller|rix0rrr|MrArnoldPalmer|iliapolo|uttarasridhar|otaviomacedo|madeline-k|kaizencc|comcalvi|corymhall|peterwoodworth|ryparker|TheRealAmazonKendra|vinayak-kukreja|Naumel|mrgrain|pahud|cgarvis|kellertk|HBobertz|sumupitchayan|pattasai|SankyRed|udaypant)$
       - -label~="contribution/core"
   - name: automatic merge
     actions:

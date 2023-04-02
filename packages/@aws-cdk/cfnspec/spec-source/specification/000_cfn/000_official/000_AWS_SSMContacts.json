@@ -1,5 +1,5 @@
 {
-  "$version": "100.0.0",
+  "$version": "117.0.0",
   "PropertyTypes": {
     "AWS::SSMContacts::Contact.ChannelTargetInfo": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-channeltargetinfo.html",
@@ -46,6 +46,7 @@
         },
         "Targets": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ssmcontacts-contact-stage.html#cfn-ssmcontacts-contact-stage-targets",
+          "DuplicatesAllowed": true,
           "ItemType": "Targets",
           "Required": false,
           "Type": "List",
@@ -94,8 +95,9 @@
         },
         "Plan": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssmcontacts-contact.html#cfn-ssmcontacts-contact-plan",
+          "DuplicatesAllowed": true,
           "ItemType": "Stage",
-          "Required": true,
+          "Required": false,
           "Type": "List",
           "UpdateType": "Mutable"
         },

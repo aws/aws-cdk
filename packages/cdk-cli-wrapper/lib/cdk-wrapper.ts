@@ -66,7 +66,21 @@ export interface SynthFastOptions {
    *
    * @default - no additional env
    */
-  readonly env?: { [name: string]: string }
+  readonly env?: { [name: string]: string; },
+}
+
+/**
+ * Additional environment variables to set in the execution environment
+ *
+ * @deprecated Use raw property bags instead (object literals, `Map<String,Object>`, etc... )
+ */
+export interface Environment {
+  /**
+   * This index signature is not usable in non-TypeScript/JavaScript languages.
+   *
+   * @jsii ignore
+   */
+  [key: string]: string | undefined
 }
 
 /**
@@ -86,7 +100,7 @@ export interface CdkCliWrapperOptions {
    *
    * @default - no additional env vars
    */
-  readonly env?: { [key: string]: string },
+  readonly env?: { [name: string]: string },
 
   /**
    * The path to the cdk executable
@@ -109,7 +123,7 @@ export interface CdkCliWrapperOptions {
  */
 export class CdkCliWrapper implements ICdk {
   private readonly directory: string;
-  private readonly env?: { [key: string]: string };
+  private readonly env?: { [name: string]: string | undefined; };
   private readonly cdk: string;
   private readonly showOutput: boolean;
 
@@ -119,7 +133,7 @@ export class CdkCliWrapper implements ICdk {
     this.showOutput = options.showOutput ?? false;
     try {
       this.cdk = options.cdkExecutable ?? 'cdk';
-    } catch (e) {
+    } catch {
       throw new Error(`could not resolve path to cdk executable: "${options.cdkExecutable ?? 'cdk'}"`);
     }
   }

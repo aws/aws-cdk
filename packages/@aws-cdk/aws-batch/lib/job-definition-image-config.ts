@@ -1,5 +1,5 @@
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as iam from '@aws-cdk/aws-iam';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { JobDefinitionContainer } from './job-definition';
 
@@ -19,7 +19,7 @@ interface TaskDefinitionProps {
  * Batch Job Task Definition
  *
  * Defines a Batch Job Task Definition. The properties of this task definition mirrors
- * those of an {@link ecs.ContainerDefinition}. This class is a wrapper on that structure.
+ * those of an `ecs.ContainerDefinition`. This class is a wrapper on that structure.
  */
 class TaskDefinition {
   /**

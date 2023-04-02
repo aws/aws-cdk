@@ -1,10 +1,10 @@
-import { Template } from '@aws-cdk/assertions';
-import * as acmpca from '@aws-cdk/aws-acmpca';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as kms from '@aws-cdk/aws-kms';
-import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as core from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as acmpca from 'aws-cdk-lib/aws-acmpca';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as core from 'aws-cdk-lib';
 import * as msk from '../lib';
 
 /* eslint-disable quote-props */
@@ -20,6 +20,41 @@ describe('MSK Cluster', () => {
     });
     stack = new core.Stack(app);
     vpc = new ec2.Vpc(stack, 'Vpc');
+  });
+
+  test.each([
+    [msk.KafkaVersion.V1_1_1, '1.1.1'],
+    [msk.KafkaVersion.V2_2_1, '2.2.1'],
+    [msk.KafkaVersion.V2_3_1, '2.3.1'],
+    [msk.KafkaVersion.V2_4_1_1, '2.4.1.1'],
+    [msk.KafkaVersion.V2_5_1, '2.5.1'],
+    [msk.KafkaVersion.V2_6_0, '2.6.0'],
+    [msk.KafkaVersion.V2_6_1, '2.6.1'],
+    [msk.KafkaVersion.V2_6_2, '2.6.2'],
+    [msk.KafkaVersion.V2_6_3, '2.6.3'],
+    [msk.KafkaVersion.V2_7_0, '2.7.0'],
+    [msk.KafkaVersion.V2_7_1, '2.7.1'],
+    [msk.KafkaVersion.V2_7_2, '2.7.2'],
+    [msk.KafkaVersion.V2_8_0, '2.8.0'],
+    [msk.KafkaVersion.V2_8_1, '2.8.1'],
+    [msk.KafkaVersion.V3_1_1, '3.1.1'],
+    [msk.KafkaVersion.V3_2_0, '3.2.0'],
+    [msk.KafkaVersion.V3_3_1, '3.3.1'],
+    [msk.KafkaVersion.V3_3_2, '3.3.2'],
+  ],
+  )('created with expected Kafka version %j', (parameter, result) => {
+    new msk.Cluster(stack, 'Cluster', {
+      clusterName: 'cluster',
+      kafkaVersion: parameter,
+      vpc,
+    });
+
+    Template.fromStack(stack).hasResource(
+      'AWS::MSK::Cluster', {},
+    );
+    Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
+      KafkaVersion: result,
+    });
   });
 
   test('created with default properties', () => {

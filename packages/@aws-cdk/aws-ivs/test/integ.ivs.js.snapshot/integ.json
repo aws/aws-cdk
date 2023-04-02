@@ -1,14 +1,12 @@
 {
-  "version": "20.0.0",
+  "version": "31.0.0",
   "testCases": {
-    "integ.ivs": {
+    "ivs-test/DefaultTest": {
       "stacks": [
         "aws-cdk-ivs"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "ivs-test/DefaultTest/DeployAssert",
+      "assertionStackName": "ivstestDefaultTestDeployAssertDCE80D47"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

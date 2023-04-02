@@ -1,8 +1,8 @@
 import * as path from 'path';
-import { Template } from '@aws-cdk/assertions';
-import * as s3 from '@aws-cdk/aws-s3';
-import { App, Stack } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { App, Stack } from 'aws-cdk-lib';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as synthetics from '../lib';
 import { RuntimeFamily } from '../lib';
 
@@ -51,7 +51,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
     });
 
     // THEN
@@ -75,7 +75,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_0,
+      runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_1_3,
     });
 
     // THEN
@@ -104,7 +104,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
     });
 
     new synthetics.Canary(stack, 'Canary2', {
@@ -112,7 +112,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_2_0,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
     });
 
     // THEN

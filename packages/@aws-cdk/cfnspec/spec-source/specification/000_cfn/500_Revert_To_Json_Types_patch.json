@@ -1,0 +1,954 @@
+{
+  "ResourceTypes": {
+    "AWS::Backup::ReportPlan": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/ReportDeliveryChannel/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ReportDeliveryChannel/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/ReportSetting/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ReportSetting/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::CloudFormation::StackSet": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/ManagedExecution/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ManagedExecution/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::CodeGuruProfiler::ProfilingGroup": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/AgentPermissions/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/AgentPermissions/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Config::ConformancePack": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/TemplateSSMDocumentDetails/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/TemplateSSMDocumentDetails/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Connect::TaskTemplate": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Constraints/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Constraints/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::EC2::FlowLog": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/DestinationOptions/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DestinationOptions/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::EC2::Subnet": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/PrivateDnsNameOptionsOnLaunch/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/PrivateDnsNameOptionsOnLaunch/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::EC2::TransitGatewayAttachment": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Options/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Options/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::EC2::TransitGatewayMulticastDomain": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Options/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Options/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::EC2::TransitGatewayVpcAttachment": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Options/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Options/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::ECR::PublicRepository": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/RepositoryCatalogData/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/RepositoryCatalogData/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::ElastiCache::User": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/AuthenticationMode/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/AuthenticationMode/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Forecast::Dataset": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/EncryptionConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/EncryptionConfig/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/Schema/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Schema/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::IoT::JobTemplate": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/AbortConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/AbortConfig/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/JobExecutionsRolloutConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/JobExecutionsRolloutConfig/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/PresignedUrlConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/PresignedUrlConfig/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/TimeoutConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/TimeoutConfig/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::IoTCoreDeviceAdvisor::SuiteDefinition": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/SuiteDefinitionConfiguration/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SuiteDefinitionConfiguration/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::IoTSiteWise::Portal": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Alarms/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Alarms/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::IoTWireless::NetworkAnalyzerConfiguration": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/TraceContent/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/TraceContent/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Lex::Bot": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/DataPrivacy/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DataPrivacy/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Lex::BotAlias": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/SentimentAnalysisSettings/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SentimentAnalysisSettings/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::LookoutEquipment::InferenceScheduler": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/DataInputConfiguration/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DataInputConfiguration/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/DataOutputConfiguration/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DataOutputConfiguration/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::MemoryDB::User": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/AuthenticationMode/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/AuthenticationMode/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Route53::HealthCheck": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/HealthCheckConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/HealthCheckConfig/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::S3::AccessPoint": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/PolicyStatus/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/PolicyStatus/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::SageMaker::FeatureGroup": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/OfflineStoreConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/OfflineStoreConfig/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/OnlineStoreConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/OnlineStoreConfig/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::SageMaker::Pipeline": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/ParallelismConfiguration/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ParallelismConfiguration/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/PipelineDefinition/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/PipelineDefinition/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::SageMaker::Project": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/ServiceCatalogProvisioningDetails/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ServiceCatalogProvisioningDetails/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Transfer::Connector": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/As2Config/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/As2Config/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::WAFv2::LoggingConfiguration": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/LoggingFilter/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/LoggingFilter/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    }
+  },
+  "PropertyTypes": {
+    "AWS::Backup::BackupSelection.BackupSelectionResourceType": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Conditions/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Conditions/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Backup::Framework.FrameworkControl": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/ControlScope/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ControlScope/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::DataBrew::Recipe.RecipeParameters": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Input/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Input/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::FIS::ExperimentTemplate.ExperimentTemplateLogConfiguration": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/CloudWatchLogsConfiguration/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/CloudWatchLogsConfiguration/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/S3Configuration/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/S3Configuration/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::GreengrassV2::Deployment.IoTJobRateIncreaseCriteria": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties"
+          },
+          {
+            "op": "add",
+            "path": "/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::IoTTwinMaker::ComponentType.DataValue": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/RelationshipValue/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/RelationshipValue/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::IoTTwinMaker::Entity.DataValue": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/RelationshipValue/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/RelationshipValue/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::IoTTwinMaker::Entity.Property": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Definition/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Definition/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::IoTTwinMaker::Entity.Status": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Error/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Error/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Lex::Bot.TestBotAliasSettings": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/SentimentAnalysisSettings/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SentimentAnalysisSettings/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Personalize::Dataset.DatasetImportJob": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/DataSource/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DataSource/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Personalize::Solution.SolutionConfig": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/AutoMLConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/AutoMLConfig/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/HpoConfig/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/HpoConfig/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::S3ObjectLambda::AccessPoint.TransformationConfiguration": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/ContentTransformation/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ContentTransformation/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::S3Outposts::Bucket.Rule": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Filter/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Filter/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::SageMaker::ModelPackage.ModelPackageContainerDefinition": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/ModelInput/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/ModelInput/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::Transfer::Workflow.WorkflowStep": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/CopyStepDetails/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/CopyStepDetails/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/CustomStepDetails/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/CustomStepDetails/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/DeleteStepDetails/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/DeleteStepDetails/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/TagStepDetails/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/TagStepDetails/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::WAFv2::LoggingConfiguration.FieldToMatch": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/JsonBody/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/JsonBody/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/SingleHeader/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SingleHeader/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::WAFv2::RuleGroup.FieldToMatch": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/SingleQueryArgument/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SingleQueryArgument/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/SingleHeader/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SingleHeader/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::WAFv2::RuleGroup.RuleAction": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/Allow/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Allow/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/Block/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Block/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/Captcha/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Captcha/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/Challenge/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Challenge/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/Count/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/Count/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    },
+    "AWS::WAFv2::WebACL.FieldToMatch": {
+      "patch": {
+        "description": "This patch fixes all types that were previously typed as Json, and CfnSpec v101.0.0 added types to them, which is a breaking change.",
+        "operations": [
+          {
+            "op": "remove",
+            "path": "/Properties/SingleQueryArgument/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SingleQueryArgument/PrimitiveType",
+            "value": "Json"
+          },
+          {
+            "op": "remove",
+            "path": "/Properties/SingleHeader/Type"
+          },
+          {
+            "op": "add",
+            "path": "/Properties/SingleHeader/PrimitiveType",
+            "value": "Json"
+          }
+        ]
+      }
+    }
+  }
+}

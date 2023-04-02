@@ -1,0 +1,19 @@
+{
+  "version": "30.0.0",
+  "files": {
+    "8d119297b7c1d884a3ca022e9e34db2e9da223ed96c46f750e5da902ad88a309": {
+      "source": {
+        "path": "aws-stepfunctions-tasks-call-aws-service-sfn-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8d119297b7c1d884a3ca022e9e34db2e9da223ed96c46f750e5da902ad88a309.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

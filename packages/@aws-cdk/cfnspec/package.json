@@ -32,10 +32,10 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/fs-extra": "^8.1.2",
+    "@types/fs-extra": "^9.0.13",
     "@types/jest": "^27.5.2",
     "@types/md5": "^2.3.2",
-    "fast-json-patch": "^2.2.1",
+    "fast-json-patch": "^3.1.1",
     "jest": "^27.5.1",
     "json-diff": "^0.10.0",
     "sort-json": "^2.0.1"

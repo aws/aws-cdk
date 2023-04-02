@@ -1,6 +1,7 @@
-import { StackActivityMonitor, IActivityPrinter, StackActivity } from '../../lib/api/util/cloudformation/stack-activity-monitor';
-import { sleep } from '../integ/helpers/aws';
+/* eslint-disable import/order */
 import { MockSdk } from './mock-sdk';
+import { StackActivityMonitor, IActivityPrinter, StackActivity } from '../../lib/api/util/cloudformation/stack-activity-monitor';
+import { sleep } from '../util';
 
 let sdk: MockSdk;
 let printer: FakePrinter;

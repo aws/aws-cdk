@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "cdk-integ-composite-alarm/DefaultTest": {
+      "stacks": [
+        "CompositeAlarmIntegrationTest"
+      ],
+      "assertionStack": "cdk-integ-composite-alarm/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegcompositealarmDefaultTestDeployAssertF4EF969E"
+    }
+  }
+}

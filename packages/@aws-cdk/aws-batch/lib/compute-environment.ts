@@ -1,8 +1,8 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import { ArnFormat, IResource, Resource, Stack } from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { ArnFormat, IResource, Resource, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnComputeEnvironment } from './batch.generated';
+import { CfnComputeEnvironment } from 'aws-cdk-lib/aws-batch';
 
 /**
  * Property to specify if the compute environment

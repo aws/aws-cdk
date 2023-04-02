@@ -1,7 +1,7 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
 import * as constructs from 'constructs';
-import { CfnConnection } from './glue.generated';
+import { CfnConnection } from 'aws-cdk-lib/aws-glue';
 
 /**
  * The type of the glue connection
@@ -49,7 +49,7 @@ export class ConnectionType {
 }
 
 /**
- * Interface representing a created or an imported {@link Connection}
+ * Interface representing a created or an imported `Connection`
  */
 export interface IConnection extends cdk.IResource {
   /**
@@ -109,7 +109,7 @@ export interface ConnectionOptions {
 }
 
 /**
- * Construction properties for {@link Connection}
+ * Construction properties for `Connection`
  */
 export interface ConnectionProps extends ConnectionOptions {
   /**

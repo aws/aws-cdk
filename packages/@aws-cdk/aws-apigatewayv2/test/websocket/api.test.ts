@@ -1,6 +1,6 @@
-import { Match, Template } from '@aws-cdk/assertions';
-import { User } from '@aws-cdk/aws-iam';
-import { Stack } from '@aws-cdk/core';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import { User } from 'aws-cdk-lib/aws-iam';
+import { Stack } from 'aws-cdk-lib';
 import {
   WebSocketRouteIntegration,
   WebSocketApi,
@@ -62,6 +62,28 @@ describe('WebSocketApi', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
       ApiId: stack.resolve(api.apiId),
       RouteKey: 'myroute',
+    });
+  });
+
+  test('addRoute: adds a route with passed key and allows it to return a response', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'api');
+
+    // WHEN
+    const route = api.addRoute('myroute', { integration: new DummyIntegration(), returnResponse: true });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Route', {
+      ApiId: stack.resolve(api.apiId),
+      RouteKey: 'myroute',
+      RouteResponseSelectionExpression: '$default',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::RouteResponse', {
+      ApiId: stack.resolve(api.apiId),
+      RouteId: stack.resolve(route.routeId),
+      RouteResponseKey: '$default',
     });
   });
 

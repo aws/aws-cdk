@@ -1,9 +1,11 @@
+/* eslint-disable import/order */
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import * as codebuild from 'aws-sdk/clients/codebuild';
 import * as lambda from 'aws-sdk/clients/lambda';
 import * as stepfunctions from 'aws-sdk/clients/stepfunctions';
 import { DeployStackResult } from '../../../lib/api';
+import { HotswapMode } from '../../../lib/api/hotswap/common';
 import * as deployments from '../../../lib/api/hotswap-deployments';
 import { CloudFormationStack, Template } from '../../../lib/api/util/cloudformation';
 import { testStack, TestStackArtifact } from '../../util';
@@ -171,9 +173,10 @@ export class HotswapMockSdkProvider {
   }
 
   public tryHotswapDeployment(
+    hotswapMode: HotswapMode,
     stackArtifact: cxapi.CloudFormationStackArtifact,
     assetParams: { [key: string]: string } = {},
   ): Promise<DeployStackResult | undefined> {
-    return deployments.tryHotswapDeployment(this.mockSdkProvider, assetParams, currentCfnStack, stackArtifact);
+    return deployments.tryHotswapDeployment(this.mockSdkProvider, assetParams, currentCfnStack, stackArtifact, hotswapMode);
   }
 }

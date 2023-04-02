@@ -32,10 +32,10 @@ describe('AssertionHandler', () => {
     let failed: Error = new Error();
     try {
       await handler.processEvent(request);
-    } catch (e) {
+    } catch (e: any) {
       failed = e;
     }
-    expect(failed.message).toMatch(/String 'this is the actual results' did not match pattern 'abcd' (using stringLikeRegexp matcher)*/);
+    expect(failed.message).toMatch(/String 'this is the actual results' did not match pattern 'abcd'/);
   });
   describe('stringLike', () => {
     test('pass', async () => {
@@ -67,7 +67,7 @@ describe('AssertionHandler', () => {
       // THEN
       expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
-        message: expect.stringMatching(/String 'this is the actual results' did not match pattern 'abcd' (using stringLikeRegexp matcher)*/),
+        message: expect.stringMatching(/String 'this is the actual results' did not match pattern 'abcd'/),
       });
     });
   });
@@ -123,7 +123,7 @@ describe('AssertionHandler', () => {
       // THEN
       expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
-        message: expect.stringMatching(/Missing element at pattern index 0 (using arrayWith matcher)*/),
+        message: expect.stringMatching(/Could not match arrayWith pattern 0/),
       });
     });
   });
@@ -182,8 +182,56 @@ describe('AssertionHandler', () => {
       // THEN
       expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
-        message: 'Expected bar but received foo at /stringParam (using objectLike matcher)\n' +
-          '{\n  \"stringParam\": \"foo\",\n  \"numberParam\": 3,\n  \"booleanParam\": true\n}',
+        message: expect.stringMatching(/Expected bar but received foo/),
+      });
+    });
+  });
+
+  describe('serializedJson', () => {
+    test('pass', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        actual: {
+          Payload: JSON.stringify({
+            Key: 'value',
+            Elements: [{ Asdf: 3 }, { Asdf: 4 }],
+          }),
+        },
+        expected: ExpectedResult.objectLike({
+          Payload: Match.serializedJson({
+            Key: 'value',
+            Elements: Match.arrayWith([{ Asdf: 3 }]),
+          }),
+        }).result,
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(response.assertion).toEqual('{"status":"success"}');
+    });
+
+    test('fail', async () => {
+      // GIVEN
+      const handler = assertionHandler() as any;
+      const request: AssertionRequest = {
+        actual: {
+          Payload: JSON.stringify({ stringParam: 'foo' }),
+        },
+        expected: ExpectedResult.objectLike({
+          Payload: Match.serializedJson({ stringParam: 'bar' }),
+        }).result,
+      };
+
+      // WHEN
+      const response: AssertionResult = await handler.processEvent(request);
+
+      // THEN
+      expect(JSON.parse(response.assertion)).toEqual({
+        status: 'fail',
+        message: expect.stringMatching(/Expected bar but received foo/),
       });
     });
   });
@@ -245,7 +293,7 @@ describe('AssertionHandler', () => {
       // THEN
       expect(JSON.parse(response.assertion)).toEqual({
         status: 'fail',
-        message: 'Expected bar but received foo at /stringParam (using exact matcher)\n{\n  \"stringParam\": \"foo\"\n}',
+        message: expect.stringMatching(/Expected bar but received foo/),
       });
     });
   });

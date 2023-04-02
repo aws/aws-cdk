@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "integ-servicecatalogappregistry-attribute-group": {
         "id": "integ-servicecatalogappregistry-attribute-group",
         "path": "integ-servicecatalogappregistry-attribute-group",
@@ -38,8 +30,8 @@
                         "beta": "time2"
                       }
                     },
-                    "name": "myAttributeGroupTest",
-                    "description": "my attribute group description"
+                    "name": "myFirstAttributeGroup",
+                    "description": "test attribute group description"
                   }
                 },
                 "constructInfo": {
@@ -47,13 +39,13 @@
                   "version": "0.0.0"
                 }
               },
-              "RAMSharec67f7d80e5ba": {
-                "id": "RAMSharec67f7d80e5ba",
-                "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/RAMSharec67f7d80e5ba",
+              "MyShareId": {
+                "id": "MyShareId",
+                "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/MyShareId",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RAM::ResourceShare",
                   "aws:cdk:cloudformation:props": {
-                    "name": "RAMSharec67f7d80e5ba",
+                    "name": "MyShare",
                     "allowExternalPrincipals": false,
                     "permissionArns": [
                       "arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly"
@@ -97,6 +89,14 @@
             "id": "MyRole",
             "path": "integ-servicecatalogappregistry-attribute-group/MyRole",
             "children": {
+              "ImportMyRole": {
+                "id": "ImportMyRole",
+                "path": "integ-servicecatalogappregistry-attribute-group/MyRole/ImportMyRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "integ-servicecatalogappregistry-attribute-group/MyRole/Resource",
@@ -147,6 +147,14 @@
             "id": "MySecondRole",
             "path": "integ-servicecatalogappregistry-attribute-group/MySecondRole",
             "children": {
+              "ImportMySecondRole": {
+                "id": "ImportMySecondRole",
+                "path": "integ-servicecatalogappregistry-attribute-group/MySecondRole/ImportMySecondRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "integ-servicecatalogappregistry-attribute-group/MySecondRole/Resource",
@@ -192,17 +200,41 @@
               "fqn": "@aws-cdk/aws-iam.Role",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-servicecatalogappregistry-attribute-group/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-servicecatalogappregistry-attribute-group/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

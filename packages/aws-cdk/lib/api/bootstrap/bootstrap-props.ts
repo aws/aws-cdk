@@ -5,6 +5,12 @@ export const REPOSITORY_NAME_OUTPUT = 'RepositoryName';
 export const BUCKET_DOMAIN_NAME_OUTPUT = 'BucketDomainName';
 export const BOOTSTRAP_VERSION_OUTPUT = 'BootstrapVersion';
 export const BOOTSTRAP_VERSION_RESOURCE = 'CdkBootstrapVersion';
+export const BOOTSTRAP_VARIANT_PARAMETER = 'BootstrapVariant';
+
+/**
+ * The assumed vendor of a template in case it is not set
+ */
+export const DEFAULT_BOOTSTRAP_VARIANT = 'AWS CDK: Default Resources';
 
 /**
  * Options for the bootstrapEnvironment operation(s)
@@ -81,7 +87,7 @@ export interface BootstrappingParameters {
   /**
    * The ARNs of the IAM managed policies that should be attached to the role performing CloudFormation deployments.
    * In most cases, this will be the AdministratorAccess policy.
-   * At least one policy is required if {@link trustedAccounts} were passed.
+   * At least one policy is required if `trustedAccounts` were passed.
    *
    * @default - the role will have no policies attached
    */

@@ -1,14 +1,10 @@
 {
-  "version": "21.0.0",
+  "version": "30.1.0",
   "testCases": {
-    "integ.database": {
-      "stacks": [
-        "aws-cdk-redshift-cluster-database"
-      ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+    "redshift-cluster-database-integ/DefaultTest": {
+      "stacks": ["aws-cdk-redshift-cluster-database"],
+      "assertionStack": "redshift-cluster-database-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "redshiftclusterdatabaseintegDefaultTestDeployAssert4339FB48"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
