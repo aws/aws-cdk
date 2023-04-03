@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 // We need to mock the chokidar library, used by 'cdk watch'
 const mockChokidarWatcherOn = jest.fn();
 const fakeChokidarWatcher = {

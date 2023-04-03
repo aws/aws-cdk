@@ -3,11 +3,11 @@ import {
   CfnCertificate,
   CfnCertificateAuthority,
   CfnCertificateAuthorityActivation,
-} from '@aws-cdk/aws-acmpca';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
-import { IntegTest, AssertionsProvider, ExpectedResult } from '@aws-cdk/integ-tests';
+} from 'aws-cdk-lib/aws-acmpca';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
+import { IntegTest, AssertionsProvider, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as msk from '../lib';
 
 const app = new cdk.App();
@@ -182,6 +182,20 @@ class FeatureFlagStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers8', { value: cluster6.bootstrapBrokersTls });
+
+    const cluster7 = new msk.Cluster(this, 'Cluster_V3_3_2', {
+      clusterName: 'integ-test-v3-3-2',
+      kafkaVersion: msk.KafkaVersion.V3_3_2,
+      vpc,
+      logging: {
+        s3: {
+          bucket: this.bucket,
+        },
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    new cdk.CfnOutput(this, 'BootstrapBrokers9', { value: cluster7.bootstrapBrokersTls });
+
   }
 }
 

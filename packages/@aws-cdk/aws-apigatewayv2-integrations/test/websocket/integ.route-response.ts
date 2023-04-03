@@ -1,6 +1,6 @@
-import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2';
-import * as cdk from '@aws-cdk/core';
-import { IntegTest } from '@aws-cdk/integ-tests';
+import { WebSocketApi } from '@aws-cdk/aws-apigatewayv2-alpha';
+import * as cdk from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { WebSocketMockIntegration } from '../../lib';
 
 const app = new cdk.App();

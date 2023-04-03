@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { Service, Source } from '../lib';
 
 
@@ -14,5 +14,6 @@ const service1 = new Service(stack, 'Service1', {
     },
     imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
   }),
+  autoDeploymentsEnabled: false,
 });
 new cdk.CfnOutput(stack, 'URL1', { value: `https://${service1.serviceUrl}` });

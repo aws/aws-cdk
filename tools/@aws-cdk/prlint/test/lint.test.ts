@@ -142,8 +142,8 @@ describe('commit message format', () => {
   })
 });
 
-describe('ban breaking changes in stable modules', () => {
-  test('breaking change in stable module', async () => {
+describe.only('ban breaking changes in stable modules', () => {
+  test.only('breaking change in stable module', async () => {
     const issue = {
       number: 1,
       title: 'chore(s3): some title',
