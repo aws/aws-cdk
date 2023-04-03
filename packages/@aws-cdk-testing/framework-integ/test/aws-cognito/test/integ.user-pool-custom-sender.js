@@ -1,0 +1,44 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const kms = require("aws-cdk-lib/aws-kms");
+const lambda = require("aws-cdk-lib/aws-lambda");
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+const aws_cognito_1 = require("aws-cdk-lib/aws-cognito");
+/*
+ * Stack verification steps
+ * * Sign up to the created user pool using an email address as the username, and password.
+ * * Verify the CustomEmailSender lambda was called via logged message in CloudWatch.
+ */
+const app = new aws_cdk_lib_1.App();
+const stack = new aws_cdk_lib_1.Stack(app, 'integ-user-pool-custom-sender');
+const customSenderLambda = new lambda.Function(stack, 'emailLambda', {
+    runtime: lambda.Runtime.NODEJS_14_X,
+    handler: 'index.handler',
+    code: lambda.Code.fromInline('exports.handler = function(event, ctx, cb) { console.log("Mocked custom email send");return cb(null, "success"); }'),
+});
+const userpool = new aws_cognito_1.UserPool(stack, 'pool', {
+    autoVerify: {
+        email: true,
+    },
+    selfSignUpEnabled: true,
+    signInAliases: {
+        email: true,
+    },
+    customSenderKmsKey: new kms.Key(stack, 'key'),
+    lambdaTriggers: {
+        customEmailSender: customSenderLambda,
+    },
+    removalPolicy: aws_cdk_lib_1.RemovalPolicy.DESTROY,
+});
+const client = userpool.addClient('client', {
+    authFlows: {
+        userSrp: true,
+    },
+});
+new aws_cdk_lib_1.CfnOutput(stack, 'UserPoolId', {
+    value: userpool.userPoolId,
+});
+new aws_cdk_lib_1.CfnOutput(stack, 'ClientId', {
+    value: client.userPoolClientId,
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcudXNlci1wb29sLWN1c3RvbS1zZW5kZXIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbnRlZy51c2VyLXBvb2wtY3VzdG9tLXNlbmRlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLDJDQUEyQztBQUMzQyxpREFBaUQ7QUFDakQsNkNBQW1FO0FBQ25FLHlEQUFtRDtBQUVuRDs7OztHQUlHO0FBQ0gsTUFBTSxHQUFHLEdBQUcsSUFBSSxpQkFBRyxFQUFFLENBQUM7QUFDdEIsTUFBTSxLQUFLLEdBQUcsSUFBSSxtQkFBSyxDQUFDLEdBQUcsRUFBRSwrQkFBK0IsQ0FBQyxDQUFDO0FBRTlELE1BQU0sa0JBQWtCLEdBQUcsSUFBSSxNQUFNLENBQUMsUUFBUSxDQUFDLEtBQUssRUFBRSxhQUFhLEVBQUU7SUFDbkUsT0FBTyxFQUFFLE1BQU0sQ0FBQyxPQUFPLENBQUMsV0FBVztJQUNuQyxPQUFPLEVBQUUsZUFBZTtJQUN4QixJQUFJLEVBQUUsTUFBTSxDQUFDLElBQUksQ0FBQyxVQUFVLENBQUMsb0hBQW9ILENBQUM7Q0FDbkosQ0FBQyxDQUFDO0FBRUgsTUFBTSxRQUFRLEdBQUcsSUFBSSxzQkFBUSxDQUFDLEtBQUssRUFBRSxNQUFNLEVBQUU7SUFDM0MsVUFBVSxFQUFFO1FBQ1YsS0FBSyxFQUFFLElBQUk7S0FDWjtJQUNELGlCQUFpQixFQUFFLElBQUk7SUFDdkIsYUFBYSxFQUFFO1FBQ2IsS0FBSyxFQUFFLElBQUk7S0FDWjtJQUNELGtCQUFrQixFQUFFLElBQUksR0FBRyxDQUFDLEdBQUcsQ0FBQyxLQUFLLEVBQUUsS0FBSyxDQUFDO0lBQzdDLGNBQWMsRUFBRTtRQUNkLGlCQUFpQixFQUFFLGtCQUFrQjtLQUN0QztJQUNELGFBQWEsRUFBRSwyQkFBYSxDQUFDLE9BQU87Q0FDckMsQ0FBQyxDQUFDO0FBRUgsTUFBTSxNQUFNLEdBQUcsUUFBUSxDQUFDLFNBQVMsQ0FBQyxRQUFRLEVBQUU7SUFDMUMsU0FBUyxFQUFFO1FBQ1QsT0FBTyxFQUFFLElBQUk7S0FDZDtDQUNGLENBQUMsQ0FBQztBQUVILElBQUksdUJBQVMsQ0FBQyxLQUFLLEVBQUUsWUFBWSxFQUFFO0lBQ2pDLEtBQUssRUFBRSxRQUFRLENBQUMsVUFBVTtDQUMzQixDQUFDLENBQUM7QUFFSCxJQUFJLHVCQUFTLENBQUMsS0FBSyxFQUFFLFVBQVUsRUFBRTtJQUMvQixLQUFLLEVBQUUsTUFBTSxDQUFDLGdCQUFnQjtDQUMvQixDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBrbXMgZnJvbSAnYXdzLWNkay1saWIvYXdzLWttcyc7XG5pbXBvcnQgKiBhcyBsYW1iZGEgZnJvbSAnYXdzLWNkay1saWIvYXdzLWxhbWJkYSc7XG5pbXBvcnQgeyBBcHAsIENmbk91dHB1dCwgUmVtb3ZhbFBvbGljeSwgU3RhY2sgfSBmcm9tICdhd3MtY2RrLWxpYic7XG5pbXBvcnQgeyBVc2VyUG9vbCB9IGZyb20gJ2F3cy1jZGstbGliL2F3cy1jb2duaXRvJztcblxuLypcbiAqIFN0YWNrIHZlcmlmaWNhdGlvbiBzdGVwc1xuICogKiBTaWduIHVwIHRvIHRoZSBjcmVhdGVkIHVzZXIgcG9vbCB1c2luZyBhbiBlbWFpbCBhZGRyZXNzIGFzIHRoZSB1c2VybmFtZSwgYW5kIHBhc3N3b3JkLlxuICogKiBWZXJpZnkgdGhlIEN1c3RvbUVtYWlsU2VuZGVyIGxhbWJkYSB3YXMgY2FsbGVkIHZpYSBsb2dnZWQgbWVzc2FnZSBpbiBDbG91ZFdhdGNoLlxuICovXG5jb25zdCBhcHAgPSBuZXcgQXBwKCk7XG5jb25zdCBzdGFjayA9IG5ldyBTdGFjayhhcHAsICdpbnRlZy11c2VyLXBvb2wtY3VzdG9tLXNlbmRlcicpO1xuXG5jb25zdCBjdXN0b21TZW5kZXJMYW1iZGEgPSBuZXcgbGFtYmRhLkZ1bmN0aW9uKHN0YWNrLCAnZW1haWxMYW1iZGEnLCB7XG4gIHJ1bnRpbWU6IGxhbWJkYS5SdW50aW1lLk5PREVKU18xNF9YLFxuICBoYW5kbGVyOiAnaW5kZXguaGFuZGxlcicsXG4gIGNvZGU6IGxhbWJkYS5Db2RlLmZyb21JbmxpbmUoJ2V4cG9ydHMuaGFuZGxlciA9IGZ1bmN0aW9uKGV2ZW50LCBjdHgsIGNiKSB7IGNvbnNvbGUubG9nKFwiTW9ja2VkIGN1c3RvbSBlbWFpbCBzZW5kXCIpO3JldHVybiBjYihudWxsLCBcInN1Y2Nlc3NcIik7IH0nKSxcbn0pO1xuXG5jb25zdCB1c2VycG9vbCA9IG5ldyBVc2VyUG9vbChzdGFjaywgJ3Bvb2wnLCB7XG4gIGF1dG9WZXJpZnk6IHtcbiAgICBlbWFpbDogdHJ1ZSxcbiAgfSxcbiAgc2VsZlNpZ25VcEVuYWJsZWQ6IHRydWUsXG4gIHNpZ25JbkFsaWFzZXM6IHtcbiAgICBlbWFpbDogdHJ1ZSxcbiAgfSxcbiAgY3VzdG9tU2VuZGVyS21zS2V5OiBuZXcga21zLktleShzdGFjaywgJ2tleScpLFxuICBsYW1iZGFUcmlnZ2Vyczoge1xuICAgIGN1c3RvbUVtYWlsU2VuZGVyOiBjdXN0b21TZW5kZXJMYW1iZGEsXG4gIH0sXG4gIHJlbW92YWxQb2xpY3k6IFJlbW92YWxQb2xpY3kuREVTVFJPWSxcbn0pO1xuXG5jb25zdCBjbGllbnQgPSB1c2VycG9vbC5hZGRDbGllbnQoJ2NsaWVudCcsIHtcbiAgYXV0aEZsb3dzOiB7XG4gICAgdXNlclNycDogdHJ1ZSxcbiAgfSxcbn0pO1xuXG5uZXcgQ2ZuT3V0cHV0KHN0YWNrLCAnVXNlclBvb2xJZCcsIHtcbiAgdmFsdWU6IHVzZXJwb29sLnVzZXJQb29sSWQsXG59KTtcblxubmV3IENmbk91dHB1dChzdGFjaywgJ0NsaWVudElkJywge1xuICB2YWx1ZTogY2xpZW50LnVzZXJQb29sQ2xpZW50SWQsXG59KTtcbiJdfQ==

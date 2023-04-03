@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import * as apigw from '../../lib';
 import { WebSocketApiKeySelectionExpression } from '../../lib';
 

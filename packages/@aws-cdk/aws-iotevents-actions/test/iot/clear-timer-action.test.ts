@@ -1,6 +1,6 @@
-import { Template } from '@aws-cdk/assertions';
-import * as iotevents from '@aws-cdk/aws-iotevents';
-import * as cdk from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
 let stack: cdk.Stack;

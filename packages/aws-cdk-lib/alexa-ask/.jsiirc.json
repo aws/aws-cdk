@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.Alexa.Ask"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.alexa.ask"
+    },
+    "python": {
+      "module": "aws_cdk.alexa_ask"
+    }
+  }
+}

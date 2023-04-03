@@ -1,4 +1,4 @@
-import * as iotevents from '@aws-cdk/aws-iotevents';
+import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
 import { Construct } from 'constructs';
 import { TimerDuration } from './timer-duration';
 
