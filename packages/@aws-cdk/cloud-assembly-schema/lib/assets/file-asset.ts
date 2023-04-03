@@ -13,13 +13,6 @@ export interface FileAsset {
    * Destinations for this file asset
    */
   readonly destinations: { [id: string]: FileDestination };
-
-  /**
-   * Optional display name for this asset
-   *
-   * @default - Uses an auto-generated name
-   */
-  readonly name?: string;
 }
 
 /**

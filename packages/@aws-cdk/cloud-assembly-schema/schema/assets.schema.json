@@ -42,11 +42,6 @@
                     "additionalProperties": {
                         "$ref": "#/definitions/FileDestination"
                     }
-                },
-                "name": {
-                    "description": "Optional display name for this asset",
-                    "type": "string",
-                    "default": "Auto-assigned name"
                 }
             },
             "required": [
@@ -123,11 +118,6 @@
                     "additionalProperties": {
                         "$ref": "#/definitions/DockerImageDestination"
                     }
-                },
-                "name": {
-                    "description": "Optional display name for this asset",
-                    "type": "string",
-                    "default": "Auto-assigned name"
                 }
             },
             "required": [

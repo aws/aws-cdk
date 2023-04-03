@@ -13,13 +13,6 @@ export interface DockerImageAsset {
    * Destinations for this file asset
    */
   readonly destinations: { [id: string]: DockerImageDestination };
-
-  /**
-   * Optional display name for this asset
-   *
-   * @default - Uses an auto-generated name
-   */
-  readonly name?: string;
 }
 
 /**
