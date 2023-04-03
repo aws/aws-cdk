@@ -1,8 +1,7 @@
 import { join } from 'path';
-import * as lambda from '../../aws-lambda';
-import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime } from '../../core';
 import { Construct, IConstruct, Node } from 'constructs';
-import { Duration } from '../../core';
+import * as lambda from '../../aws-lambda';
+import { CustomResource, CustomResourceProvider, CustomResourceProviderRuntime, Duration } from '../../core';
 
 /**
  * Interface for triggers.

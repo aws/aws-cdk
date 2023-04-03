@@ -1,11 +1,9 @@
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as sns from 'aws-cdk-lib/aws-sns';
-import * as sqs from '@aws-cdk/aws-sqs';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { ExpectedResult } from '@aws-cdk/integ-tests';
 import * as triggers from 'aws-cdk-lib/triggers';
-import { InvocationType } from '../lib';
 
 const app = new App();
 const stack = new Stack(app, 'MyStack');
@@ -33,7 +31,7 @@ const func = new lambda.Function(stack, 'MyLambdaFunction', {
 
 const trigger = new triggers.Trigger(stack, 'MyTrigger', {
   handler: func,
-  invocationType: InvocationType.EVENT,
+  invocationType: triggers.InvocationType.EVENT,
   timeout: Duration.minutes(1),
   executeAfter: [topic1],
 });
@@ -52,7 +50,7 @@ assertionQueue.grantSendMessages(funcWithAssertion);
 
 new triggers.Trigger(stack, 'MyAssertionTrigger', {
   handler: funcWithAssertion,
-  invocationType: InvocationType.REQUEST_RESPONSE,
+  invocationType: triggers.InvocationType.REQUEST_RESPONSE,
   timeout: Duration.minutes(1),
   executeAfter: [assertionQueue],
 });
@@ -77,7 +75,7 @@ const testCase = new integ.IntegTest(app, 'TriggerTest', {
 testCase.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: assertionQueue.queueUrl,
   WaitTimeSeconds: 20,
-}).assertAtPath('Messages.0.Body', ExpectedResult.stringLikeRegexp('^hello world!$')).waitForAssertions({
+}).assertAtPath('Messages.0.Body', integ.ExpectedResult.stringLikeRegexp('^hello world!$')).waitForAssertions({
   totalTimeout: Duration.minutes(5),
   interval: Duration.seconds(15),
   backoffRate: 3,

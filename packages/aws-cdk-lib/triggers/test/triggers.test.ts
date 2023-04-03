@@ -3,7 +3,6 @@ import * as lambda from '../../aws-lambda';
 import * as sns from '../../aws-sns';
 import { Duration, Stack } from '../../core';
 import * as triggers from '../lib';
-import { InvocationType } from '../lib';
 
 test('minimal trigger function', () => {
   // GIVEN
@@ -126,7 +125,7 @@ test('trigger with optional properties', () => {
   new triggers.Trigger(stack, 'MyTrigger', {
     handler: func,
     timeout: Duration.minutes(10),
-    invocationType: InvocationType.EVENT,
+    invocationType: triggers.InvocationType.EVENT,
   });
 
   // THEN
