@@ -38,6 +38,7 @@ export class AssetManifestBuilder {
       path: asset.fileName,
       executable: asset.executable,
       packaging: asset.packaging,
+      name: asset.displayName,
     }, {
       bucketName: target.bucketName,
       objectKey,
@@ -73,6 +74,7 @@ export class AssetManifestBuilder {
       dockerOutputs: asset.dockerOutputs,
       cacheFrom: asset.dockerCacheFrom,
       cacheTo: asset.dockerCacheTo,
+      name: asset.displayName,
     }, {
       repositoryName: target.repositoryName,
       imageTag,
