@@ -1,8 +1,8 @@
-import * as iot from '@aws-cdk/aws-iot';
-import * as firehose from '@aws-cdk/aws-kinesisfirehose';
-import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
+import * as iot from '@aws-cdk/aws-iot-alpha';
+import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
 

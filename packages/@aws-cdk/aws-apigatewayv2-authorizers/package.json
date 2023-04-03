@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/aws-apigatewayv2-authorizers",
+  "name": "@aws-cdk/aws-apigatewayv2-authorizers-alpha",
   "version": "0.0.0",
   "description": "Authorizers for AWS APIGateway V2",
   "main": "lib/index.js",
@@ -8,26 +8,30 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Apigatewayv2.Authorizers",
-        "packageId": "Amazon.CDK.AWS.APIGatewayv2.Authorizers",
+        "namespace": "Amazon.CDK.AWS.Apigatewayv2.Authorizers.Alpha",
+        "packageId": "Amazon.CDK.AWS.APIGatewayv2.Authorizers.Alpha",
         "signAssembly": true,
         "assemblyOriginatorKeyFile": "../../key.snk",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.apigatewayv2.authorizers",
+        "package": "software.amazon.awscdk.services.apigatewayv2.authorizers.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "apigatewayv2-authorizers"
+          "artifactId": "apigatewayv2-authorizers-alpha"
         }
       },
       "python": {
-        "distName": "aws-cdk.aws-apigatewayv2-authorizers",
-        "module": "aws_cdk.aws_apigatewayv2_authorizers",
+        "distName": "aws-cdk.aws-apigatewayv2-authorizers-alpha",
+        "module": "aws_cdk.aws_apigatewayv2_authorizers_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkapigatewayv2authorizersalpha"
       }
     },
     "projectReferences": true,
@@ -79,30 +83,21 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
-    "@aws-cdk/aws-apigatewayv2-integrations": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/aws-lambda": "^8.10.111",
-    "@aws-cdk/integ-tests": "0.0.0",
-    "@types/jest": "^27.5.2"
+    "@types/jest": "^27.5.2",
+    "aws-cdk-lib": "0.0.0",
+    "constructs": "^10.0.0",
+    "@aws-cdk/aws-apigatewayv2-integrations-alpha": "0.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2-alpha": "0.0.0"
   },
-  "dependencies": {
-    "@aws-cdk/aws-apigatewayv2": "0.0.0",
-    "@aws-cdk/aws-cognito": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "constructs": "^10.0.0"
-  },
+  "dependencies": {},
   "peerDependencies": {
-    "@aws-cdk/aws-apigatewayv2": "0.0.0",
-    "@aws-cdk/aws-cognito": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2-alpha": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -116,5 +111,16 @@
   "publishConfig": {
     "tag": "latest"
   },
-  "private": true
+  "private": false,
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
+  }
 }

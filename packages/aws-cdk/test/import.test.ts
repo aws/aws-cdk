@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 jest.mock('promptly', () => {
   return {
     ...jest.requireActual('promptly'),

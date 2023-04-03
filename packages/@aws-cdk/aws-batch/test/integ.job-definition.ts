@@ -1,7 +1,7 @@
 /* eslint-disable quotes */
-import { ContainerImage } from "@aws-cdk/aws-ecs";
-import { App, Stack } from "@aws-cdk/core";
-import { ExpectedResult, IntegTest } from "@aws-cdk/integ-tests";
+import { ContainerImage } from "aws-cdk-lib/aws-ecs";
+import { App, Stack } from "aws-cdk-lib";
+import { ExpectedResult, IntegTest } from "@aws-cdk/integ-tests-alpha";
 import { JobDefinition } from "../lib";
 
 const app = new App();

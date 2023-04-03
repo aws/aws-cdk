@@ -1,8 +1,8 @@
-import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
-import { Stack } from '@aws-cdk/core';
+import { Metric, MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
+import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
-import { CfnStage } from '../apigatewayv2.generated';
+import { CfnStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import { StageOptions, IStage, StageAttributes } from '../common';
 import { IApi } from '../common/api';
 import { StageBase } from '../common/base';

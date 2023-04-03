@@ -1,0 +1,19 @@
+{
+  "version": "31.0.0",
+  "files": {
+    "a9beea32c9b28bae98911a4a8b67622ad7d611f5d0604066ceaf6e283e02c0c3": {
+      "source": {
+        "path": "VPCFilterSubnetsTestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a9beea32c9b28bae98911a4a8b67622ad7d611f5d0604066ceaf6e283e02c0c3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
