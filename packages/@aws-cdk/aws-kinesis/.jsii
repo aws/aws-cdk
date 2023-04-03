@@ -1,0 +1,3333 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.Assets",
+          "packageId": "Amazon.CDK.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.assets",
+          "module": "aws_cdk.assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-cloudwatch": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CloudWatch",
+          "packageId": "Amazon.CDK.AWS.CloudWatch"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudwatch",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudwatch"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudwatch"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cloudwatch",
+          "module": "aws_cdk.aws_cloudwatch"
+        }
+      }
+    },
+    "@aws-cdk/aws-events": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-events",
+          "module": "aws_cdk.aws_events"
+        }
+      }
+    },
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      }
+    },
+    "@aws-cdk/aws-kms": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-kms",
+          "module": "aws_cdk.aws_kms"
+        }
+      }
+    },
+    "@aws-cdk/aws-logs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Logs",
+          "packageId": "Amazon.CDK.AWS.Logs"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "logs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.logs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-logs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-logs",
+          "module": "aws_cdk.aws_logs"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3",
+          "packageId": "Amazon.CDK.AWS.S3"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3",
+          "module": "aws_cdk.aws_s3"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3-assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3.Assets",
+          "packageId": "Amazon.CDK.AWS.S3.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3-assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3-assets",
+          "module": "aws_cdk.aws_s3_assets"
+        }
+      }
+    },
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::Kinesis",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.77.0 (build 3e5fa88)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "kinesis"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-kinesis",
+  "readme": {
+    "markdown": "# Amazon Kinesis Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)\n\n---\n\n<!--END STABILITY BANNER-->\n\n[Amazon Kinesis](https://docs.aws.amazon.com/streams/latest/dev/introduction.html) provides collection and processing of large\n[streams](https://aws.amazon.com/streaming-data/) of data records in real time. Kinesis data streams can be used for rapid and continuous data\nintake and aggregation.\n\n## Table Of Contents\n\n- [Streams](#streams)\n  - [Encryption](#encryption)\n  - [Import](#import)\n  - [Permission Grants](#permission-grants)\n    - [Read Permissions](#read-permissions)\n    - [Write Permissions](#write-permissions)\n    - [Custom Permissions](#custom-permissions)\n  - [Metrics](#metrics)\n\n## Streams\n\nAmazon Kinesis Data Streams ingests a large amount of data in real time, durably stores the data, and makes the data available for consumption.\n\nUsing the CDK, a new Kinesis stream can be created as part of the stack using the construct's constructor. You may specify the `streamName` to give\nyour own identifier to the stream. If not, CloudFormation will generate a name.\n\n```ts\nnew kinesis.Stream(this, 'MyFirstStream', {\n  streamName: 'my-awesome-stream',\n});\n```\n\nYou can also specify properties such as `shardCount` to indicate how many shards the stream should choose and a `retentionPeriod`\nto specify how long the data in the shards should remain accessible.\nRead more at [Creating and Managing Streams](https://docs.aws.amazon.com/streams/latest/dev/working-with-streams.html)\n\n```ts\nnew kinesis.Stream(this, 'MyFirstStream', {\n  streamName: 'my-awesome-stream',\n  shardCount: 3,\n  retentionPeriod: Duration.hours(48),\n});\n```\n\n### Encryption\n\n[Stream encryption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html) enables\nserver-side encryption using an AWS KMS key for a specified stream.\n\nEncryption is enabled by default on your stream with the master key owned by Kinesis Data Streams in regions where it is supported.\n\n```ts\nnew kinesis.Stream(this, 'MyEncryptedStream');\n```\n\nYou can enable encryption on your stream with a user-managed key by specifying the `encryption` property.\nA KMS key will be created for you and associated with the stream.\n\n```ts\nnew kinesis.Stream(this, 'MyEncryptedStream', {\n  encryption: kinesis.StreamEncryption.KMS,\n});\n```\n\nYou can also supply your own external KMS key to use for stream encryption by specifying the `encryptionKey` property.\n\n```ts\nconst key = new kms.Key(this, 'MyKey');\n\nnew kinesis.Stream(this, 'MyEncryptedStream', {\n  encryption: kinesis.StreamEncryption.KMS,\n  encryptionKey: key,\n});\n```\n\n### Import\n\nAny Kinesis stream that has been created outside the stack can be imported into your CDK app.\n\nStreams can be imported by their ARN via the `Stream.fromStreamArn()` API\n\n```ts\nconst importedStream = kinesis.Stream.fromStreamArn(this, 'ImportedStream',\n  'arn:aws:kinesis:us-east-2:123456789012:stream/f3j09j2230j',\n);\n```\n\nEncrypted Streams can also be imported by their attributes via the `Stream.fromStreamAttributes()` API\n\n```ts\nconst importedStream = kinesis.Stream.fromStreamAttributes(this, 'ImportedEncryptedStream', {\n  streamArn: 'arn:aws:kinesis:us-east-2:123456789012:stream/f3j09j2230j',\n  encryptionKey: kms.Key.fromKeyArn(this, 'key',\n    'arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012',\n  ),\n});\n```\n\n### Permission Grants\n\nIAM roles, users or groups which need to be able to work with Amazon Kinesis streams at runtime should be granted IAM permissions.\n\nAny object that implements the `IGrantable` interface (has an associated principal) can be granted permissions by calling:\n\n- `grantRead(principal)` - grants the principal read access\n- `grantWrite(principal)` - grants the principal write permissions to a Stream\n- `grantReadWrite(principal)` - grants principal read and write permissions\n\n#### Read Permissions\n\nGrant `read` access to a stream by calling the `grantRead()` API.\nIf the stream has an encryption key, read permissions will also be granted to the key.\n\n```ts\nconst lambdaRole = new iam.Role(this, 'Role', {\n  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),\n  description: 'Example role...',\n});\n\nconst stream = new kinesis.Stream(this, 'MyEncryptedStream', {\n  encryption: kinesis.StreamEncryption.KMS,\n});\n\n// give lambda permissions to read stream\nstream.grantRead(lambdaRole);\n```\n\nThe following read permissions are provided to a service principal by the `grantRead()` API:\n\n- `kinesis:DescribeStreamSummary`\n- `kinesis:GetRecords`\n- `kinesis:GetShardIterator`\n- `kinesis:ListShards`\n- `kinesis:SubscribeToShard`\n\n#### Write Permissions\n\nGrant `write` permissions to a stream is provided by calling the `grantWrite()` API.\nIf the stream has an encryption key, write permissions will also be granted to the key.\n\n```ts\nconst lambdaRole = new iam.Role(this, 'Role', {\n  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),\n  description: 'Example role...',\n});\n\nconst stream = new kinesis.Stream(this, 'MyEncryptedStream', {\n  encryption: kinesis.StreamEncryption.KMS,\n});\n\n// give lambda permissions to write to stream\nstream.grantWrite(lambdaRole);\n```\n\nThe following write permissions are provided to a service principal by the `grantWrite()` API:\n\n- `kinesis:ListShards`\n- `kinesis:PutRecord`\n- `kinesis:PutRecords`\n\n#### Custom Permissions\n\nYou can add any set of permissions to a stream by calling the `grant()` API.\n\n```ts\nconst user = new iam.User(this, 'MyUser');\n\nconst stream = new kinesis.Stream(this, 'MyStream');\n\n// give my user permissions to list shards\nstream.grant(user, 'kinesis:ListShards');\n```\n\n### Metrics\n\nYou can use common metrics from your stream to create alarms and/or dashboards. The `stream.metric('MetricName')` method creates a metric with the stream namespace and dimension. You can also use pre-define methods like `stream.metricGetRecordsSuccess()`. To find out more about Kinesis metrics check [Monitoring the Amazon Kinesis Data Streams Service with Amazon CloudWatch](https://docs.aws.amazon.com/streams/latest/dev/monitoring-with-cloudwatch.html).\n\n```ts\nconst stream = new kinesis.Stream(this, 'MyStream');\n\n// Using base metric method passing the metric name\nstream.metric('GetRecords.Success');\n\n// using pre-defined metric method\nstream.metricGetRecordsSuccess();\n\n// using pre-defined and overriding the statistic\nstream.metricGetRecordsSuccess({ statistic: 'Maximum' });\n```\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-kinesis",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Kinesis",
+      "packageId": "Amazon.CDK.AWS.Kinesis"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "kinesis",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.kinesis"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-kinesis"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-kinesis",
+      "module": "aws_cdk.aws_kinesis"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-kinesis.CfnStream": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Kinesis::Stream",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html"
+        },
+        "remarks": "Creates a Kinesis stream that captures and transports data records that are emitted from data sources. For information about creating streams, see [CreateStream](https://docs.aws.amazon.com/kinesis/latest/APIReference/API_CreateStream.html) in the Amazon Kinesis API Reference.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Kinesis::Stream`."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.CfnStream",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Kinesis::Stream`."
+        },
+        "locationInModule": {
+          "filename": "lib/kinesis.generated.ts",
+          "line": 219
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-kinesis.CfnStreamProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/kinesis.generated.ts",
+        "line": 137
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 237
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 253
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnStream",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 141
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "The Amazon resource name (ARN) of the Kinesis stream, such as `arn:aws:kinesis:us-east-2:123456789012:stream/mystream` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 166
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 242
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-tags"
+            },
+            "remarks": "For information about constraints for this property, see [Tag Restrictions](https://docs.aws.amazon.com/streams/latest/dev/tagging.html#tagging-restrictions) in the *Amazon Kinesis Developer Guide* .",
+            "stability": "external",
+            "summary": "An arbitrary set of tags (key–value pairs) to associate with the Kinesis stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 210
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-name"
+            },
+            "remarks": "If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the stream name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\nIf you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
+            "stability": "external",
+            "summary": "The name of the Kinesis stream."
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 175
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-retentionperiodhours"
+            },
+            "remarks": "The default value is 24. For more information about the stream retention period, see [Changing the Data Retention Period](https://docs.aws.amazon.com/streams/latest/dev/kinesis-extended-retention.html) in the Amazon Kinesis Developer Guide.",
+            "stability": "external",
+            "summary": "The number of hours for the data records that are stored in shards to remain accessible."
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 182
+          },
+          "name": "retentionPeriodHours",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-shardcount"
+            },
+            "remarks": "For greater provisioned throughput, increase the number of shards.",
+            "stability": "external",
+            "summary": "The number of shards that the stream uses."
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 189
+          },
+          "name": "shardCount",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-streamencryption"
+            },
+            "remarks": "Removing this property from your stack template and updating your stack disables encryption.",
+            "stability": "external",
+            "summary": "When specified, enables or updates server-side encryption using an AWS KMS key for a specified stream."
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 196
+          },
+          "name": "streamEncryption",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-kinesis.CfnStream.StreamEncryptionProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-streammodedetails"
+            },
+            "remarks": "Currently, in Kinesis Data Streams, you can choose between an *on-demand* capacity mode and a *provisioned* capacity mode for your data streams.",
+            "stability": "external",
+            "summary": "Specifies the capacity mode to which you want to set your data stream."
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 203
+          },
+          "name": "streamModeDetails",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kinesis.CfnStream.StreamModeDetailsProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kinesis.generated:CfnStream"
+    },
+    "@aws-cdk/aws-kinesis.CfnStream.StreamEncryptionProperty": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html"
+        },
+        "remarks": "> When invoking this API, you must use either the `StreamARN` or the `StreamName` parameter, or both. It is recommended that you use the `StreamARN` input parameter when you invoke this API.\n\nStarting encryption is an asynchronous operation. Upon receiving the request, Kinesis Data Streams returns immediately and sets the status of the stream to `UPDATING` . After the update is complete, Kinesis Data Streams sets the status of the stream back to `ACTIVE` . Updating or applying encryption normally takes a few seconds to complete, but it can take minutes. You can continue to read and write data to your stream while its status is `UPDATING` . Once the status of the stream is `ACTIVE` , encryption begins for records written to the stream.\n\nAPI Limits: You can successfully apply a new AWS KMS key for server-side encryption 25 times in a rolling 24-hour period.\n\nNote: It can take up to 5 seconds after the stream is in an `ACTIVE` status before all records written to the stream are encrypted. After you enable encryption, you can verify that encryption is applied by inspecting the API response from `PutRecord` or `PutRecords` .",
+        "stability": "external",
+        "summary": "Enables or updates server-side encryption using an AWS KMS key for a specified stream."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.CfnStream.StreamEncryptionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kinesis.generated.ts",
+        "line": 275
+      },
+      "name": "StreamEncryptionProperty",
+      "namespace": "CfnStream",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html#cfn-kinesis-stream-streamencryption-encryptiontype"
+            },
+            "remarks": "The only valid value is `KMS` .",
+            "stability": "external",
+            "summary": "The encryption type to use."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 281
+          },
+          "name": "encryptionType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streamencryption.html#cfn-kinesis-stream-streamencryption-keyid"
+            },
+            "remarks": "This value can be a globally unique identifier, a fully specified Amazon Resource Name (ARN) to either an alias or a key, or an alias name prefixed by \"alias/\".You can also use a master key owned by Kinesis Data Streams by specifying the alias `aws/kinesis` .\n\n- Key ARN example: `arn:aws:kms:us-east-1:123456789012:key/12345678-1234-1234-1234-123456789012`\n- Alias ARN example: `arn:aws:kms:us-east-1:123456789012:alias/MyAliasName`\n- Globally unique key ID example: `12345678-1234-1234-1234-123456789012`\n- Alias name example: `alias/MyAliasName`\n- Master key owned by Kinesis Data Streams: `alias/aws/kinesis`",
+            "stability": "external",
+            "summary": "The GUID for the customer-managed AWS KMS key to use for encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 293
+          },
+          "name": "keyId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kinesis.generated:CfnStream.StreamEncryptionProperty"
+    },
+    "@aws-cdk/aws-kinesis.CfnStream.StreamModeDetailsProperty": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streammodedetails.html"
+        },
+        "remarks": "Currently, in Kinesis Data Streams, you can choose between an *on-demand* capacity mode and a *provisioned* capacity mode for your data streams.",
+        "stability": "external",
+        "summary": "Specifies the capacity mode to which you want to set your data stream."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.CfnStream.StreamModeDetailsProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kinesis.generated.ts",
+        "line": 359
+      },
+      "name": "StreamModeDetailsProperty",
+      "namespace": "CfnStream",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesis-stream-streammodedetails.html#cfn-kinesis-stream-streammodedetails-streammode"
+            },
+            "remarks": "Currently, in Kinesis Data Streams, you can choose between an *on-demand* capacity mode and a *provisioned* capacity mode for your data streams.",
+            "stability": "external",
+            "summary": "Specifies the capacity mode to which you want to set your data stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 365
+          },
+          "name": "streamMode",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kinesis.generated:CfnStream.StreamModeDetailsProperty"
+    },
+    "@aws-cdk/aws-kinesis.CfnStreamConsumer": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::Kinesis::StreamConsumer",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html"
+        },
+        "remarks": "Use the AWS CloudFormation `AWS::Kinesis::StreamConsumer` resource to register a consumer with a Kinesis data stream. The consumer you register can then call [SubscribeToShard](https://docs.aws.amazon.com/kinesis/latest/APIReference/API_SubscribeToShard.html) to receive data from the stream using enhanced fan-out, at a rate of up to 2 MiB per second for every shard you subscribe to. This rate is unaffected by the total number of consumers that read from the same stream.\n\nYou can register up to five consumers per stream. However, you can request a limit increase using the [Kinesis Data Streams limits form](https://docs.aws.amazon.com/support/v1?#/) . A given consumer can only be registered with one stream at a time.\n\nFor more information, see [Using Consumers with Enhanced Fan-Out](https://docs.aws.amazon.com/streams/latest/dev/introduction-to-enhanced-consumers.html) .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::Kinesis::StreamConsumer`."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.CfnStreamConsumer",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::Kinesis::StreamConsumer`."
+        },
+        "locationInModule": {
+          "filename": "lib/kinesis.generated.ts",
+          "line": 585
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-kinesis.CfnStreamConsumerProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/kinesis.generated.ts",
+        "line": 507
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 605
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 617
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnStreamConsumer",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 511
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ConsumerARN"
+            },
+            "remarks": "You need this ARN to be able to call [SubscribeToShard](https://docs.aws.amazon.com/kinesis/latest/APIReference/API_SubscribeToShard.html) .\n\nIf you delete a consumer and then create a new one with the same name, it won't have the same ARN. That's because consumer ARNs contain the creation timestamp. This is important to keep in mind if you have IAM policies that reference consumer ARNs.",
+            "stability": "external",
+            "summary": "When you register a consumer, Kinesis Data Streams generates an ARN for it."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 538
+          },
+          "name": "attrConsumerArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ConsumerCreationTimestamp"
+            },
+            "stability": "external",
+            "summary": "The time at which the consumer was created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 544
+          },
+          "name": "attrConsumerCreationTimestamp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ConsumerName"
+            },
+            "stability": "external",
+            "summary": "The name you gave the consumer when you registered it."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 550
+          },
+          "name": "attrConsumerName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ConsumerStatus"
+            },
+            "stability": "external",
+            "summary": "A consumer can't read data while in the `CREATING` or `DELETING` states."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 556
+          },
+          "name": "attrConsumerStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "StreamARN"
+            },
+            "stability": "external",
+            "summary": "The ARN of the data stream with which the consumer is registered."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 562
+          },
+          "name": "attrStreamArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 610
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html#cfn-kinesis-streamconsumer-consumername"
+            },
+            "stability": "external",
+            "summary": "The name of the consumer is something you choose when you register the consumer."
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 569
+          },
+          "name": "consumerName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html#cfn-kinesis-streamconsumer-streamarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the stream with which you registered the consumer."
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 576
+          },
+          "name": "streamArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kinesis.generated:CfnStreamConsumer"
+    },
+    "@aws-cdk/aws-kinesis.CfnStreamConsumerProps": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnStreamConsumer`."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.CfnStreamConsumerProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kinesis.generated.ts",
+        "line": 426
+      },
+      "name": "CfnStreamConsumerProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html#cfn-kinesis-streamconsumer-consumername"
+            },
+            "stability": "external",
+            "summary": "The name of the consumer is something you choose when you register the consumer."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 433
+          },
+          "name": "consumerName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-streamconsumer.html#cfn-kinesis-streamconsumer-streamarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the stream with which you registered the consumer."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 440
+          },
+          "name": "streamArn",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kinesis.generated:CfnStreamConsumerProps"
+    },
+    "@aws-cdk/aws-kinesis.CfnStreamProps": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnStream`."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.CfnStreamProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kinesis.generated.ts",
+        "line": 20
+      },
+      "name": "CfnStreamProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-name"
+            },
+            "remarks": "If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the stream name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\nIf you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
+            "stability": "external",
+            "summary": "The name of the Kinesis stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 29
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-retentionperiodhours"
+            },
+            "remarks": "The default value is 24. For more information about the stream retention period, see [Changing the Data Retention Period](https://docs.aws.amazon.com/streams/latest/dev/kinesis-extended-retention.html) in the Amazon Kinesis Developer Guide.",
+            "stability": "external",
+            "summary": "The number of hours for the data records that are stored in shards to remain accessible."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 36
+          },
+          "name": "retentionPeriodHours",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-shardcount"
+            },
+            "remarks": "For greater provisioned throughput, increase the number of shards.",
+            "stability": "external",
+            "summary": "The number of shards that the stream uses."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 43
+          },
+          "name": "shardCount",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-streamencryption"
+            },
+            "remarks": "Removing this property from your stack template and updating your stack disables encryption.",
+            "stability": "external",
+            "summary": "When specified, enables or updates server-side encryption using an AWS KMS key for a specified stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 50
+          },
+          "name": "streamEncryption",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/aws-kinesis.CfnStream.StreamEncryptionProperty"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-streammodedetails"
+            },
+            "remarks": "Currently, in Kinesis Data Streams, you can choose between an *on-demand* capacity mode and a *provisioned* capacity mode for your data streams.",
+            "stability": "external",
+            "summary": "Specifies the capacity mode to which you want to set your data stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 57
+          },
+          "name": "streamModeDetails",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-kinesis.CfnStream.StreamModeDetailsProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesis-stream.html#cfn-kinesis-stream-tags"
+            },
+            "remarks": "For information about constraints for this property, see [Tag Restrictions](https://docs.aws.amazon.com/streams/latest/dev/tagging.html#tagging-restrictions) in the *Amazon Kinesis Developer Guide* .",
+            "stability": "external",
+            "summary": "An arbitrary set of tags (key–value pairs) to associate with the Kinesis stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis.generated.ts",
+            "line": 64
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kinesis.generated:CfnStreamProps"
+    },
+    "@aws-cdk/aws-kinesis.IStream": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "docs": {
+        "stability": "stable",
+        "summary": "A Kinesis Stream."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.IStream",
+      "interfaces": [
+        "@aws-cdk/core.IResource"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/stream.ts",
+        "line": 29
+      },
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the indicated permissions on this stream to the provided IAM principal."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 79
+          },
+          "name": "grant",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            },
+            {
+              "name": "actions",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          },
+          "variadic": true
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "If an encryption key is used, permission to ues the key to decrypt the\ncontents of the stream will also be granted.",
+            "stability": "stable",
+            "summary": "Grant read permissions for this stream and its contents to an IAM principal (Role/Group/User)."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 56
+          },
+          "name": "grantRead",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "If an encryption key is used, permission to use the key for\nencrypt/decrypt will also be granted.",
+            "stability": "stable",
+            "summary": "Grants read/write permissions for this stream and its contents to an IAM principal (Role/Group/User)."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 74
+          },
+          "name": "grantReadWrite",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "If an encryption key is used, permission to ues the key to encrypt the\ncontents of the stream will also be granted.",
+            "stability": "stable",
+            "summary": "Grant write permissions for this stream and its contents to an IAM principal (Role/Group/User)."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 65
+          },
+          "name": "grantWrite",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Return stream metric based from its metric name."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 87
+          },
+          "name": "metric",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "name of the stream metric."
+              },
+              "name": "metricName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Minimum, Maximum, and\nAverage statistics represent the records in a single GetRecords operation for the stream in the specified time\nperiod.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of records retrieved from the shard, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 130
+          },
+          "name": "metricGetRecords",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Minimum, Maximum,\nand Average statistics represent the bytes in a single GetRecords operation for the stream in the specified time\nperiod.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of bytes retrieved from the Kinesis stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 98
+          },
+          "name": "metricGetRecordsBytes",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Age is the difference between the current time and when the last record of the GetRecords call was written\nto the stream. The Minimum and Maximum statistics can be used to track the progress of Kinesis consumer\napplications. A value of zero indicates that the records being read are completely caught up with the stream.\n\nThe metric defaults to maximum over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The age of the last record in all GetRecords calls made against a Kinesis stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 110
+          },
+          "name": "metricGetRecordsIteratorAgeMilliseconds",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The time taken per GetRecords operation, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 119
+          },
+          "name": "metricGetRecordsLatency",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of successful GetRecords operations per stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 139
+          },
+          "name": "metricGetRecordsSuccess",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "This metric includes\nbytes from PutRecord and PutRecords operations. Minimum, Maximum, and Average statistics represent the bytes in a\nsingle put operation for the stream in the specified time period.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of bytes successfully put to the Kinesis stream over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 150
+          },
+          "name": "metricIncomingBytes",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "This metric includes\nrecord counts from PutRecord and PutRecords operations. Minimum, Maximum, and Average statistics represent the\nrecords in a single put operation for the stream in the specified time period.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of records successfully put to the Kinesis stream over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 161
+          },
+          "name": "metricIncomingRecords",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of bytes put to the Kinesis stream using the PutRecord operation over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 170
+          },
+          "name": "metricPutRecordBytes",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The time taken per PutRecord operation, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 179
+          },
+          "name": "metricPutRecordLatency",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of bytes put to the Kinesis stream using the PutRecords operation over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 198
+          },
+          "name": "metricPutRecordsBytes",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Occasional internal failures are to be expected and should be retried.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of records rejected due to internal failures in a PutRecords operation per Kinesis data stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 247
+          },
+          "name": "metricPutRecordsFailedRecords",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The time taken per PutRecords operation, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 207
+          },
+          "name": "metricPutRecordsLatency",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of PutRecords operations where at least one record succeeded, per Kinesis stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 217
+          },
+          "name": "metricPutRecordsSuccess",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of successful records in a PutRecords operation per Kinesis data stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 237
+          },
+          "name": "metricPutRecordsSuccessfulRecords",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of records rejected due to throttling in a PutRecords operation per Kinesis data stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 257
+          },
+          "name": "metricPutRecordsThrottledRecords",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The total number of records sent in a PutRecords operation per Kinesis data stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 227
+          },
+          "name": "metricPutRecordsTotalRecords",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Average\nreflects the percentage of successful writes to a stream.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of successful PutRecord operations per Kinesis stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 189
+          },
+          "name": "metricPutRecordSuccess",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The most commonly used\nstatistic for this metric is Average.\n\nWhen the Minimum statistic has a value of 1, all records were throttled for the stream during the specified time\nperiod.\n\nWhen the Maximum statistic has a value of 0 (zero), no records were throttled for the stream during the specified\ntime period.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties",
+            "stability": "stable",
+            "summary": "The number of GetRecords calls throttled for the stream over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 274
+          },
+          "name": "metricReadProvisionedThroughputExceeded",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "This metric\nincludes throttling from PutRecord and PutRecords operations.\n\nWhen the Minimum statistic has a non-zero value, records were being throttled for the stream during the specified\ntime period.\n\nWhen the Maximum statistic has a value of 0 (zero), no records were being throttled for the stream during the\nspecified time period.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of records rejected due to throttling for the stream over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 290
+          },
+          "name": "metricWriteProvisionedThroughputExceeded",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        }
+      ],
+      "name": "IStream",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The ARN of the stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 35
+          },
+          "name": "streamArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The name of the stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 42
+          },
+          "name": "streamName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Optional KMS encryption key associated with this stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 47
+          },
+          "name": "encryptionKey",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.IKey"
+          }
+        }
+      ],
+      "symbolId": "lib/stream:IStream"
+    },
+    "@aws-cdk/aws-kinesis.Stream": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "base": "@aws-cdk/core.Resource",
+      "docs": {
+        "remarks": "Can be encrypted with a KMS key.",
+        "stability": "stable",
+        "summary": "A Kinesis stream."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.Stream",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/stream.ts",
+          "line": 754
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-kinesis.StreamProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-kinesis.IStream"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/stream.ts",
+        "line": 718
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Import an existing Kinesis Stream provided an ARN."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 727
+          },
+          "name": "fromStreamArn",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The parent creating construct (usually `this`)."
+              },
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "docs": {
+                "summary": "The construct's name."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "Stream ARN (i.e. arn:aws:kinesis:<region>:<account-id>:stream/Foo)."
+              },
+              "name": "streamArn",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-kinesis.IStream"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Creates a Stream construct that represents an external stream."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 738
+          },
+          "name": "fromStreamAttributes",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The parent creating construct (usually `this`)."
+              },
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "docs": {
+                "summary": "The construct's name."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "Stream import properties."
+              },
+              "name": "attrs",
+              "type": {
+                "fqn": "@aws-cdk/aws-kinesis.StreamAttributes"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-kinesis.IStream"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the indicated permissions on this stream to the given IAM principal (Role/Group/User)."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 379
+          },
+          "name": "grant",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            },
+            {
+              "name": "actions",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          },
+          "variadic": true
+        },
+        {
+          "docs": {
+            "remarks": "If an encryption key is used, permission to ues the key to decrypt the\ncontents of the stream will also be granted.",
+            "stability": "stable",
+            "summary": "Grant read permissions for this stream and its contents to an IAM principal (Role/Group/User)."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 338
+          },
+          "name": "grantRead",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "If an encryption key is used, permission to use the key for\nencrypt/decrypt will also be granted.",
+            "stability": "stable",
+            "summary": "Grants read/write permissions for this stream and its contents to an IAM principal (Role/Group/User)."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 369
+          },
+          "name": "grantReadWrite",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "If an encryption key is used, permission to ues the key to encrypt the\ncontents of the stream will also be granted.",
+            "stability": "stable",
+            "summary": "Grant write permissions for this stream and its contents to an IAM principal (Role/Group/User)."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 355
+          },
+          "name": "grantWrite",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return stream metric based from its metric name."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 394
+          },
+          "name": "metric",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "name of the stream metric."
+              },
+              "name": "metricName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Minimum, Maximum, and\nAverage statistics represent the records in a single GetRecords operation for the stream in the specified time\nperiod.\n\naverage\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of records retrieved from the shard, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 453
+          },
+          "name": "metricGetRecords",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Minimum, Maximum,\nand Average statistics represent the bytes in a single GetRecords operation for the stream in the specified time\nperiod.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of bytes retrieved from the Kinesis stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 414
+          },
+          "name": "metricGetRecordsBytes",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Age is the difference between the current time and when the last record of the GetRecords call was written\nto the stream. The Minimum and Maximum statistics can be used to track the progress of Kinesis consumer\napplications. A value of zero indicates that the records being read are completely caught up with the stream.\n\nThe metric defaults to maximum over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The age of the last record in all GetRecords calls made against a Kinesis stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 428
+          },
+          "name": "metricGetRecordsIteratorAgeMilliseconds",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of successful GetRecords operations per stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 464
+          },
+          "name": "metricGetRecordsLatency",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of successful GetRecords operations per stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 439
+          },
+          "name": "metricGetRecordsSuccess",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "This metric includes\nbytes from PutRecord and PutRecords operations. Minimum, Maximum, and Average statistics represent the bytes in a\nsingle put operation for the stream in the specified time period.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of bytes successfully put to the Kinesis stream over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 593
+          },
+          "name": "metricIncomingBytes",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "This metric includes\nrecord counts from PutRecord and PutRecords operations. Minimum, Maximum, and Average statistics represent the\nrecords in a single put operation for the stream in the specified time period.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of records successfully put to the Kinesis stream over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 606
+          },
+          "name": "metricIncomingRecords",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of bytes put to the Kinesis stream using the PutRecord operation over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 475
+          },
+          "name": "metricPutRecordBytes",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The time taken per PutRecord operation, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 486
+          },
+          "name": "metricPutRecordLatency",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of bytes put to the Kinesis stream using the PutRecords operation over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 509
+          },
+          "name": "metricPutRecordsBytes",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Occasional internal failures are to be expected and should be retried.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of records rejected due to internal failures in a PutRecords operation per Kinesis data stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 568
+          },
+          "name": "metricPutRecordsFailedRecords",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The time taken per PutRecords operation, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 520
+          },
+          "name": "metricPutRecordsLatency",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of PutRecords operations where at least one record succeeded, per Kinesis stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 532
+          },
+          "name": "metricPutRecordsSuccess",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of successful records in a PutRecords operation per Kinesis data stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 556
+          },
+          "name": "metricPutRecordsSuccessfulRecords",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of records rejected due to throttling in a PutRecords operation per Kinesis data stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 580
+          },
+          "name": "metricPutRecordsThrottledRecords",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "The metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The total number of records sent in a PutRecords operation per Kinesis data stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 544
+          },
+          "name": "metricPutRecordsTotalRecords",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Average\nreflects the percentage of successful writes to a stream.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of successful PutRecord operations per Kinesis stream, measured over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 498
+          },
+          "name": "metricPutRecordSuccess",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "The most commonly used\nstatistic for this metric is Average.\n\nWhen the Minimum statistic has a value of 1, all records were throttled for the stream during the specified time\nperiod.\n\nWhen the Maximum statistic has a value of 0 (zero), no records were throttled for the stream during the specified\ntime period.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties",
+            "stability": "stable",
+            "summary": "The number of GetRecords calls throttled for the stream over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 625
+          },
+          "name": "metricReadProvisionedThroughputExceeded",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "This metric\nincludes throttling from PutRecord and PutRecords operations.\n\nWhen the Minimum statistic has a non-zero value, records were being throttled for the stream during the specified\ntime period.\n\nWhen the Maximum statistic has a value of 0 (zero), no records were being throttled for the stream during the\nspecified time period.\n\nThe metric defaults to average over 5 minutes, it can be changed by passing `statistic` and `period` properties.",
+            "stability": "stable",
+            "summary": "The number of records rejected due to throttling for the stream over the specified time period."
+          },
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 643
+          },
+          "name": "metricWriteProvisionedThroughputExceeded",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "properties of the metric."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        }
+      ],
+      "name": "Stream",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of the stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 748
+          },
+          "name": "streamArn",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The name of the stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 749
+          },
+          "name": "streamName",
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Optional KMS encryption key associated with this stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 750
+          },
+          "name": "encryptionKey",
+          "optional": true,
+          "overrides": "@aws-cdk/aws-kinesis.IStream",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.IKey"
+          }
+        }
+      ],
+      "symbolId": "lib/stream:Stream"
+    },
+    "@aws-cdk/aws-kinesis.StreamAttributes": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "remarks": "The easiest way to instantiate is to call\n`stream.export()`. Then, the consumer can use `Stream.import(this, ref)` and\nget a `Stream`.",
+        "stability": "stable",
+        "summary": "A reference to a stream."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.StreamAttributes",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/stream.ts",
+        "line": 298
+      },
+      "name": "StreamAttributes",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of the stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 302
+          },
+          "name": "streamArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No encryption",
+            "stability": "stable",
+            "summary": "The KMS key securing the contents of the stream if encryption is enabled."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 309
+          },
+          "name": "encryptionKey",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.IKey"
+          }
+        }
+      ],
+      "symbolId": "lib/stream:StreamAttributes"
+    },
+    "@aws-cdk/aws-kinesis.StreamEncryption": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "docs": {
+        "stability": "stable",
+        "summary": "What kind of server-side encryption to apply to this stream."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.StreamEncryption",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/stream.ts",
+        "line": 865
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Records in the stream are not encrypted."
+          },
+          "name": "UNENCRYPTED"
+        },
+        {
+          "docs": {
+            "remarks": "If `encryptionKey` is specified, this key will be used, otherwise, one will be defined.",
+            "stability": "stable",
+            "summary": "Server-side encryption with a KMS key managed by the user."
+          },
+          "name": "KMS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Server-side encryption with a master key managed by Amazon Kinesis."
+          },
+          "name": "MANAGED"
+        }
+      ],
+      "name": "StreamEncryption",
+      "symbolId": "lib/stream:StreamEncryption"
+    },
+    "@aws-cdk/aws-kinesis.StreamMode": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "docs": {
+        "stability": "stable",
+        "summary": "Specifies the capacity mode to apply to this stream."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.StreamMode",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/stream.ts",
+        "line": 886
+      },
+      "members": [
+        {
+          "docs": {
+            "remarks": "The stream will have `shardCount` shards unless\nmodified and will be billed according to the provisioned capacity.",
+            "stability": "stable",
+            "summary": "Specify the provisioned capacity mode."
+          },
+          "name": "PROVISIONED"
+        },
+        {
+          "docs": {
+            "remarks": "The stream will autoscale and be billed according to the\nvolume of data ingested and retrieved.",
+            "stability": "stable",
+            "summary": "Specify the on-demand capacity mode."
+          },
+          "name": "ON_DEMAND"
+        }
+      ],
+      "name": "StreamMode",
+      "symbolId": "lib/stream:StreamMode"
+    },
+    "@aws-cdk/aws-kinesis.StreamProps": {
+      "assembly": "@aws-cdk/aws-kinesis",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties for a Kinesis Stream."
+      },
+      "fqn": "@aws-cdk/aws-kinesis.StreamProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/stream.ts",
+        "line": 662
+      },
+      "name": "StreamProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- StreamEncryption.KMS if encrypted Streams are supported in the region\nor StreamEncryption.UNENCRYPTED otherwise.\nStreamEncryption.KMS if an encryption key is supplied through the encryptionKey property",
+            "remarks": "If you choose KMS, you can specify a KMS key via `encryptionKey`. If\nencryption key is not specified, a key will automatically be created.",
+            "stability": "stable",
+            "summary": "The kind of server-side encryption to apply to this stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 694
+          },
+          "name": "encryption",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-kinesis.StreamEncryption"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Kinesis Data Streams master key ('/alias/aws/kinesis').\nIf encryption is set to StreamEncryption.KMS and this property is undefined, a new KMS key\nwill be created and associated with this stream.",
+            "remarks": "The 'encryption' property must be set to \"Kms\".",
+            "stability": "stable",
+            "summary": "External KMS key to use for stream encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 705
+          },
+          "name": "encryptionKey",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.IKey"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Duration.hours(24)",
+            "stability": "stable",
+            "summary": "The number of hours for the data records that are stored in shards to remain accessible."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 673
+          },
+          "name": "retentionPeriod",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/core.Duration"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "1",
+            "remarks": "Can only be provided if streamMode is Provisioned.",
+            "stability": "stable",
+            "summary": "The number of shards for the stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 682
+          },
+          "name": "shardCount",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "StreamMode.PROVISIONED",
+            "stability": "stable",
+            "summary": "The capacity mode of this stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 712
+          },
+          "name": "streamMode",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-kinesis.StreamMode"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "<generated>",
+            "stability": "stable",
+            "summary": "Enforces a particular physical stream name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/stream.ts",
+            "line": 667
+          },
+          "name": "streamName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/stream:StreamProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "QVYKC67VDYLSAKGJ+gKUnWEOk/5tAwWQz7351g8uSwk="
+}

@@ -1,0 +1,47 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
+const ec2 = require("@aws-cdk/aws-ec2");
+const ecs = require("@aws-cdk/aws-ecs");
+const events = require("@aws-cdk/aws-events");
+const sqs = require("@aws-cdk/aws-sqs");
+const cdk = require("@aws-cdk/core");
+const integ = require("@aws-cdk/integ-tests");
+const targets = require("../../lib");
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-ecs-integ-ecs');
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+cluster.addCapacity('DefaultAutoScalingGroup', {
+    instanceType: new ec2.InstanceType('t2.micro'),
+});
+const deadLetterQueue = new sqs.Queue(stack, 'MyDeadLetterQueue');
+// Create a Task Definition for the container to start
+const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromAsset(path.resolve(__dirname, 'eventhandler-image')),
+    memoryLimitMiB: 256,
+    logging: new ecs.AwsLogDriver({ streamPrefix: 'EventDemo' }),
+});
+// An Rule that describes the event trigger (in this case a scheduled run)
+const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+});
+// Use EcsTask as the target of the Rule
+rule.addTarget(new targets.EcsTask({
+    cluster,
+    taskDefinition,
+    taskCount: 1,
+    containerOverrides: [{
+            containerName: 'TheContainer',
+            environment: [
+                { name: 'I_WAS_TRIGGERED', value: 'From CloudWatch Events' },
+            ],
+        }],
+    deadLetterQueue,
+}));
+new integ.IntegTest(app, 'EcsTest', {
+    testCases: [stack],
+});
+app.synth();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuZXZlbnQtZWMyLXRhc2suanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbnRlZy5ldmVudC1lYzItdGFzay50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLDZCQUE2QjtBQUM3Qix3Q0FBd0M7QUFDeEMsd0NBQXdDO0FBQ3hDLDhDQUE4QztBQUM5Qyx3Q0FBd0M7QUFDeEMscUNBQXFDO0FBQ3JDLDhDQUE4QztBQUM5QyxxQ0FBcUM7QUFFckMsTUFBTSxHQUFHLEdBQUcsSUFBSSxHQUFHLENBQUMsR0FBRyxFQUFFLENBQUM7QUFFMUIsTUFBTSxLQUFLLEdBQUcsSUFBSSxHQUFHLENBQUMsS0FBSyxDQUFDLEdBQUcsRUFBRSxtQkFBbUIsQ0FBQyxDQUFDO0FBRXRELE1BQU0sR0FBRyxHQUFHLElBQUksR0FBRyxDQUFDLEdBQUcsQ0FBQyxLQUFLLEVBQUUsS0FBSyxFQUFFLEVBQUUsTUFBTSxFQUFFLENBQUMsRUFBRSxDQUFDLENBQUM7QUFFckQsTUFBTSxPQUFPLEdBQUcsSUFBSSxHQUFHLENBQUMsT0FBTyxDQUFDLEtBQUssRUFBRSxZQUFZLEVBQUUsRUFBRSxHQUFHLEVBQUUsQ0FBQyxDQUFDO0FBQzlELE9BQU8sQ0FBQyxXQUFXLENBQUMseUJBQXlCLEVBQUU7SUFDN0MsWUFBWSxFQUFFLElBQUksR0FBRyxDQUFDLFlBQVksQ0FBQyxVQUFVLENBQUM7Q0FDL0MsQ0FBQyxDQUFDO0FBRUgsTUFBTSxlQUFlLEdBQUcsSUFBSSxHQUFHLENBQUMsS0FBSyxDQUFDLEtBQUssRUFBRSxtQkFBbUIsQ0FBQyxDQUFDO0FBRWxFLHNEQUFzRDtBQUN0RCxNQUFNLGNBQWMsR0FBRyxJQUFJLEdBQUcsQ0FBQyxpQkFBaUIsQ0FBQyxLQUFLLEVBQUUsU0FBUyxDQUFDLENBQUM7QUFDbkUsY0FBYyxDQUFDLFlBQVksQ0FBQyxjQUFjLEVBQUU7SUFDMUMsS0FBSyxFQUFFLEdBQUcsQ0FBQyxjQUFjLENBQUMsU0FBUyxDQUFDLElBQUksQ0FBQyxPQUFPLENBQUMsU0FBUyxFQUFFLG9CQUFvQixDQUFDLENBQUM7SUFDbEYsY0FBYyxFQUFFLEdBQUc7SUFDbkIsT0FBTyxFQUFFLElBQUksR0FBRyxDQUFDLFlBQVksQ0FBQyxFQUFFLFlBQVksRUFBRSxXQUFXLEVBQUUsQ0FBQztDQUM3RCxDQUFDLENBQUM7QUFFSCwwRUFBMEU7QUFDMUUsTUFBTSxJQUFJLEdBQUcsSUFBSSxNQUFNLENBQUMsSUFBSSxDQUFDLEtBQUssRUFBRSxNQUFNLEVBQUU7SUFDMUMsUUFBUSxFQUFFLE1BQU0sQ0FBQyxRQUFRLENBQUMsSUFBSSxDQUFDLEdBQUcsQ0FBQyxRQUFRLENBQUMsT0FBTyxDQUFDLENBQUMsQ0FBQyxDQUFDO0NBQ3hELENBQUMsQ0FBQztBQUVILHdDQUF3QztBQUN4QyxJQUFJLENBQUMsU0FBUyxDQUFDLElBQUksT0FBTyxDQUFDLE9BQU8sQ0FBQztJQUNqQyxPQUFPO0lBQ1AsY0FBYztJQUNkLFNBQVMsRUFBRSxDQUFDO0lBQ1osa0JBQWtCLEVBQUUsQ0FBQztZQUNuQixhQUFhLEVBQUUsY0FBYztZQUM3QixXQUFXLEVBQUU7Z0JBQ1gsRUFBRSxJQUFJLEVBQUUsaUJBQWlCLEVBQUUsS0FBSyxFQUFFLHdCQUF3QixFQUFFO2FBQzdEO1NBQ0YsQ0FBQztJQUNGLGVBQWU7Q0FDaEIsQ0FBQyxDQUFDLENBQUM7QUFFSixJQUFJLEtBQUssQ0FBQyxTQUFTLENBQUMsR0FBRyxFQUFFLFNBQVMsRUFBRTtJQUNsQyxTQUFTLEVBQUUsQ0FBQyxLQUFLLENBQUM7Q0FDbkIsQ0FBQyxDQUFDO0FBRUgsR0FBRyxDQUFDLEtBQUssRUFBRSxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICogYXMgcGF0aCBmcm9tICdwYXRoJztcbmltcG9ydCAqIGFzIGVjMiBmcm9tICdAYXdzLWNkay9hd3MtZWMyJztcbmltcG9ydCAqIGFzIGVjcyBmcm9tICdAYXdzLWNkay9hd3MtZWNzJztcbmltcG9ydCAqIGFzIGV2ZW50cyBmcm9tICdAYXdzLWNkay9hd3MtZXZlbnRzJztcbmltcG9ydCAqIGFzIHNxcyBmcm9tICdAYXdzLWNkay9hd3Mtc3FzJztcbmltcG9ydCAqIGFzIGNkayBmcm9tICdAYXdzLWNkay9jb3JlJztcbmltcG9ydCAqIGFzIGludGVnIGZyb20gJ0Bhd3MtY2RrL2ludGVnLXRlc3RzJztcbmltcG9ydCAqIGFzIHRhcmdldHMgZnJvbSAnLi4vLi4vbGliJztcblxuY29uc3QgYXBwID0gbmV3IGNkay5BcHAoKTtcblxuY29uc3Qgc3RhY2sgPSBuZXcgY2RrLlN0YWNrKGFwcCwgJ2F3cy1lY3MtaW50ZWctZWNzJyk7XG5cbmNvbnN0IHZwYyA9IG5ldyBlYzIuVnBjKHN0YWNrLCAnVnBjJywgeyBtYXhBenM6IDEgfSk7XG5cbmNvbnN0IGNsdXN0ZXIgPSBuZXcgZWNzLkNsdXN0ZXIoc3RhY2ssICdFY3NDbHVzdGVyJywgeyB2cGMgfSk7XG5jbHVzdGVyLmFkZENhcGFjaXR5KCdEZWZhdWx0QXV0b1NjYWxpbmdHcm91cCcsIHtcbiAgaW5zdGFuY2VUeXBlOiBuZXcgZWMyLkluc3RhbmNlVHlwZSgndDIubWljcm8nKSxcbn0pO1xuXG5jb25zdCBkZWFkTGV0dGVyUXVldWUgPSBuZXcgc3FzLlF1ZXVlKHN0YWNrLCAnTXlEZWFkTGV0dGVyUXVldWUnKTtcblxuLy8gQ3JlYXRlIGEgVGFzayBEZWZpbml0aW9uIGZvciB0aGUgY29udGFpbmVyIHRvIHN0YXJ0XG5jb25zdCB0YXNrRGVmaW5pdGlvbiA9IG5ldyBlY3MuRWMyVGFza0RlZmluaXRpb24oc3RhY2ssICdUYXNrRGVmJyk7XG50YXNrRGVmaW5pdGlvbi5hZGRDb250YWluZXIoJ1RoZUNvbnRhaW5lcicsIHtcbiAgaW1hZ2U6IGVjcy5Db250YWluZXJJbWFnZS5mcm9tQXNzZXQocGF0aC5yZXNvbHZlKF9fZGlybmFtZSwgJ2V2ZW50aGFuZGxlci1pbWFnZScpKSxcbiAgbWVtb3J5TGltaXRNaUI6IDI1NixcbiAgbG9nZ2luZzogbmV3IGVjcy5Bd3NMb2dEcml2ZXIoeyBzdHJlYW1QcmVmaXg6ICdFdmVudERlbW8nIH0pLFxufSk7XG5cbi8vIEFuIFJ1bGUgdGhhdCBkZXNjcmliZXMgdGhlIGV2ZW50IHRyaWdnZXIgKGluIHRoaXMgY2FzZSBhIHNjaGVkdWxlZCBydW4pXG5jb25zdCBydWxlID0gbmV3IGV2ZW50cy5SdWxlKHN0YWNrLCAnUnVsZScsIHtcbiAgc2NoZWR1bGU6IGV2ZW50cy5TY2hlZHVsZS5yYXRlKGNkay5EdXJhdGlvbi5taW51dGVzKDEpKSxcbn0pO1xuXG4vLyBVc2UgRWNzVGFzayBhcyB0aGUgdGFyZ2V0IG9mIHRoZSBSdWxlXG5ydWxlLmFkZFRhcmdldChuZXcgdGFyZ2V0cy5FY3NUYXNrKHtcbiAgY2x1c3RlcixcbiAgdGFza0RlZmluaXRpb24sXG4gIHRhc2tDb3VudDogMSxcbiAgY29udGFpbmVyT3ZlcnJpZGVzOiBbe1xuICAgIGNvbnRhaW5lck5hbWU6ICdUaGVDb250YWluZXInLFxuICAgIGVudmlyb25tZW50OiBbXG4gICAgICB7IG5hbWU6ICdJX1dBU19UUklHR0VSRUQnLCB2YWx1ZTogJ0Zyb20gQ2xvdWRXYXRjaCBFdmVudHMnIH0sXG4gICAgXSxcbiAgfV0sXG4gIGRlYWRMZXR0ZXJRdWV1ZSxcbn0pKTtcblxubmV3IGludGVnLkludGVnVGVzdChhcHAsICdFY3NUZXN0Jywge1xuICB0ZXN0Q2FzZXM6IFtzdGFja10sXG59KTtcblxuYXBwLnN5bnRoKCk7XG4iXX0=

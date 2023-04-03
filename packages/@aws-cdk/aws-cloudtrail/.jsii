@@ -1,0 +1,4686 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.Assets",
+          "packageId": "Amazon.CDK.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.assets",
+          "module": "aws_cdk.assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-applicationautoscaling": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling",
+          "packageId": "Amazon.CDK.AWS.ApplicationAutoScaling"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "applicationautoscaling",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.applicationautoscaling"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-applicationautoscaling"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-applicationautoscaling",
+          "module": "aws_cdk.aws_applicationautoscaling"
+        }
+      }
+    },
+    "@aws-cdk/aws-autoscaling-common": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
+          "packageId": "Amazon.CDK.AWS.AutoScaling.Common"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "autoscaling-common",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.autoscaling.common"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-autoscaling-common"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-autoscaling-common",
+          "module": "aws_cdk.aws_autoscaling_common"
+        }
+      }
+    },
+    "@aws-cdk/aws-cloudwatch": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CloudWatch",
+          "packageId": "Amazon.CDK.AWS.CloudWatch"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudwatch",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudwatch"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudwatch"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cloudwatch",
+          "module": "aws_cdk.aws_cloudwatch"
+        }
+      }
+    },
+    "@aws-cdk/aws-codeguruprofiler": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodeGuruProfiler",
+          "packageId": "Amazon.CDK.AWS.CodeGuruProfiler"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codeguruprofiler",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codeguruprofiler"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codeguruprofiler"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codeguruprofiler",
+          "module": "aws_cdk.aws_codeguruprofiler"
+        }
+      }
+    },
+    "@aws-cdk/aws-codestarnotifications": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodeStarNotifications",
+          "packageId": "Amazon.CDK.AWS.CodeStarNotifications"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codestarnotifications",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codestarnotifications"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codestarnotifications"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codestarnotifications",
+          "module": "aws_cdk.aws_codestarnotifications"
+        }
+      }
+    },
+    "@aws-cdk/aws-ec2": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.EC2",
+          "packageId": "Amazon.CDK.AWS.EC2"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ec2",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ec2"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ec2"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ec2",
+          "module": "aws_cdk.aws_ec2"
+        }
+      }
+    },
+    "@aws-cdk/aws-ecr": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ECR",
+          "packageId": "Amazon.CDK.AWS.ECR"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ecr",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ecr"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ecr"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ecr",
+          "module": "aws_cdk.aws_ecr"
+        }
+      }
+    },
+    "@aws-cdk/aws-ecr-assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Ecr.Assets",
+          "packageId": "Amazon.CDK.ECR.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ecr-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ecr.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ecr-assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ecr-assets",
+          "module": "aws_cdk.aws_ecr_assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-efs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.EFS",
+          "packageId": "Amazon.CDK.AWS.EFS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "efs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.efs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-efs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-efs",
+          "module": "aws_cdk.aws_efs"
+        }
+      }
+    },
+    "@aws-cdk/aws-events": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-events",
+          "module": "aws_cdk.aws_events"
+        }
+      }
+    },
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      }
+    },
+    "@aws-cdk/aws-kms": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-kms",
+          "module": "aws_cdk.aws_kms"
+        }
+      }
+    },
+    "@aws-cdk/aws-lambda": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Lambda",
+          "packageId": "Amazon.CDK.AWS.Lambda"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "lambda",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.lambda"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-lambda"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-lambda",
+          "module": "aws_cdk.aws_lambda"
+        }
+      }
+    },
+    "@aws-cdk/aws-logs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Logs",
+          "packageId": "Amazon.CDK.AWS.Logs"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "logs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.logs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-logs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-logs",
+          "module": "aws_cdk.aws_logs"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3",
+          "packageId": "Amazon.CDK.AWS.S3"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3",
+          "module": "aws_cdk.aws_s3"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3-assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3.Assets",
+          "packageId": "Amazon.CDK.AWS.S3.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3-assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3-assets",
+          "module": "aws_cdk.aws_s3_assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-signer": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Signer",
+          "packageId": "Amazon.CDK.AWS.Signer"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "signer",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.signer"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-signer"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-signer",
+          "module": "aws_cdk.aws_signer"
+        }
+      }
+    },
+    "@aws-cdk/aws-sns": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SNS",
+          "packageId": "Amazon.CDK.AWS.SNS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sns",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sns"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sns"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-sns",
+          "module": "aws_cdk.aws_sns"
+        }
+      }
+    },
+    "@aws-cdk/aws-sqs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SQS",
+          "packageId": "Amazon.CDK.AWS.SQS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sqs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sqs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sqs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-sqs",
+          "module": "aws_cdk.aws_sqs"
+        }
+      }
+    },
+    "@aws-cdk/aws-ssm": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SSM",
+          "packageId": "Amazon.CDK.AWS.SSM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ssm",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ssm"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ssm"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ssm",
+          "module": "aws_cdk.aws_ssm"
+        }
+      }
+    },
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::CloudTrail",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.77.0 (build 3e5fa88)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "cloudtrail"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-cloudtrail",
+  "readme": {
+    "markdown": "# AWS CloudTrail Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)\n\n---\n\n<!--END STABILITY BANNER-->\n\n## Trail\n\nAWS CloudTrail enables governance, compliance, and operational and risk auditing of your AWS account. Actions taken by\na user, role, or an AWS service are recorded as events in CloudTrail. Learn more at the [CloudTrail\ndocumentation](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-user-guide.html).\n\nThe `Trail` construct enables ongoing delivery of events as log files to an Amazon S3 bucket. Learn more about [Creating\na Trail for Your AWS Account](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html).\nThe following code creates a simple CloudTrail for your account -\n\n```ts\nconst trail = new cloudtrail.Trail(this, 'CloudTrail');\n```\n\nBy default, this will create a new S3 Bucket that CloudTrail will write to, and choose a few other reasonable defaults\nsuch as turning on multi-region and global service events.\nThe defaults for each property and how to override them are all documented on the `TrailProps` interface.\n\n## Log File Validation\n\nIn order to validate that the CloudTrail log file was not modified after CloudTrail delivered it, CloudTrail provides a\ndigital signature for each file. Learn more at [Validating CloudTrail Log File\nIntegrity](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-log-file-validation-intro.html).\n\nThis is enabled on the `Trail` construct by default, but can be turned off by setting `enableFileValidation` to `false`.\n\n```ts\nconst trail = new cloudtrail.Trail(this, 'CloudTrail', {\n  enableFileValidation: false,\n});\n```\n\n## Notifications\n\nAmazon SNS notifications can be configured upon new log files containing Trail events are delivered to S3.\nLearn more at [Configuring Amazon SNS Notifications for\nCloudTrail](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/configure-sns-notifications-for-cloudtrail.html).\nThe following code configures an SNS topic to be notified -\n\n```ts\nconst topic = new sns.Topic(this, 'TrailTopic');\nconst trail = new cloudtrail.Trail(this, 'CloudTrail', {\n  snsTopic: topic,\n});\n```\n\n## Service Integrations\n\nBesides sending trail events to S3, they can also be configured to notify other AWS services -\n\n### Amazon CloudWatch Logs\n\nCloudTrail events can be delivered to a CloudWatch Logs LogGroup. By default, a new LogGroup is created with a\ndefault retention setting. The following code enables sending CloudWatch logs but specifies a particular retention\nperiod for the created Log Group.\n\n```ts\nimport * as logs from '@aws-cdk/aws-logs';\n\nconst trail = new cloudtrail.Trail(this, 'CloudTrail', {\n  sendToCloudWatchLogs: true,\n  cloudWatchLogsRetention: logs.RetentionDays.FOUR_MONTHS,\n});\n```\n\nIf you would like to use a specific log group instead, this can be configured via `cloudwatchLogGroup`.\n\n### Amazon EventBridge\n\nAmazon EventBridge rules can be configured to be triggered when CloudTrail events occur using the `Trail.onEvent()` API.\nUsing APIs available in `aws-events`, these events can be filtered to match to those that are of interest, either from\na specific service, account or time range. See [Events delivered via\nCloudTrail](https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#events-for-services-not-listed)\nto learn more about the event structure for events from CloudTrail.\n\nThe following code filters events for S3 from a specific AWS account and triggers a lambda function.\n\n```ts\nconst myFunctionHandler = new lambda.Function(this, 'MyFunction', {\n  code: lambda.Code.fromAsset('resource/myfunction'),\n  runtime: lambda.Runtime.NODEJS_14_X,\n  handler: 'index.handler',\n});\n\nconst eventRule = cloudtrail.Trail.onEvent(this, 'MyCloudWatchEvent', {\n  target: new targets.LambdaFunction(myFunctionHandler),\n});\n\neventRule.addEventPattern({\n  account: ['123456789012'],\n  source: ['aws.s3'],\n});\n```\n\n## Multi-Region & Global Service Events\n\nBy default, a `Trail` is configured to deliver log files from multiple regions to a single S3 bucket for a given\naccount. This creates shadow trails (replication of the trails) in all of the other regions. Learn more about [How\nCloudTrail Behaves Regionally](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html#cloudtrail-concepts-regional-and-global-services)\nand about the [`IsMultiRegion`\nproperty](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-ismultiregiontrail).\n\nFor most services, events are recorded in the region where the action occurred. For global services such as AWS IAM,\nAWS STS, Amazon CloudFront, Route 53, etc., events are delivered to any trail that includes global services. Learn more\n[About Global Service Events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html#cloudtrail-concepts-global-service-events).\n\nEvents for global services are turned on by default for `Trail` constructs in the CDK.\n\nThe following code disables multi-region trail delivery and trail delivery for global services for a specific `Trail` -\n\n```ts\nconst trail = new cloudtrail.Trail(this, 'CloudTrail', {\n  // ...\n  isMultiRegionTrail: false,\n  includeGlobalServiceEvents: false,\n});\n```\n\n## Events Types\n\n**Management events** provide information about management operations that are performed on resources in your AWS\naccount. These are also known as control plane operations. Learn more about [Management\nEvents](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html#cloudtrail-concepts-events).\n\nBy default, a `Trail` logs all management events. However, they can be configured to either be turned off, or to only\nlog 'Read' or 'Write' events.\n\nThe following code configures the `Trail` to only track management events that are of type 'Read'.\n\n```ts\nconst trail = new cloudtrail.Trail(this, 'CloudTrail', {\n  // ...\n  managementEvents: cloudtrail.ReadWriteType.READ_ONLY,\n});\n```\n\n**Data events** provide information about the resource operations performed on or in a resource. These are also known\nas data plane operations. Learn more about [Data\nEvents](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html#cloudtrail-concepts-events).\nBy default, no data events are logged for a `Trail`.\n\nAWS CloudTrail supports data event logging for Amazon S3 objects and AWS Lambda functions.\n\nThe `logAllS3DataEvents()` API configures the trail to log all S3 data events while the `addS3EventSelector()` API can\nbe used to configure logging of S3 data events for specific buckets and specific object prefix. The following code\nconfigures logging of S3 data events for `fooBucket` and with object prefix `bar/`.\n\n```ts\nimport * as s3 from '@aws-cdk/aws-s3';\n\nconst trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');\ndeclare const bucket: s3.Bucket;\n\n// Adds an event selector to the bucket foo\ntrail.addS3EventSelector([{\n  bucket,\n  objectPrefix: 'bar/',\n}]);\n```\n\nSimilarly, the `logAllLambdaDataEvents()` configures the trail to log all Lambda data events while the\n`addLambdaEventSelector()` API can be used to configure logging for specific Lambda functions. The following code\nconfigures logging of Lambda data events for a specific Function.\n\n```ts\nconst trail = new cloudtrail.Trail(this, 'MyAmazingCloudTrail');\nconst amazingFunction = new lambda.Function(this, 'AnAmazingFunction', {\n  runtime: lambda.Runtime.NODEJS_14_X,\n  handler: \"hello.handler\",\n  code: lambda.Code.fromAsset(\"lambda\"),\n});\n\n// Add an event selector to log data events for the provided Lambda functions.\ntrail.addLambdaEventSelector([ amazingFunction ]);\n```\n\n## Organization Trail\n\nIt is possible to create a trail that will be applied to all accounts in an organization if the current account manages an organization.\nTo enable this, the property `isOrganizationTrail` must be set. If this property is set and the current account does not manage an organization, the stack will fail to deploy.\n\n```ts\nnew cloudtrail.Trail(this, 'OrganizationTrail', {\n  isOrganizationTrail: true,\n});\n```\n\n## CloudTrail Insights\n\nSet `InsightSelector` to enable Insight.\nInsights selector values can be `ApiCallRateInsight`, `ApiErrorRateInsight`, or both.\n\n```ts\nnew Trail(stack, 'Insights', {\n    insightTypes: [\n      InsightType.API_CALL_RATE,\n      InsightType.API_ERROR_RATE,\n    ],\n});\n```\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-cloudtrail",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.CloudTrail",
+      "packageId": "Amazon.CDK.AWS.CloudTrail"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cloudtrail",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.cloudtrail"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-cloudtrail"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-cloudtrail",
+      "module": "aws_cdk.aws_cloudtrail"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-cloudtrail.AddEventSelectorOptions": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options for adding an event selector."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.AddEventSelectorOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.ts",
+        "line": 468
+      },
+      "name": "AddEventSelectorOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "[]",
+            "stability": "stable",
+            "summary": "An optional list of service event sources from which you do not want management events to be logged on your trail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 488
+          },
+          "name": "excludeManagementEventSources",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-cloudtrail.ManagementEventSources"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "stable",
+            "summary": "Specifies whether the event selector includes management events for the trail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 481
+          },
+          "name": "includeManagementEvents",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "ReadWriteType.All",
+            "stability": "stable",
+            "summary": "Specifies whether to log read-only events, write-only events, or all events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 474
+          },
+          "name": "readWriteType",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudtrail.ReadWriteType"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail:AddEventSelectorOptions"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnChannel": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::CloudTrail::Channel",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-channel.html"
+        },
+        "remarks": "Contains information about a returned CloudTrail channel.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::CloudTrail::Channel`."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnChannel",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::CloudTrail::Channel`."
+        },
+        "locationInModule": {
+          "filename": "lib/cloudtrail.generated.ts",
+          "line": 185
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudtrail.CfnChannelProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 117
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 201
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 215
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnChannel",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 121
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "ChannelArn"
+            },
+            "stability": "external",
+            "summary": "`Ref` returns the ARN of the CloudTrail channel, such as `arn:aws:cloudtrail:us-east-2:123456789012:channel/01234567890` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 146
+          },
+          "name": "attrChannelArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 206
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-channel.html#cfn-cloudtrail-channel-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tags."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 176
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-channel.html#cfn-cloudtrail-channel-destinations"
+            },
+            "stability": "external",
+            "summary": "One or more event data stores to which events arriving through a channel will be logged."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 153
+          },
+          "name": "destinations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.CfnChannel.DestinationProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-channel.html#cfn-cloudtrail-channel-name"
+            },
+            "stability": "external",
+            "summary": "The name of the channel."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 160
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-channel.html#cfn-cloudtrail-channel-source"
+            },
+            "remarks": "You cannot change this name after you create the channel. A maximum of one channel is allowed per source.\n\nA source can be either `Custom` for all valid non- AWS events, or the name of a partner event source. For information about the source names for available partners, see [Additional information about integration partners](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/query-event-data-store-integration.html#cloudtrail-lake-partner-information) in the CloudTrail User Guide.",
+            "stability": "external",
+            "summary": "The name of the partner or external event source."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 169
+          },
+          "name": "source",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnChannel"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnChannel.DestinationProperty": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-channel-destination.html"
+        },
+        "stability": "external",
+        "summary": "Contains information about the destination receiving events."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnChannel.DestinationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 229
+      },
+      "name": "DestinationProperty",
+      "namespace": "CfnChannel",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-channel-destination.html#cfn-cloudtrail-channel-destination-location"
+            },
+            "remarks": "For service-linked channels, the location is the name of the AWS service.",
+            "stability": "external",
+            "summary": "For channels used for a CloudTrail Lake integration, the location is the ARN of an event data store that receives events from a channel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 235
+          },
+          "name": "location",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-channel-destination.html#cfn-cloudtrail-channel-destination-type"
+            },
+            "remarks": "For channels used for a CloudTrail Lake integration, the value is `EventDataStore` . For service-linked channels, the value is `AWS_SERVICE` .",
+            "stability": "external",
+            "summary": "The type of destination for events arriving from a channel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 241
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnChannel.DestinationProperty"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnChannelProps": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-channel.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnChannel`."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnChannelProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 20
+      },
+      "name": "CfnChannelProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-channel.html#cfn-cloudtrail-channel-destinations"
+            },
+            "stability": "external",
+            "summary": "One or more event data stores to which events arriving through a channel will be logged."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 27
+          },
+          "name": "destinations",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.CfnChannel.DestinationProperty"
+                          },
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-channel.html#cfn-cloudtrail-channel-name"
+            },
+            "stability": "external",
+            "summary": "The name of the channel."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 34
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-channel.html#cfn-cloudtrail-channel-source"
+            },
+            "remarks": "You cannot change this name after you create the channel. A maximum of one channel is allowed per source.\n\nA source can be either `Custom` for all valid non- AWS events, or the name of a partner event source. For information about the source names for available partners, see [Additional information about integration partners](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/query-event-data-store-integration.html#cloudtrail-lake-partner-information) in the CloudTrail User Guide.",
+            "stability": "external",
+            "summary": "The name of the partner or external event source."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 43
+          },
+          "name": "source",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-channel.html#cfn-cloudtrail-channel-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tags."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 50
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnChannelProps"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnEventDataStore": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::CloudTrail::EventDataStore",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html"
+        },
+        "remarks": "Creates a new event data store.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::CloudTrail::EventDataStore`."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnEventDataStore",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::CloudTrail::EventDataStore`."
+        },
+        "locationInModule": {
+          "filename": "lib/cloudtrail.generated.ts",
+          "line": 587
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudtrail.CfnEventDataStoreProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 458
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 610
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 628
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnEventDataStore",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 462
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "CreatedTimestamp"
+            },
+            "stability": "external",
+            "summary": "`Ref` returns the time stamp of the creation of the event data store, such as `1248496624` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 487
+          },
+          "name": "attrCreatedTimestamp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "EventDataStoreArn"
+            },
+            "stability": "external",
+            "summary": "`Ref` returns the ARN of the CloudTrail event data store, such as `arn:aws:cloudtrail:us-east-1:12345678910:eventdatastore/EXAMPLE-f852-4e8f-8bd1-bcf6cEXAMPLE` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 493
+          },
+          "name": "attrEventDataStoreArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Status"
+            },
+            "stability": "external",
+            "summary": "`Ref` returns the status of the event data store, such as `ENABLED` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 499
+          },
+          "name": "attrStatus",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "UpdatedTimestamp"
+            },
+            "stability": "external",
+            "summary": "`Ref` returns the time stamp that updates were made to an event data store, such as `1598296624` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 505
+          },
+          "name": "attrUpdatedTimestamp",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 615
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tags."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 571
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-advancedeventselectors"
+            },
+            "remarks": "You can configure up to five advanced event selectors for each event data store.\n\nFor more information about how to use advanced event selectors to log CloudTrail events, see [Log events by using advanced event selectors](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html#creating-data-event-selectors-advanced) in the CloudTrail User Guide.\n\nFor more information about how to use advanced event selectors to include AWS Config configuration items in your event data store, see [Create an event data store for AWS Config configuration items](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/query-lake-cli.html#lake-cli-create-eds-config) in the CloudTrail User Guide.\n\nFor more information about how to use advanced event selectors to include non- AWS events in your event data store, see [Create an integration to log events from outside AWS](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/query-lake-cli.html#lake-cli-create-integration) in the CloudTrail User Guide.",
+            "stability": "external",
+            "summary": "The advanced event selectors to use to select the events for the data store."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 518
+          },
+          "name": "advancedEventSelectors",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.CfnEventDataStore.AdvancedEventSelectorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-kmskeyid"
+            },
+            "remarks": "The value can be an alias name prefixed by `alias/` , a fully specified ARN to an alias, a fully specified ARN to a key, or a globally unique identifier.\n\n> Disabling or deleting the KMS key, or removing CloudTrail permissions on the key, prevents CloudTrail from logging events to the event data store, and prevents users from querying the data in the event data store that was encrypted with the key. After you associate an event data store with a KMS key, the KMS key cannot be removed or changed. Before you disable or delete a KMS key that you are using with an event data store, delete or back up your event data store.\n\nCloudTrail also supports AWS KMS multi-Region keys. For more information about multi-Region keys, see [Using multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nExamples:\n\n- `alias/MyAliasName`\n- `arn:aws:kms:us-east-2:123456789012:alias/MyAliasName`\n- `arn:aws:kms:us-east-2:123456789012:key/12345678-1234-1234-1234-123456789012`\n- `12345678-1234-1234-1234-123456789012`",
+            "stability": "external",
+            "summary": "Specifies the AWS KMS key ID to use to encrypt the events delivered by CloudTrail."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 536
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-multiregionenabled"
+            },
+            "stability": "external",
+            "summary": "Specifies whether the event data store includes events from all regions, or only from the region in which the event data store is created."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 543
+          },
+          "name": "multiRegionEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-name"
+            },
+            "stability": "external",
+            "summary": "The name of the event data store."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 550
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-organizationenabled"
+            },
+            "stability": "external",
+            "summary": "Specifies whether an event data store collects events logged for an organization in AWS Organizations ."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 557
+          },
+          "name": "organizationEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-retentionperiod"
+            },
+            "remarks": "You can set a retention period of up to 2557 days, the equivalent of seven years.",
+            "stability": "external",
+            "summary": "The retention period of the event data store, in days."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 564
+          },
+          "name": "retentionPeriod",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-terminationprotectionenabled"
+            },
+            "remarks": "If termination protection is enabled, you cannot delete the event data store until termination protection is disabled.",
+            "stability": "external",
+            "summary": "Specifies whether termination protection is enabled for the event data store."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 578
+          },
+          "name": "terminationProtectionEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnEventDataStore"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnEventDataStore.AdvancedEventSelectorProperty": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-eventdatastore-advancedeventselector.html"
+        },
+        "remarks": "They help you control costs by logging only those events that are important to you. For more information about advanced event selectors, see [Logging data events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html) in the *AWS CloudTrail User Guide* .\n\n- `readOnly`\n- `eventSource`\n- `eventName`\n- `eventCategory`\n- `resources.type`\n- `resources.ARN`\n\nYou cannot apply both event selectors and advanced event selectors to a trail.",
+        "stability": "external",
+        "summary": "Advanced event selectors let you create fine-grained selectors for the following AWS CloudTrail event record ﬁelds."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnEventDataStore.AdvancedEventSelectorProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 651
+      },
+      "name": "AdvancedEventSelectorProperty",
+      "namespace": "CfnEventDataStore",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-eventdatastore-advancedeventselector.html#cfn-cloudtrail-eventdatastore-advancedeventselector-fieldselectors"
+            },
+            "stability": "external",
+            "summary": "Contains all selector statements in an advanced event selector."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 657
+          },
+          "name": "fieldSelectors",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.CfnEventDataStore.AdvancedFieldSelectorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-eventdatastore-advancedeventselector.html#cfn-cloudtrail-eventdatastore-advancedeventselector-name"
+            },
+            "stability": "external",
+            "summary": "An optional, descriptive name for an advanced event selector, such as \"Log data events for only two S3 buckets\"."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 663
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnEventDataStore.AdvancedEventSelectorProperty"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnEventDataStore.AdvancedFieldSelectorProperty": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-eventdatastore-advancedfieldselector.html"
+        },
+        "stability": "external",
+        "summary": "A single selector statement in an advanced event selector."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnEventDataStore.AdvancedFieldSelectorProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 728
+      },
+      "name": "AdvancedFieldSelectorProperty",
+      "namespace": "CfnEventDataStore",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-eventdatastore-advancedfieldselector.html#cfn-cloudtrail-eventdatastore-advancedfieldselector-field"
+            },
+            "remarks": "For event data stores for AWS Config configuration items, Audit Manager evidence, or non- AWS events, the field is used only for selecting events as filtering is not supported.\n\nFor CloudTrail event records, supported fields include `readOnly` , `eventCategory` , `eventSource` (for management events), `eventName` , `resources.type` , and `resources.ARN` .\n\nFor event data stores for AWS Config configuration items, Audit Manager evidence, or non- AWS events, the only supported field is `eventCategory` .\n\n- *`readOnly`* - Optional. Can be set to `Equals` a value of `true` or `false` . If you do not add this field, CloudTrail logs both `read` and `write` events. A value of `true` logs only `read` events. A value of `false` logs only `write` events.\n- *`eventSource`* - For filtering management events only. This can be set only to `NotEquals` `kms.amazonaws.com` .\n- *`eventName`* - Can use any operator. You can use it to ﬁlter in or ﬁlter out any data event logged to CloudTrail, such as `PutBucket` or `GetSnapshotBlock` . You can have multiple values for this ﬁeld, separated by commas.\n- *`eventCategory`* - This is required and must be set to `Equals` .\n\n- For CloudTrail event records, the value must be `Management` or `Data` .\n- For AWS Config configuration items, the value must be `ConfigurationItem` .\n- For Audit Manager evidence, the value must be `Evidence` .\n- For non- AWS events, the value must be `ActivityAuditLog` .\n- *`resources.type`* - This ﬁeld is required for CloudTrail data events. `resources.type` can only use the `Equals` operator, and the value can be one of the following:\n\n- `AWS::DynamoDB::Table`\n- `AWS::Lambda::Function`\n- `AWS::S3::Object`\n- `AWS::CloudTrail::Channel`\n- `AWS::Cognito::IdentityPool`\n- `AWS::DynamoDB::Stream`\n- `AWS::EC2::InstanceConnectEndpoint`\n- `AWS::EC2::Snapshot`\n- `AWS::FinSpace::Environment`\n- `AWS::Glue::Table`\n- `AWS::KendraRanking::ExecutionPlan`\n- `AWS::ManagedBlockchain::Node`\n- `AWS::SageMaker::ExperimentTrialComponent`\n- `AWS::SageMaker::FeatureGroup`\n- `AWS::S3::AccessPoint`\n- `AWS::S3ObjectLambda::AccessPoint`\n- `AWS::S3Outposts::Object`\n\nYou can have only one `resources.type` ﬁeld per selector. To log data events on more than one resource type, add another selector.\n- *`resources.ARN`* - You can use any operator with `resources.ARN` , but if you use `Equals` or `NotEquals` , the value must exactly match the ARN of a valid resource of the type you've speciﬁed in the template as the value of resources.type. For example, if resources.type equals `AWS::S3::Object` , the ARN must be in one of the following formats. To log all data events for all objects in a specific S3 bucket, use the `StartsWith` operator, and include only the bucket ARN as the matching value.\n\nThe trailing slash is intentional; do not exclude it. Replace the text between less than and greater than symbols (<>) with resource-specific information.\n\n- `arn:<partition>:s3:::<bucket_name>/`\n- `arn:<partition>:s3:::<bucket_name>/<object_path>/`\n\nWhen resources.type equals `AWS::DynamoDB::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>`\n\nWhen resources.type equals `AWS::Lambda::Function` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:lambda:<region>:<account_ID>:function:<function_name>`\n\nWhen resources.type equals `AWS::CloudTrail::Channel` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:cloudtrail:<region>:<account_ID>:channel/<channel_UUID>`\n\nWhen resources.type equals `AWS::Cognito::IdentityPool` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:cognito-identity:<region>:<account_ID>:identitypool/<identity_pool_ID>`\n\nWhen `resources.type` equals `AWS::DynamoDB::Stream` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:dynamodb:<region>:<account_ID>:table/<table_name>/stream/<date_time>`\n\nWhen `resources.type` equals `AWS::EC2::InstanceConnectEndpoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:ec2:<region>::instance-connect-endpoint/<instance_connect_endpoint_ID>`\n\nWhen `resources.type` equals `AWS::EC2::Snapshot` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:ec2:<region>::snapshot/<snapshot_ID>`\n\nWhen `resources.type` equals `AWS::FinSpace::Environment` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:finspace:<region>:<account_ID>:environment/<environment_ID>`\n\nWhen `resources.type` equals `AWS::Glue::Table` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:glue:<region>:<account_ID>:table/<database_name>/<table_name>`\n\nWhen `resources.type` equals `AWS::KendraRanking::ExecutionPlan` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:kendra-ranking:<region>:<account_ID>:table/<rescore-execution-plan>/<rescore_execution_plan_ID>`\n\nWhen `resources.type` equals `AWS::ManagedBlockchain::Node` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:managedblockchain:<region>:<account_ID>:nodes/<node_ID>`\n\nWhen `resources.type` equals `AWS::SageMaker::ExperimentTrialComponent` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:experiment-trial-component/<experiment_trial_component_name>`\n\nWhen `resources.type` equals `AWS::SageMaker::FeatureGroup` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:sagemaker:<region>:<account_ID>:feature-group/<feature_group_name>`\n\nWhen `resources.type` equals `AWS::S3::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in one of the following formats. To log events on all objects in an S3 access point, we recommend that you use only the access point ARN, don’t include the object path, and use the `StartsWith` or `NotStartsWith` operators.\n\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>`\n- `arn:<partition>:s3:<region>:<account_ID>:accesspoint/<access_point_name>/object/<object_path>`\n\nWhen `resources.type` equals `AWS::S3ObjectLambda::AccessPoint` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-object-lambda:<region>:<account_ID>:accesspoint/<access_point_name>`\n\nWhen `resources.type` equals `AWS::S3Outposts::Object` , and the operator is set to `Equals` or `NotEquals` , the ARN must be in the following format:\n\n- `arn:<partition>:s3-outposts:<region>:<account_ID>:<object_path>`",
+            "stability": "external",
+            "summary": "A field in a CloudTrail event record on which to filter events to be logged."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 852
+          },
+          "name": "field",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-eventdatastore-advancedfieldselector.html#cfn-cloudtrail-eventdatastore-advancedfieldselector-endswith"
+            },
+            "stability": "external",
+            "summary": "An operator that includes events that match the last few characters of the event record field specified as the value of `Field` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 734
+          },
+          "name": "endsWith",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-eventdatastore-advancedfieldselector.html#cfn-cloudtrail-eventdatastore-advancedfieldselector-equals"
+            },
+            "remarks": "This is the only valid operator that you can use with the `readOnly` , `eventCategory` , and `resources.type` fields.",
+            "stability": "external",
+            "summary": "An operator that includes events that match the exact value of the event record field specified as the value of `Field` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 740
+          },
+          "name": "equalTo",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-eventdatastore-advancedfieldselector.html#cfn-cloudtrail-eventdatastore-advancedfieldselector-notendswith"
+            },
+            "stability": "external",
+            "summary": "An operator that excludes events that match the last few characters of the event record field specified as the value of `Field` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 858
+          },
+          "name": "notEndsWith",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-eventdatastore-advancedfieldselector.html#cfn-cloudtrail-eventdatastore-advancedfieldselector-notequals"
+            },
+            "stability": "external",
+            "summary": "An operator that excludes events that match the exact value of the event record field specified as the value of `Field` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 864
+          },
+          "name": "notEquals",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-eventdatastore-advancedfieldselector.html#cfn-cloudtrail-eventdatastore-advancedfieldselector-notstartswith"
+            },
+            "stability": "external",
+            "summary": "An operator that excludes events that match the first few characters of the event record field specified as the value of `Field` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 870
+          },
+          "name": "notStartsWith",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-eventdatastore-advancedfieldselector.html#cfn-cloudtrail-eventdatastore-advancedfieldselector-startswith"
+            },
+            "stability": "external",
+            "summary": "An operator that includes events that match the first few characters of the event record field specified as the value of `Field` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 876
+          },
+          "name": "startsWith",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnEventDataStore.AdvancedFieldSelectorProperty"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnEventDataStoreProps": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnEventDataStore`."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnEventDataStoreProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 306
+      },
+      "name": "CfnEventDataStoreProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-advancedeventselectors"
+            },
+            "remarks": "You can configure up to five advanced event selectors for each event data store.\n\nFor more information about how to use advanced event selectors to log CloudTrail events, see [Log events by using advanced event selectors](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html#creating-data-event-selectors-advanced) in the CloudTrail User Guide.\n\nFor more information about how to use advanced event selectors to include AWS Config configuration items in your event data store, see [Create an event data store for AWS Config configuration items](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/query-lake-cli.html#lake-cli-create-eds-config) in the CloudTrail User Guide.\n\nFor more information about how to use advanced event selectors to include non- AWS events in your event data store, see [Create an integration to log events from outside AWS](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/query-lake-cli.html#lake-cli-create-integration) in the CloudTrail User Guide.",
+            "stability": "external",
+            "summary": "The advanced event selectors to use to select the events for the data store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 319
+          },
+          "name": "advancedEventSelectors",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.CfnEventDataStore.AdvancedEventSelectorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-kmskeyid"
+            },
+            "remarks": "The value can be an alias name prefixed by `alias/` , a fully specified ARN to an alias, a fully specified ARN to a key, or a globally unique identifier.\n\n> Disabling or deleting the KMS key, or removing CloudTrail permissions on the key, prevents CloudTrail from logging events to the event data store, and prevents users from querying the data in the event data store that was encrypted with the key. After you associate an event data store with a KMS key, the KMS key cannot be removed or changed. Before you disable or delete a KMS key that you are using with an event data store, delete or back up your event data store.\n\nCloudTrail also supports AWS KMS multi-Region keys. For more information about multi-Region keys, see [Using multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nExamples:\n\n- `alias/MyAliasName`\n- `arn:aws:kms:us-east-2:123456789012:alias/MyAliasName`\n- `arn:aws:kms:us-east-2:123456789012:key/12345678-1234-1234-1234-123456789012`\n- `12345678-1234-1234-1234-123456789012`",
+            "stability": "external",
+            "summary": "Specifies the AWS KMS key ID to use to encrypt the events delivered by CloudTrail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 337
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-multiregionenabled"
+            },
+            "stability": "external",
+            "summary": "Specifies whether the event data store includes events from all regions, or only from the region in which the event data store is created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 344
+          },
+          "name": "multiRegionEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-name"
+            },
+            "stability": "external",
+            "summary": "The name of the event data store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 351
+          },
+          "name": "name",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-organizationenabled"
+            },
+            "stability": "external",
+            "summary": "Specifies whether an event data store collects events logged for an organization in AWS Organizations ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 358
+          },
+          "name": "organizationEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-retentionperiod"
+            },
+            "remarks": "You can set a retention period of up to 2557 days, the equivalent of seven years.",
+            "stability": "external",
+            "summary": "The retention period of the event data store, in days."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 365
+          },
+          "name": "retentionPeriod",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-tags"
+            },
+            "stability": "external",
+            "summary": "A list of tags."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 372
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-eventdatastore.html#cfn-cloudtrail-eventdatastore-terminationprotectionenabled"
+            },
+            "remarks": "If termination protection is enabled, you cannot delete the event data store until termination protection is disabled.",
+            "stability": "external",
+            "summary": "Specifies whether termination protection is enabled for the event data store."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 379
+          },
+          "name": "terminationProtectionEnabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnEventDataStoreProps"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnResourcePolicy": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::CloudTrail::ResourcePolicy",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-resourcepolicy.html"
+        },
+        "remarks": "Attaches a resource-based permission policy to a CloudTrail channel that is used for an integration with an event source outside of AWS . For more information about resource-based policies, see [CloudTrail resource-based policy examples](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/security_iam_resource-based-policy-examples.html) in the *CloudTrail User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::CloudTrail::ResourcePolicy`."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnResourcePolicy",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::CloudTrail::ResourcePolicy`."
+        },
+        "locationInModule": {
+          "filename": "lib/cloudtrail.generated.ts",
+          "line": 1090
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudtrail.CfnResourcePolicyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 1038
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1105
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1117
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnResourcePolicy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1042
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1110
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-resourcepolicy.html#cfn-cloudtrail-resourcepolicy-resourcearn"
+            },
+            "remarks": "The following is the format of a resource ARN: `arn:aws:cloudtrail:us-east-2:123456789012:channel/MyChannel` .",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the CloudTrail channel attached to the resource-based policy."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1068
+          },
+          "name": "resourceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-resourcepolicy.html#cfn-cloudtrail-resourcepolicy-resourcepolicy"
+            },
+            "remarks": "The following are requirements for the resource policy:\n\n- Contains only one action: cloudtrail-data:PutAuditEvents\n- Contains at least one statement. The policy can have a maximum of 20 statements.\n- Each statement contains at least one principal. A statement can have a maximum of 50 principals.",
+            "stability": "external",
+            "summary": "A JSON-formatted string for an AWS resource-based policy."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1081
+          },
+          "name": "resourcePolicy",
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnResourcePolicy"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnResourcePolicyProps": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-resourcepolicy.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnResourcePolicy`."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnResourcePolicyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 955
+      },
+      "name": "CfnResourcePolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-resourcepolicy.html#cfn-cloudtrail-resourcepolicy-resourcearn"
+            },
+            "remarks": "The following is the format of a resource ARN: `arn:aws:cloudtrail:us-east-2:123456789012:channel/MyChannel` .",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the CloudTrail channel attached to the resource-based policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 962
+          },
+          "name": "resourceArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-resourcepolicy.html#cfn-cloudtrail-resourcepolicy-resourcepolicy"
+            },
+            "remarks": "The following are requirements for the resource policy:\n\n- Contains only one action: cloudtrail-data:PutAuditEvents\n- Contains at least one statement. The policy can have a maximum of 20 statements.\n- Each statement contains at least one principal. A statement can have a maximum of 50 principals.",
+            "stability": "external",
+            "summary": "A JSON-formatted string for an AWS resource-based policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 975
+          },
+          "name": "resourcePolicy",
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnResourcePolicyProps"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnTrail": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::CloudTrail::Trail",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html"
+        },
+        "remarks": "Creates a trail that specifies the settings for delivery of log data to an Amazon S3 bucket.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::CloudTrail::Trail`."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::CloudTrail::Trail`."
+        },
+        "locationInModule": {
+          "filename": "lib/cloudtrail.generated.ts",
+          "line": 1536
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudtrail.CfnTrailProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 1362
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1566
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1591
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnTrail",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1366
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "stability": "external",
+            "summary": "`Ref` returns the ARN of the CloudTrail trail, such as `arn:aws:cloudtrail:us-east-2:123456789012:trail/myCloudTrail` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1391
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "SnsTopicArn"
+            },
+            "stability": "external",
+            "summary": "`Ref` returns the ARN of the Amazon SNS topic that's associated with the CloudTrail trail, such as `arn:aws:sns:us-east-2:123456789012:mySNSTopic` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1397
+          },
+          "name": "attrSnsTopicArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1571
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-tags"
+            },
+            "stability": "external",
+            "summary": "A custom set of tags (key-value pairs) for this trail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1514
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-islogging"
+            },
+            "stability": "external",
+            "summary": "Whether the CloudTrail trail is currently logging AWS API calls."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1404
+          },
+          "name": "isLogging",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-s3bucketname"
+            },
+            "remarks": "See [Amazon S3 Bucket Naming Requirements](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/create_trail_naming_policy.html) .",
+            "stability": "external",
+            "summary": "Specifies the name of the Amazon S3 bucket designated for publishing log files."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1411
+          },
+          "name": "s3BucketName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-cloudwatchlogsloggrouparn"
+            },
+            "remarks": "You must use a log group that exists in your account.\n\nNot required unless you specify `CloudWatchLogsRoleArn` .",
+            "stability": "external",
+            "summary": "Specifies a log group name using an Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs are delivered."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1420
+          },
+          "name": "cloudWatchLogsLogGroupArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-cloudwatchlogsrolearn"
+            },
+            "remarks": "You must use a role that exists in your account.",
+            "stability": "external",
+            "summary": "Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1427
+          },
+          "name": "cloudWatchLogsRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-enablelogfilevalidation"
+            },
+            "remarks": "> When you disable log file integrity validation, the chain of digest files is broken after one hour. CloudTrail does not create digest files for log files that were delivered during a period in which log file integrity validation was disabled. For example, if you enable log file integrity validation at noon on January 1, disable it at noon on January 2, and re-enable it at noon on January 10, digest files will not be created for the log files delivered from noon on January 2 to noon on January 10. The same applies whenever you stop CloudTrail logging or delete a trail.",
+            "stability": "external",
+            "summary": "Specifies whether log file validation is enabled. The default is false."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1436
+          },
+          "name": "enableLogFileValidation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-eventselectors"
+            },
+            "remarks": "By default, trails created without specific event selectors will be configured to log all read and write management events, and no data events. When an event occurs in your account, CloudTrail evaluates the event selector for all trails. For each trail, if the event matches any event selector, the trail processes and logs the event. If the event doesn't match any event selector, the trail doesn't log the event.\n\nYou can configure up to five event selectors for a trail.",
+            "stability": "external",
+            "summary": "Use event selectors to further specify the management and data event settings for your trail."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1445
+          },
+          "name": "eventSelectors",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail.EventSelectorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-includeglobalserviceevents"
+            },
+            "stability": "external",
+            "summary": "Specifies whether the trail is publishing events from global services such as IAM to the log files."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1452
+          },
+          "name": "includeGlobalServiceEvents",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-insightselectors"
+            },
+            "remarks": "`ApiCallRateInsight` and `ApiErrorRateInsight` are valid Insight types.\n\nThe `ApiCallRateInsight` Insights type analyzes write-only management API calls that are aggregated per minute against a baseline API call volume.\n\nThe `ApiErrorRateInsight` Insights type analyzes management API calls that result in error codes. The error is shown if the API call is unsuccessful.",
+            "stability": "external",
+            "summary": "A JSON string that contains the insight types you want to log on a trail."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1463
+          },
+          "name": "insightSelectors",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail.InsightSelectorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-ismultiregiontrail"
+            },
+            "remarks": "The default is false. If the trail exists only in the current region and this value is set to true, shadow trails (replications of the trail) will be created in the other regions. If the trail exists in all regions and this value is set to false, the trail will remain in the region where it was created, and its shadow trails in other regions will be deleted. As a best practice, consider using trails that log events in all regions.",
+            "stability": "external",
+            "summary": "Specifies whether the trail applies only to the current region or to all regions."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1470
+          },
+          "name": "isMultiRegionTrail",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-isorganizationtrail"
+            },
+            "remarks": "The default is false, and cannot be true unless the call is made on behalf of an AWS account that is the management account or delegated administrator account for an organization in AWS Organizations . If the trail is not an organization trail and this is set to `true` , the trail will be created in all AWS accounts that belong to the organization. If the trail is an organization trail and this is set to `false` , the trail will remain in the current AWS account but be deleted from all member accounts in the organization.",
+            "stability": "external",
+            "summary": "Specifies whether the trail is applied to all accounts in an organization in AWS Organizations , or only for the current AWS account ."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1477
+          },
+          "name": "isOrganizationTrail",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-kmskeyid"
+            },
+            "remarks": "The value can be an alias name prefixed by \"alias/\", a fully specified ARN to an alias, a fully specified ARN to a key, or a globally unique identifier.\n\nCloudTrail also supports AWS KMS multi-Region keys. For more information about multi-Region keys, see [Using multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nExamples:\n\n- alias/MyAliasName\n- arn:aws:kms:us-east-2:123456789012:alias/MyAliasName\n- arn:aws:kms:us-east-2:123456789012:key/12345678-1234-1234-1234-123456789012\n- 12345678-1234-1234-1234-123456789012",
+            "stability": "external",
+            "summary": "Specifies the AWS KMS key ID to use to encrypt the logs delivered by CloudTrail."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1493
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-s3keyprefix"
+            },
+            "remarks": "For more information, see [Finding Your CloudTrail Log Files](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-find-log-files.html) . The maximum length is 200 characters.",
+            "stability": "external",
+            "summary": "Specifies the Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1500
+          },
+          "name": "s3KeyPrefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-snstopicname"
+            },
+            "remarks": "The maximum length is 256 characters.",
+            "stability": "external",
+            "summary": "Specifies the name of the Amazon SNS topic defined for notification of log file delivery."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1507
+          },
+          "name": "snsTopicName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-trailname"
+            },
+            "remarks": "- Contain only ASCII letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), or dashes (-)\n- Start with a letter or number, and end with a letter or number\n- Be between 3 and 128 characters\n- Have no adjacent periods, underscores or dashes. Names like `my-_namespace` and `my--namespace` are not valid.\n- Not be in IP address format (for example, 192.168.5.4)",
+            "stability": "external",
+            "summary": "Specifies the name of the trail. The name must meet the following requirements:."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1527
+          },
+          "name": "trailName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnTrail"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnTrail.DataResourceProperty": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-dataresource.html"
+        },
+        "remarks": "Data events provide information about the resource operations performed on or within a resource itself. These are also known as data plane operations. You can specify up to 250 data resources for a trail. Currently, advanced event selectors for data events are not supported in AWS CloudFormation templates.\n\n> The total number of allowed data resources is 250. This number can be distributed between 1 and 5 event selectors, but the total cannot exceed 250 across all selectors.\n\nThe following example demonstrates how logging works when you configure logging of all data events for an S3 bucket named `bucket-1` . In this example, the CloudTrail user specified an empty prefix, and the option to log both `Read` and `Write` data events.\n\n- A user uploads an image file to `bucket-1` .\n- The `PutObject` API operation is an Amazon S3 object-level API. It is recorded as a data event in CloudTrail. Because the CloudTrail user specified an S3 bucket with an empty prefix, events that occur on any object in that bucket are logged. The trail processes and logs the event.\n- A user uploads an object to an Amazon S3 bucket named `arn:aws:s3:::bucket-2` .\n- The `PutObject` API operation occurred for an object in an S3 bucket that the CloudTrail user didn't specify for the trail. The trail doesn’t log the event.\n\nThe following example demonstrates how logging works when you configure logging of AWS Lambda data events for a Lambda function named *MyLambdaFunction* , but not for all Lambda functions.\n\n- A user runs a script that includes a call to the *MyLambdaFunction* function and the *MyOtherLambdaFunction* function.\n- The `Invoke` API operation on *MyLambdaFunction* is an Lambda API. It is recorded as a data event in CloudTrail. Because the CloudTrail user specified logging data events for *MyLambdaFunction* , any invocations of that function are logged. The trail processes and logs the event.\n- The `Invoke` API operation on *MyOtherLambdaFunction* is an Lambda API. Because the CloudTrail user did not specify logging data events for all Lambda functions, the `Invoke` operation for *MyOtherLambdaFunction* does not match the function specified for the trail. The trail doesn’t log the event.",
+        "stability": "external",
+        "summary": "The Amazon S3 buckets, AWS Lambda functions, or Amazon DynamoDB tables that you specify in event selectors in your AWS CloudFormation template for your trail to log data events."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail.DataResourceProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 1620
+      },
+      "name": "DataResourceProperty",
+      "namespace": "CfnTrail",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-dataresource.html#cfn-cloudtrail-trail-dataresource-type"
+            },
+            "remarks": "You can specify the following *basic* event selector resource types:\n\n- `AWS::S3::Object`\n- `AWS::Lambda::Function`\n- `AWS::DynamoDB::Table`",
+            "stability": "external",
+            "summary": "The resource type in which you want to log data events."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1630
+          },
+          "name": "type",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-dataresource.html#cfn-cloudtrail-trail-dataresource-values"
+            },
+            "remarks": "- To log data events for all objects in all S3 buckets in your AWS account , specify the prefix as `arn:aws:s3` .\n\n> This also enables logging of data event activity performed by any user or role in your AWS account , even if that activity is performed on a bucket that belongs to another AWS account .\n- To log data events for all objects in an S3 bucket, specify the bucket and an empty object prefix such as `arn:aws:s3:::bucket-1/` . The trail logs data events for all objects in this S3 bucket.\n- To log data events for specific objects, specify the S3 bucket and object prefix such as `arn:aws:s3:::bucket-1/example-images` . The trail logs data events for objects in this S3 bucket that match the prefix.\n- To log data events for all Lambda functions in your AWS account , specify the prefix as `arn:aws:lambda` .\n\n> This also enables logging of `Invoke` activity performed by any user or role in your AWS account , even if that activity is performed on a function that belongs to another AWS account .\n- To log data events for a specific Lambda function, specify the function ARN.\n\n> Lambda function ARNs are exact. For example, if you specify a function ARN *arn:aws:lambda:us-west-2:111111111111:function:helloworld* , data events will only be logged for *arn:aws:lambda:us-west-2:111111111111:function:helloworld* . They will not be logged for *arn:aws:lambda:us-west-2:111111111111:function:helloworld2* .\n- To log data events for all DynamoDB tables in your AWS account , specify the prefix as `arn:aws:dynamodb` .",
+            "stability": "external",
+            "summary": "An array of Amazon Resource Name (ARN) strings or partial ARN strings for the specified objects."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1649
+          },
+          "name": "values",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnTrail.DataResourceProperty"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnTrail.EventSelectorProperty": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html"
+        },
+        "remarks": "By default, trails created without specific event selectors will be configured to log all read and write management events, and no data events. When an event occurs in your account, CloudTrail evaluates the event selector for all trails. For each trail, if the event matches any event selector, the trail processes and logs the event. If the event doesn't match any event selector, the trail doesn't log the event.\n\nYou can configure up to five event selectors for a trail.\n\nYou cannot apply both event selectors and advanced event selectors to a trail.",
+        "stability": "external",
+        "summary": "Use event selectors to further specify the management and data event settings for your trail."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail.EventSelectorProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 1718
+      },
+      "name": "EventSelectorProperty",
+      "namespace": "CfnTrail",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html#cfn-cloudtrail-trail-eventselector-dataresources"
+            },
+            "remarks": "Currently, advanced event selectors for data events are not supported in AWS CloudFormation templates. You can specify up to 250 resources for an individual event selector, but the total number of data resources cannot exceed 250 across all event selectors in a trail. This limit does not apply if you configure resource logging for all data events.\n\nFor more information, see [Logging data events for trails](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html) and [Limits in AWS CloudTrail](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/WhatIsCloudTrail-Limits.html) in the *AWS CloudTrail User Guide* .",
+            "stability": "external",
+            "summary": "In AWS CloudFormation , CloudTrail supports data event logging for Amazon S3 objects, Amazon DynamoDB tables, and AWS Lambda functions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1726
+          },
+          "name": "dataResources",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail.DataResourceProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html#cfn-cloudtrail-trail-eventselector-excludemanagementeventsources"
+            },
+            "remarks": "In this release, the list can be empty (disables the filter), or it can filter out AWS Key Management Service or Amazon RDS Data API events by containing `kms.amazonaws.com` or `rdsdata.amazonaws.com` . By default, `ExcludeManagementEventSources` is empty, and AWS KMS and Amazon RDS Data API events are logged to your trail. You can exclude management event sources only in regions that support the event source.",
+            "stability": "external",
+            "summary": "An optional list of service event sources from which you do not want management events to be logged on your trail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1732
+          },
+          "name": "excludeManagementEventSources",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html#cfn-cloudtrail-trail-eventselector-includemanagementevents"
+            },
+            "remarks": "For more information, see [Management Events](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-management-events-with-cloudtrail.html) in the *AWS CloudTrail User Guide* .\n\nBy default, the value is `true` .\n\nThe first copy of management events is free. You are charged for additional copies of management events that you are logging on any subsequent trail in the same region. For more information about CloudTrail pricing, see [AWS CloudTrail Pricing](https://docs.aws.amazon.com/cloudtrail/pricing/) .",
+            "stability": "external",
+            "summary": "Specify if you want your event selector to include management events for your trail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1744
+          },
+          "name": "includeManagementEvents",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-eventselector.html#cfn-cloudtrail-trail-eventselector-readwritetype"
+            },
+            "remarks": "For example, the EC2 `GetConsoleOutput` is a read-only API operation and `RunInstances` is a write-only API operation.\n\nBy default, the value is `All` .",
+            "stability": "external",
+            "summary": "Specify if you want your trail to log read-only events, write-only events, or all."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1752
+          },
+          "name": "readWriteType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnTrail.EventSelectorProperty"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnTrail.InsightSelectorProperty": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-insightselector.html"
+        },
+        "stability": "external",
+        "summary": "A JSON string that contains a list of Insights types that are logged on a trail."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail.InsightSelectorProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 1822
+      },
+      "name": "InsightSelectorProperty",
+      "namespace": "CfnTrail",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-insightselector.html#cfn-cloudtrail-trail-insightselector-insighttype"
+            },
+            "remarks": "The `ApiCallRateInsight` Insights type analyzes write-only management API calls that are aggregated per minute against a baseline API call volume.\n\nThe `ApiErrorRateInsight` Insights type analyzes management API calls that result in error codes. The error is shown if the API call is unsuccessful.",
+            "stability": "external",
+            "summary": "The type of Insights events to log on a trail. `ApiCallRateInsight` and `ApiErrorRateInsight` are valid Insight types."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1832
+          },
+          "name": "insightType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnTrail.InsightSelectorProperty"
+    },
+    "@aws-cdk/aws-cloudtrail.CfnTrailProps": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnTrail`."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.CfnTrailProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.generated.ts",
+        "line": 1130
+      },
+      "name": "CfnTrailProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-islogging"
+            },
+            "stability": "external",
+            "summary": "Whether the CloudTrail trail is currently logging AWS API calls."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1137
+          },
+          "name": "isLogging",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-s3bucketname"
+            },
+            "remarks": "See [Amazon S3 Bucket Naming Requirements](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/create_trail_naming_policy.html) .",
+            "stability": "external",
+            "summary": "Specifies the name of the Amazon S3 bucket designated for publishing log files."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1144
+          },
+          "name": "s3BucketName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-cloudwatchlogsloggrouparn"
+            },
+            "remarks": "You must use a log group that exists in your account.\n\nNot required unless you specify `CloudWatchLogsRoleArn` .",
+            "stability": "external",
+            "summary": "Specifies a log group name using an Amazon Resource Name (ARN), a unique identifier that represents the log group to which CloudTrail logs are delivered."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1153
+          },
+          "name": "cloudWatchLogsLogGroupArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-cloudwatchlogsrolearn"
+            },
+            "remarks": "You must use a role that exists in your account.",
+            "stability": "external",
+            "summary": "Specifies the role for the CloudWatch Logs endpoint to assume to write to a user's log group."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1160
+          },
+          "name": "cloudWatchLogsRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-enablelogfilevalidation"
+            },
+            "remarks": "> When you disable log file integrity validation, the chain of digest files is broken after one hour. CloudTrail does not create digest files for log files that were delivered during a period in which log file integrity validation was disabled. For example, if you enable log file integrity validation at noon on January 1, disable it at noon on January 2, and re-enable it at noon on January 10, digest files will not be created for the log files delivered from noon on January 2 to noon on January 10. The same applies whenever you stop CloudTrail logging or delete a trail.",
+            "stability": "external",
+            "summary": "Specifies whether log file validation is enabled. The default is false."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1169
+          },
+          "name": "enableLogFileValidation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-eventselectors"
+            },
+            "remarks": "By default, trails created without specific event selectors will be configured to log all read and write management events, and no data events. When an event occurs in your account, CloudTrail evaluates the event selector for all trails. For each trail, if the event matches any event selector, the trail processes and logs the event. If the event doesn't match any event selector, the trail doesn't log the event.\n\nYou can configure up to five event selectors for a trail.",
+            "stability": "external",
+            "summary": "Use event selectors to further specify the management and data event settings for your trail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1178
+          },
+          "name": "eventSelectors",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail.EventSelectorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-includeglobalserviceevents"
+            },
+            "stability": "external",
+            "summary": "Specifies whether the trail is publishing events from global services such as IAM to the log files."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1185
+          },
+          "name": "includeGlobalServiceEvents",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-insightselectors"
+            },
+            "remarks": "`ApiCallRateInsight` and `ApiErrorRateInsight` are valid Insight types.\n\nThe `ApiCallRateInsight` Insights type analyzes write-only management API calls that are aggregated per minute against a baseline API call volume.\n\nThe `ApiErrorRateInsight` Insights type analyzes management API calls that result in error codes. The error is shown if the API call is unsuccessful.",
+            "stability": "external",
+            "summary": "A JSON string that contains the insight types you want to log on a trail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1196
+          },
+          "name": "insightSelectors",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-cloudtrail.CfnTrail.InsightSelectorProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-ismultiregiontrail"
+            },
+            "remarks": "The default is false. If the trail exists only in the current region and this value is set to true, shadow trails (replications of the trail) will be created in the other regions. If the trail exists in all regions and this value is set to false, the trail will remain in the region where it was created, and its shadow trails in other regions will be deleted. As a best practice, consider using trails that log events in all regions.",
+            "stability": "external",
+            "summary": "Specifies whether the trail applies only to the current region or to all regions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1203
+          },
+          "name": "isMultiRegionTrail",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-isorganizationtrail"
+            },
+            "remarks": "The default is false, and cannot be true unless the call is made on behalf of an AWS account that is the management account or delegated administrator account for an organization in AWS Organizations . If the trail is not an organization trail and this is set to `true` , the trail will be created in all AWS accounts that belong to the organization. If the trail is an organization trail and this is set to `false` , the trail will remain in the current AWS account but be deleted from all member accounts in the organization.",
+            "stability": "external",
+            "summary": "Specifies whether the trail is applied to all accounts in an organization in AWS Organizations , or only for the current AWS account ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1210
+          },
+          "name": "isOrganizationTrail",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-kmskeyid"
+            },
+            "remarks": "The value can be an alias name prefixed by \"alias/\", a fully specified ARN to an alias, a fully specified ARN to a key, or a globally unique identifier.\n\nCloudTrail also supports AWS KMS multi-Region keys. For more information about multi-Region keys, see [Using multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nExamples:\n\n- alias/MyAliasName\n- arn:aws:kms:us-east-2:123456789012:alias/MyAliasName\n- arn:aws:kms:us-east-2:123456789012:key/12345678-1234-1234-1234-123456789012\n- 12345678-1234-1234-1234-123456789012",
+            "stability": "external",
+            "summary": "Specifies the AWS KMS key ID to use to encrypt the logs delivered by CloudTrail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1226
+          },
+          "name": "kmsKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-s3keyprefix"
+            },
+            "remarks": "For more information, see [Finding Your CloudTrail Log Files](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-find-log-files.html) . The maximum length is 200 characters.",
+            "stability": "external",
+            "summary": "Specifies the Amazon S3 key prefix that comes after the name of the bucket you have designated for log file delivery."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1233
+          },
+          "name": "s3KeyPrefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-snstopicname"
+            },
+            "remarks": "The maximum length is 256 characters.",
+            "stability": "external",
+            "summary": "Specifies the name of the Amazon SNS topic defined for notification of log file delivery."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1240
+          },
+          "name": "snsTopicName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-tags"
+            },
+            "stability": "external",
+            "summary": "A custom set of tags (key-value pairs) for this trail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1247
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudtrail-trail.html#cfn-cloudtrail-trail-trailname"
+            },
+            "remarks": "- Contain only ASCII letters (a-z, A-Z), numbers (0-9), periods (.), underscores (_), or dashes (-)\n- Start with a letter or number, and end with a letter or number\n- Be between 3 and 128 characters\n- Have no adjacent periods, underscores or dashes. Names like `my-_namespace` and `my--namespace` are not valid.\n- Not be in IP address format (for example, 192.168.5.4)",
+            "stability": "external",
+            "summary": "Specifies the name of the trail. The name must meet the following requirements:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.generated.ts",
+            "line": 1260
+          },
+          "name": "trailName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail.generated:CfnTrailProps"
+    },
+    "@aws-cdk/aws-cloudtrail.DataResourceType": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "docs": {
+        "stability": "stable",
+        "summary": "Resource type for a data event."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.DataResourceType",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.ts",
+        "line": 523
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Data resource type for Lambda function."
+          },
+          "name": "LAMBDA_FUNCTION"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Data resource type for S3 objects."
+          },
+          "name": "S3_OBJECT"
+        }
+      ],
+      "name": "DataResourceType",
+      "symbolId": "lib/cloudtrail:DataResourceType"
+    },
+    "@aws-cdk/aws-cloudtrail.InsightType": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "docs": {
+        "stability": "stable",
+        "summary": "Util element for InsightSelector."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.InsightType",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/cloudtrail.ts",
+          "line": 182
+        },
+        "parameters": [
+          {
+            "name": "value",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ],
+        "protected": true
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.ts",
+        "line": 171
+      },
+      "name": "InsightType",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "remarks": "(API Call Rate)",
+            "stability": "stable",
+            "summary": "The type of insights to log on a trail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 175
+          },
+          "name": "API_CALL_RATE",
+          "static": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudtrail.InsightType"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "remarks": "(API Error Rate)",
+            "stability": "stable",
+            "summary": "The type of insights to log on a trail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 180
+          },
+          "name": "API_ERROR_RATE",
+          "static": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudtrail.InsightType"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 182
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail:InsightType"
+    },
+    "@aws-cdk/aws-cloudtrail.ManagementEventSources": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "docs": {
+        "stability": "stable",
+        "summary": "Types of management event sources that can be excluded."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.ManagementEventSources",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.ts",
+        "line": 494
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "AWS Key Management Service (AWS KMS) events."
+          },
+          "name": "KMS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Data API events."
+          },
+          "name": "RDS_DATA_API"
+        }
+      ],
+      "name": "ManagementEventSources",
+      "symbolId": "lib/cloudtrail:ManagementEventSources"
+    },
+    "@aws-cdk/aws-cloudtrail.ReadWriteType": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "docs": {
+        "stability": "stable",
+        "summary": "Types of events that CloudTrail can log."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.ReadWriteType",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.ts",
+        "line": 142
+      },
+      "members": [
+        {
+          "docs": {
+            "remarks": "For example, read-only events include the Amazon EC2 DescribeSecurityGroups\nand DescribeSubnets API operations.",
+            "stability": "stable",
+            "summary": "Read-only events include API operations that read your resources, but don't make changes."
+          },
+          "name": "READ_ONLY"
+        },
+        {
+          "docs": {
+            "remarks": "For example, the Amazon EC2 RunInstances and TerminateInstances API\noperations modify your instances.",
+            "stability": "stable",
+            "summary": "Write-only events include API operations that modify (or might modify) your resources."
+          },
+          "name": "WRITE_ONLY"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "All events."
+          },
+          "name": "ALL"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "No events."
+          },
+          "name": "NONE"
+        }
+      ],
+      "name": "ReadWriteType",
+      "symbolId": "lib/cloudtrail:ReadWriteType"
+    },
+    "@aws-cdk/aws-cloudtrail.S3EventSelector": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Selecting an S3 bucket and an optional prefix to be logged for data events."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.S3EventSelector",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.ts",
+        "line": 509
+      },
+      "name": "S3EventSelector",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "S3 bucket."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 511
+          },
+          "name": "bucket",
+          "type": {
+            "fqn": "@aws-cdk/aws-s3.IBucket"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- all objects",
+            "stability": "stable",
+            "summary": "Data events for objects whose key matches this prefix will be logged."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 517
+          },
+          "name": "objectPrefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail:S3EventSelector"
+    },
+    "@aws-cdk/aws-cloudtrail.Trail": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "base": "@aws-cdk/core.Resource",
+      "docs": {
+        "remarks": "import { CloudTrail } from '@aws-cdk/aws-cloudtrail'\n\nconst cloudTrail = new CloudTrail(this, 'MyTrail');\n\nNOTE the above example creates an UNENCRYPTED bucket by default,\nIf you are required to use an Encrypted bucket you can supply a preconfigured bucket\nvia TrailProps",
+        "stability": "stable",
+        "summary": "Cloud trail allows you to log events that happen in your AWS account For example:."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.Trail",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/cloudtrail.ts",
+          "line": 243
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudtrail.TrailProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.ts",
+        "line": 198
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "Note that the event doesn't necessarily have to come from this Trail, it can\nbe captured from any one.\n\nBe sure to filter the event further down using an event pattern.",
+            "stability": "stable",
+            "summary": "Create an event rule for when an event is recorded by any Trail in the account."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 208
+          },
+          "name": "onEvent",
+          "parameters": [
+            {
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "remarks": "Only events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.\n\nThis method adds an Event Selector for filtering events that match either S3 or Lambda function operations.\n\nData events: These events provide insight into the resource operations performed on or within a resource.\nThese are also known as data plane operations.",
+            "stability": "stable",
+            "summary": "When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 362
+          },
+          "name": "addEventSelector",
+          "parameters": [
+            {
+              "name": "dataResourceType",
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudtrail.DataResourceType"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the list of data resource ARNs to include in logging (maximum 250 entries)."
+              },
+              "name": "dataResourceValues",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "string"
+                  },
+                  "kind": "array"
+                }
+              }
+            },
+            {
+              "docs": {
+                "summary": "the options to configure logging of management and data events."
+              },
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudtrail.AddEventSelectorOptions"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "remarks": "Only events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.\n\nThis method adds a Lambda Data Event Selector for filtering events that match Lambda function operations.\n\nData events: These events provide insight into the resource operations performed on or within a resource.\nThese are also known as data plane operations.",
+            "stability": "stable",
+            "summary": "When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 399
+          },
+          "name": "addLambdaEventSelector",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the list of lambda function handlers whose data events should be logged (maximum 250 entries)."
+              },
+              "name": "handlers",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "fqn": "@aws-cdk/aws-lambda.IFunction"
+                  },
+                  "kind": "array"
+                }
+              }
+            },
+            {
+              "docs": {
+                "summary": "the options to configure logging of management and data events."
+              },
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudtrail.AddEventSelectorOptions"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "remarks": "Only events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.\n\nThis method adds an S3 Data Event Selector for filtering events that match S3 operations.\n\nData events: These events provide insight into the resource operations performed on or within a resource.\nThese are also known as data plane operations.",
+            "stability": "stable",
+            "summary": "When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 426
+          },
+          "name": "addS3EventSelector",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the list of S3 bucket with optional prefix to include in logging (maximum 250 entries)."
+              },
+              "name": "s3Selector",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "fqn": "@aws-cdk/aws-cloudtrail.S3EventSelector"
+                  },
+                  "kind": "array"
+                }
+              }
+            },
+            {
+              "docs": {
+                "summary": "the options to configure logging of management and data events."
+              },
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudtrail.AddEventSelectorOptions"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "default": "false",
+            "see": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html",
+            "stability": "stable",
+            "summary": "Log all Lambda data events for all lambda functions the account."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 410
+          },
+          "name": "logAllLambdaDataEvents",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudtrail.AddEventSelectorOptions"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "default": "false",
+            "see": "https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html",
+            "stability": "stable",
+            "summary": "Log all S3 data events for all objects for all buckets in the account."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 437
+          },
+          "name": "logAllS3DataEvents",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudtrail.AddEventSelectorOptions"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "deprecated": "- use Trail.onEvent()",
+            "remarks": "Note that the event doesn't necessarily have to come from this Trail, it can\nbe captured from any one.\n\nBe sure to filter the event further down using an event pattern.",
+            "stability": "deprecated",
+            "summary": "Create an event rule for when an event is recorded by any Trail in the account."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 451
+          },
+          "name": "onCloudTrailEvent",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        }
+      ],
+      "name": "Trail",
+      "properties": [
+        {
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "ARN of the CloudTrail trail i.e. arn:aws:cloudtrail:us-east-2:123456789012:trail/myCloudTrail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 222
+          },
+          "name": "trailArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "ARN of the Amazon SNS topic that's associated with the CloudTrail trail, i.e. arn:aws:sns:us-east-2:123456789012:mySNSTopic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 229
+          },
+          "name": "trailSnsTopicArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "`undefined` if `sendToCloudWatchLogs` property is false.",
+            "stability": "stable",
+            "summary": "The CloudWatch log group to which CloudTrail events are sent."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 235
+          },
+          "name": "logGroup",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.ILogGroup"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail:Trail"
+    },
+    "@aws-cdk/aws-cloudtrail.TrailProps": {
+      "assembly": "@aws-cdk/aws-cloudtrail",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties for an AWS CloudTrail trail."
+      },
+      "fqn": "@aws-cdk/aws-cloudtrail.TrailProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/cloudtrail.ts",
+        "line": 15
+      },
+      "name": "TrailProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- if not supplied a bucket will be created with all the correct permisions",
+            "stability": "stable",
+            "summary": "The Amazon S3 bucket."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 117
+          },
+          "name": "bucket",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-s3.IBucket"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- a new log group is created and used.",
+            "remarks": "Ignored if sendToCloudWatchLogs is set to false.",
+            "stability": "stable",
+            "summary": "Log Group to which CloudTrail to push logs to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 80
+          },
+          "name": "cloudWatchLogGroup",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.ILogGroup"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "logs.RetentionDays.ONE_YEAR",
+            "remarks": "Ignored if sendToCloudWatchLogs is false or if cloudWatchLogGroup is set.",
+            "stability": "stable",
+            "summary": "How long to retain logs in CloudWatchLogs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 74
+          },
+          "name": "cloudWatchLogsRetention",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.RetentionDays"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "remarks": "This feature is built using industry standard algorithms: SHA-256 for hashing and SHA-256 with RSA for digital signing.\nThis makes it computationally infeasible to modify, delete or forge CloudTrail log files without detection.\nYou can use the AWS CLI to validate the files in the location where CloudTrail delivered them.",
+            "stability": "stable",
+            "summary": "To determine whether a log file was modified, deleted, or unchanged after CloudTrail delivered it, you can use CloudTrail log file integrity validation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 58
+          },
+          "name": "enableFileValidation",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No encryption.",
+            "stability": "stable",
+            "summary": "The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 92
+          },
+          "name": "encryptionKey",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.IKey"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "remarks": "For global services such as AWS Identity and Access Management (IAM), AWS STS, Amazon CloudFront, and Route 53,\nevents are delivered to any trail that includes global services, and are logged as occurring in US East (N. Virginia) Region.",
+            "stability": "stable",
+            "summary": "For most services, events are recorded in the region where the action occurred."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 23
+          },
+          "name": "includeGlobalServiceEvents",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No Value.",
+            "stability": "stable",
+            "summary": "A JSON string that contains the insight types you want to log on a trail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 136
+          },
+          "name": "insightTypes",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-cloudtrail.InsightType"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "true",
+            "stability": "stable",
+            "summary": "Whether or not this trail delivers log files from multiple regions to a single S3 bucket for a single account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 30
+          },
+          "name": "isMultiRegionTrail",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- false",
+            "remarks": "If this is set to true then the current account _must_ be the management account. If it is not, then CloudFormation will throw an error.\n\nIf this is set to true and the current account is a management account for an organization in AWS Organizations, the trail will be created in all AWS accounts that belong to the organization.\nIf this is set to false, the trail will remain in the current AWS account but be deleted from all member accounts in the organization.",
+            "stability": "stable",
+            "summary": "Specifies whether the trail is applied to all accounts in an organization in AWS Organizations, or only for the current AWS account."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 129
+          },
+          "name": "isOrganizationTrail",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No encryption.",
+            "deprecated": "- use encryptionKey instead.",
+            "stability": "deprecated",
+            "summary": "The AWS Key Management Service (AWS KMS) key ID that you want to use to encrypt CloudTrail logs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 86
+          },
+          "name": "kmsKey",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.IKey"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "ReadWriteType.ALL",
+            "remarks": "Only events that match your trail settings are delivered to your Amazon S3 bucket and Amazon CloudWatch Logs log group.\n\nThis method sets the management configuration for this trail.\n\nManagement events provide insight into management operations that are performed on resources in your AWS account.\nThese are also known as control plane operations.\nManagement events can also include non-API events that occur in your account.\nFor example, when a user logs in to your account, CloudTrail logs the ConsoleLogin event.",
+            "stability": "stable",
+            "summary": "When an event occurs in your account, CloudTrail evaluates whether the event matches the settings for your trails."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 47
+          },
+          "name": "managementEvents",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-cloudtrail.ReadWriteType"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No prefix.",
+            "stability": "stable",
+            "summary": "An Amazon S3 object key prefix that precedes the name of all log files."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 111
+          },
+          "name": "s3KeyPrefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "remarks": "Disabled for cost out of the box.",
+            "stability": "stable",
+            "summary": "If CloudTrail pushes logs to CloudWatch Logs in addition to S3."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 66
+          },
+          "name": "sendToCloudWatchLogs",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No notifications.",
+            "stability": "stable",
+            "summary": "SNS topic that is notified when new log files are published."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 98
+          },
+          "name": "snsTopic",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-sns.ITopic"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- AWS CloudFormation generated name.",
+            "remarks": "We recommend customers do not set an explicit name.",
+            "stability": "stable",
+            "summary": "The name of the trail."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudtrail.ts",
+            "line": 105
+          },
+          "name": "trailName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudtrail:TrailProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "GMITN/GZ2/HFU7AX6AfbK1jmt3rYjj3d/ccCvCTFoHc="
+}

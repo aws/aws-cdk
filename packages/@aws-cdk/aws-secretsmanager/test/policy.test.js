@@ -1,0 +1,40 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const assertions_1 = require("@aws-cdk/assertions");
+const iam = require("@aws-cdk/aws-iam");
+const cdk = require("@aws-cdk/core");
+const cxapi = require("@aws-cdk/cx-api");
+const secretsmanager = require("../lib");
+const lib_1 = require("../lib");
+class MockAttachmentTarget extends cdk.Resource {
+    asSecretAttachmentTarget() {
+        return {
+            targetId: 'mock-id',
+            targetType: lib_1.AttachmentTargetType.RDS_DB_INSTANCE,
+        };
+    }
+}
+describe.each([
+    [false, 2],
+    [true, 1],
+])('@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments=%s', (featureFlagValue, expectedResourcePolicyCount) => {
+    const app = new cdk.App({
+        context: {
+            [cxapi.SECRETS_MANAGER_TARGET_ATTACHMENT_RESOURCE_POLICY]: featureFlagValue,
+        },
+    });
+    const stack = new cdk.Stack(app);
+    test('using addToResourcePolicy on a Secret and on a SecretAttachmentTarget attaching this Secret', () => {
+        // GIVEN
+        const secret = new secretsmanager.Secret(stack, 'Secret');
+        const servicePrincipalOne = new iam.ServicePrincipal('some-service-a');
+        const servicePrincipalTwo = new iam.ServicePrincipal('some-service-b');
+        const secretAttachment = secret.attach(new MockAttachmentTarget(stack, 'mock-target'));
+        // WHEN
+        secret.grantRead(servicePrincipalOne);
+        secretAttachment.grantRead(servicePrincipalTwo);
+        // THEN
+        assertions_1.Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::ResourcePolicy', expectedResourcePolicyCount);
+    });
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicG9saWN5LnRlc3QuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJwb2xpY3kudGVzdC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLG9EQUErQztBQUMvQyx3Q0FBd0M7QUFDeEMscUNBQXFDO0FBQ3JDLHlDQUF5QztBQUN6Qyx5Q0FBeUM7QUFDekMsZ0NBQXVFO0FBRXZFLE1BQU0sb0JBQXFCLFNBQVEsR0FBRyxDQUFDLFFBQVE7SUFDN0Msd0JBQXdCO1FBQ3RCLE9BQU87WUFDTCxRQUFRLEVBQUUsU0FBUztZQUNuQixVQUFVLEVBQUUsMEJBQW9CLENBQUMsZUFBZTtTQUNqRCxDQUFDO0tBQ0g7Q0FDRjtBQUVELFFBQVEsQ0FBQyxJQUFJLENBQUM7SUFDWixDQUFDLEtBQUssRUFBRSxDQUFDLENBQUM7SUFDVixDQUFDLElBQUksRUFBRSxDQUFDLENBQUM7Q0FDVixDQUFDLENBQUMsMEZBQTBGLEVBQUUsQ0FBQyxnQkFBZ0IsRUFBRSwyQkFBMkIsRUFBRSxFQUFFO0lBQy9JLE1BQU0sR0FBRyxHQUFHLElBQUksR0FBRyxDQUFDLEdBQUcsQ0FBQztRQUN0QixPQUFPLEVBQUU7WUFDUCxDQUFDLEtBQUssQ0FBQyxpREFBaUQsQ0FBQyxFQUFFLGdCQUFnQjtTQUM1RTtLQUNGLENBQUMsQ0FBQztJQUNILE1BQU0sS0FBSyxHQUFHLElBQUksR0FBRyxDQUFDLEtBQUssQ0FBQyxHQUFHLENBQUMsQ0FBQztJQUVqQyxJQUFJLENBQUMsNkZBQTZGLEVBQUUsR0FBRyxFQUFFO1FBQ3ZHLFFBQVE7UUFFUixNQUFNLE1BQU0sR0FBRyxJQUFJLGNBQWMsQ0FBQyxNQUFNLENBQUMsS0FBSyxFQUFFLFFBQVEsQ0FBQyxDQUFDO1FBQzFELE1BQU0sbUJBQW1CLEdBQUcsSUFBSSxHQUFHLENBQUMsZ0JBQWdCLENBQUMsZ0JBQWdCLENBQUMsQ0FBQztRQUN2RSxNQUFNLG1CQUFtQixHQUFHLElBQUksR0FBRyxDQUFDLGdCQUFnQixDQUFDLGdCQUFnQixDQUFDLENBQUM7UUFDdkUsTUFBTSxnQkFBZ0IsR0FBRyxNQUFNLENBQUMsTUFBTSxDQUFDLElBQUksb0JBQW9CLENBQUMsS0FBSyxFQUFFLGFBQWEsQ0FBQyxDQUFDLENBQUM7UUFFdkYsT0FBTztRQUNQLE1BQU0sQ0FBQyxTQUFTLENBQUMsbUJBQW1CLENBQUMsQ0FBQztRQUN0QyxnQkFBZ0IsQ0FBQyxTQUFTLENBQUMsbUJBQW1CLENBQUMsQ0FBQztRQUVoRCxPQUFPO1FBQ1AscUJBQVEsQ0FBQyxTQUFTLENBQUMsS0FBSyxDQUFDLENBQUMsZUFBZSxDQUFDLHFDQUFxQyxFQUFFLDJCQUEyQixDQUFDLENBQUM7SUFDaEgsQ0FBQyxDQUFDLENBQUM7QUFDTCxDQUFDLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IFRlbXBsYXRlIH0gZnJvbSAnQGF3cy1jZGsvYXNzZXJ0aW9ucyc7XG5pbXBvcnQgKiBhcyBpYW0gZnJvbSAnQGF3cy1jZGsvYXdzLWlhbSc7XG5pbXBvcnQgKiBhcyBjZGsgZnJvbSAnQGF3cy1jZGsvY29yZSc7XG5pbXBvcnQgKiBhcyBjeGFwaSBmcm9tICdAYXdzLWNkay9jeC1hcGknO1xuaW1wb3J0ICogYXMgc2VjcmV0c21hbmFnZXIgZnJvbSAnLi4vbGliJztcbmltcG9ydCB7IEF0dGFjaG1lbnRUYXJnZXRUeXBlLCBJU2VjcmV0QXR0YWNobWVudFRhcmdldCB9IGZyb20gJy4uL2xpYic7XG5cbmNsYXNzIE1vY2tBdHRhY2htZW50VGFyZ2V0IGV4dGVuZHMgY2RrLlJlc291cmNlIGltcGxlbWVudHMgSVNlY3JldEF0dGFjaG1lbnRUYXJnZXQge1xuICBhc1NlY3JldEF0dGFjaG1lbnRUYXJnZXQoKTogc2VjcmV0c21hbmFnZXIuU2VjcmV0QXR0YWNobWVudFRhcmdldFByb3BzIHtcbiAgICByZXR1cm4ge1xuICAgICAgdGFyZ2V0SWQ6ICdtb2NrLWlkJyxcbiAgICAgIHRhcmdldFR5cGU6IEF0dGFjaG1lbnRUYXJnZXRUeXBlLlJEU19EQl9JTlNUQU5DRSxcbiAgICB9O1xuICB9XG59XG5cbmRlc2NyaWJlLmVhY2goW1xuICBbZmFsc2UsIDJdLFxuICBbdHJ1ZSwgMV0sXG5dKSgnQGF3cy1jZGsvYXdzLXNlY3JldHNtYW5hZ2VyOnVzZUF0dGFjaGVkU2VjcmV0UmVzb3VyY2VQb2xpY3lGb3JTZWNyZXRUYXJnZXRBdHRhY2htZW50cz0lcycsIChmZWF0dXJlRmxhZ1ZhbHVlLCBleHBlY3RlZFJlc291cmNlUG9saWN5Q291bnQpID0+IHtcbiAgY29uc3QgYXBwID0gbmV3IGNkay5BcHAoe1xuICAgIGNvbnRleHQ6IHtcbiAgICAgIFtjeGFwaS5TRUNSRVRTX01BTkFHRVJfVEFSR0VUX0FUVEFDSE1FTlRfUkVTT1VSQ0VfUE9MSUNZXTogZmVhdHVyZUZsYWdWYWx1ZSxcbiAgICB9LFxuICB9KTtcbiAgY29uc3Qgc3RhY2sgPSBuZXcgY2RrLlN0YWNrKGFwcCk7XG5cbiAgdGVzdCgndXNpbmcgYWRkVG9SZXNvdXJjZVBvbGljeSBvbiBhIFNlY3JldCBhbmQgb24gYSBTZWNyZXRBdHRhY2htZW50VGFyZ2V0IGF0dGFjaGluZyB0aGlzIFNlY3JldCcsICgpID0+IHtcbiAgICAvLyBHSVZFTlxuXG4gICAgY29uc3Qgc2VjcmV0ID0gbmV3IHNlY3JldHNtYW5hZ2VyLlNlY3JldChzdGFjaywgJ1NlY3JldCcpO1xuICAgIGNvbnN0IHNlcnZpY2VQcmluY2lwYWxPbmUgPSBuZXcgaWFtLlNlcnZpY2VQcmluY2lwYWwoJ3NvbWUtc2VydmljZS1hJyk7XG4gICAgY29uc3Qgc2VydmljZVByaW5jaXBhbFR3byA9IG5ldyBpYW0uU2VydmljZVByaW5jaXBhbCgnc29tZS1zZXJ2aWNlLWInKTtcbiAgICBjb25zdCBzZWNyZXRBdHRhY2htZW50ID0gc2VjcmV0LmF0dGFjaChuZXcgTW9ja0F0dGFjaG1lbnRUYXJnZXQoc3RhY2ssICdtb2NrLXRhcmdldCcpKTtcblxuICAgIC8vIFdIRU5cbiAgICBzZWNyZXQuZ3JhbnRSZWFkKHNlcnZpY2VQcmluY2lwYWxPbmUpO1xuICAgIHNlY3JldEF0dGFjaG1lbnQuZ3JhbnRSZWFkKHNlcnZpY2VQcmluY2lwYWxUd28pO1xuXG4gICAgLy8gVEhFTlxuICAgIFRlbXBsYXRlLmZyb21TdGFjayhzdGFjaykucmVzb3VyY2VDb3VudElzKCdBV1M6OlNlY3JldHNNYW5hZ2VyOjpSZXNvdXJjZVBvbGljeScsIGV4cGVjdGVkUmVzb3VyY2VQb2xpY3lDb3VudCk7XG4gIH0pO1xufSk7XG4iXX0=

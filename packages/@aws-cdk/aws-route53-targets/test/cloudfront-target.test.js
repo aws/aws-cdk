@@ -1,0 +1,81 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const assertions_1 = require("@aws-cdk/assertions");
+const cloudfront = require("@aws-cdk/aws-cloudfront");
+const route53 = require("@aws-cdk/aws-route53");
+const s3 = require("@aws-cdk/aws-s3");
+const core_1 = require("@aws-cdk/core");
+const targets = require("../lib");
+test('use CloudFrontTarget partition hosted zone id mapping', () => {
+    // GIVEN
+    const stack = new core_1.Stack();
+    // WHEN
+    targets.CloudFrontTarget.getHostedZoneId(stack);
+    // THEN
+    assertions_1.Template.fromStack(stack).hasMapping('AWSCloudFrontPartitionHostedZoneIdMap', {
+        'aws': {
+            zoneId: 'Z2FDTNDATAQYW2',
+        },
+        'aws-cn': {
+            zoneId: 'Z3RFFRIM2A3IF5',
+        },
+    });
+});
+test('use CloudFrontTarget hosted zone id mappings in nested stacks', () => {
+    // GIVEN
+    const stack = new core_1.Stack();
+    const nestedStackA = new core_1.NestedStack(stack, 'nestedStackA');
+    const nestedStackB = new core_1.NestedStack(stack, 'nestedStackB');
+    // WHEN
+    targets.CloudFrontTarget.getHostedZoneId(nestedStackA);
+    targets.CloudFrontTarget.getHostedZoneId(nestedStackB);
+    // THEN
+    for (let nestedStack of [nestedStackA, nestedStackB]) {
+        assertions_1.Template.fromStack(nestedStack).hasMapping('AWSCloudFrontPartitionHostedZoneIdMap', {
+            'aws': {
+                zoneId: 'Z2FDTNDATAQYW2',
+            },
+            'aws-cn': {
+                zoneId: 'Z3RFFRIM2A3IF5',
+            },
+        });
+    }
+});
+test('use CloudFront as record target', () => {
+    // GIVEN
+    const stack = new core_1.Stack();
+    const sourceBucket = new s3.Bucket(stack, 'Bucket');
+    const distribution = new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
+        originConfigs: [
+            {
+                s3OriginSource: {
+                    s3BucketSource: sourceBucket,
+                },
+                behaviors: [{ isDefaultBehavior: true }],
+            },
+        ],
+    });
+    // WHEN
+    const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'test.public' });
+    new route53.ARecord(zone, 'Alias', {
+        zone,
+        recordName: '_foo',
+        target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+    });
+    // THEN
+    assertions_1.Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+        AliasTarget: {
+            DNSName: { 'Fn::GetAtt': ['MyDistributionCFDistributionDE147309', 'DomainName'] },
+            HostedZoneId: {
+                'Fn::FindInMap': [
+                    'AWSCloudFrontPartitionHostedZoneIdMap',
+                    {
+                        Ref: 'AWS::Partition',
+                    },
+                    'zoneId',
+                ],
+            },
+        },
+    });
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY2xvdWRmcm9udC10YXJnZXQudGVzdC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImNsb3VkZnJvbnQtdGFyZ2V0LnRlc3QudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSxvREFBK0M7QUFDL0Msc0RBQXNEO0FBQ3RELGdEQUFnRDtBQUNoRCxzQ0FBc0M7QUFDdEMsd0NBQW1EO0FBQ25ELGtDQUFrQztBQUVsQyxJQUFJLENBQUMsdURBQXVELEVBQUUsR0FBRyxFQUFFO0lBQ2pFLFFBQVE7SUFDUixNQUFNLEtBQUssR0FBRyxJQUFJLFlBQUssRUFBRSxDQUFDO0lBRTFCLE9BQU87SUFDUCxPQUFPLENBQUMsZ0JBQWdCLENBQUMsZUFBZSxDQUFDLEtBQUssQ0FBQyxDQUFDO0lBRWhELE9BQU87SUFDUCxxQkFBUSxDQUFDLFNBQVMsQ0FBQyxLQUFLLENBQUMsQ0FBQyxVQUFVLENBQUMsdUNBQXVDLEVBQUU7UUFDNUUsS0FBSyxFQUFFO1lBQ0wsTUFBTSxFQUFFLGdCQUFnQjtTQUN6QjtRQUNELFFBQVEsRUFBRTtZQUNSLE1BQU0sRUFBRSxnQkFBZ0I7U0FDekI7S0FDRixDQUFDLENBQUM7QUFDTCxDQUFDLENBQUMsQ0FBQztBQUVILElBQUksQ0FBQywrREFBK0QsRUFBRSxHQUFHLEVBQUU7SUFDekUsUUFBUTtJQUNSLE1BQU0sS0FBSyxHQUFHLElBQUksWUFBSyxFQUFFLENBQUM7SUFDMUIsTUFBTSxZQUFZLEdBQUcsSUFBSSxrQkFBVyxDQUFDLEtBQUssRUFBRSxjQUFjLENBQUMsQ0FBQztJQUM1RCxNQUFNLFlBQVksR0FBRyxJQUFJLGtCQUFXLENBQUMsS0FBSyxFQUFFLGNBQWMsQ0FBQyxDQUFDO0lBRTVELE9BQU87SUFDUCxPQUFPLENBQUMsZ0JBQWdCLENBQUMsZUFBZSxDQUFDLFlBQVksQ0FBQyxDQUFDO0lBQ3ZELE9BQU8sQ0FBQyxnQkFBZ0IsQ0FBQyxlQUFlLENBQUMsWUFBWSxDQUFDLENBQUM7SUFFdkQsT0FBTztJQUNQLEtBQUssSUFBSSxXQUFXLElBQUksQ0FBQyxZQUFZLEVBQUUsWUFBWSxDQUFDLEVBQUU7UUFDcEQscUJBQVEsQ0FBQyxTQUFTLENBQUMsV0FBVyxDQUFDLENBQUMsVUFBVSxDQUFDLHVDQUF1QyxFQUFFO1lBQ2xGLEtBQUssRUFBRTtnQkFDTCxNQUFNLEVBQUUsZ0JBQWdCO2FBQ3pCO1lBQ0QsUUFBUSxFQUFFO2dCQUNSLE1BQU0sRUFBRSxnQkFBZ0I7YUFDekI7U0FDRixDQUFDLENBQUM7S0FDSjtBQUNILENBQUMsQ0FBQyxDQUFDO0FBRUgsSUFBSSxDQUFDLGlDQUFpQyxFQUFFLEdBQUcsRUFBRTtJQUMzQyxRQUFRO0lBQ1IsTUFBTSxLQUFLLEdBQUcsSUFBSSxZQUFLLEVBQUUsQ0FBQztJQUUxQixNQUFNLFlBQVksR0FBRyxJQUFJLEVBQUUsQ0FBQyxNQUFNLENBQUMsS0FBSyxFQUFFLFFBQVEsQ0FBQyxDQUFDO0lBRXBELE1BQU0sWUFBWSxHQUFHLElBQUksVUFBVSxDQUFDLHlCQUF5QixDQUFDLEtBQUssRUFBRSxnQkFBZ0IsRUFBRTtRQUNyRixhQUFhLEVBQUU7WUFDYjtnQkFDRSxjQUFjLEVBQUU7b0JBQ2QsY0FBYyxFQUFFLFlBQVk7aUJBQzdCO2dCQUNELFNBQVMsRUFBRSxDQUFDLEVBQUUsaUJBQWlCLEVBQUUsSUFBSSxFQUFFLENBQUM7YUFDekM7U0FDRjtLQUNGLENBQUMsQ0FBQztJQUVILE9BQU87SUFDUCxNQUFNLElBQUksR0FBRyxJQUFJLE9BQU8sQ0FBQyxnQkFBZ0IsQ0FBQyxLQUFLLEVBQUUsWUFBWSxFQUFFLEVBQUUsUUFBUSxFQUFFLGFBQWEsRUFBRSxDQUFDLENBQUM7SUFDNUYsSUFBSSxPQUFPLENBQUMsT0FBTyxDQUFDLElBQUksRUFBRSxPQUFPLEVBQUU7UUFDakMsSUFBSTtRQUNKLFVBQVUsRUFBRSxNQUFNO1FBQ2xCLE1BQU0sRUFBRSxPQUFPLENBQUMsWUFBWSxDQUFDLFNBQVMsQ0FBQyxJQUFJLE9BQU8sQ0FBQyxnQkFBZ0IsQ0FBQyxZQUFZLENBQUMsQ0FBQztLQUNuRixDQUFDLENBQUM7SUFFSCxPQUFPO0lBQ1AscUJBQVEsQ0FBQyxTQUFTLENBQUMsS0FBSyxDQUFDLENBQUMscUJBQXFCLENBQUMseUJBQXlCLEVBQUU7UUFDekUsV0FBVyxFQUFFO1lBQ1gsT0FBTyxFQUFFLEVBQUUsWUFBWSxFQUFFLENBQUMsc0NBQXNDLEVBQUUsWUFBWSxDQUFDLEVBQUU7WUFDakYsWUFBWSxFQUFFO2dCQUNaLGVBQWUsRUFBRTtvQkFDZix1Q0FBdUM7b0JBQ3ZDO3dCQUNFLEdBQUcsRUFBRSxnQkFBZ0I7cUJBQ3RCO29CQUNELFFBQVE7aUJBQ1Q7YUFDRjtTQUNGO0tBQ0YsQ0FBQyxDQUFDO0FBQ0wsQ0FBQyxDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBUZW1wbGF0ZSB9IGZyb20gJ0Bhd3MtY2RrL2Fzc2VydGlvbnMnO1xuaW1wb3J0ICogYXMgY2xvdWRmcm9udCBmcm9tICdAYXdzLWNkay9hd3MtY2xvdWRmcm9udCc7XG5pbXBvcnQgKiBhcyByb3V0ZTUzIGZyb20gJ0Bhd3MtY2RrL2F3cy1yb3V0ZTUzJztcbmltcG9ydCAqIGFzIHMzIGZyb20gJ0Bhd3MtY2RrL2F3cy1zMyc7XG5pbXBvcnQgeyBOZXN0ZWRTdGFjaywgU3RhY2sgfSBmcm9tICdAYXdzLWNkay9jb3JlJztcbmltcG9ydCAqIGFzIHRhcmdldHMgZnJvbSAnLi4vbGliJztcblxudGVzdCgndXNlIENsb3VkRnJvbnRUYXJnZXQgcGFydGl0aW9uIGhvc3RlZCB6b25lIGlkIG1hcHBpbmcnLCAoKSA9PiB7XG4gIC8vIEdJVkVOXG4gIGNvbnN0IHN0YWNrID0gbmV3IFN0YWNrKCk7XG5cbiAgLy8gV0hFTlxuICB0YXJnZXRzLkNsb3VkRnJvbnRUYXJnZXQuZ2V0SG9zdGVkWm9uZUlkKHN0YWNrKTtcblxuICAvLyBUSEVOXG4gIFRlbXBsYXRlLmZyb21TdGFjayhzdGFjaykuaGFzTWFwcGluZygnQVdTQ2xvdWRGcm9udFBhcnRpdGlvbkhvc3RlZFpvbmVJZE1hcCcsIHtcbiAgICAnYXdzJzoge1xuICAgICAgem9uZUlkOiAnWjJGRFROREFUQVFZVzInLFxuICAgIH0sXG4gICAgJ2F3cy1jbic6IHtcbiAgICAgIHpvbmVJZDogJ1ozUkZGUklNMkEzSUY1JyxcbiAgICB9LFxuICB9KTtcbn0pO1xuXG50ZXN0KCd1c2UgQ2xvdWRGcm9udFRhcmdldCBob3N0ZWQgem9uZSBpZCBtYXBwaW5ncyBpbiBuZXN0ZWQgc3RhY2tzJywgKCkgPT4ge1xuICAvLyBHSVZFTlxuICBjb25zdCBzdGFjayA9IG5ldyBTdGFjaygpO1xuICBjb25zdCBuZXN0ZWRTdGFja0EgPSBuZXcgTmVzdGVkU3RhY2soc3RhY2ssICduZXN0ZWRTdGFja0EnKTtcbiAgY29uc3QgbmVzdGVkU3RhY2tCID0gbmV3IE5lc3RlZFN0YWNrKHN0YWNrLCAnbmVzdGVkU3RhY2tCJyk7XG5cbiAgLy8gV0hFTlxuICB0YXJnZXRzLkNsb3VkRnJvbnRUYXJnZXQuZ2V0SG9zdGVkWm9uZUlkKG5lc3RlZFN0YWNrQSk7XG4gIHRhcmdldHMuQ2xvdWRGcm9udFRhcmdldC5nZXRIb3N0ZWRab25lSWQobmVzdGVkU3RhY2tCKTtcblxuICAvLyBUSEVOXG4gIGZvciAobGV0IG5lc3RlZFN0YWNrIG9mIFtuZXN0ZWRTdGFja0EsIG5lc3RlZFN0YWNrQl0pIHtcbiAgICBUZW1wbGF0ZS5mcm9tU3RhY2sobmVzdGVkU3RhY2spLmhhc01hcHBpbmcoJ0FXU0Nsb3VkRnJvbnRQYXJ0aXRpb25Ib3N0ZWRab25lSWRNYXAnLCB7XG4gICAgICAnYXdzJzoge1xuICAgICAgICB6b25lSWQ6ICdaMkZEVE5EQVRBUVlXMicsXG4gICAgICB9LFxuICAgICAgJ2F3cy1jbic6IHtcbiAgICAgICAgem9uZUlkOiAnWjNSRkZSSU0yQTNJRjUnLFxuICAgICAgfSxcbiAgICB9KTtcbiAgfVxufSk7XG5cbnRlc3QoJ3VzZSBDbG91ZEZyb250IGFzIHJlY29yZCB0YXJnZXQnLCAoKSA9PiB7XG4gIC8vIEdJVkVOXG4gIGNvbnN0IHN0YWNrID0gbmV3IFN0YWNrKCk7XG5cbiAgY29uc3Qgc291cmNlQnVja2V0ID0gbmV3IHMzLkJ1Y2tldChzdGFjaywgJ0J1Y2tldCcpO1xuXG4gIGNvbnN0IGRpc3RyaWJ1dGlvbiA9IG5ldyBjbG91ZGZyb250LkNsb3VkRnJvbnRXZWJEaXN0cmlidXRpb24oc3RhY2ssICdNeURpc3RyaWJ1dGlvbicsIHtcbiAgICBvcmlnaW5Db25maWdzOiBbXG4gICAgICB7XG4gICAgICAgIHMzT3JpZ2luU291cmNlOiB7XG4gICAgICAgICAgczNCdWNrZXRTb3VyY2U6IHNvdXJjZUJ1Y2tldCxcbiAgICAgICAgfSxcbiAgICAgICAgYmVoYXZpb3JzOiBbeyBpc0RlZmF1bHRCZWhhdmlvcjogdHJ1ZSB9XSxcbiAgICAgIH0sXG4gICAgXSxcbiAgfSk7XG5cbiAgLy8gV0hFTlxuICBjb25zdCB6b25lID0gbmV3IHJvdXRlNTMuUHVibGljSG9zdGVkWm9uZShzdGFjaywgJ0hvc3RlZFpvbmUnLCB7IHpvbmVOYW1lOiAndGVzdC5wdWJsaWMnIH0pO1xuICBuZXcgcm91dGU1My5BUmVjb3JkKHpvbmUsICdBbGlhcycsIHtcbiAgICB6b25lLFxuICAgIHJlY29yZE5hbWU6ICdfZm9vJyxcbiAgICB0YXJnZXQ6IHJvdXRlNTMuUmVjb3JkVGFyZ2V0LmZyb21BbGlhcyhuZXcgdGFyZ2V0cy5DbG91ZEZyb250VGFyZ2V0KGRpc3RyaWJ1dGlvbikpLFxuICB9KTtcblxuICAvLyBUSEVOXG4gIFRlbXBsYXRlLmZyb21TdGFjayhzdGFjaykuaGFzUmVzb3VyY2VQcm9wZXJ0aWVzKCdBV1M6OlJvdXRlNTM6OlJlY29yZFNldCcsIHtcbiAgICBBbGlhc1RhcmdldDoge1xuICAgICAgRE5TTmFtZTogeyAnRm46OkdldEF0dCc6IFsnTXlEaXN0cmlidXRpb25DRkRpc3RyaWJ1dGlvbkRFMTQ3MzA5JywgJ0RvbWFpbk5hbWUnXSB9LFxuICAgICAgSG9zdGVkWm9uZUlkOiB7XG4gICAgICAgICdGbjo6RmluZEluTWFwJzogW1xuICAgICAgICAgICdBV1NDbG91ZEZyb250UGFydGl0aW9uSG9zdGVkWm9uZUlkTWFwJyxcbiAgICAgICAgICB7XG4gICAgICAgICAgICBSZWY6ICdBV1M6OlBhcnRpdGlvbicsXG4gICAgICAgICAgfSxcbiAgICAgICAgICAnem9uZUlkJyxcbiAgICAgICAgXSxcbiAgICAgIH0sXG4gICAgfSxcbiAgfSk7XG59KTtcbiJdfQ==

@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const iam = require("@aws-cdk/aws-iam");
+const core_1 = require("@aws-cdk/core");
+const lib_1 = require("../lib");
+const app = new core_1.App();
+const stack = new core_1.Stack(app, 'integ-kinesis-stream');
+const role = new iam.Role(stack, 'UserRole', {
+    assumedBy: new iam.AccountRootPrincipal(),
+});
+const stream = new lib_1.Stream(stack, 'myStream');
+stream.grantReadWrite(role);
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuc3RyZWFtLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiaW50ZWcuc3RyZWFtLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsd0NBQXdDO0FBQ3hDLHdDQUEyQztBQUMzQyxnQ0FBZ0M7QUFFaEMsTUFBTSxHQUFHLEdBQUcsSUFBSSxVQUFHLEVBQUUsQ0FBQztBQUN0QixNQUFNLEtBQUssR0FBRyxJQUFJLFlBQUssQ0FBQyxHQUFHLEVBQUUsc0JBQXNCLENBQUMsQ0FBQztBQUVyRCxNQUFNLElBQUksR0FBRyxJQUFJLEdBQUcsQ0FBQyxJQUFJLENBQUMsS0FBSyxFQUFFLFVBQVUsRUFBRTtJQUMzQyxTQUFTLEVBQUUsSUFBSSxHQUFHLENBQUMsb0JBQW9CLEVBQUU7Q0FDMUMsQ0FBQyxDQUFDO0FBRUgsTUFBTSxNQUFNLEdBQUcsSUFBSSxZQUFNLENBQUMsS0FBSyxFQUFFLFVBQVUsQ0FBQyxDQUFDO0FBRTdDLE1BQU0sQ0FBQyxjQUFjLENBQUMsSUFBSSxDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBpYW0gZnJvbSAnQGF3cy1jZGsvYXdzLWlhbSc7XG5pbXBvcnQgeyBBcHAsIFN0YWNrIH0gZnJvbSAnQGF3cy1jZGsvY29yZSc7XG5pbXBvcnQgeyBTdHJlYW0gfSBmcm9tICcuLi9saWInO1xuXG5jb25zdCBhcHAgPSBuZXcgQXBwKCk7XG5jb25zdCBzdGFjayA9IG5ldyBTdGFjayhhcHAsICdpbnRlZy1raW5lc2lzLXN0cmVhbScpO1xuXG5jb25zdCByb2xlID0gbmV3IGlhbS5Sb2xlKHN0YWNrLCAnVXNlclJvbGUnLCB7XG4gIGFzc3VtZWRCeTogbmV3IGlhbS5BY2NvdW50Um9vdFByaW5jaXBhbCgpLFxufSk7XG5cbmNvbnN0IHN0cmVhbSA9IG5ldyBTdHJlYW0oc3RhY2ssICdteVN0cmVhbScpO1xuXG5zdHJlYW0uZ3JhbnRSZWFkV3JpdGUocm9sZSk7XG4iXX0=

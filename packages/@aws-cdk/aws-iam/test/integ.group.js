@@ -1,0 +1,14 @@
+"use strict";
+// Creates a default group, with no users and no policy attached.
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = require("@aws-cdk/core");
+const integ_tests_1 = require("@aws-cdk/integ-tests");
+const lib_1 = require("../lib");
+const app = new core_1.App();
+const stack = new core_1.Stack(app, 'integ-iam-role-1');
+new lib_1.Group(stack, 'MyGroup');
+new integ_tests_1.IntegTest(app, 'iam-role-1', {
+    testCases: [stack],
+});
+app.synth();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuZ3JvdXAuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbnRlZy5ncm91cC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsaUVBQWlFOztBQUVqRSx3Q0FBMkM7QUFDM0Msc0RBQWlEO0FBQ2pELGdDQUErQjtBQUUvQixNQUFNLEdBQUcsR0FBRyxJQUFJLFVBQUcsRUFBRSxDQUFDO0FBRXRCLE1BQU0sS0FBSyxHQUFHLElBQUksWUFBSyxDQUFDLEdBQUcsRUFBRSxrQkFBa0IsQ0FBQyxDQUFDO0FBRWpELElBQUksV0FBSyxDQUFDLEtBQUssRUFBRSxTQUFTLENBQUMsQ0FBQztBQUU1QixJQUFJLHVCQUFTLENBQUMsR0FBRyxFQUFFLFlBQVksRUFBRTtJQUMvQixTQUFTLEVBQUUsQ0FBQyxLQUFLLENBQUM7Q0FDbkIsQ0FBQyxDQUFDO0FBRUgsR0FBRyxDQUFDLEtBQUssRUFBRSxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLy8gQ3JlYXRlcyBhIGRlZmF1bHQgZ3JvdXAsIHdpdGggbm8gdXNlcnMgYW5kIG5vIHBvbGljeSBhdHRhY2hlZC5cblxuaW1wb3J0IHsgQXBwLCBTdGFjayB9IGZyb20gJ0Bhd3MtY2RrL2NvcmUnO1xuaW1wb3J0IHsgSW50ZWdUZXN0IH0gZnJvbSAnQGF3cy1jZGsvaW50ZWctdGVzdHMnO1xuaW1wb3J0IHsgR3JvdXAgfSBmcm9tICcuLi9saWInO1xuXG5jb25zdCBhcHAgPSBuZXcgQXBwKCk7XG5cbmNvbnN0IHN0YWNrID0gbmV3IFN0YWNrKGFwcCwgJ2ludGVnLWlhbS1yb2xlLTEnKTtcblxubmV3IEdyb3VwKHN0YWNrLCAnTXlHcm91cCcpO1xuXG5uZXcgSW50ZWdUZXN0KGFwcCwgJ2lhbS1yb2xlLTEnLCB7XG4gIHRlc3RDYXNlczogW3N0YWNrXSxcbn0pO1xuXG5hcHAuc3ludGgoKTtcbiJdfQ==

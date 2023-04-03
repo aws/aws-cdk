@@ -1,0 +1,21 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NamespaceType = void 0;
+var NamespaceType;
+(function (NamespaceType) {
+    /**
+     * Choose this option if you want your application to use only API calls to discover registered instances.
+     */
+    NamespaceType["HTTP"] = "HTTP";
+    /**
+     * Choose this option if you want your application to be able to discover instances using either API calls or using
+     * DNS queries in a VPC.
+     */
+    NamespaceType["DNS_PRIVATE"] = "DNS_PRIVATE";
+    /**
+     * Choose this option if you want your application to be able to discover instances using either API calls or using
+     * public DNS queries. You aren't required to use both methods.
+     */
+    NamespaceType["DNS_PUBLIC"] = "DNS_PUBLIC";
+})(NamespaceType = exports.NamespaceType || (exports.NamespaceType = {}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibmFtZXNwYWNlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsibmFtZXNwYWNlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQXlDQSxJQUFZLGFBaUJYO0FBakJELFdBQVksYUFBYTtJQUN2Qjs7T0FFRztJQUNILDhCQUFhLENBQUE7SUFFYjs7O09BR0c7SUFDSCw0Q0FBMkIsQ0FBQTtJQUUzQjs7O09BR0c7SUFDSCwwQ0FBeUIsQ0FBQTtBQUMzQixDQUFDLEVBakJXLGFBQWEsR0FBYixxQkFBYSxLQUFiLHFCQUFhLFFBaUJ4QiIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IElSZXNvdXJjZSB9IGZyb20gJ0Bhd3MtY2RrL2NvcmUnO1xuXG5leHBvcnQgaW50ZXJmYWNlIElOYW1lc3BhY2UgZXh0ZW5kcyBJUmVzb3VyY2Uge1xuICAvKipcbiAgICogQSBuYW1lIGZvciB0aGUgTmFtZXNwYWNlLlxuICAgKiBAYXR0cmlidXRlXG4gICAqL1xuICByZWFkb25seSBuYW1lc3BhY2VOYW1lOiBzdHJpbmc7XG5cbiAgLyoqXG4gICAqIE5hbWVzcGFjZSBJZCBmb3IgdGhlIE5hbWVzcGFjZS5cbiAgICogQGF0dHJpYnV0ZVxuICAgKi9cbiAgcmVhZG9ubHkgbmFtZXNwYWNlSWQ6IHN0cmluZztcblxuICAvKipcbiAgICogTmFtZXNwYWNlIEFSTiBmb3IgdGhlIE5hbWVzcGFjZS5cbiAgICogQGF0dHJpYnV0ZVxuICAgKi9cbiAgcmVhZG9ubHkgbmFtZXNwYWNlQXJuOiBzdHJpbmc7XG5cbiAgLyoqXG4gICAqIFR5cGUgb2YgTmFtZXNwYWNlXG4gICAqL1xuICByZWFkb25seSB0eXBlOiBOYW1lc3BhY2VUeXBlO1xufVxuXG5leHBvcnQgaW50ZXJmYWNlIEJhc2VOYW1lc3BhY2VQcm9wcyB7XG4gIC8qKlxuICAgKiBBIG5hbWUgZm9yIHRoZSBOYW1lc3BhY2UuXG4gICAqL1xuICByZWFkb25seSBuYW1lOiBzdHJpbmc7XG5cbiAgLyoqXG4gICAqIEEgZGVzY3JpcHRpb24gb2YgdGhlIE5hbWVzcGFjZS5cbiAgICpcbiAgICogQGRlZmF1bHQgbm9uZVxuICAgKi9cbiAgcmVhZG9ubHkgZGVzY3JpcHRpb24/OiBzdHJpbmc7XG59XG5cbmV4cG9ydCBlbnVtIE5hbWVzcGFjZVR5cGUge1xuICAvKipcbiAgICogQ2hvb3NlIHRoaXMgb3B0aW9uIGlmIHlvdSB3YW50IHlvdXIgYXBwbGljYXRpb24gdG8gdXNlIG9ubHkgQVBJIGNhbGxzIHRvIGRpc2NvdmVyIHJlZ2lzdGVyZWQgaW5zdGFuY2VzLlxuICAgKi9cbiAgSFRUUCA9ICdIVFRQJyxcblxuICAvKipcbiAgICogQ2hvb3NlIHRoaXMgb3B0aW9uIGlmIHlvdSB3YW50IHlvdXIgYXBwbGljYXRpb24gdG8gYmUgYWJsZSB0byBkaXNjb3ZlciBpbnN0YW5jZXMgdXNpbmcgZWl0aGVyIEFQSSBjYWxscyBvciB1c2luZ1xuICAgKiBETlMgcXVlcmllcyBpbiBhIFZQQy5cbiAgICovXG4gIEROU19QUklWQVRFID0gJ0ROU19QUklWQVRFJyxcblxuICAvKipcbiAgICogQ2hvb3NlIHRoaXMgb3B0aW9uIGlmIHlvdSB3YW50IHlvdXIgYXBwbGljYXRpb24gdG8gYmUgYWJsZSB0byBkaXNjb3ZlciBpbnN0YW5jZXMgdXNpbmcgZWl0aGVyIEFQSSBjYWxscyBvciB1c2luZ1xuICAgKiBwdWJsaWMgRE5TIHF1ZXJpZXMuIFlvdSBhcmVuJ3QgcmVxdWlyZWQgdG8gdXNlIGJvdGggbWV0aG9kcy5cbiAgICovXG4gIEROU19QVUJMSUMgPSAnRE5TX1BVQkxJQycsXG59XG4iXX0=

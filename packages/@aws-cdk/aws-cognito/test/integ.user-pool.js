@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = require("@aws-cdk/core");
+const lib_1 = require("../lib");
+const app = new core_1.App();
+const stack = new core_1.Stack(app, 'integ-user-pool');
+const userpool = new lib_1.UserPool(stack, 'myuserpool', {
+    userPoolName: 'MyUserPool',
+    removalPolicy: core_1.RemovalPolicy.DESTROY,
+    deletionProtection: false,
+});
+new core_1.CfnOutput(stack, 'user-pool-id', {
+    value: userpool.userPoolId,
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcudXNlci1wb29sLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiaW50ZWcudXNlci1wb29sLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsd0NBQXFFO0FBQ3JFLGdDQUFrQztBQUVsQyxNQUFNLEdBQUcsR0FBRyxJQUFJLFVBQUcsRUFBRSxDQUFDO0FBQ3RCLE1BQU0sS0FBSyxHQUFHLElBQUksWUFBSyxDQUFDLEdBQUcsRUFBRSxpQkFBaUIsQ0FBQyxDQUFDO0FBRWhELE1BQU0sUUFBUSxHQUFHLElBQUksY0FBUSxDQUFDLEtBQUssRUFBRSxZQUFZLEVBQUU7SUFDakQsWUFBWSxFQUFFLFlBQVk7SUFDMUIsYUFBYSxFQUFFLG9CQUFhLENBQUMsT0FBTztJQUNwQyxrQkFBa0IsRUFBRSxLQUFLO0NBQzFCLENBQUMsQ0FBQztBQUVILElBQUksZ0JBQVMsQ0FBQyxLQUFLLEVBQUUsY0FBYyxFQUFFO0lBQ25DLEtBQUssRUFBRSxRQUFRLENBQUMsVUFBVTtDQUMzQixDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBBcHAsIENmbk91dHB1dCwgUmVtb3ZhbFBvbGljeSwgU3RhY2sgfSBmcm9tICdAYXdzLWNkay9jb3JlJztcbmltcG9ydCB7IFVzZXJQb29sIH0gZnJvbSAnLi4vbGliJztcblxuY29uc3QgYXBwID0gbmV3IEFwcCgpO1xuY29uc3Qgc3RhY2sgPSBuZXcgU3RhY2soYXBwLCAnaW50ZWctdXNlci1wb29sJyk7XG5cbmNvbnN0IHVzZXJwb29sID0gbmV3IFVzZXJQb29sKHN0YWNrLCAnbXl1c2VycG9vbCcsIHtcbiAgdXNlclBvb2xOYW1lOiAnTXlVc2VyUG9vbCcsXG4gIHJlbW92YWxQb2xpY3k6IFJlbW92YWxQb2xpY3kuREVTVFJPWSxcbiAgZGVsZXRpb25Qcm90ZWN0aW9uOiBmYWxzZSxcbn0pO1xuXG5uZXcgQ2ZuT3V0cHV0KHN0YWNrLCAndXNlci1wb29sLWlkJywge1xuICB2YWx1ZTogdXNlcnBvb2wudXNlclBvb2xJZCxcbn0pO1xuIl19

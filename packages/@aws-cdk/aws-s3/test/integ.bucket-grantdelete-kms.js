@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const iam = require("@aws-cdk/aws-iam");
+const kms = require("@aws-cdk/aws-kms");
+const cdk = require("@aws-cdk/core");
+const integ_tests_1 = require("@aws-cdk/integ-tests");
+const s3 = require("../lib");
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-cdk-s3');
+const key = new kms.Key(stack, 'MyKey');
+const deleter = new iam.User(stack, 'Deleter');
+const bucket = new s3.Bucket(stack, 'MyBucket', {
+    encryptionKey: key,
+    encryption: s3.BucketEncryption.KMS,
+});
+// when
+bucket.grantDelete(deleter);
+new integ_tests_1.IntegTest(app, 'cdk-integ-s3-grant-delete-kms', {
+    testCases: [stack],
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuYnVja2V0LWdyYW50ZGVsZXRlLWttcy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImludGVnLmJ1Y2tldC1ncmFudGRlbGV0ZS1rbXMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBQ0Esd0NBQXdDO0FBQ3hDLHdDQUF3QztBQUN4QyxxQ0FBcUM7QUFDckMsc0RBQWlEO0FBQ2pELDZCQUE2QjtBQUU3QixNQUFNLEdBQUcsR0FBRyxJQUFJLEdBQUcsQ0FBQyxHQUFHLEVBQUUsQ0FBQztBQUUxQixNQUFNLEtBQUssR0FBRyxJQUFJLEdBQUcsQ0FBQyxLQUFLLENBQUMsR0FBRyxFQUFFLFlBQVksQ0FBQyxDQUFDO0FBRS9DLE1BQU0sR0FBRyxHQUFHLElBQUksR0FBRyxDQUFDLEdBQUcsQ0FBQyxLQUFLLEVBQUUsT0FBTyxDQUFDLENBQUM7QUFDeEMsTUFBTSxPQUFPLEdBQUcsSUFBSSxHQUFHLENBQUMsSUFBSSxDQUFDLEtBQUssRUFBRSxTQUFTLENBQUMsQ0FBQztBQUMvQyxNQUFNLE1BQU0sR0FBRyxJQUFJLEVBQUUsQ0FBQyxNQUFNLENBQUMsS0FBSyxFQUFFLFVBQVUsRUFBRTtJQUM5QyxhQUFhLEVBQUUsR0FBRztJQUNsQixVQUFVLEVBQUUsRUFBRSxDQUFDLGdCQUFnQixDQUFDLEdBQUc7Q0FDcEMsQ0FBQyxDQUFDO0FBRUgsT0FBTztBQUNQLE1BQU0sQ0FBQyxXQUFXLENBQUMsT0FBTyxDQUFDLENBQUM7QUFFNUIsSUFBSSx1QkFBUyxDQUFDLEdBQUcsRUFBRSwrQkFBK0IsRUFBRTtJQUNsRCxTQUFTLEVBQUUsQ0FBQyxLQUFLLENBQUM7Q0FDbkIsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiIyEvdXNyL2Jpbi9lbnYgbm9kZVxuaW1wb3J0ICogYXMgaWFtIGZyb20gJ0Bhd3MtY2RrL2F3cy1pYW0nO1xuaW1wb3J0ICogYXMga21zIGZyb20gJ0Bhd3MtY2RrL2F3cy1rbXMnO1xuaW1wb3J0ICogYXMgY2RrIGZyb20gJ0Bhd3MtY2RrL2NvcmUnO1xuaW1wb3J0IHsgSW50ZWdUZXN0IH0gZnJvbSAnQGF3cy1jZGsvaW50ZWctdGVzdHMnO1xuaW1wb3J0ICogYXMgczMgZnJvbSAnLi4vbGliJztcblxuY29uc3QgYXBwID0gbmV3IGNkay5BcHAoKTtcblxuY29uc3Qgc3RhY2sgPSBuZXcgY2RrLlN0YWNrKGFwcCwgJ2F3cy1jZGstczMnKTtcblxuY29uc3Qga2V5ID0gbmV3IGttcy5LZXkoc3RhY2ssICdNeUtleScpO1xuY29uc3QgZGVsZXRlciA9IG5ldyBpYW0uVXNlcihzdGFjaywgJ0RlbGV0ZXInKTtcbmNvbnN0IGJ1Y2tldCA9IG5ldyBzMy5CdWNrZXQoc3RhY2ssICdNeUJ1Y2tldCcsIHtcbiAgZW5jcnlwdGlvbktleToga2V5LFxuICBlbmNyeXB0aW9uOiBzMy5CdWNrZXRFbmNyeXB0aW9uLktNUyxcbn0pO1xuXG4vLyB3aGVuXG5idWNrZXQuZ3JhbnREZWxldGUoZGVsZXRlcik7XG5cbm5ldyBJbnRlZ1Rlc3QoYXBwLCAnY2RrLWludGVnLXMzLWdyYW50LWRlbGV0ZS1rbXMnLCB7XG4gIHRlc3RDYXNlczogW3N0YWNrXSxcbn0pOyJdfQ==

@@ -1,0 +1,7 @@
+"use strict";
+exports.handler = async (_) => {
+    return {
+        statusCode: 200,
+    };
+};
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiO0FBQUEsT0FBTyxDQUFDLE9BQU8sR0FBRyxLQUFLLEVBQUUsQ0FBTSxFQUFFLEVBQUU7SUFDakMsT0FBTztRQUNMLFVBQVUsRUFBRSxHQUFHO0tBQ2hCLENBQUM7QUFDSixDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJleHBvcnRzLmhhbmRsZXIgPSBhc3luYyAoXzogYW55KSA9PiB7XG4gIHJldHVybiB7XG4gICAgc3RhdHVzQ29kZTogMjAwLFxuICB9O1xufTsiXX0=

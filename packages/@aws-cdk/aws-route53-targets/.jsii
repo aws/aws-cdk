@@ -1,0 +1,2108 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigateway": "0.0.0",
+    "@aws-cdk/aws-cloudfront": "0.0.0",
+    "@aws-cdk/aws-cognito": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancing": "0.0.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "0.0.0",
+    "@aws-cdk/aws-globalaccelerator": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-route53": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/region-info": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.Assets",
+          "packageId": "Amazon.CDK.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.assets",
+          "module": "aws_cdk.assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-acmpca": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ACMPCA",
+          "packageId": "Amazon.CDK.AWS.ACMPCA"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "acmpca",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.acmpca"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-acmpca"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-acmpca",
+          "module": "aws_cdk.aws_acmpca"
+        }
+      }
+    },
+    "@aws-cdk/aws-apigateway": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.APIGateway",
+          "packageId": "Amazon.CDK.AWS.APIGateway"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "apigateway",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.apigateway"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-apigateway"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-apigateway",
+          "module": "aws_cdk.aws_apigateway"
+        }
+      }
+    },
+    "@aws-cdk/aws-apigatewayv2": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Apigatewayv2",
+          "packageId": "Amazon.CDK.AWS.APIGatewayv2"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "apigatewayv2",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.apigatewayv2"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-apigatewayv2"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-apigatewayv2",
+          "module": "aws_cdk.aws_apigatewayv2"
+        }
+      }
+    },
+    "@aws-cdk/aws-applicationautoscaling": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling",
+          "packageId": "Amazon.CDK.AWS.ApplicationAutoScaling"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "applicationautoscaling",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.applicationautoscaling"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-applicationautoscaling"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-applicationautoscaling",
+          "module": "aws_cdk.aws_applicationautoscaling"
+        }
+      }
+    },
+    "@aws-cdk/aws-autoscaling-common": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
+          "packageId": "Amazon.CDK.AWS.AutoScaling.Common"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "autoscaling-common",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.autoscaling.common"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-autoscaling-common"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-autoscaling-common",
+          "module": "aws_cdk.aws_autoscaling_common"
+        }
+      }
+    },
+    "@aws-cdk/aws-certificatemanager": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CertificateManager",
+          "packageId": "Amazon.CDK.AWS.CertificateManager"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "certificatemanager",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.certificatemanager"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-certificatemanager"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-certificatemanager",
+          "module": "aws_cdk.aws_certificatemanager"
+        }
+      }
+    },
+    "@aws-cdk/aws-cloudformation": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CloudFormation",
+          "packageId": "Amazon.CDK.AWS.CloudFormation"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudformation",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudformation"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudformation"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cloudformation",
+          "module": "aws_cdk.aws_cloudformation"
+        }
+      }
+    },
+    "@aws-cdk/aws-cloudfront": {
+      "submodules": {
+        "@aws-cdk/aws-cloudfront.experimental": {}
+      },
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CloudFront",
+          "packageId": "Amazon.CDK.AWS.CloudFront"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudfront",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudfront"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudfront"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cloudfront",
+          "module": "aws_cdk.aws_cloudfront"
+        }
+      }
+    },
+    "@aws-cdk/aws-cloudwatch": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CloudWatch",
+          "packageId": "Amazon.CDK.AWS.CloudWatch"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudwatch",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudwatch"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudwatch"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cloudwatch",
+          "module": "aws_cdk.aws_cloudwatch"
+        }
+      }
+    },
+    "@aws-cdk/aws-codeguruprofiler": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodeGuruProfiler",
+          "packageId": "Amazon.CDK.AWS.CodeGuruProfiler"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codeguruprofiler",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codeguruprofiler"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codeguruprofiler"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codeguruprofiler",
+          "module": "aws_cdk.aws_codeguruprofiler"
+        }
+      }
+    },
+    "@aws-cdk/aws-codestarnotifications": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodeStarNotifications",
+          "packageId": "Amazon.CDK.AWS.CodeStarNotifications"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codestarnotifications",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codestarnotifications"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codestarnotifications"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codestarnotifications",
+          "module": "aws_cdk.aws_codestarnotifications"
+        }
+      }
+    },
+    "@aws-cdk/aws-cognito": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Cognito",
+          "packageId": "Amazon.CDK.AWS.Cognito"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cognito",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cognito"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cognito"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cognito",
+          "module": "aws_cdk.aws_cognito"
+        }
+      }
+    },
+    "@aws-cdk/aws-ec2": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.EC2",
+          "packageId": "Amazon.CDK.AWS.EC2"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ec2",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ec2"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ec2"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ec2",
+          "module": "aws_cdk.aws_ec2"
+        }
+      }
+    },
+    "@aws-cdk/aws-ecr": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ECR",
+          "packageId": "Amazon.CDK.AWS.ECR"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ecr",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ecr"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ecr"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ecr",
+          "module": "aws_cdk.aws_ecr"
+        }
+      }
+    },
+    "@aws-cdk/aws-ecr-assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Ecr.Assets",
+          "packageId": "Amazon.CDK.ECR.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ecr-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ecr.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ecr-assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ecr-assets",
+          "module": "aws_cdk.aws_ecr_assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-efs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.EFS",
+          "packageId": "Amazon.CDK.AWS.EFS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "efs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.efs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-efs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-efs",
+          "module": "aws_cdk.aws_efs"
+        }
+      }
+    },
+    "@aws-cdk/aws-elasticloadbalancing": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ElasticLoadBalancing",
+          "packageId": "Amazon.CDK.AWS.ElasticLoadBalancing"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "elasticloadbalancing",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.elasticloadbalancing"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-elasticloadbalancing"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-elasticloadbalancing",
+          "module": "aws_cdk.aws_elasticloadbalancing"
+        }
+      }
+    },
+    "@aws-cdk/aws-elasticloadbalancingv2": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ElasticLoadBalancingV2",
+          "packageId": "Amazon.CDK.AWS.ElasticLoadBalancingV2"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "elasticloadbalancingv2",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.elasticloadbalancingv2"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-elasticloadbalancingv2"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-elasticloadbalancingv2",
+          "module": "aws_cdk.aws_elasticloadbalancingv2"
+        }
+      }
+    },
+    "@aws-cdk/aws-events": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-events",
+          "module": "aws_cdk.aws_events"
+        }
+      }
+    },
+    "@aws-cdk/aws-globalaccelerator": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.GlobalAccelerator",
+          "packageId": "Amazon.CDK.AWS.GlobalAccelerator"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "globalaccelerator",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.globalaccelerator"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-globalaccelerator"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-globalaccelerator",
+          "module": "aws_cdk.aws_globalaccelerator"
+        }
+      }
+    },
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      }
+    },
+    "@aws-cdk/aws-kms": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-kms",
+          "module": "aws_cdk.aws_kms"
+        }
+      }
+    },
+    "@aws-cdk/aws-lambda": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Lambda",
+          "packageId": "Amazon.CDK.AWS.Lambda"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "lambda",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.lambda"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-lambda"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-lambda",
+          "module": "aws_cdk.aws_lambda"
+        }
+      }
+    },
+    "@aws-cdk/aws-logs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Logs",
+          "packageId": "Amazon.CDK.AWS.Logs"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "logs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.logs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-logs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-logs",
+          "module": "aws_cdk.aws_logs"
+        }
+      }
+    },
+    "@aws-cdk/aws-route53": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Route53",
+          "packageId": "Amazon.CDK.AWS.Route53"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "route53",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.route53"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-route53"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-route53",
+          "module": "aws_cdk.aws_route53"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3",
+          "packageId": "Amazon.CDK.AWS.S3"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3",
+          "module": "aws_cdk.aws_s3"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3-assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3.Assets",
+          "packageId": "Amazon.CDK.AWS.S3.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3-assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3-assets",
+          "module": "aws_cdk.aws_s3_assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-sam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SAM",
+          "packageId": "Amazon.CDK.AWS.SAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-sam",
+          "module": "aws_cdk.aws_sam"
+        }
+      }
+    },
+    "@aws-cdk/aws-secretsmanager": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SecretsManager",
+          "packageId": "Amazon.CDK.AWS.SecretsManager"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "secretsmanager",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.secretsmanager"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-secretsmanager"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-secretsmanager",
+          "module": "aws_cdk.aws_secretsmanager"
+        }
+      }
+    },
+    "@aws-cdk/aws-signer": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Signer",
+          "packageId": "Amazon.CDK.AWS.Signer"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "signer",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.signer"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-signer"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-signer",
+          "module": "aws_cdk.aws_signer"
+        }
+      }
+    },
+    "@aws-cdk/aws-sns": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SNS",
+          "packageId": "Amazon.CDK.AWS.SNS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sns",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sns"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sns"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-sns",
+          "module": "aws_cdk.aws_sns"
+        }
+      }
+    },
+    "@aws-cdk/aws-sqs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SQS",
+          "packageId": "Amazon.CDK.AWS.SQS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sqs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sqs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sqs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-sqs",
+          "module": "aws_cdk.aws_sqs"
+        }
+      }
+    },
+    "@aws-cdk/aws-ssm": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SSM",
+          "packageId": "Amazon.CDK.AWS.SSM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ssm",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ssm"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ssm"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ssm",
+          "module": "aws_cdk.aws_ssm"
+        }
+      }
+    },
+    "@aws-cdk/aws-stepfunctions": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.StepFunctions",
+          "packageId": "Amazon.CDK.AWS.StepFunctions"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "stepfunctions",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.stepfunctions"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-stepfunctions"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-stepfunctions",
+          "module": "aws_cdk.aws_stepfunctions"
+        }
+      }
+    },
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/custom-resources": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CustomResources",
+          "packageId": "Amazon.CDK.AWS.CustomResources"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-customresources",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.customresources"
+        },
+        "js": {
+          "npm": "@aws-cdk/custom-resources"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.custom-resources",
+          "module": "aws_cdk.custom_resources"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS Route53 Alias Targets",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.77.0 (build 3e5fa88)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "route53"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-route53-targets",
+  "readme": {
+    "markdown": "# Route53 Alias Record Targets for the CDK Route53 Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis library contains Route53 Alias Record targets for:\n\n* API Gateway custom domains\n\n  ```ts\n  import * as apigw from '@aws-cdk/aws-apigateway';\n\n  declare const zone: route53.HostedZone;\n  declare const restApi: apigw.LambdaRestApi;\n\n  new route53.ARecord(this, 'AliasRecord', {\n    zone,\n    target: route53.RecordTarget.fromAlias(new targets.ApiGateway(restApi)),\n    // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomain(domainName)),\n  });\n  ```\n\n* API Gateway V2 custom domains\n\n  ```ts\n  import * as apigwv2 from '@aws-cdk/aws-apigatewayv2';\n\n  declare const zone: route53.HostedZone;\n  declare const domainName: apigwv2.DomainName;\n\n  new route53.ARecord(this, 'AliasRecord', {\n    zone,\n    target: route53.RecordTarget.fromAlias(new targets.ApiGatewayv2DomainProperties(domainName.regionalDomainName, domainName.regionalHostedZoneId)),\n  });\n  ```\n\n* CloudFront distributions\n\n  ```ts\n  import * as cloudfront from '@aws-cdk/aws-cloudfront';\n\n  declare const zone: route53.HostedZone;\n  declare const distribution: cloudfront.CloudFrontWebDistribution;\n\n  new route53.ARecord(this, 'AliasRecord', {\n    zone,\n    target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),\n  });\n  ```\n\n* ELBv2 load balancers\n\n  ```ts\n  import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';\n\n  declare const zone: route53.HostedZone;\n  declare const lb: elbv2.ApplicationLoadBalancer;\n\n  new route53.ARecord(this, 'AliasRecord', {\n    zone,\n    target: route53.RecordTarget.fromAlias(new targets.LoadBalancerTarget(lb)),\n    // or - route53.RecordTarget.fromAlias(new targets.ApiGatewayDomain(domainName)),\n  });\n  ```\n\n* Classic load balancers\n\n  ```ts\n  import * as elb from '@aws-cdk/aws-elasticloadbalancing';\n\n  declare const zone: route53.HostedZone;\n  declare const lb: elb.LoadBalancer;\n\n  new route53.ARecord(this, 'AliasRecord', {\n    zone,\n    target: route53.RecordTarget.fromAlias(new targets.ClassicLoadBalancerTarget(lb)),\n    // or - route53.RecordTarget.fromAlias(new alias.ApiGatewayDomain(domainName)),\n  });\n  ```\n\n**Important:** Based on [AWS documentation](https://aws.amazon.com/de/premiumsupport/knowledge-center/alias-resource-record-set-route53-cli/), all alias record in Route 53 that points to a Elastic Load Balancer will always include *dualstack* for the DNSName to resolve IPv4/IPv6 addresses (without *dualstack* IPv6 will not resolve).\n\nFor example, if the Amazon-provided DNS for the load balancer is `ALB-xxxxxxx.us-west-2.elb.amazonaws.com`, CDK will create alias target in Route 53 will be `dualstack.ALB-xxxxxxx.us-west-2.elb.amazonaws.com`.\n\n* GlobalAccelerator\n\n  ```ts\n  import * as globalaccelerator from '@aws-cdk/aws-globalaccelerator';\n\n  declare const zone: route53.HostedZone;\n  declare const accelerator: globalaccelerator.Accelerator;\n\n  new route53.ARecord(this, 'AliasRecord', {\n    zone,\n    target: route53.RecordTarget.fromAlias(new targets.GlobalAcceleratorTarget(accelerator)),\n    // or - route53.RecordTarget.fromAlias(new targets.GlobalAcceleratorDomainTarget('xyz.awsglobalaccelerator.com')),\n  });\n  ```\n\n**Important:** If you use GlobalAcceleratorDomainTarget, passing a string rather than an instance of IAccelerator, ensure that the string is a valid domain name of an existing Global Accelerator instance.\nSee [the documentation on DNS addressing](https://docs.aws.amazon.com/global-accelerator/latest/dg/dns-addressing-custom-domains.dns-addressing.html) with Global Accelerator for more info.\n\n* InterfaceVpcEndpoints\n\n**Important:** Based on the CFN docs for VPCEndpoints - [see here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-vpcendpoint.html#aws-resource-ec2-vpcendpoint-return-values) - the attributes returned for DnsEntries in CloudFormation is a combination of the hosted zone ID and the DNS name. The entries are ordered as follows: regional public DNS, zonal public DNS, private DNS, and wildcard DNS. This order is not enforced for AWS Marketplace services, and therefore this CDK construct is ONLY guaranteed to work with non-marketplace services.\n\n  ```ts\n  import * as ec2 from '@aws-cdk/aws-ec2';\n\n  declare const zone: route53.HostedZone;\n  declare const interfaceVpcEndpoint: ec2.InterfaceVpcEndpoint;\n\n  new route53.ARecord(this, \"AliasRecord\", {\n    zone,\n    target: route53.RecordTarget.fromAlias(new targets.InterfaceVpcEndpointTarget(interfaceVpcEndpoint)),\n  });\n  ```\n\n* S3 Bucket Website:\n\n**Important:** The Bucket name must strictly match the full DNS name.\nSee [the Developer Guide](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/getting-started.html) for more info.\n\n  ```ts\n  import * as s3 from '@aws-cdk/aws-s3';\n\n  const recordName = 'www';\n  const domainName = 'example.com';\n\n  const bucketWebsite = new s3.Bucket(this, 'BucketWebsite', {\n    bucketName: [recordName, domainName].join('.'), // www.example.com\n    publicReadAccess: true,\n    websiteIndexDocument: 'index.html',\n  });\n\n  const zone = route53.HostedZone.fromLookup(this, 'Zone', {domainName}); // example.com\n\n  new route53.ARecord(this, 'AliasRecord', {\n    zone,\n    recordName, // www\n    target: route53.RecordTarget.fromAlias(new targets.BucketWebsiteTarget(bucketWebsite)),\n  });\n  ```\n\n* User pool domain\n\n  ```ts\n  import * as cognito from '@aws-cdk/aws-cognito';\n\n  declare const zone: route53.HostedZone;\n  declare const domain: cognito.UserPoolDomain;\n  new route53.ARecord(this, 'AliasRecord', {\n    zone,\n    target: route53.RecordTarget.fromAlias(new targets.UserPoolDomainTarget(domain)),\n  });\n  ```\n\n* Route 53 record\n\n  ```ts\n  declare const zone: route53.HostedZone;\n  declare const record: route53.ARecord;\n  new route53.ARecord(this, 'AliasRecord', {\n    zone,\n    target: route53.RecordTarget.fromAlias(new targets.Route53RecordTarget(record)),\n  });\n  ```\n\n* Elastic Beanstalk environment:\n\n**Important:** Only supports Elastic Beanstalk environments created after 2016 that have a regional endpoint.\n\n```ts\ndeclare const zone: route53.HostedZone;\ndeclare const ebsEnvironmentUrl: string;\n\nnew route53.ARecord(this, 'AliasRecord', {\n  zone,\n  target: route53.RecordTarget.fromAlias(new targets.ElasticBeanstalkEnvironmentEndpointTarget(ebsEnvironmentUrl)),\n});\n```\n\nSee the documentation of `@aws-cdk/aws-route53` for more information.\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-route53-targets",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Route53.Targets",
+      "packageId": "Amazon.CDK.AWS.Route53.Targets"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "route53-targets",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.route53.targets"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-route53-targets"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-route53-targets",
+      "module": "aws_cdk.aws_route53_targets"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-route53-targets.ApiGateway": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "base": "@aws-cdk/aws-route53-targets.ApiGatewayDomain",
+      "docs": {
+        "remarks": "You can direct the alias to any `apigateway.DomainName` resource through the\n`ApiGatewayDomain` class.",
+        "stability": "stable",
+        "summary": "Defines an API Gateway REST API as the alias target. Requires that the domain name will be defined through `RestApiProps.domainName`."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.ApiGateway",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/api-gateway-domain-name.ts",
+          "line": 29
+        },
+        "parameters": [
+          {
+            "name": "api",
+            "type": {
+              "fqn": "@aws-cdk/aws-apigateway.RestApiBase"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/api-gateway-domain-name.ts",
+        "line": 28
+      },
+      "name": "ApiGateway",
+      "symbolId": "lib/api-gateway-domain-name:ApiGateway"
+    },
+    "@aws-cdk/aws-route53-targets.ApiGatewayDomain": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "docs": {
+        "remarks": "Use the `ApiGateway` class if you wish to map the alias to an REST API with a\ndomain name defined through the `RestApiProps.domainName` prop.",
+        "stability": "stable",
+        "summary": "Defines an API Gateway domain name as the alias target."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.ApiGatewayDomain",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/api-gateway-domain-name.ts",
+          "line": 11
+        },
+        "parameters": [
+          {
+            "name": "domainName",
+            "type": {
+              "fqn": "@aws-cdk/aws-apigateway.IDomainName"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-route53.IAliasRecordTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/api-gateway-domain-name.ts",
+        "line": 10
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return hosted zone ID and DNS name, usable for Route53 alias targets."
+          },
+          "locationInModule": {
+            "filename": "lib/api-gateway-domain-name.ts",
+            "line": 13
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-route53.IAliasRecordTarget",
+          "parameters": [
+            {
+              "name": "_record",
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IRecordSet"
+              }
+            },
+            {
+              "name": "_zone",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IHostedZone"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-route53.AliasRecordTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "ApiGatewayDomain",
+      "symbolId": "lib/api-gateway-domain-name:ApiGatewayDomain"
+    },
+    "@aws-cdk/aws-route53-targets.ApiGatewayv2DomainProperties": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Defines an API Gateway V2 domain name as the alias target."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.ApiGatewayv2DomainProperties",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/api-gatewayv2-domain-name.ts",
+          "line": 11
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "the domain name associated with the regional endpoint for this custom domain name."
+            },
+            "name": "regionalDomainName",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "the region-specific Amazon Route 53 Hosted Zone ID of the regional endpoint."
+            },
+            "name": "regionalHostedZoneId",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-route53.IAliasRecordTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/api-gatewayv2-domain-name.ts",
+        "line": 6
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return hosted zone ID and DNS name, usable for Route53 alias targets."
+          },
+          "locationInModule": {
+            "filename": "lib/api-gatewayv2-domain-name.ts",
+            "line": 13
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-route53.IAliasRecordTarget",
+          "parameters": [
+            {
+              "name": "_record",
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IRecordSet"
+              }
+            },
+            {
+              "name": "_zone",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IHostedZone"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-route53.AliasRecordTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "ApiGatewayv2DomainProperties",
+      "symbolId": "lib/api-gatewayv2-domain-name:ApiGatewayv2DomainProperties"
+    },
+    "@aws-cdk/aws-route53-targets.BucketWebsiteTarget": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use a S3 as an alias record target."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.BucketWebsiteTarget",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/bucket-website-target.ts",
+          "line": 10
+        },
+        "parameters": [
+          {
+            "name": "bucket",
+            "type": {
+              "fqn": "@aws-cdk/aws-s3.IBucket"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-route53.IAliasRecordTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/bucket-website-target.ts",
+        "line": 9
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return hosted zone ID and DNS name, usable for Route53 alias targets."
+          },
+          "locationInModule": {
+            "filename": "lib/bucket-website-target.ts",
+            "line": 13
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-route53.IAliasRecordTarget",
+          "parameters": [
+            {
+              "name": "_record",
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IRecordSet"
+              }
+            },
+            {
+              "name": "_zone",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IHostedZone"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-route53.AliasRecordTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "BucketWebsiteTarget",
+      "symbolId": "lib/bucket-website-target:BucketWebsiteTarget"
+    },
+    "@aws-cdk/aws-route53-targets.ClassicLoadBalancerTarget": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use a classic ELB as an alias record target."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.ClassicLoadBalancerTarget",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/classic-load-balancer-target.ts",
+          "line": 8
+        },
+        "parameters": [
+          {
+            "name": "loadBalancer",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticloadbalancing.LoadBalancer"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-route53.IAliasRecordTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/classic-load-balancer-target.ts",
+        "line": 7
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return hosted zone ID and DNS name, usable for Route53 alias targets."
+          },
+          "locationInModule": {
+            "filename": "lib/classic-load-balancer-target.ts",
+            "line": 11
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-route53.IAliasRecordTarget",
+          "parameters": [
+            {
+              "name": "_record",
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IRecordSet"
+              }
+            },
+            {
+              "name": "_zone",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IHostedZone"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-route53.AliasRecordTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "ClassicLoadBalancerTarget",
+      "symbolId": "lib/classic-load-balancer-target:ClassicLoadBalancerTarget"
+    },
+    "@aws-cdk/aws-route53-targets.CloudFrontTarget": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use a CloudFront Distribution as an alias record target."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.CloudFrontTarget",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/cloudfront-target.ts",
+          "line": 41
+        },
+        "parameters": [
+          {
+            "name": "distribution",
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudfront.IDistribution"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-route53.IAliasRecordTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/cloudfront-target.ts",
+        "line": 9
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Get the hosted zone id for the current scope."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudfront-target.ts",
+            "line": 21
+          },
+          "name": "getHostedZoneId",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- scope in which this resource is defined."
+              },
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.IConstruct"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return hosted zone ID and DNS name, usable for Route53 alias targets."
+          },
+          "locationInModule": {
+            "filename": "lib/cloudfront-target.ts",
+            "line": 44
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-route53.IAliasRecordTarget",
+          "parameters": [
+            {
+              "name": "_record",
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IRecordSet"
+              }
+            },
+            {
+              "name": "_zone",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IHostedZone"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-route53.AliasRecordTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "CloudFrontTarget",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "remarks": "This value never changes.",
+            "stability": "stable",
+            "summary": "The hosted zone Id if using an alias record in Route53."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/cloudfront-target.ts",
+            "line": 14
+          },
+          "name": "CLOUDFRONT_ZONE_ID",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/cloudfront-target:CloudFrontTarget"
+    },
+    "@aws-cdk/aws-route53-targets.ElasticBeanstalkEnvironmentEndpointTarget": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "docs": {
+        "remarks": "Only supports Elastic Beanstalk environments created after 2016 that have a regional endpoint.",
+        "stability": "stable",
+        "summary": "Use an Elastic Beanstalk environment URL as an alias record target. E.g. mysampleenvironment.xyz.us-east-1.elasticbeanstalk.com or mycustomcnameprefix.us-east-1.elasticbeanstalk.com."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.ElasticBeanstalkEnvironmentEndpointTarget",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/elastic-beanstalk-environment-target.ts",
+          "line": 13
+        },
+        "parameters": [
+          {
+            "name": "environmentEndpoint",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-route53.IAliasRecordTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/elastic-beanstalk-environment-target.ts",
+        "line": 12
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return hosted zone ID and DNS name, usable for Route53 alias targets."
+          },
+          "locationInModule": {
+            "filename": "lib/elastic-beanstalk-environment-target.ts",
+            "line": 16
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-route53.IAliasRecordTarget",
+          "parameters": [
+            {
+              "name": "_record",
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IRecordSet"
+              }
+            },
+            {
+              "name": "_zone",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IHostedZone"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-route53.AliasRecordTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "ElasticBeanstalkEnvironmentEndpointTarget",
+      "symbolId": "lib/elastic-beanstalk-environment-target:ElasticBeanstalkEnvironmentEndpointTarget"
+    },
+    "@aws-cdk/aws-route53-targets.GlobalAcceleratorDomainTarget": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use a Global Accelerator domain name as an alias record target."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.GlobalAcceleratorDomainTarget",
+      "initializer": {
+        "docs": {
+          "stability": "stable",
+          "summary": "Create an Alias Target for a Global Accelerator domain name."
+        },
+        "locationInModule": {
+          "filename": "lib/global-accelerator-target.ts",
+          "line": 19
+        },
+        "parameters": [
+          {
+            "name": "acceleratorDomainName",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-route53.IAliasRecordTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/global-accelerator-target.ts",
+        "line": 8
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return hosted zone ID and DNS name, usable for Route53 alias targets."
+          },
+          "locationInModule": {
+            "filename": "lib/global-accelerator-target.ts",
+            "line": 22
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-route53.IAliasRecordTarget",
+          "parameters": [
+            {
+              "name": "_record",
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IRecordSet"
+              }
+            },
+            {
+              "name": "_zone",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IHostedZone"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-route53.AliasRecordTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "GlobalAcceleratorDomainTarget",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "remarks": "This value never changes.\nRef: https://docs.aws.amazon.com/general/latest/gr/global_accelerator.html",
+            "stability": "stable",
+            "summary": "The hosted zone Id if using an alias record in Route53."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/global-accelerator-target.ts",
+            "line": 14
+          },
+          "name": "GLOBAL_ACCELERATOR_ZONE_ID",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/global-accelerator-target:GlobalAcceleratorDomainTarget"
+    },
+    "@aws-cdk/aws-route53-targets.GlobalAcceleratorTarget": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "base": "@aws-cdk/aws-route53-targets.GlobalAcceleratorDomainTarget",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use a Global Accelerator instance domain name as an alias record target."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.GlobalAcceleratorTarget",
+      "initializer": {
+        "docs": {
+          "stability": "stable",
+          "summary": "Create an Alias Target for a Global Accelerator instance."
+        },
+        "locationInModule": {
+          "filename": "lib/global-accelerator-target.ts",
+          "line": 38
+        },
+        "parameters": [
+          {
+            "name": "accelerator",
+            "type": {
+              "fqn": "@aws-cdk/aws-globalaccelerator.IAccelerator"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/global-accelerator-target.ts",
+        "line": 33
+      },
+      "name": "GlobalAcceleratorTarget",
+      "symbolId": "lib/global-accelerator-target:GlobalAcceleratorTarget"
+    },
+    "@aws-cdk/aws-route53-targets.InterfaceVpcEndpointTarget": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Set an InterfaceVpcEndpoint as a target for an ARecord."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.InterfaceVpcEndpointTarget",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/interface-vpc-endpoint-target.ts",
+          "line": 10
+        },
+        "parameters": [
+          {
+            "name": "vpcEndpoint",
+            "type": {
+              "fqn": "@aws-cdk/aws-ec2.InterfaceVpcEndpoint"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-route53.IAliasRecordTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/interface-vpc-endpoint-target.ts",
+        "line": 8
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return hosted zone ID and DNS name, usable for Route53 alias targets."
+          },
+          "locationInModule": {
+            "filename": "lib/interface-vpc-endpoint-target.ts",
+            "line": 14
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-route53.IAliasRecordTarget",
+          "parameters": [
+            {
+              "name": "_record",
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IRecordSet"
+              }
+            },
+            {
+              "name": "_zone",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IHostedZone"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-route53.AliasRecordTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "InterfaceVpcEndpointTarget",
+      "symbolId": "lib/interface-vpc-endpoint-target:InterfaceVpcEndpointTarget"
+    },
+    "@aws-cdk/aws-route53-targets.LoadBalancerTarget": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use an ELBv2 as an alias record target."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.LoadBalancerTarget",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/load-balancer-target.ts",
+          "line": 8
+        },
+        "parameters": [
+          {
+            "name": "loadBalancer",
+            "type": {
+              "fqn": "@aws-cdk/aws-elasticloadbalancingv2.ILoadBalancerV2"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-route53.IAliasRecordTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/load-balancer-target.ts",
+        "line": 7
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return hosted zone ID and DNS name, usable for Route53 alias targets."
+          },
+          "locationInModule": {
+            "filename": "lib/load-balancer-target.ts",
+            "line": 11
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-route53.IAliasRecordTarget",
+          "parameters": [
+            {
+              "name": "_record",
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IRecordSet"
+              }
+            },
+            {
+              "name": "_zone",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IHostedZone"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-route53.AliasRecordTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "LoadBalancerTarget",
+      "symbolId": "lib/load-balancer-target:LoadBalancerTarget"
+    },
+    "@aws-cdk/aws-route53-targets.Route53RecordTarget": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use another Route 53 record as an alias record target."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.Route53RecordTarget",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/route53-record.ts",
+          "line": 7
+        },
+        "parameters": [
+          {
+            "name": "record",
+            "type": {
+              "fqn": "@aws-cdk/aws-route53.IRecordSet"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-route53.IAliasRecordTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/route53-record.ts",
+        "line": 6
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return hosted zone ID and DNS name, usable for Route53 alias targets."
+          },
+          "locationInModule": {
+            "filename": "lib/route53-record.ts",
+            "line": 10
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-route53.IAliasRecordTarget",
+          "parameters": [
+            {
+              "name": "_record",
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IRecordSet"
+              }
+            },
+            {
+              "name": "zone",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IHostedZone"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-route53.AliasRecordTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "Route53RecordTarget",
+      "symbolId": "lib/route53-record:Route53RecordTarget"
+    },
+    "@aws-cdk/aws-route53-targets.UserPoolDomainTarget": {
+      "assembly": "@aws-cdk/aws-route53-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use a user pool domain as an alias record target."
+      },
+      "fqn": "@aws-cdk/aws-route53-targets.UserPoolDomainTarget",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/userpool-domain.ts",
+          "line": 9
+        },
+        "parameters": [
+          {
+            "name": "domain",
+            "type": {
+              "fqn": "@aws-cdk/aws-cognito.UserPoolDomain"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-route53.IAliasRecordTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/userpool-domain.ts",
+        "line": 8
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return hosted zone ID and DNS name, usable for Route53 alias targets."
+          },
+          "locationInModule": {
+            "filename": "lib/userpool-domain.ts",
+            "line": 12
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-route53.IAliasRecordTarget",
+          "parameters": [
+            {
+              "name": "_record",
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IRecordSet"
+              }
+            },
+            {
+              "name": "_zone",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-route53.IHostedZone"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-route53.AliasRecordTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "UserPoolDomainTarget",
+      "symbolId": "lib/userpool-domain:UserPoolDomainTarget"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "82sEG6T8iGoD8108acLMqLUI4uEGmfACwt4ubu4x3Vg="
+}

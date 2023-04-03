@@ -1,0 +1,30 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TestFixture = void 0;
+const codecommit = require("@aws-cdk/aws-codecommit");
+const codepipeline = require("@aws-cdk/aws-codepipeline");
+const cdk = require("@aws-cdk/core");
+const cpactions = require("../../lib");
+/**
+ * A test stack with a half-prepared pipeline ready to add CloudFormation actions to
+ */
+class TestFixture extends cdk.Stack {
+    constructor(props = {}) {
+        super(undefined, undefined, props);
+        this.pipeline = new codepipeline.Pipeline(this, 'Pipeline');
+        this.sourceStage = this.pipeline.addStage({ stageName: 'Source' });
+        this.deployStage = this.pipeline.addStage({ stageName: 'Deploy' });
+        this.repo = new codecommit.Repository(this, 'MyVeryImportantRepo', {
+            repositoryName: 'my-very-important-repo',
+        });
+        this.sourceOutput = new codepipeline.Artifact('SourceArtifact');
+        const source = new cpactions.CodeCommitSourceAction({
+            actionName: 'Source',
+            output: this.sourceOutput,
+            repository: this.repo,
+        });
+        this.sourceStage.addAction(source);
+    }
+}
+exports.TestFixture = TestFixture;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidGVzdC1maXh0dXJlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsidGVzdC1maXh0dXJlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUFBLHNEQUFzRDtBQUN0RCwwREFBMEQ7QUFDMUQscUNBQXFDO0FBQ3JDLHVDQUF1QztBQUV2Qzs7R0FFRztBQUNILE1BQWEsV0FBWSxTQUFRLEdBQUcsQ0FBQyxLQUFLO0lBT3hDLFlBQVksUUFBd0IsRUFBRTtRQUNwQyxLQUFLLENBQUMsU0FBUyxFQUFFLFNBQVMsRUFBRSxLQUFLLENBQUMsQ0FBQztRQUVuQyxJQUFJLENBQUMsUUFBUSxHQUFHLElBQUksWUFBWSxDQUFDLFFBQVEsQ0FBQyxJQUFJLEVBQUUsVUFBVSxDQUFDLENBQUM7UUFDNUQsSUFBSSxDQUFDLFdBQVcsR0FBRyxJQUFJLENBQUMsUUFBUSxDQUFDLFFBQVEsQ0FBQyxFQUFFLFNBQVMsRUFBRSxRQUFRLEVBQUUsQ0FBQyxDQUFDO1FBQ25FLElBQUksQ0FBQyxXQUFXLEdBQUcsSUFBSSxDQUFDLFFBQVEsQ0FBQyxRQUFRLENBQUMsRUFBRSxTQUFTLEVBQUUsUUFBUSxFQUFFLENBQUMsQ0FBQztRQUNuRSxJQUFJLENBQUMsSUFBSSxHQUFHLElBQUksVUFBVSxDQUFDLFVBQVUsQ0FBQyxJQUFJLEVBQUUscUJBQXFCLEVBQUU7WUFDakUsY0FBYyxFQUFFLHdCQUF3QjtTQUN6QyxDQUFDLENBQUM7UUFDSCxJQUFJLENBQUMsWUFBWSxHQUFHLElBQUksWUFBWSxDQUFDLFFBQVEsQ0FBQyxnQkFBZ0IsQ0FBQyxDQUFDO1FBQ2hFLE1BQU0sTUFBTSxHQUFHLElBQUksU0FBUyxDQUFDLHNCQUFzQixDQUFDO1lBQ2xELFVBQVUsRUFBRSxRQUFRO1lBQ3BCLE1BQU0sRUFBRSxJQUFJLENBQUMsWUFBWTtZQUN6QixVQUFVLEVBQUUsSUFBSSxDQUFDLElBQUk7U0FDdEIsQ0FBQyxDQUFDO1FBQ0gsSUFBSSxDQUFDLFdBQVcsQ0FBQyxTQUFTLENBQUMsTUFBTSxDQUFDLENBQUM7S0FDcEM7Q0FDRjtBQXhCRCxrQ0F3QkMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBjb2RlY29tbWl0IGZyb20gJ0Bhd3MtY2RrL2F3cy1jb2RlY29tbWl0JztcbmltcG9ydCAqIGFzIGNvZGVwaXBlbGluZSBmcm9tICdAYXdzLWNkay9hd3MtY29kZXBpcGVsaW5lJztcbmltcG9ydCAqIGFzIGNkayBmcm9tICdAYXdzLWNkay9jb3JlJztcbmltcG9ydCAqIGFzIGNwYWN0aW9ucyBmcm9tICcuLi8uLi9saWInO1xuXG4vKipcbiAqIEEgdGVzdCBzdGFjayB3aXRoIGEgaGFsZi1wcmVwYXJlZCBwaXBlbGluZSByZWFkeSB0byBhZGQgQ2xvdWRGb3JtYXRpb24gYWN0aW9ucyB0b1xuICovXG5leHBvcnQgY2xhc3MgVGVzdEZpeHR1cmUgZXh0ZW5kcyBjZGsuU3RhY2sge1xuICBwdWJsaWMgcmVhZG9ubHkgcGlwZWxpbmU6IGNvZGVwaXBlbGluZS5QaXBlbGluZTtcbiAgcHVibGljIHJlYWRvbmx5IHNvdXJjZVN0YWdlOiBjb2RlcGlwZWxpbmUuSVN0YWdlO1xuICBwdWJsaWMgcmVhZG9ubHkgZGVwbG95U3RhZ2U6IGNvZGVwaXBlbGluZS5JU3RhZ2U7XG4gIHB1YmxpYyByZWFkb25seSByZXBvOiBjb2RlY29tbWl0LlJlcG9zaXRvcnk7XG4gIHB1YmxpYyByZWFkb25seSBzb3VyY2VPdXRwdXQ6IGNvZGVwaXBlbGluZS5BcnRpZmFjdDtcblxuICBjb25zdHJ1Y3Rvcihwcm9wczogY2RrLlN0YWNrUHJvcHMgPSB7fSkge1xuICAgIHN1cGVyKHVuZGVmaW5lZCwgdW5kZWZpbmVkLCBwcm9wcyk7XG5cbiAgICB0aGlzLnBpcGVsaW5lID0gbmV3IGNvZGVwaXBlbGluZS5QaXBlbGluZSh0aGlzLCAnUGlwZWxpbmUnKTtcbiAgICB0aGlzLnNvdXJjZVN0YWdlID0gdGhpcy5waXBlbGluZS5hZGRTdGFnZSh7IHN0YWdlTmFtZTogJ1NvdXJjZScgfSk7XG4gICAgdGhpcy5kZXBsb3lTdGFnZSA9IHRoaXMucGlwZWxpbmUuYWRkU3RhZ2UoeyBzdGFnZU5hbWU6ICdEZXBsb3knIH0pO1xuICAgIHRoaXMucmVwbyA9IG5ldyBjb2RlY29tbWl0LlJlcG9zaXRvcnkodGhpcywgJ015VmVyeUltcG9ydGFudFJlcG8nLCB7XG4gICAgICByZXBvc2l0b3J5TmFtZTogJ215LXZlcnktaW1wb3J0YW50LXJlcG8nLFxuICAgIH0pO1xuICAgIHRoaXMuc291cmNlT3V0cHV0ID0gbmV3IGNvZGVwaXBlbGluZS5BcnRpZmFjdCgnU291cmNlQXJ0aWZhY3QnKTtcbiAgICBjb25zdCBzb3VyY2UgPSBuZXcgY3BhY3Rpb25zLkNvZGVDb21taXRTb3VyY2VBY3Rpb24oe1xuICAgICAgYWN0aW9uTmFtZTogJ1NvdXJjZScsXG4gICAgICBvdXRwdXQ6IHRoaXMuc291cmNlT3V0cHV0LFxuICAgICAgcmVwb3NpdG9yeTogdGhpcy5yZXBvLFxuICAgIH0pO1xuICAgIHRoaXMuc291cmNlU3RhZ2UuYWRkQWN0aW9uKHNvdXJjZSk7XG4gIH1cbn1cbiJdfQ==

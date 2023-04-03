@@ -1,4 +1,5 @@
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
@@ -102,6 +103,7 @@ integ.assertions.awsApiCall('S3', 'putObject', {
     integ.assertions.awsApiCall('S3', 'getObject', {
       Bucket: deployBucket.bucketName,
       Key: 'key',
+      KMSEncryptionKeyARN: key?.keyArn,
     }),
   ),
 );

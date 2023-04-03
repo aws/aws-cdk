@@ -1,0 +1,4418 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigateway": "0.0.0",
+    "@aws-cdk/aws-autoscaling": "0.0.0",
+    "@aws-cdk/aws-codebuild": "0.0.0",
+    "@aws-cdk/aws-codepipeline": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-ecs": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kinesis": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/aws-sns-subscriptions": "0.0.0",
+    "@aws-cdk/aws-sqs": "0.0.0",
+    "@aws-cdk/aws-stepfunctions": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/custom-resources": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.Assets",
+          "packageId": "Amazon.CDK.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.assets",
+          "module": "aws_cdk.assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-acmpca": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ACMPCA",
+          "packageId": "Amazon.CDK.AWS.ACMPCA"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "acmpca",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.acmpca"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-acmpca"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-acmpca",
+          "module": "aws_cdk.aws_acmpca"
+        }
+      }
+    },
+    "@aws-cdk/aws-apigateway": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.APIGateway",
+          "packageId": "Amazon.CDK.AWS.APIGateway"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "apigateway",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.apigateway"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-apigateway"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-apigateway",
+          "module": "aws_cdk.aws_apigateway"
+        }
+      }
+    },
+    "@aws-cdk/aws-apigatewayv2": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Apigatewayv2",
+          "packageId": "Amazon.CDK.AWS.APIGatewayv2"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "apigatewayv2",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.apigatewayv2"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-apigatewayv2"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-apigatewayv2",
+          "module": "aws_cdk.aws_apigatewayv2"
+        }
+      }
+    },
+    "@aws-cdk/aws-applicationautoscaling": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling",
+          "packageId": "Amazon.CDK.AWS.ApplicationAutoScaling"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "applicationautoscaling",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.applicationautoscaling"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-applicationautoscaling"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-applicationautoscaling",
+          "module": "aws_cdk.aws_applicationautoscaling"
+        }
+      }
+    },
+    "@aws-cdk/aws-autoscaling": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.AutoScaling",
+          "packageId": "Amazon.CDK.AWS.AutoScaling"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "autoscaling",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.autoscaling"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-autoscaling"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-autoscaling",
+          "module": "aws_cdk.aws_autoscaling"
+        }
+      }
+    },
+    "@aws-cdk/aws-autoscaling-common": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
+          "packageId": "Amazon.CDK.AWS.AutoScaling.Common"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "autoscaling-common",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.autoscaling.common"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-autoscaling-common"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-autoscaling-common",
+          "module": "aws_cdk.aws_autoscaling_common"
+        }
+      }
+    },
+    "@aws-cdk/aws-autoscaling-hooktargets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.AutoScaling.HookTargets",
+          "packageId": "Amazon.CDK.AWS.AutoScaling.HookTargets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "autoscaling-hooktargets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.autoscaling.hooktargets"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-autoscaling-hooktargets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-autoscaling-hooktargets",
+          "module": "aws_cdk.aws_autoscaling_hooktargets"
+        }
+      }
+    },
+    "@aws-cdk/aws-certificatemanager": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CertificateManager",
+          "packageId": "Amazon.CDK.AWS.CertificateManager"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "certificatemanager",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.certificatemanager"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-certificatemanager"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-certificatemanager",
+          "module": "aws_cdk.aws_certificatemanager"
+        }
+      }
+    },
+    "@aws-cdk/aws-cloudformation": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CloudFormation",
+          "packageId": "Amazon.CDK.AWS.CloudFormation"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudformation",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudformation"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudformation"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cloudformation",
+          "module": "aws_cdk.aws_cloudformation"
+        }
+      }
+    },
+    "@aws-cdk/aws-cloudfront": {
+      "submodules": {
+        "@aws-cdk/aws-cloudfront.experimental": {}
+      },
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CloudFront",
+          "packageId": "Amazon.CDK.AWS.CloudFront"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudfront",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudfront"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudfront"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cloudfront",
+          "module": "aws_cdk.aws_cloudfront"
+        }
+      }
+    },
+    "@aws-cdk/aws-cloudwatch": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CloudWatch",
+          "packageId": "Amazon.CDK.AWS.CloudWatch"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudwatch",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudwatch"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudwatch"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cloudwatch",
+          "module": "aws_cdk.aws_cloudwatch"
+        }
+      }
+    },
+    "@aws-cdk/aws-codebuild": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodeBuild",
+          "packageId": "Amazon.CDK.AWS.CodeBuild"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codebuild",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codebuild"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codebuild"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codebuild",
+          "module": "aws_cdk.aws_codebuild"
+        }
+      }
+    },
+    "@aws-cdk/aws-codecommit": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodeCommit",
+          "packageId": "Amazon.CDK.AWS.CodeCommit"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codecommit",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codecommit"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codecommit"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codecommit",
+          "module": "aws_cdk.aws_codecommit"
+        }
+      }
+    },
+    "@aws-cdk/aws-codeguruprofiler": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodeGuruProfiler",
+          "packageId": "Amazon.CDK.AWS.CodeGuruProfiler"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codeguruprofiler",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codeguruprofiler"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codeguruprofiler"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codeguruprofiler",
+          "module": "aws_cdk.aws_codeguruprofiler"
+        }
+      }
+    },
+    "@aws-cdk/aws-codepipeline": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodePipeline",
+          "packageId": "Amazon.CDK.AWS.CodePipeline"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codepipeline",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codepipeline"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codepipeline"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codepipeline",
+          "module": "aws_cdk.aws_codepipeline"
+        }
+      }
+    },
+    "@aws-cdk/aws-codestarnotifications": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodeStarNotifications",
+          "packageId": "Amazon.CDK.AWS.CodeStarNotifications"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codestarnotifications",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codestarnotifications"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codestarnotifications"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codestarnotifications",
+          "module": "aws_cdk.aws_codestarnotifications"
+        }
+      }
+    },
+    "@aws-cdk/aws-cognito": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Cognito",
+          "packageId": "Amazon.CDK.AWS.Cognito"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cognito",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cognito"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cognito"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cognito",
+          "module": "aws_cdk.aws_cognito"
+        }
+      }
+    },
+    "@aws-cdk/aws-ec2": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.EC2",
+          "packageId": "Amazon.CDK.AWS.EC2"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ec2",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ec2"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ec2"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ec2",
+          "module": "aws_cdk.aws_ec2"
+        }
+      }
+    },
+    "@aws-cdk/aws-ecr": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ECR",
+          "packageId": "Amazon.CDK.AWS.ECR"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ecr",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ecr"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ecr"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ecr",
+          "module": "aws_cdk.aws_ecr"
+        }
+      }
+    },
+    "@aws-cdk/aws-ecr-assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Ecr.Assets",
+          "packageId": "Amazon.CDK.ECR.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ecr-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ecr.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ecr-assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ecr-assets",
+          "module": "aws_cdk.aws_ecr_assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-ecs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ECS",
+          "packageId": "Amazon.CDK.AWS.ECS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ecs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ecs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ecs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ecs",
+          "module": "aws_cdk.aws_ecs"
+        }
+      }
+    },
+    "@aws-cdk/aws-efs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.EFS",
+          "packageId": "Amazon.CDK.AWS.EFS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "efs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.efs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-efs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-efs",
+          "module": "aws_cdk.aws_efs"
+        }
+      }
+    },
+    "@aws-cdk/aws-elasticloadbalancing": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ElasticLoadBalancing",
+          "packageId": "Amazon.CDK.AWS.ElasticLoadBalancing"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "elasticloadbalancing",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.elasticloadbalancing"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-elasticloadbalancing"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-elasticloadbalancing",
+          "module": "aws_cdk.aws_elasticloadbalancing"
+        }
+      }
+    },
+    "@aws-cdk/aws-elasticloadbalancingv2": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ElasticLoadBalancingV2",
+          "packageId": "Amazon.CDK.AWS.ElasticLoadBalancingV2"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "elasticloadbalancingv2",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.elasticloadbalancingv2"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-elasticloadbalancingv2"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-elasticloadbalancingv2",
+          "module": "aws_cdk.aws_elasticloadbalancingv2"
+        }
+      }
+    },
+    "@aws-cdk/aws-events": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-events",
+          "module": "aws_cdk.aws_events"
+        }
+      }
+    },
+    "@aws-cdk/aws-globalaccelerator": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.GlobalAccelerator",
+          "packageId": "Amazon.CDK.AWS.GlobalAccelerator"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "globalaccelerator",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.globalaccelerator"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-globalaccelerator"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-globalaccelerator",
+          "module": "aws_cdk.aws_globalaccelerator"
+        }
+      }
+    },
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      }
+    },
+    "@aws-cdk/aws-kinesis": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Kinesis",
+          "packageId": "Amazon.CDK.AWS.Kinesis"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kinesis",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kinesis"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kinesis"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-kinesis",
+          "module": "aws_cdk.aws_kinesis"
+        }
+      }
+    },
+    "@aws-cdk/aws-kinesisfirehose": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.KinesisFirehose",
+          "packageId": "Amazon.CDK.AWS.KinesisFirehose"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kinesisfirehose",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kinesisfirehose"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kinesisfirehose"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-kinesisfirehose",
+          "module": "aws_cdk.aws_kinesisfirehose"
+        }
+      }
+    },
+    "@aws-cdk/aws-kms": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-kms",
+          "module": "aws_cdk.aws_kms"
+        }
+      }
+    },
+    "@aws-cdk/aws-lambda": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Lambda",
+          "packageId": "Amazon.CDK.AWS.Lambda"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "lambda",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.lambda"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-lambda"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-lambda",
+          "module": "aws_cdk.aws_lambda"
+        }
+      }
+    },
+    "@aws-cdk/aws-logs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Logs",
+          "packageId": "Amazon.CDK.AWS.Logs"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "logs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.logs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-logs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-logs",
+          "module": "aws_cdk.aws_logs"
+        }
+      }
+    },
+    "@aws-cdk/aws-route53": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Route53",
+          "packageId": "Amazon.CDK.AWS.Route53"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "route53",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.route53"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-route53"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-route53",
+          "module": "aws_cdk.aws_route53"
+        }
+      }
+    },
+    "@aws-cdk/aws-route53-targets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Route53.Targets",
+          "packageId": "Amazon.CDK.AWS.Route53.Targets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "route53-targets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.route53.targets"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-route53-targets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-route53-targets",
+          "module": "aws_cdk.aws_route53_targets"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3",
+          "packageId": "Amazon.CDK.AWS.S3"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3",
+          "module": "aws_cdk.aws_s3"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3-assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3.Assets",
+          "packageId": "Amazon.CDK.AWS.S3.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3-assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3-assets",
+          "module": "aws_cdk.aws_s3_assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-sam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SAM",
+          "packageId": "Amazon.CDK.AWS.SAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-sam",
+          "module": "aws_cdk.aws_sam"
+        }
+      }
+    },
+    "@aws-cdk/aws-secretsmanager": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SecretsManager",
+          "packageId": "Amazon.CDK.AWS.SecretsManager"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "secretsmanager",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.secretsmanager"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-secretsmanager"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-secretsmanager",
+          "module": "aws_cdk.aws_secretsmanager"
+        }
+      }
+    },
+    "@aws-cdk/aws-servicediscovery": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ServiceDiscovery",
+          "packageId": "Amazon.CDK.AWS.ServiceDiscovery"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "servicediscovery",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.servicediscovery"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-servicediscovery"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-servicediscovery",
+          "module": "aws_cdk.aws_servicediscovery"
+        }
+      }
+    },
+    "@aws-cdk/aws-signer": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Signer",
+          "packageId": "Amazon.CDK.AWS.Signer"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "signer",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.signer"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-signer"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-signer",
+          "module": "aws_cdk.aws_signer"
+        }
+      }
+    },
+    "@aws-cdk/aws-sns": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SNS",
+          "packageId": "Amazon.CDK.AWS.SNS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sns",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sns"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sns"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-sns",
+          "module": "aws_cdk.aws_sns"
+        }
+      }
+    },
+    "@aws-cdk/aws-sns-subscriptions": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SNS.Subscriptions",
+          "packageId": "Amazon.CDK.AWS.SNS.Subscriptions"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sns-subscriptions",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sns.subscriptions"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sns-subscriptions"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-sns-subscriptions",
+          "module": "aws_cdk.aws_sns_subscriptions"
+        }
+      }
+    },
+    "@aws-cdk/aws-sqs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SQS",
+          "packageId": "Amazon.CDK.AWS.SQS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sqs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sqs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sqs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-sqs",
+          "module": "aws_cdk.aws_sqs"
+        }
+      }
+    },
+    "@aws-cdk/aws-ssm": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SSM",
+          "packageId": "Amazon.CDK.AWS.SSM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ssm",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ssm"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ssm"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ssm",
+          "module": "aws_cdk.aws_ssm"
+        }
+      }
+    },
+    "@aws-cdk/aws-stepfunctions": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.StepFunctions",
+          "packageId": "Amazon.CDK.AWS.StepFunctions"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "stepfunctions",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.stepfunctions"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-stepfunctions"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-stepfunctions",
+          "module": "aws_cdk.aws_stepfunctions"
+        }
+      }
+    },
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/custom-resources": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CustomResources",
+          "packageId": "Amazon.CDK.AWS.CustomResources"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-customresources",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.customresources"
+        },
+        "js": {
+          "npm": "@aws-cdk/custom-resources"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.custom-resources",
+          "module": "aws_cdk.custom_resources"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "Event targets for Amazon EventBridge",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.77.0 (build 3e5fa88)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "cloudwatch",
+    "events",
+    "eventbridge"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-events-targets",
+  "readme": {
+    "markdown": "# Event Targets for Amazon EventBridge\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis library contains integration classes to send Amazon EventBridge to any\nnumber of supported AWS Services. Instances of these classes should be passed\nto the `rule.addTarget()` method.\n\nCurrently supported are:\n\n* [Start a CodeBuild build](#start-a-codebuild-build)\n* [Start a CodePipeline pipeline](#start-a-codepipeline-pipeline)\n* Run an ECS task\n* [Invoke a Lambda function](#invoke-a-lambda-function)\n* [Invoke a API Gateway REST API](#invoke-an-api-gateway-rest-api)\n* Publish a message to an SNS topic\n* Send a message to an SQS queue\n* [Start a StepFunctions state machine](#start-a-stepfunctions-state-machine)\n* [Queue a Batch job](#queue-a-batch-job)\n* Make an AWS API call\n* Put a record to a Kinesis stream\n* [Log an event into a LogGroup](#log-an-event-into-a-loggroup)\n* Put a record to a Kinesis Data Firehose stream\n* [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)\n* [Send an event to EventBridge API Destination](#invoke-an-api-destination)\n\nSee the README of the `@aws-cdk/aws-events` library for more information on\nEventBridge.\n\n## Event retry policy and using dead-letter queues\n\nThe Codebuild, CodePipeline, Lambda, StepFunctions, LogGroup, SQSQueue, SNSTopic and ECSTask targets support attaching a [dead letter queue and setting retry policies](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html). See the [lambda example](#invoke-a-lambda-function).\nUse [escape hatches](https://docs.aws.amazon.com/cdk/latest/guide/cfn_layer.html) for the other target types.\n\n## Invoke a Lambda function\n\nUse the `LambdaFunction` target to invoke a lambda function.\n\nThe code snippet below creates an event rule with a Lambda function as a target\ntriggered for every events from `aws.ec2` source. You can optionally attach a\n[dead letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html).\n\n```ts\nimport * as lambda from '@aws-cdk/aws-lambda';\n\nconst fn = new lambda.Function(this, 'MyFunc', {\n  runtime: lambda.Runtime.NODEJS_14_X,\n  handler: 'index.handler',\n  code: lambda.Code.fromInline(`exports.handler = handler.toString()`),\n});\n\nconst rule = new events.Rule(this, 'rule', {\n  eventPattern: {\n    source: [\"aws.ec2\"],\n  },\n});\n\nconst queue = new sqs.Queue(this, 'Queue');\n\nrule.addTarget(new targets.LambdaFunction(fn, {\n  deadLetterQueue: queue, // Optional: add a dead letter queue\n  maxEventAge: cdk.Duration.hours(2), // Optional: set the maxEventAge retry policy\n  retryAttempts: 2, // Optional: set the max number of retry attempts\n}));\n```\n\n## Log an event into a LogGroup\n\nUse the `LogGroup` target to log your events in a CloudWatch LogGroup.\n\nFor example, the following code snippet creates an event rule with a CloudWatch LogGroup as a target.\nEvery events sent from the `aws.ec2` source will be sent to the CloudWatch LogGroup.\n\n```ts\nimport * as logs from '@aws-cdk/aws-logs';\n\nconst logGroup = new logs.LogGroup(this, 'MyLogGroup', {\n  logGroupName: 'MyLogGroup',\n});\n\nconst rule = new events.Rule(this, 'rule', {\n  eventPattern: {\n    source: [\"aws.ec2\"],\n  },\n});\n\nrule.addTarget(new targets.CloudWatchLogGroup(logGroup));\n```\n\nA rule target input can also be specified to modify the event that is sent to the log group.\nUnlike other event targets, CloudWatchLogs requires a specific input template format.\n\n```ts\nimport * as logs from '@aws-cdk/aws-logs';\ndeclare const logGroup: logs.LogGroup;\ndeclare const rule: events.Rule;\n\nrule.addTarget(new targets.CloudWatchLogGroup(logGroup, {\n  logEvent: targets.LogGroupTargetInput({\n    timestamp: events.EventField.from('$.time'),\n    message: events.EventField.from('$.detail-type'),\n  }),\n}));\n```\n\nIf you want to use static values to overwrite the `message` make sure that you provide a `string`\nvalue.\n\n```ts\nimport * as logs from '@aws-cdk/aws-logs';\ndeclare const logGroup: logs.LogGroup;\ndeclare const rule: events.Rule;\n\nrule.addTarget(new targets.CloudWatchLogGroup(logGroup, {\n  logEvent: targets.LogGroupTargetInput({\n    message: JSON.stringify({\n\t  CustomField: 'CustomValue',\n\t}),\n  }),\n}));\n```\n\n## Start a CodeBuild build\n\nUse the `CodeBuildProject` target to trigger a CodeBuild project.\n\nThe code snippet below creates a CodeCommit repository that triggers a CodeBuild project\non commit to the master branch. You can optionally attach a\n[dead letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html).\n\n```ts\nimport * as codebuild from '@aws-cdk/aws-codebuild';\nimport * as codecommit from '@aws-cdk/aws-codecommit';\n\nconst repo = new codecommit.Repository(this, 'MyRepo', {\n  repositoryName: 'aws-cdk-codebuild-events',\n});\n\nconst project = new codebuild.Project(this, 'MyProject', {\n  source: codebuild.Source.codeCommit({ repository: repo }),\n});\n\nconst deadLetterQueue = new sqs.Queue(this, 'DeadLetterQueue');\n\n// trigger a build when a commit is pushed to the repo\nconst onCommitRule = repo.onCommit('OnCommit', {\n  target: new targets.CodeBuildProject(project, {\n    deadLetterQueue: deadLetterQueue,\n  }),\n  branches: ['master'],\n});\n```\n\n## Start a CodePipeline pipeline\n\nUse the `CodePipeline` target to trigger a CodePipeline pipeline.\n\nThe code snippet below creates a CodePipeline pipeline that is triggered every hour\n\n```ts\nimport * as codepipeline from '@aws-cdk/aws-codepipeline';\n\nconst pipeline = new codepipeline.Pipeline(this, 'Pipeline');\n\nconst rule = new events.Rule(this, 'Rule', {\n  schedule: events.Schedule.expression('rate(1 hour)'),\n});\n\nrule.addTarget(new targets.CodePipeline(pipeline));\n```\n\n## Start a StepFunctions state machine\n\nUse the `SfnStateMachine` target to trigger a State Machine.\n\nThe code snippet below creates a Simple StateMachine that is triggered every minute with a\ndummy object as input.\nYou can optionally attach a\n[dead letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html)\nto the target.\n\n```ts\nimport * as iam from '@aws-cdk/aws-iam';\nimport * as sfn from '@aws-cdk/aws-stepfunctions';\n\nconst rule = new events.Rule(this, 'Rule', {\n  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),\n});\n\nconst dlq = new sqs.Queue(this, 'DeadLetterQueue');\n\nconst role = new iam.Role(this, 'Role', {\n  assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),\n});\nconst stateMachine = new sfn.StateMachine(this, 'SM', {\n  definition: new sfn.Wait(this, 'Hello', { time: sfn.WaitTime.duration(cdk.Duration.seconds(10)) })\n});\n\nrule.addTarget(new targets.SfnStateMachine(stateMachine, {\n  input: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),\n  deadLetterQueue: dlq,\n  role: role\n}));\n```\n\n## Queue a Batch job\n\nUse the `BatchJob` target to queue a Batch job.\n\nThe code snippet below creates a Simple JobQueue that is triggered every hour with a\ndummy object as input.\nYou can optionally attach a\n[dead letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html)\nto the target.\n\n```ts\nimport * as batch from '@aws-cdk/aws-batch';\nimport { ContainerImage } from '@aws-cdk/aws-ecs';\n\nconst jobQueue = new batch.JobQueue(this, 'MyQueue', {\n  computeEnvironments: [\n    {\n      computeEnvironment: new batch.ComputeEnvironment(this, 'ComputeEnvironment', {\n        managed: false,\n      }),\n      order: 1,\n    },\n  ],\n});\n\nconst jobDefinition = new batch.JobDefinition(this, 'MyJob', {\n  container: {\n    image: ContainerImage.fromRegistry('test-repo'),\n  },\n});\n\nconst queue = new sqs.Queue(this, 'Queue');\n\nconst rule = new events.Rule(this, 'Rule', {\n  schedule: events.Schedule.rate(cdk.Duration.hours(1)),\n});\n\nrule.addTarget(new targets.BatchJob(\n  jobQueue.jobQueueArn,\n  jobQueue,\n  jobDefinition.jobDefinitionArn,\n  jobDefinition, {\n    deadLetterQueue: queue,\n    event: events.RuleTargetInput.fromObject({ SomeParam: 'SomeValue' }),\n    retryAttempts: 2,\n    maxEventAge: cdk.Duration.hours(2),\n  },\n));\n```\n\n## Invoke an API Gateway REST API\n\nUse the `ApiGateway` target to trigger a REST API.\n\nThe code snippet below creates a Api Gateway REST API that is invoked every hour.\n\n```ts\nimport * as api from '@aws-cdk/aws-apigateway';\nimport * as lambda from '@aws-cdk/aws-lambda';\n\nconst rule = new events.Rule(this, 'Rule', {\n  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),\n});\n\nconst fn = new lambda.Function( this, 'MyFunc', {\n  handler: 'index.handler',\n  runtime: lambda.Runtime.NODEJS_14_X,\n  code: lambda.Code.fromInline( 'exports.handler = e => {}' ),\n} );\n\nconst restApi = new api.LambdaRestApi( this, 'MyRestAPI', { handler: fn } );\n\nconst dlq = new sqs.Queue(this, 'DeadLetterQueue');\n\nrule.addTarget(\n  new targets.ApiGateway( restApi, {\n    path: '/*/test',\n    method: 'GET',\n    stage:  'prod',\n    pathParameterValues: ['path-value'],\n    headerParameters: {\n      Header1: 'header1',\n    },\n    queryStringParameters: {\n      QueryParam1: 'query-param-1',\n    },\n    deadLetterQueue: dlq\n  } ),\n)\n```\n\n## Invoke an API Destination\n\nUse the `targets.ApiDestination` target to trigger an external API. You need to\ncreate an `events.Connection` and `events.ApiDestination` as well.\n\nThe code snippet below creates an external destination that is invoked every hour.\n\n```ts\nconst connection = new events.Connection(this, 'Connection', {\n  authorization: events.Authorization.apiKey('x-api-key', SecretValue.secretsManager('ApiSecretName')),\n  description: 'Connection with API Key x-api-key',\n});\n\nconst destination = new events.ApiDestination(this, 'Destination', {\n  connection,\n  endpoint: 'https://example.com',\n  description: 'Calling example.com with API key x-api-key',\n});\n\nconst rule = new events.Rule(this, 'Rule', {\n  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),\n  targets: [new targets.ApiDestination(destination)],\n});\n```\n\n## Put an event on an EventBridge bus\n\nUse the `EventBus` target to route event to a different EventBus.\n\nThe code snippet below creates the scheduled event rule that route events to an imported event bus.\n\n```ts\nconst rule = new events.Rule(this, 'Rule', {\n  schedule: events.Schedule.expression('rate(1 minute)'),\n});\n\nrule.addTarget(new targets.EventBus(\n  events.EventBus.fromEventBusArn(\n    this,\n    'External',\n    `arn:aws:events:eu-west-1:999999999999:event-bus/test-bus`,\n  ),\n));\n```\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-events-targets",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.Events.Targets",
+      "packageId": "Amazon.CDK.AWS.Events.Targets"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "events-targets",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.events.targets"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-events-targets"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-events-targets",
+      "module": "aws_cdk.aws_events_targets"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-events-targets.ApiDestination": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use an API Destination rule target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.ApiDestination",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/api-destination.ts",
+          "line": 62
+        },
+        "parameters": [
+          {
+            "name": "apiDestination",
+            "type": {
+              "fqn": "@aws-cdk/aws-events.IApiDestination"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.ApiDestinationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/api-destination.ts",
+        "line": 61
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a RuleTarget that can be used to trigger API destinations from an EventBridge event."
+          },
+          "locationInModule": {
+            "filename": "lib/api-destination.ts",
+            "line": 71
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "_rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "ApiDestination",
+      "symbolId": "lib/api-destination:ApiDestination"
+    },
+    "@aws-cdk/aws-events-targets.ApiDestinationProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Customize the EventBridge Api Destinations Target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.ApiDestinationProps",
+      "interfaces": [
+        "@aws-cdk/aws-events-targets.TargetBaseProps"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/api-destination.ts",
+        "line": 8
+      },
+      "name": "ApiDestinationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- the entire EventBridge event",
+            "stability": "stable",
+            "summary": "The event to send."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-destination.ts",
+            "line": 14
+          },
+          "name": "event",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-events.RuleTargetInput"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- a new role will be created",
+            "stability": "stable",
+            "summary": "The role to assume before invoking the target."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-destination.ts",
+            "line": 21
+          },
+          "name": "eventRole",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- none",
+            "remarks": "These are merged with headers specified on the Connection, with\nthe headers on the Connection taking precedence.\n\nYou can only specify secret values on the Connection.",
+            "stability": "stable",
+            "summary": "Additional headers sent to the API Destination."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-destination.ts",
+            "line": 33
+          },
+          "name": "headerParameters",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- none",
+            "remarks": "If the API destination has a wilcard in the path, these path parts\nwill be inserted in that place.",
+            "stability": "stable",
+            "summary": "Path parameters to insert in place of path wildcards (`*`)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-destination.ts",
+            "line": 43
+          },
+          "name": "pathParameterValues",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- none",
+            "remarks": "These are merged with headers specified on the Connection, with\nthe headers on the Connection taking precedence.\n\nYou can only specify secret values on the Connection.",
+            "stability": "stable",
+            "summary": "Additional query string parameters sent to the API Destination."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-destination.ts",
+            "line": 55
+          },
+          "name": "queryStringParameters",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/api-destination:ApiDestinationProps"
+    },
+    "@aws-cdk/aws-events-targets.ApiGateway": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use an API Gateway REST APIs as a target for Amazon EventBridge rules."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.ApiGateway",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/api-gateway.ts",
+          "line": 77
+        },
+        "parameters": [
+          {
+            "name": "restApi",
+            "type": {
+              "fqn": "@aws-cdk/aws-apigateway.RestApi"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.ApiGatewayProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/api-gateway.ts",
+        "line": 75
+      },
+      "methods": [
+        {
+          "docs": {
+            "see": "https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions",
+            "stability": "stable",
+            "summary": "Returns a RuleTarget that can be used to trigger this API Gateway REST APIs as a result from an EventBridge event."
+          },
+          "locationInModule": {
+            "filename": "lib/api-gateway.ts",
+            "line": 86
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "ApiGateway",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-gateway.ts",
+            "line": 77
+          },
+          "name": "restApi",
+          "type": {
+            "fqn": "@aws-cdk/aws-apigateway.RestApi"
+          }
+        }
+      ],
+      "symbolId": "lib/api-gateway:ApiGateway"
+    },
+    "@aws-cdk/aws-events-targets.ApiGatewayProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Customize the API Gateway Event Target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.ApiGatewayProps",
+      "interfaces": [
+        "@aws-cdk/aws-events-targets.TargetBaseProps"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/api-gateway.ts",
+        "line": 9
+      },
+      "name": "ApiGatewayProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- a new role will be created",
+            "stability": "stable",
+            "summary": "The role to assume before invoking the target (i.e., the pipeline) when the given rule is triggered."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-gateway.ts",
+            "line": 69
+          },
+          "name": "eventRole",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "no header parameters",
+            "stability": "stable",
+            "summary": "The headers to be set when requesting API."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-gateway.ts",
+            "line": 39
+          },
+          "name": "headerParameters",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "'*' that treated as ANY",
+            "stability": "stable",
+            "summary": "The method for api resource invoked by the rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-gateway.ts",
+            "line": 16
+          },
+          "name": "method",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "'/'",
+            "remarks": "We can use wildcards('*') to specify the path. In that case,\nan equal number of real values must be specified for pathParameterValues.",
+            "stability": "stable",
+            "summary": "The api resource invoked by the rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-gateway.ts",
+            "line": 25
+          },
+          "name": "path",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "no path parameters",
+            "stability": "stable",
+            "summary": "The path parameter values to be used to populate to wildcards(\"*\") of requesting api path."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-gateway.ts",
+            "line": 47
+          },
+          "name": "pathParameterValues",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "the entire EventBridge event",
+            "stability": "stable",
+            "summary": "This will be the post request body send to the API."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-gateway.ts",
+            "line": 61
+          },
+          "name": "postBody",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-events.RuleTargetInput"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "no querystring parameters",
+            "stability": "stable",
+            "summary": "The query parameters to be set when requesting API."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-gateway.ts",
+            "line": 54
+          },
+          "name": "queryStringParameters",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "the value of deploymentStage.stageName of target api gateway.",
+            "stability": "stable",
+            "summary": "The deploy stage of api gateway invoked by the rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api-gateway.ts",
+            "line": 32
+          },
+          "name": "stage",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/api-gateway:ApiGatewayProps"
+    },
+    "@aws-cdk/aws-events-targets.AwsApi": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use an AWS Lambda function that makes API calls as an event rule target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.AwsApi",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/aws-api.ts",
+          "line": 78
+        },
+        "parameters": [
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.AwsApiProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/aws-api.ts",
+        "line": 77
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a RuleTarget that can be used to trigger this AwsApi as a result from an EventBridge event."
+          },
+          "locationInModule": {
+            "filename": "lib/aws-api.ts",
+            "line": 84
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "AwsApi",
+      "symbolId": "lib/aws-api:AwsApi"
+    },
+    "@aws-cdk/aws-events-targets.AwsApiInput": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Rule target input for an AwsApi target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.AwsApiInput",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/aws-api.ts",
+        "line": 19
+      },
+      "name": "AwsApiInput",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "see": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html",
+            "stability": "stable",
+            "summary": "The service action to call."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-api.ts",
+            "line": 32
+          },
+          "name": "action",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "see": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html",
+            "stability": "stable",
+            "summary": "The service to call."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-api.ts",
+            "line": 25
+          },
+          "name": "service",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- use latest available API version",
+            "see": "https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/locking-api-versions.html",
+            "stability": "stable",
+            "summary": "API version to use for the service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-api.ts",
+            "line": 58
+          },
+          "name": "apiVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- do not catch errors",
+            "remarks": "The `code` property of the\n`Error` object will be tested against this pattern. If there is a match an\nerror will not be thrown.",
+            "stability": "stable",
+            "summary": "The regex pattern to use to catch API errors."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-api.ts",
+            "line": 50
+          },
+          "name": "catchErrorPattern",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no parameters",
+            "see": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html",
+            "stability": "stable",
+            "summary": "The parameters for the service action."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-api.ts",
+            "line": 41
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/aws-api:AwsApiInput"
+    },
+    "@aws-cdk/aws-events-targets.AwsApiProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties for an AwsApi target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.AwsApiProps",
+      "interfaces": [
+        "@aws-cdk/aws-events-targets.AwsApiInput"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/aws-api.ts",
+        "line": 64
+      },
+      "name": "AwsApiProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- extract the permission from the API call",
+            "remarks": "Use only if\nresource restriction is needed.",
+            "stability": "stable",
+            "summary": "The IAM policy statement to allow the API call."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-api.ts",
+            "line": 71
+          },
+          "name": "policyStatement",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+          }
+        }
+      ],
+      "symbolId": "lib/aws-api:AwsApiProps"
+    },
+    "@aws-cdk/aws-events-targets.BatchJob": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "remarks": "Most likely the code will look something like this:\n`new BatchJob(jobQueue.jobQueueArn, jobQueue, jobDefinition.jobDefinitionArn, jobDefinition)`\n\nIn the future this API will be improved to be fully typed",
+        "stability": "stable",
+        "summary": "Use an AWS Batch Job / Queue as an event rule target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.BatchJob",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/batch.ts",
+          "line": 52
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "The JobQueue arn."
+            },
+            "name": "jobQueueArn",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "The JobQueue Resource."
+            },
+            "name": "jobQueueScope",
+            "type": {
+              "fqn": "constructs.IConstruct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "The jobDefinition arn."
+            },
+            "name": "jobDefinitionArn",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "The JobQueue Resource."
+            },
+            "name": "jobDefinitionScope",
+            "type": {
+              "fqn": "constructs.IConstruct"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.BatchJobProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/batch.ts",
+        "line": 51
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a RuleTarget that can be used to trigger queue this batch job as a result from an EventBridge event."
+          },
+          "locationInModule": {
+            "filename": "lib/batch.ts",
+            "line": 79
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "BatchJob",
+      "symbolId": "lib/batch:BatchJob"
+    },
+    "@aws-cdk/aws-events-targets.BatchJobProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Customize the Batch Job Event Target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.BatchJobProps",
+      "interfaces": [
+        "@aws-cdk/aws-events-targets.TargetBaseProps"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/batch.ts",
+        "line": 10
+      },
+      "name": "BatchJobProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "no retryStrategy is set",
+            "remarks": "Valid values are 1–10.",
+            "stability": "stable",
+            "summary": "The number of times to attempt to retry, if the job fails."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/batch.ts",
+            "line": 34
+          },
+          "name": "attempts",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "the entire EventBridge event",
+            "remarks": "This will be the payload sent to the Lambda Function.",
+            "stability": "stable",
+            "summary": "The event to send to the Lambda."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/batch.ts",
+            "line": 18
+          },
+          "name": "event",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-events.RuleTargetInput"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Automatically generated",
+            "stability": "stable",
+            "summary": "The name of the submitted job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/batch.ts",
+            "line": 41
+          },
+          "name": "jobName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "no arrayProperties are set",
+            "remarks": "Valid values are integers between 2 and 10,000.",
+            "stability": "stable",
+            "summary": "The size of the array, if this is an array batch job."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/batch.ts",
+            "line": 27
+          },
+          "name": "size",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/batch:BatchJobProps"
+    },
+    "@aws-cdk/aws-events-targets.CloudWatchLogGroup": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use an AWS CloudWatch LogGroup as an event rule target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.CloudWatchLogGroup",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/log-group.ts",
+          "line": 88
+        },
+        "parameters": [
+          {
+            "name": "logGroup",
+            "type": {
+              "fqn": "@aws-cdk/aws-logs.ILogGroup"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.LogGroupProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/log-group.ts",
+        "line": 86
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a RuleTarget that can be used to log an event into a CloudWatch LogGroup."
+          },
+          "locationInModule": {
+            "filename": "lib/log-group.ts",
+            "line": 93
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "_rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "CloudWatchLogGroup",
+      "symbolId": "lib/log-group:CloudWatchLogGroup"
+    },
+    "@aws-cdk/aws-events-targets.CodeBuildProject": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Start a CodeBuild build when an Amazon EventBridge rule is triggered."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.CodeBuildProject",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/codebuild.ts",
+          "line": 33
+        },
+        "parameters": [
+          {
+            "name": "project",
+            "type": {
+              "fqn": "@aws-cdk/aws-codebuild.IProject"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.CodeBuildProjectProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/codebuild.ts",
+        "line": 32
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Allows using build projects as event rule targets."
+          },
+          "locationInModule": {
+            "filename": "lib/codebuild.ts",
+            "line": 41
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "_rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "CodeBuildProject",
+      "symbolId": "lib/codebuild:CodeBuildProject"
+    },
+    "@aws-cdk/aws-events-targets.CodeBuildProjectProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Customize the CodeBuild Event Target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.CodeBuildProjectProps",
+      "interfaces": [
+        "@aws-cdk/aws-events-targets.TargetBaseProps"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/codebuild.ts",
+        "line": 9
+      },
+      "name": "CodeBuildProjectProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- the entire EventBridge event",
+            "remarks": "This will be the payload for the StartBuild API.",
+            "stability": "stable",
+            "summary": "The event to send to CodeBuild."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codebuild.ts",
+            "line": 26
+          },
+          "name": "event",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-events.RuleTargetInput"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- a new role will be created",
+            "stability": "stable",
+            "summary": "The role to assume before invoking the target (i.e., the codebuild) when the given rule is triggered."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codebuild.ts",
+            "line": 17
+          },
+          "name": "eventRole",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole"
+          }
+        }
+      ],
+      "symbolId": "lib/codebuild:CodeBuildProjectProps"
+    },
+    "@aws-cdk/aws-events-targets.CodePipeline": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Allows the pipeline to be used as an EventBridge rule target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.CodePipeline",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/codepipeline.ts",
+          "line": 23
+        },
+        "parameters": [
+          {
+            "name": "pipeline",
+            "type": {
+              "fqn": "@aws-cdk/aws-codepipeline.IPipeline"
+            }
+          },
+          {
+            "name": "options",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.CodePipelineTargetOptions"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/codepipeline.ts",
+        "line": 22
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "NOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`.",
+            "stability": "stable",
+            "summary": "Returns the rule target specification."
+          },
+          "locationInModule": {
+            "filename": "lib/codepipeline.ts",
+            "line": 28
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "_rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "CodePipeline",
+      "symbolId": "lib/codepipeline:CodePipeline"
+    },
+    "@aws-cdk/aws-events-targets.CodePipelineTargetOptions": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Customization options when creating a `CodePipeline` event target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.CodePipelineTargetOptions",
+      "interfaces": [
+        "@aws-cdk/aws-events-targets.TargetBaseProps"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/codepipeline.ts",
+        "line": 9
+      },
+      "name": "CodePipelineTargetOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- a new role will be created",
+            "stability": "stable",
+            "summary": "The role to assume before invoking the target (i.e., the pipeline) when the given rule is triggered."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/codepipeline.ts",
+            "line": 16
+          },
+          "name": "eventRole",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole"
+          }
+        }
+      ],
+      "symbolId": "lib/codepipeline:CodePipelineTargetOptions"
+    },
+    "@aws-cdk/aws-events-targets.ContainerOverride": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/aws-events-targets.ContainerOverride",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecs-task-properties.ts",
+        "line": 1
+      },
+      "name": "ContainerOverride",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Name of the container inside the task definition."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task-properties.ts",
+            "line": 5
+          },
+          "name": "containerName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Default command",
+            "stability": "stable",
+            "summary": "Command to run inside the container."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task-properties.ts",
+            "line": 12
+          },
+          "name": "command",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "The default value from the task definition.",
+            "stability": "stable",
+            "summary": "The number of cpu units reserved for the container."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task-properties.ts",
+            "line": 24
+          },
+          "name": "cpu",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Variables to set in the container's environment."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task-properties.ts",
+            "line": 17
+          },
+          "name": "environment",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-events-targets.TaskEnvironmentVariable"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "The default value from the task definition.",
+            "stability": "stable",
+            "summary": "Hard memory limit on the container."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task-properties.ts",
+            "line": 31
+          },
+          "name": "memoryLimit",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "The default value from the task definition.",
+            "stability": "stable",
+            "summary": "Soft memory limit on the container."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task-properties.ts",
+            "line": 38
+          },
+          "name": "memoryReservation",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/ecs-task-properties:ContainerOverride"
+    },
+    "@aws-cdk/aws-events-targets.EcsTask": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Start a task on an ECS cluster."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.EcsTask",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/ecs-task.ts",
+          "line": 112
+        },
+        "parameters": [
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.EcsTaskProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ecs-task.ts",
+        "line": 89
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Allows using tasks as target of EventBridge events."
+          },
+          "locationInModule": {
+            "filename": "lib/ecs-task.ts",
+            "line": 154
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "_rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "EcsTask",
+      "properties": [
+        {
+          "docs": {
+            "default": "- A new security group is created.",
+            "deprecated": "use securityGroups instead.",
+            "remarks": "Only applicable with awsvpc network mode.",
+            "stability": "deprecated",
+            "summary": "The security group associated with the task."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task.ts",
+            "line": 98
+          },
+          "name": "securityGroup",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ec2.ISecurityGroup"
+          }
+        },
+        {
+          "docs": {
+            "default": "- A new security group is created.",
+            "remarks": "Only applicable with awsvpc network mode.",
+            "stability": "stable",
+            "summary": "The security groups associated with the task."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task.ts",
+            "line": 105
+          },
+          "name": "securityGroups",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-ec2.ISecurityGroup"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ecs-task:EcsTask"
+    },
+    "@aws-cdk/aws-events-targets.EcsTaskProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties to define an ECS Event Task."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.EcsTaskProps",
+      "interfaces": [
+        "@aws-cdk/aws-events-targets.TargetBaseProps"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecs-task.ts",
+        "line": 13
+      },
+      "name": "EcsTaskProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Cluster where service will be deployed."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task.ts",
+            "line": 17
+          },
+          "name": "cluster",
+          "type": {
+            "fqn": "@aws-cdk/aws-ecs.ICluster"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Task Definition of the task that should be started."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task.ts",
+            "line": 22
+          },
+          "name": "taskDefinition",
+          "type": {
+            "fqn": "@aws-cdk/aws-ecs.ITaskDefinition"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Key is the name of the container to override, value is the\nvalues you want to override.",
+            "stability": "stable",
+            "summary": "Container setting overrides."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task.ts",
+            "line": 37
+          },
+          "name": "containerOverrides",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-events-targets.ContainerOverride"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- ECS will set the Fargate platform version to 'LATEST'",
+            "remarks": "Unless you have specific compatibility requirements, you don't need to specify this.",
+            "see": "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html",
+            "stability": "stable",
+            "summary": "The platform version on which to run your task."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task.ts",
+            "line": 83
+          },
+          "name": "platformVersion",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ecs.FargatePlatformVersion"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "A new IAM role is created",
+            "stability": "stable",
+            "summary": "Existing IAM role to run the ECS task."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task.ts",
+            "line": 72
+          },
+          "name": "role",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "A new security group is created",
+            "deprecated": "use securityGroups instead",
+            "remarks": "(Only applicable in case the TaskDefinition is configured for AwsVpc networking)",
+            "stability": "deprecated",
+            "summary": "Existing security group to use for the task's ENIs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task.ts",
+            "line": 56
+          },
+          "name": "securityGroup",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ec2.ISecurityGroup"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "A new security group is created",
+            "remarks": "(Only applicable in case the TaskDefinition is configured for AwsVpc networking)",
+            "stability": "stable",
+            "summary": "Existing security groups to use for the task's ENIs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task.ts",
+            "line": 65
+          },
+          "name": "securityGroups",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-ec2.ISecurityGroup"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Private subnets",
+            "remarks": "(Only applicable in case the TaskDefinition is configured for AwsVpc networking)",
+            "stability": "stable",
+            "summary": "In what subnets to place the task's ENIs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task.ts",
+            "line": 46
+          },
+          "name": "subnetSelection",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ec2.SubnetSelection"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "1",
+            "stability": "stable",
+            "summary": "How many tasks should be started when this event is triggered."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task.ts",
+            "line": 29
+          },
+          "name": "taskCount",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/ecs-task:EcsTaskProps"
+    },
+    "@aws-cdk/aws-events-targets.EventBus": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Notify an existing Event Bus of an event."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.EventBus",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/event-bus.ts",
+          "line": 36
+        },
+        "parameters": [
+          {
+            "name": "eventBus",
+            "type": {
+              "fqn": "@aws-cdk/aws-events.IEventBus"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.EventBusProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/event-bus.ts",
+        "line": 35
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "NOTE: Do not use the various `inputXxx` options. They can be set in a call to `addTarget`.",
+            "stability": "stable",
+            "summary": "Returns the rule target specification."
+          },
+          "locationInModule": {
+            "filename": "lib/event-bus.ts",
+            "line": 38
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "EventBus",
+      "symbolId": "lib/event-bus:EventBus"
+    },
+    "@aws-cdk/aws-events-targets.EventBusProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "remarks": "Cannot extend TargetBaseProps. Retry policy is not supported for Event bus targets.",
+        "stability": "stable",
+        "summary": "Configuration properties of an Event Bus event."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.EventBusProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/event-bus.ts",
+        "line": 11
+      },
+      "name": "EventBusProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no dead-letter queue",
+            "remarks": "The events not successfully delivered are automatically retried for a specified period of time,\ndepending on the retry policy of the target.\nIf an event is not delivered before all retry attempts are exhausted, it will be sent to the dead letter queue.",
+            "stability": "stable",
+            "summary": "The SQS queue to be used as deadLetterQueue. Check out the [considerations for using a dead-letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html#dlq-considerations)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/event-bus.ts",
+            "line": 29
+          },
+          "name": "deadLetterQueue",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-sqs.IQueue"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "a new role is created.",
+            "stability": "stable",
+            "summary": "Role to be used to publish the event."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/event-bus.ts",
+            "line": 17
+          },
+          "name": "role",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole"
+          }
+        }
+      ],
+      "symbolId": "lib/event-bus:EventBusProps"
+    },
+    "@aws-cdk/aws-events-targets.KinesisFirehoseStream": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Customize the Firehose Stream Event Target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.KinesisFirehoseStream",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/kinesis-firehose-stream.ts",
+          "line": 26
+        },
+        "parameters": [
+          {
+            "name": "stream",
+            "type": {
+              "fqn": "@aws-cdk/aws-kinesisfirehose.CfnDeliveryStream"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.KinesisFirehoseStreamProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/kinesis-firehose-stream.ts",
+        "line": 24
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a RuleTarget that can be used to trigger this Firehose Stream as a result from a Event Bridge event."
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis-firehose-stream.ts",
+            "line": 33
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "_rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "KinesisFirehoseStream",
+      "symbolId": "lib/kinesis-firehose-stream:KinesisFirehoseStream"
+    },
+    "@aws-cdk/aws-events-targets.KinesisFirehoseStreamProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Customize the Firehose Stream Event Target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.KinesisFirehoseStreamProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kinesis-firehose-stream.ts",
+        "line": 9
+      },
+      "name": "KinesisFirehoseStreamProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- the entire Event Bridge event",
+            "remarks": "Must be a valid JSON text passed to the target stream.",
+            "stability": "stable",
+            "summary": "The message to send to the stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis-firehose-stream.ts",
+            "line": 17
+          },
+          "name": "message",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-events.RuleTargetInput"
+          }
+        }
+      ],
+      "symbolId": "lib/kinesis-firehose-stream:KinesisFirehoseStreamProps"
+    },
+    "@aws-cdk/aws-events-targets.KinesisStream": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "example": "  /// fixture=withRepoAndKinesisStream\n  // put to a Kinesis stream every time code is committed\n  // to a CodeCommit repository\n  repository.onCommit('onCommit', { target: new targets.KinesisStream(stream) });",
+        "stability": "stable",
+        "summary": "Use a Kinesis Stream as a target for AWS CloudWatch event rules."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.KinesisStream",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/kinesis-stream.ts",
+          "line": 40
+        },
+        "parameters": [
+          {
+            "name": "stream",
+            "type": {
+              "fqn": "@aws-cdk/aws-kinesis.IStream"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.KinesisStreamProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/kinesis-stream.ts",
+        "line": 38
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a RuleTarget that can be used to trigger this Kinesis Stream as a result from a CloudWatch event."
+          },
+          "locationInModule": {
+            "filename": "lib/kinesis-stream.ts",
+            "line": 47
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "_rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "KinesisStream",
+      "symbolId": "lib/kinesis-stream:KinesisStream"
+    },
+    "@aws-cdk/aws-events-targets.KinesisStreamProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Customize the Kinesis Stream Event Target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.KinesisStreamProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kinesis-stream.ts",
+        "line": 9
+      },
+      "name": "KinesisStreamProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- the entire CloudWatch event",
+            "remarks": "Must be a valid JSON text passed to the target stream.",
+            "stability": "stable",
+            "summary": "The message to send to the stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis-stream.ts",
+            "line": 24
+          },
+          "name": "message",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-events.RuleTargetInput"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- eventId as the partition key",
+            "stability": "stable",
+            "summary": "Partition Key Path for records sent to this stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kinesis-stream.ts",
+            "line": 15
+          },
+          "name": "partitionKeyPath",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kinesis-stream:KinesisStreamProps"
+    },
+    "@aws-cdk/aws-events-targets.LambdaFunction": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use an AWS Lambda function as an event rule target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.LambdaFunction",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/lambda.ts",
+          "line": 23
+        },
+        "parameters": [
+          {
+            "name": "handler",
+            "type": {
+              "fqn": "@aws-cdk/aws-lambda.IFunction"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.LambdaFunctionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/lambda.ts",
+        "line": 22
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a RuleTarget that can be used to trigger this Lambda as a result from an EventBridge event."
+          },
+          "locationInModule": {
+            "filename": "lib/lambda.ts",
+            "line": 31
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "LambdaFunction",
+      "symbolId": "lib/lambda:LambdaFunction"
+    },
+    "@aws-cdk/aws-events-targets.LambdaFunctionProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Customize the Lambda Event Target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.LambdaFunctionProps",
+      "interfaces": [
+        "@aws-cdk/aws-events-targets.TargetBaseProps"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lambda.ts",
+        "line": 8
+      },
+      "name": "LambdaFunctionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "the entire EventBridge event",
+            "remarks": "This will be the payload sent to the Lambda Function.",
+            "stability": "stable",
+            "summary": "The event to send to the Lambda."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lambda.ts",
+            "line": 16
+          },
+          "name": "event",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-events.RuleTargetInput"
+          }
+        }
+      ],
+      "symbolId": "lib/lambda:LambdaFunctionProps"
+    },
+    "@aws-cdk/aws-events-targets.LogGroupProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Customize the CloudWatch LogGroup Event Target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.LogGroupProps",
+      "interfaces": [
+        "@aws-cdk/aws-events-targets.TargetBaseProps"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/log-group.ts",
+        "line": 62
+      },
+      "name": "LogGroupProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- the entire EventBridge event",
+            "deprecated": "use logEvent instead",
+            "remarks": "This will be the event logged into the CloudWatch LogGroup",
+            "stability": "deprecated",
+            "summary": "The event to send to the CloudWatch LogGroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/log-group.ts",
+            "line": 71
+          },
+          "name": "event",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-events.RuleTargetInput"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- the entire EventBridge event",
+            "remarks": "This will be the event logged into the CloudWatch LogGroup",
+            "stability": "stable",
+            "summary": "The event to send to the CloudWatch LogGroup."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/log-group.ts",
+            "line": 80
+          },
+          "name": "logEvent",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-events-targets.LogGroupTargetInput"
+          }
+        }
+      ],
+      "symbolId": "lib/log-group:LogGroupProps"
+    },
+    "@aws-cdk/aws-events-targets.LogGroupTargetInput": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "The input to send to the CloudWatch LogGroup target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.LogGroupTargetInput",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        }
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/log-group.ts",
+        "line": 38
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "May contain strings returned by `EventField.from()` to substitute in parts of the\nmatched event.",
+            "stability": "stable",
+            "summary": "Pass a JSON object to the the log group event target."
+          },
+          "locationInModule": {
+            "filename": "lib/log-group.ts",
+            "line": 46
+          },
+          "name": "fromObject",
+          "parameters": [
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events-targets.LogGroupTargetInputOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetInput"
+            }
+          },
+          "static": true
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Return the input properties for this input object."
+          },
+          "locationInModule": {
+            "filename": "lib/log-group.ts",
+            "line": 56
+          },
+          "name": "bind",
+          "parameters": [
+            {
+              "name": "rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetInputProperties"
+            }
+          }
+        }
+      ],
+      "name": "LogGroupTargetInput",
+      "symbolId": "lib/log-group:LogGroupTargetInput"
+    },
+    "@aws-cdk/aws-events-targets.LogGroupTargetInputOptions": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options used when creating a target input template."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.LogGroupTargetInputOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/log-group.ts",
+        "line": 13
+      },
+      "name": "LogGroupTargetInputOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "EventField.detailType",
+            "remarks": "This field must be a string. If an object is passed (e.g. JSON data)\nit will not throw an error, but the message that makes it to\nCloudWatch logs will be incorrect. This is a likely scenario if\ndoing something like: EventField.fromPath('$.detail') since in most cases\nthe `detail` field contains JSON data.",
+            "stability": "stable",
+            "summary": "The value provided here will be used in the Log \"message\" field."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/log-group.ts",
+            "line": 32
+          },
+          "name": "message",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "EventField.time",
+            "stability": "stable",
+            "summary": "The timestamp that will appear in the CloudWatch Logs record."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/log-group.ts",
+            "line": 19
+          },
+          "name": "timestamp",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/log-group:LogGroupTargetInputOptions"
+    },
+    "@aws-cdk/aws-events-targets.SfnStateMachine": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "stability": "stable",
+        "summary": "Use a StepFunctions state machine as a target for Amazon EventBridge rules."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.SfnStateMachine",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/state-machine.ts",
+          "line": 31
+        },
+        "parameters": [
+          {
+            "name": "machine",
+            "type": {
+              "fqn": "@aws-cdk/aws-stepfunctions.IStateMachine"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.SfnStateMachineProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/state-machine.ts",
+        "line": 28
+      },
+      "methods": [
+        {
+          "docs": {
+            "see": "https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sns-permissions",
+            "stability": "stable",
+            "summary": "Returns a properties that are used in an Rule to trigger this State Machine."
+          },
+          "locationInModule": {
+            "filename": "lib/state-machine.ts",
+            "line": 42
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "_rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "SfnStateMachine",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/state-machine.ts",
+            "line": 31
+          },
+          "name": "machine",
+          "type": {
+            "fqn": "@aws-cdk/aws-stepfunctions.IStateMachine"
+          }
+        }
+      ],
+      "symbolId": "lib/state-machine:SfnStateMachine"
+    },
+    "@aws-cdk/aws-events-targets.SfnStateMachineProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Customize the Step Functions State Machine target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.SfnStateMachineProps",
+      "interfaces": [
+        "@aws-cdk/aws-events-targets.TargetBaseProps"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/state-machine.ts",
+        "line": 9
+      },
+      "name": "SfnStateMachineProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "the entire EventBridge event",
+            "stability": "stable",
+            "summary": "The input to the state machine execution."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/state-machine.ts",
+            "line": 15
+          },
+          "name": "input",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-events.RuleTargetInput"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- a new role will be created",
+            "stability": "stable",
+            "summary": "The IAM role to be assumed to execute the State Machine."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/state-machine.ts",
+            "line": 22
+          },
+          "name": "role",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole"
+          }
+        }
+      ],
+      "symbolId": "lib/state-machine:SfnStateMachineProps"
+    },
+    "@aws-cdk/aws-events-targets.SnsTopic": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "example": "  /// fixture=withRepoAndTopic\n  // publish to an SNS topic every time code is committed\n  // to a CodeCommit repository\n  repository.onCommit('onCommit', { target: new targets.SnsTopic(topic) });",
+        "stability": "stable",
+        "summary": "Use an SNS topic as a target for Amazon EventBridge rules."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.SnsTopic",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/sns.ts",
+          "line": 29
+        },
+        "parameters": [
+          {
+            "name": "topic",
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.ITopic"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.SnsTopicProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/sns.ts",
+        "line": 28
+      },
+      "methods": [
+        {
+          "docs": {
+            "see": "https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sns-permissions",
+            "stability": "stable",
+            "summary": "Returns a RuleTarget that can be used to trigger this SNS topic as a result from an EventBridge event."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.ts",
+            "line": 38
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "_rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "SnsTopic",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.ts",
+            "line": 29
+          },
+          "name": "topic",
+          "type": {
+            "fqn": "@aws-cdk/aws-sns.ITopic"
+          }
+        }
+      ],
+      "symbolId": "lib/sns:SnsTopic"
+    },
+    "@aws-cdk/aws-events-targets.SnsTopicProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Customize the SNS Topic Event Target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.SnsTopicProps",
+      "interfaces": [
+        "@aws-cdk/aws-events-targets.TargetBaseProps"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sns.ts",
+        "line": 9
+      },
+      "name": "SnsTopicProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "the entire EventBridge event",
+            "stability": "stable",
+            "summary": "The message to send to the topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.ts",
+            "line": 15
+          },
+          "name": "message",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-events.RuleTargetInput"
+          }
+        }
+      ],
+      "symbolId": "lib/sns:SnsTopicProps"
+    },
+    "@aws-cdk/aws-events-targets.SqsQueue": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "docs": {
+        "example": "  /// fixture=withRepoAndSqsQueue\n  // publish to an SQS queue every time code is committed\n  // to a CodeCommit repository\n  repository.onCommit('onCommit', { target: new targets.SqsQueue(queue) });",
+        "stability": "stable",
+        "summary": "Use an SQS Queue as a target for Amazon EventBridge rules."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.SqsQueue",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/sqs.ts",
+          "line": 44
+        },
+        "parameters": [
+          {
+            "name": "queue",
+            "type": {
+              "fqn": "@aws-cdk/aws-sqs.IQueue"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-events-targets.SqsQueueProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-events.IRuleTarget"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/sqs.ts",
+        "line": 42
+      },
+      "methods": [
+        {
+          "docs": {
+            "see": "https://docs.aws.amazon.com/eventbridge/latest/userguide/resource-based-policies-eventbridge.html#sqs-permissions",
+            "stability": "stable",
+            "summary": "Returns a RuleTarget that can be used to trigger this SQS queue as a result from an EventBridge event."
+          },
+          "locationInModule": {
+            "filename": "lib/sqs.ts",
+            "line": 56
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-events.IRuleTarget",
+          "parameters": [
+            {
+              "name": "rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-events.IRule"
+              }
+            },
+            {
+              "name": "_id",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.RuleTargetConfig"
+            }
+          }
+        }
+      ],
+      "name": "SqsQueue",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sqs.ts",
+            "line": 44
+          },
+          "name": "queue",
+          "type": {
+            "fqn": "@aws-cdk/aws-sqs.IQueue"
+          }
+        }
+      ],
+      "symbolId": "lib/sqs:SqsQueue"
+    },
+    "@aws-cdk/aws-events-targets.SqsQueueProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Customize the SQS Queue Event Target."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.SqsQueueProps",
+      "interfaces": [
+        "@aws-cdk/aws-events-targets.TargetBaseProps"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sqs.ts",
+        "line": 11
+      },
+      "name": "SqsQueueProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "the entire EventBridge event",
+            "remarks": "Must be a valid JSON text passed to the target queue.",
+            "stability": "stable",
+            "summary": "The message to send to the queue."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sqs.ts",
+            "line": 29
+          },
+          "name": "message",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-events.RuleTargetInput"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no message group ID (regular queue)",
+            "remarks": "Required for FIFO queues, leave empty for regular queues.",
+            "stability": "stable",
+            "summary": "Message Group ID for messages sent to this queue."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sqs.ts",
+            "line": 20
+          },
+          "name": "messageGroupId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/sqs:SqsQueueProps"
+    },
+    "@aws-cdk/aws-events-targets.TargetBaseProps": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "The generic properties for an RuleTarget."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.TargetBaseProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/util.ts",
+        "line": 11
+      },
+      "name": "TargetBaseProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no dead-letter queue",
+            "remarks": "The events not successfully delivered are automatically retried for a specified period of time,\ndepending on the retry policy of the target.\nIf an event is not delivered before all retry attempts are exhausted, it will be sent to the dead letter queue.",
+            "stability": "stable",
+            "summary": "The SQS queue to be used as deadLetterQueue. Check out the [considerations for using a dead-letter queue](https://docs.aws.amazon.com/eventbridge/latest/userguide/rule-dlq.html#dlq-considerations)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/util.ts",
+            "line": 22
+          },
+          "name": "deadLetterQueue",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-sqs.IQueue"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Duration.hours(24)",
+            "remarks": "Minimum value of 60.\nMaximum value of 86400.",
+            "stability": "stable",
+            "summary": "The maximum age of a request that Lambda sends to a function for processing."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/util.ts",
+            "line": 32
+          },
+          "name": "maxEventAge",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/core.Duration"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "185",
+            "remarks": "Minimum value of 0.\nMaximum value of 185.",
+            "stability": "stable",
+            "summary": "The maximum number of times to retry when the function returns an error."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/util.ts",
+            "line": 42
+          },
+          "name": "retryAttempts",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/util:TargetBaseProps"
+    },
+    "@aws-cdk/aws-events-targets.TaskEnvironmentVariable": {
+      "assembly": "@aws-cdk/aws-events-targets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "An environment variable to be set in the container run as a task."
+      },
+      "fqn": "@aws-cdk/aws-events-targets.TaskEnvironmentVariable",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecs-task-properties.ts",
+        "line": 44
+      },
+      "name": "TaskEnvironmentVariable",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Exactly one of `name` and `namePath` must be specified.",
+            "stability": "stable",
+            "summary": "Name for the environment variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task-properties.ts",
+            "line": 50
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Exactly one of `value` and `valuePath` must be specified.",
+            "stability": "stable",
+            "summary": "Value of the environment variable."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecs-task-properties.ts",
+            "line": 57
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ecs-task-properties:TaskEnvironmentVariable"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "4i/JxiWX54ilj6eXLMdhrDabnLN2EOBNzcsoj5ldrnY="
+}
