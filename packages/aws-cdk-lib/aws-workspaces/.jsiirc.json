@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.workspaces"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.WorkSpaces"
+    },
+    "python": {
+      "module": "aws_cdk.aws_workspaces"
+    }
+  }
+}

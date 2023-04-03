@@ -27,7 +27,6 @@ phases:
       - 'if ${BUMP_CANDIDATE:-false}; then /bin/bash ./scripts/bump-candidate.sh; fi'
       - /bin/bash ./scripts/align-version.sh
       - /bin/bash ./build.sh
-      - /bin/bash ./scripts/transform.sh
   post_build:
     commands:
       # Short-circuit: Don't run pack if the above build failed.
