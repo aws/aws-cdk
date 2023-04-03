@@ -1,7 +1,7 @@
-import * as core from '@aws-cdk/core';
-import { Lazy, Names } from '@aws-cdk/core';
+import * as core from 'aws-cdk-lib';
+import { Lazy, Names } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnPlaybackKeyPair } from './ivs.generated';
+import { CfnPlaybackKeyPair } from 'aws-cdk-lib/aws-ivs';
 
 /**
  * Represents an IVS Playback Key Pair

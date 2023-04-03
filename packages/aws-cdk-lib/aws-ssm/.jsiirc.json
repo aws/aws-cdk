@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.ssm"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.SSM"
+    },
+    "python": {
+      "module": "aws_cdk.aws_ssm"
+    }
+  }
+}

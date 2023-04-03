@@ -1,5 +1,5 @@
 import * as crypto from 'crypto';
-import * as iam from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 /**
  * Supported permissions for sharing applications or attribute groups with principals using AWS RAM.
