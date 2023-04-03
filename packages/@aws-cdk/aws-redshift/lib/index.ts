@@ -8,4 +8,3 @@ export * from './table';
 export * from './user';
 
 // AWS::Redshift CloudFormation Resources:
-export * from './redshift.generated';

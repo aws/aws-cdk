@@ -1,0 +1,24 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const ec2 = require("aws-cdk-lib/aws-ec2");
+const cdk = require("aws-cdk-lib");
+const aws_efs_1 = require("aws-cdk-lib/aws-efs");
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'test-efs-integ');
+const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
+const fileSystem = new aws_efs_1.FileSystem(stack, 'FileSystem', {
+    vpc,
+});
+fileSystem.addAccessPoint('AccessPoint', {
+    createAcl: {
+        ownerGid: '1000',
+        ownerUid: '1000',
+        permissions: '755',
+    },
+    path: '/custom-path',
+    posixUser: {
+        gid: '1000',
+        uid: '1000',
+    },
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuZWZzLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiaW50ZWcuZWZzLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7O0FBQUEsMkNBQTJDO0FBQzNDLG1DQUFtQztBQUNuQyxpREFBaUQ7QUFFakQsTUFBTSxHQUFHLEdBQUcsSUFBSSxHQUFHLENBQUMsR0FBRyxFQUFFLENBQUM7QUFDMUIsTUFBTSxLQUFLLEdBQUcsSUFBSSxHQUFHLENBQUMsS0FBSyxDQUFDLEdBQUcsRUFBRSxnQkFBZ0IsQ0FBQyxDQUFDO0FBRW5ELE1BQU0sR0FBRyxHQUFHLElBQUksR0FBRyxDQUFDLEdBQUcsQ0FBQyxLQUFLLEVBQUUsS0FBSyxFQUFFLEVBQUUsTUFBTSxFQUFFLENBQUMsRUFBRSxXQUFXLEVBQUUsQ0FBQyxFQUFFLENBQUMsQ0FBQztBQUVyRSxNQUFNLFVBQVUsR0FBRyxJQUFJLG9CQUFVLENBQUMsS0FBSyxFQUFFLFlBQVksRUFBRTtJQUNyRCxHQUFHO0NBQ0osQ0FBQyxDQUFDO0FBRUgsVUFBVSxDQUFDLGNBQWMsQ0FBQyxhQUFhLEVBQUU7SUFDdkMsU0FBUyxFQUFFO1FBQ1QsUUFBUSxFQUFFLE1BQU07UUFDaEIsUUFBUSxFQUFFLE1BQU07UUFDaEIsV0FBVyxFQUFFLEtBQUs7S0FDbkI7SUFDRCxJQUFJLEVBQUUsY0FBYztJQUNwQixTQUFTLEVBQUU7UUFDVCxHQUFHLEVBQUUsTUFBTTtRQUNYLEdBQUcsRUFBRSxNQUFNO0tBQ1o7Q0FDRixDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBlYzIgZnJvbSAnYXdzLWNkay1saWIvYXdzLWVjMic7XG5pbXBvcnQgKiBhcyBjZGsgZnJvbSAnYXdzLWNkay1saWInO1xuaW1wb3J0IHsgRmlsZVN5c3RlbSB9IGZyb20gJ2F3cy1jZGstbGliL2F3cy1lZnMnO1xuXG5jb25zdCBhcHAgPSBuZXcgY2RrLkFwcCgpO1xuY29uc3Qgc3RhY2sgPSBuZXcgY2RrLlN0YWNrKGFwcCwgJ3Rlc3QtZWZzLWludGVnJyk7XG5cbmNvbnN0IHZwYyA9IG5ldyBlYzIuVnBjKHN0YWNrLCAnVnBjJywgeyBtYXhBenM6IDMsIG5hdEdhdGV3YXlzOiAxIH0pO1xuXG5jb25zdCBmaWxlU3lzdGVtID0gbmV3IEZpbGVTeXN0ZW0oc3RhY2ssICdGaWxlU3lzdGVtJywge1xuICB2cGMsXG59KTtcblxuZmlsZVN5c3RlbS5hZGRBY2Nlc3NQb2ludCgnQWNjZXNzUG9pbnQnLCB7XG4gIGNyZWF0ZUFjbDoge1xuICAgIG93bmVyR2lkOiAnMTAwMCcsXG4gICAgb3duZXJVaWQ6ICcxMDAwJyxcbiAgICBwZXJtaXNzaW9uczogJzc1NScsXG4gIH0sXG4gIHBhdGg6ICcvY3VzdG9tLXBhdGgnLFxuICBwb3NpeFVzZXI6IHtcbiAgICBnaWQ6ICcxMDAwJyxcbiAgICB1aWQ6ICcxMDAwJyxcbiAgfSxcbn0pOyJdfQ==

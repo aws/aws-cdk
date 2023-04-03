@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import * as cdk from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as appreg from '../lib';
 
 // When doing a deployment for these stacks, specify stack `env` properties and use

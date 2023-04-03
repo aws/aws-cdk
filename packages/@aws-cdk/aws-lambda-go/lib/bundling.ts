@@ -1,7 +1,7 @@
 import * as os from 'os';
 import * as path from 'path';
-import { Architecture, AssetCode, Code, Runtime } from '@aws-cdk/aws-lambda';
-import * as cdk from '@aws-cdk/core';
+import { Architecture, AssetCode, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
+import * as cdk from 'aws-cdk-lib';
 import { BundlingOptions } from './types';
 import { exec, findUp, getGoBuildVersion } from './util';
 

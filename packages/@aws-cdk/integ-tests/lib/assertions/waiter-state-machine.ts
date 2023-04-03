@@ -1,4 +1,4 @@
-import { CfnResource, Duration, Stack } from '@aws-cdk/core';
+import { CfnResource, Duration, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { AssertionsProvider } from './providers';
 

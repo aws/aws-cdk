@@ -1,13 +1,14 @@
-import { Template } from '@aws-cdk/assertions';
-import { Vpc } from '@aws-cdk/aws-ec2';
-import { Stack } from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import { Stack } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as batch from '../lib';
 import { FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment } from '../lib';
 
 
 test('JobQueue respects computeEnvironments', () => {
   // GIVEN
   const stack = new Stack();
-  const vpc = new Vpc(stack, 'vpc');
+  const vpc = new ec2.Vpc(stack, 'vpc');
 
   // WHEN
   new JobQueue(stack, 'joBBQ', {
@@ -34,7 +35,7 @@ test('JobQueue respects computeEnvironments', () => {
 test('JobQueue respects enabled', () => {
   // GIVEN
   const stack = new Stack();
-  const vpc = new Vpc(stack, 'vpc');
+  const vpc = new ec2.Vpc(stack, 'vpc');
 
   // WHEN
   new JobQueue(stack, 'joBBQ', {
@@ -62,7 +63,7 @@ test('JobQueue respects enabled', () => {
 test('JobQueue respects name', () => {
   // GIVEN
   const stack = new Stack();
-  const vpc = new Vpc(stack, 'vpc');
+  const vpc = new ec2.Vpc(stack, 'vpc');
 
   // WHEN
   new JobQueue(stack, 'joBBQ', {
@@ -90,7 +91,7 @@ test('JobQueue respects name', () => {
 test('JobQueue respects schedulingPolicy', () => {
   // GIVEN
   const stack = new Stack();
-  const vpc = new Vpc(stack, 'vpc');
+  const vpc = new ec2.Vpc(stack, 'vpc');
 
   // WHEN
   new JobQueue(stack, 'JobQueue', {
@@ -120,7 +121,7 @@ test('JobQueue respects schedulingPolicy', () => {
 test('JobQueue respects addComputeEnvironment', () => {
   // GIVEN
   const stack = new Stack();
-  const vpc = new Vpc(stack, 'vpc');
+  const vpc = new ec2.Vpc(stack, 'vpc');
 
   // WHEN
   const queue = new JobQueue(stack, 'JobQueue', {
@@ -175,7 +176,7 @@ test('can be imported from ARN', () => {
 test('JobQueue throws when the same order is assigned to multiple ComputeEnvironments', () => {
   // GIVEN
   const stack = new Stack();
-  const vpc = new Vpc(stack, 'vpc');
+  const vpc = new ec2.Vpc(stack, 'vpc');
 
   // WHEN
   const joBBQ = new JobQueue(stack, 'joBBQ', {
