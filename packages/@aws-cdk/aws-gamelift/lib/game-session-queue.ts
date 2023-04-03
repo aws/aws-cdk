@@ -1,8 +1,8 @@
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as sns from '@aws-cdk/aws-sns';
-import * as cdk from '@aws-cdk/core';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnGameSessionQueue } from './gamelift.generated';
+import { CfnGameSessionQueue } from 'aws-cdk-lib/aws-gamelift';
 
 /**
  * Represents a game session queue destination

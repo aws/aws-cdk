@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/aws-iot-actions",
+  "name": "@aws-cdk/aws-iot-actions-alpha",
   "version": "0.0.0",
   "description": "Receipt rule actions for AWS IoT",
   "main": "lib/index.js",
@@ -8,24 +8,28 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.iot.actions",
+        "package": "software.amazon.awscdk.services.iot.actions.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "iot-actions"
+          "artifactId": "iot-actions-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.IoT.Actions",
-        "packageId": "Amazon.CDK.AWS.IoT.Actions",
+        "namespace": "Amazon.CDK.AWS.IoT.Actions.Alpha",
+        "packageId": "Amazon.CDK.AWS.IoT.Actions.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-iot-actions",
-        "module": "aws_cdk.aws_iot_actions",
+        "distName": "aws-cdk.aws-iot-actions-alpha",
+        "module": "aws_cdk.aws_iot_actions_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkiotactionsalpha"
       }
     },
     "projectReferences": true,
@@ -77,48 +81,28 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
-    "@aws-cdk/aws-kinesisfirehose-destinations": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
-    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "aws-cdk-lib": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "0.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
+    "@aws-cdk/aws-iot-alpha": "0.0.0",
+    "@aws-cdk/aws-iotevents-alpha": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0"
   },
   "dependencies": {
-    "@aws-cdk/aws-cloudwatch": "0.0.0",
-    "@aws-cdk/aws-dynamodb": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-iot": "0.0.0",
-    "@aws-cdk/aws-iotevents": "0.0.0",
-    "@aws-cdk/aws-kinesis": "0.0.0",
-    "@aws-cdk/aws-kinesisfirehose": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-logs": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/aws-sns": "0.0.0",
-    "@aws-cdk/aws-sqs": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "case": "1.6.3",
-    "constructs": "^10.0.0"
+    "case": "1.6.3"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-cloudwatch": "0.0.0",
-    "@aws-cdk/aws-dynamodb": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-iot": "0.0.0",
-    "@aws-cdk/aws-iotevents": "0.0.0",
-    "@aws-cdk/aws-kinesis": "0.0.0",
-    "@aws-cdk/aws-kinesisfirehose": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-logs": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/aws-sns": "0.0.0",
-    "@aws-cdk/aws-sqs": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/aws-iot-alpha": "0.0.0",
+    "@aws-cdk/aws-iotevents-alpha": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "bundledDependencies": [
@@ -133,7 +117,18 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
   },
-  "private": true
+  "private": false,
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
+  }
 }
