@@ -1,5 +1,5 @@
-import { Template } from '@aws-cdk/assertions';
-import * as cdk from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as cdk from 'aws-cdk-lib';
 import * as iot from '../lib';
 
 test('Default property', () => {
