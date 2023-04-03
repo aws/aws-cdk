@@ -326,6 +326,13 @@ export class DockerImageAsset extends Construct implements IAsset {
   public readonly imageTag: string;
 
   /**
+   * A display name for this image asset
+   * 
+   * @default - Uses an auto-generated name
+   */
+  public readonly imageName?: string;
+
+  /**
    * The path to the asset, relative to the current Cloud Assembly
    *
    * If asset staging is disabled, this will just be the original path.
@@ -470,6 +477,7 @@ export class DockerImageAsset extends Construct implements IAsset {
       dockerOutputs: this.dockerOutputs,
       dockerCacheFrom: this.dockerCacheFrom,
       dockerCacheTo: this.dockerCacheTo,
+      displayName: this.imageName,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);

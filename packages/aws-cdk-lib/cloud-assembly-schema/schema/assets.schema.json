@@ -71,6 +71,10 @@
                         "zip"
                     ],
                     "type": "string"
+                },
+                "name": {
+                    "description": "Display name for this file asset",
+                    "type": "string"
                 }
             }
         },
@@ -187,6 +191,10 @@
                 "cacheTo": {
                     "description": "Cache to options to pass to the `docker build` command. (Default - no cache to options are passed to the build command)",
                     "$ref": "#/definitions/DockerCacheOption"
+                },
+                "name": {
+                    "description": "Display name for this file asset",
+                    "type": "string"
                 }
             }
         },

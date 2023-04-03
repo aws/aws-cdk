@@ -56,6 +56,13 @@ export class TarballImageAsset extends Construct implements IAsset {
    */
   public readonly imageTag: string;
 
+  /**
+   * A display name for this image asset
+   * 
+   * @default - Uses an auto-generated name
+   */
+  public readonly imageName?: string;
+
   constructor(scope: Construct, id: string, props: TarballImageAssetProps) {
     super(scope, id);
 
@@ -79,6 +86,7 @@ export class TarballImageAsset extends Construct implements IAsset {
         '-c',
         `docker load -i ${relativePathInOutDir} | tail -n 1 | sed "s/Loaded image: //g"`,
       ],
+      displayName: this.imageName,
     });
 
     this.repository = ecr.Repository.fromRepositoryName(this, 'Repository', location.repositoryName);

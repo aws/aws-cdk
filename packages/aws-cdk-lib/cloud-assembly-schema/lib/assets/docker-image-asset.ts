@@ -113,6 +113,13 @@ export interface DockerImageSource {
    * @see https://docs.docker.com/build/cache/backends/
    */
   readonly cacheTo?: DockerCacheOption;
+
+  /**
+   * Display name for this docker image asset
+   * 
+   * @default - Uses an auto-generated name
+   */
+  readonly name?: string;
 }
 
 /**

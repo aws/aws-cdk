@@ -126,6 +126,13 @@ export interface FileAssetSource {
   readonly fileName?: string;
 
   /**
+   * Optional display name for this file asset.
+   * 
+   * @default - If the asset needs to be displayed it will use an auto-generated name
+   */
+  readonly displayName?: string
+
+  /**
    * Which type of packaging to perform.
    *
    * @default - Required if `fileName` is specified.
@@ -254,6 +261,12 @@ export interface DockerImageAssetSource {
    */
   readonly dockerCacheTo?: DockerCacheOption;
 
+  /**
+   * Optional display name for this docker image asset.
+   * 
+   * @default - If the asset needs to be displayed it will use an auto-generated name
+   */
+  readonly displayName?: string
 }
 
 /**

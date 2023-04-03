@@ -58,6 +58,13 @@ export interface FileSource {
    * @default FILE
    */
   readonly packaging?: FileAssetPackaging;
+
+  /**
+   * Display name for this file asset
+   * 
+   * @default - Uses an auto-generated name
+   */
+  readonly name?: string;
 }
 
 /**

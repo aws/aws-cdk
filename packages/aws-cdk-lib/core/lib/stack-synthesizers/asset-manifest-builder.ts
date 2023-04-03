@@ -21,7 +21,7 @@ export class AssetManifestBuilder {
    * Derive the region from the stack, use the asset hash as the key, copy the
    * file extension over, and set the prefix.
    */
-  public defaultAddFileAsset(stack: Stack, asset: FileAssetSource, target: AssetManifestFileDestination) {
+  public defaultAddFileAsset(stack: Stack, asset: FileAssetSource, target: AssetManifestFileDestination, assetName?: string) {
     validateFileAssetSource(asset);
 
     const extension =
@@ -44,7 +44,7 @@ export class AssetManifestBuilder {
       region: resolvedOr(stack.region, undefined),
       assumeRoleArn: target.role?.assumeRoleArn,
       assumeRoleExternalId: target.role?.assumeRoleExternalId,
-    });
+    }, assetName);
   }
 
   /**
@@ -56,6 +56,7 @@ export class AssetManifestBuilder {
     stack: Stack,
     asset: DockerImageAssetSource,
     target: AssetManifestDockerImageDestination,
+    assetName?: string
   ) {
     validateDockerImageAssetSource(asset);
     const imageTag = `${target.dockerTagPrefix ?? ''}${asset.sourceHash}`;
@@ -79,7 +80,7 @@ export class AssetManifestBuilder {
       region: resolvedOr(stack.region, undefined),
       assumeRoleArn: target.role?.assumeRoleArn,
       assumeRoleExternalId: target.role?.assumeRoleExternalId,
-    });
+    }, assetName);
   }
 
   /**

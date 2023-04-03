@@ -115,6 +115,13 @@ export class Asset extends Construct implements cdk.IAsset {
   public readonly assetHash: string;
 
   /**
+   * Display name for the asset, used in some higher level constructs like pipelines
+   * 
+   * @default - Auto-generated names are used.
+   */
+  public readonly assetName?: string;
+
+  /**
    * Indicates if this asset got bundled before staged, or not.
    */
   private readonly isBundled: boolean;
@@ -147,6 +154,7 @@ export class Asset extends Construct implements cdk.IAsset {
       packaging: staging.packaging,
       sourceHash: this.sourceHash,
       fileName: this.assetPath,
+      displayName: this.assetName,
     });
 
     this.s3BucketName = location.bucketName;
@@ -190,7 +198,7 @@ export class Asset extends Construct implements cdk.IAsset {
 
     // tell tools such as SAM CLI that the "Code" property of this resource
     // points to a local path in order to enable local invocation of this function.
-    resource.cfnOptions.metadata = resource.cfnOptions.metadata || { };
+    resource.cfnOptions.metadata = resource.cfnOptions.metadata || {};
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PATH_KEY] = this.assetPath;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY] = this.isBundled;
     resource.cfnOptions.metadata[cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY] = resourceProperty;
