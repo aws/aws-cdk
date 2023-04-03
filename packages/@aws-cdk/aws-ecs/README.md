@@ -1362,3 +1362,18 @@ const customService = new ecs.FargateService(this, 'CustomizedService', {
   },
 });
 ```
+
+## Enable pseudo-terminal (TTY) allocation
+
+You can allocate a pseudo-terminal (TTY) for a container passing `pseudoTerminal` option while adding the container
+to the task definition.
+This maps to Tty option in the ["Create a container section"](https://docs.docker.com/engine/api/v1.38/#operation/ContainerCreate)
+of the [Docker Remote API](https://docs.docker.com/engine/api/v1.38/) and the --tty option to [`docker run`](https://docs.docker.com/engine/reference/commandline/run/).
+
+```ts
+const taskDefinition = new ecs.Ec2TaskDefinition(this, 'TaskDef');
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('example-image'),
+  pseudoTerminal: true
+});
+```

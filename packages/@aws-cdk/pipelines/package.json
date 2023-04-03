@@ -5,6 +5,14 @@
   "description": "Continuous Delivery of CDK applications",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "typesVersions": {
+    "<=3.9": {
+      "*": [
+        ".types-compat/ts3.9/*",
+        ".types-compat/ts3.9/*/index.d.ts"
+      ]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",

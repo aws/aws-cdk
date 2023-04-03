@@ -18,6 +18,7 @@ const FILE_PATH = 'tree.json';
  *
  */
 export class TreeMetadata extends Construct {
+  private _tree?: { [path: string]: Node };
   constructor(scope: Construct) {
     super(scope, 'Tree');
   }
@@ -42,9 +43,15 @@ export class TreeMetadata extends Construct {
         .filter((child) => child !== undefined)
         .reduce((map, child) => Object.assign(map, { [child!.id]: child }), {});
 
+      const parent = construct.node.scope;
       const node: Node = {
         id: construct.node.id || 'App',
         path: construct.node.path,
+        parent: parent && parent.node.path ? {
+          id: parent.node.id,
+          path: parent.node.path,
+          constructInfo: constructInfoFromConstruct(parent),
+        } : undefined,
         children: Object.keys(childrenMap).length === 0 ? undefined : childrenMap,
         attributes: this.synthAttributes(construct),
         constructInfo: constructInfoFromConstruct(construct),
@@ -59,9 +66,16 @@ export class TreeMetadata extends Construct {
       version: 'tree-0.1',
       tree: visit(this.node.root),
     };
+    this._tree = lookup;
 
     const builder = session.assembly;
-    fs.writeFileSync(path.join(builder.outdir, FILE_PATH), JSON.stringify(tree, undefined, 2), { encoding: 'utf-8' });
+    fs.writeFileSync(path.join(builder.outdir, FILE_PATH), JSON.stringify(tree, (key: string, value: any) => {
+      // we are adding in the `parent` attribute for internal use
+      // and it doesn't make much sense to include it in the
+      // tree.json
+      if (key === 'parent') return undefined;
+      return value;
+    }, 2), { encoding: 'utf-8' });
 
     builder.addArtifact('Tree', {
       type: ArtifactType.CDK_TREE,
@@ -69,6 +83,63 @@ export class TreeMetadata extends Construct {
         file: FILE_PATH,
       },
     });
+  }
+
+  /**
+   * Each node will only have 1 level up (node.parent.parent will always be undefined)
+   * so we need to reconstruct the node making sure the parents are set
+   */
+  private getNodeWithParents(node: Node): Node {
+    if (!this._tree) {
+      throw new Error(`attempting to get node branch for ${node.path}, but the tree has not been created yet!`);
+    }
+    let tree = node;
+    if (node.parent) {
+      tree = {
+        ...node,
+        parent: this.getNodeWithParents(this._tree[node.parent.path]),
+      };
+    }
+    return tree;
+  }
+
+  /**
+   * Construct a new tree with only the nodes that we care about.
+   * Normally each node can contain many child nodes, but we only care about the
+   * tree that leads to a specific construct so drop any nodes not in that path
+   *
+   * @param node Node the current tree node
+   * @param child Node the previous tree node and the current node's child node
+   * @returns Node the new tree
+   */
+  private renderTreeWithChildren(node: Node, child?: Node): Node {
+    if (node.parent) {
+      return this.renderTreeWithChildren(node.parent, node);
+    } else if (child) {
+      return {
+        ...node,
+        children: {
+          [child.id]: child,
+        },
+      };
+    }
+    return node;
+  }
+
+  /**
+   * This gets a specific "branch" of the tree for a given construct path.
+   * It will return the root Node of the tree with non-relevant branches filtered
+   * out (i.e. node children that don't traverse to the given construct path)
+   *
+   * @internal
+   */
+  public _getNodeBranch(constructPath: string): Node | undefined {
+    if (!this._tree) {
+      throw new Error(`attempting to get node branch for ${constructPath}, but the tree has not been created yet!`);
+    }
+    const tree = this._tree[constructPath];
+    const treeWithParents = this.getNodeWithParents(tree);
+    return this.renderTreeWithChildren(treeWithParents);
   }
 
   private synthAttributes(construct: IConstruct): { [key: string]: any } | undefined {
@@ -88,9 +159,10 @@ export class TreeMetadata extends Construct {
   }
 }
 
-interface Node {
+export interface Node {
   readonly id: string;
   readonly path: string;
+  readonly parent?: Node;
   readonly children?: { [key: string]: Node };
   readonly attributes?: { [key: string]: any };
 

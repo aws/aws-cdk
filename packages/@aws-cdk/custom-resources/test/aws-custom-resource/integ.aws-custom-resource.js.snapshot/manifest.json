@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "30.1.0",
   "artifacts": {
     "aws-cdk-sdk-js.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fcfb1dd36ebebdb91b2be028c7fedf6fec075728ba6c5165e04b3d0be259c783.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eaaca485f9a98a657308ad4e676057416abc8024d04826b9c08aa25d37293c94.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,6 +37,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TopicBFC7AF6E"
+          }
+        ],
+        "/aws-cdk-sdk-js/Publish": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
           }
         ],
         "/aws-cdk-sdk-js/Publish/Resource/Default": [
@@ -63,6 +69,12 @@
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
+        "/aws-cdk-sdk-js/ListTopics": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
+          }
+        ],
         "/aws-cdk-sdk-js/ListTopics/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -75,10 +87,16 @@
             "data": "ListTopicsCustomResourcePolicy31A8396A"
           }
         ],
-        "/aws-cdk-sdk-js/DummyParameter/Resource": [
+        "/aws-cdk-sdk-js/Utf8Parameter/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DummyParameter53662B67"
+            "data": "Utf8Parameter6C885A19"
+          }
+        ],
+        "/aws-cdk-sdk-js/GetParameter": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
           }
         ],
         "/aws-cdk-sdk-js/GetParameter/Resource/Default": [
@@ -103,6 +121,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomRoleDefaultPolicyC5C189DF"
+          }
+        ],
+        "/aws-cdk-sdk-js/GetParameterNoPolicy": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version."
           }
         ],
         "/aws-cdk-sdk-js/GetParameterNoPolicy/Resource/Default": [
@@ -146,9 +170,65 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
+        ],
+        "DummyParameter53662B67": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DummyParameter53662B67",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
         ]
       },
       "displayName": "aws-cdk-sdk-js"
+    },
+    "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5.assets"
+      ],
+      "metadata": {
+        "/AwsCustomResourceTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AwsCustomResourceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AwsCustomResourceTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

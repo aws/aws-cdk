@@ -421,7 +421,7 @@ export class Cluster extends Resource implements ICluster {
       }) : new EcsOptimizedAmi());
 
     const machineImageType = options.machineImageType ??
-      (isBottleRocketImage(machineImage) ? MachineImageType.BOTTLEROCKET : MachineImageType.AMAZON_LINUX_2);
+      (BottleRocketImage.isBottleRocketImage(machineImage) ? MachineImageType.BOTTLEROCKET : MachineImageType.AMAZON_LINUX_2);
 
     const autoScalingGroup = new autoscaling.AutoScalingGroup(this, id, {
       vpc: this.vpc,
@@ -1290,9 +1290,4 @@ class MaybeCreateCapacityProviderAssociations implements IAspect {
       }
     }
   }
-}
-
-
-function isBottleRocketImage(image: ec2.IMachineImage) {
-  return image instanceof BottleRocketImage;
 }
