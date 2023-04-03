@@ -336,7 +336,7 @@ The code snippet below creates an AWS IoT rule that writes all or part of an
 MQTT message to Amazon Location Tracker using the LocationAction action.
 
 ```ts
-import { CfnTracker } from '@aws-cdk/aws-location';
+import { CfnTracker } from 'aws-cdk-lib/aws-location';
 
 declare const tracker: CfnTracker;
 
