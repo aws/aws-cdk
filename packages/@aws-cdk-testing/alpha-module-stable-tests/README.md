@@ -20,10 +20,10 @@ For example, `aws-events-targets` is an integration module that depends on both 
 
 ## Tests
 
-The tests themselves are in each module directory:
+The tests themselves live in `test/`:
 
 ```text
-alpha-module-stable-tests/
+test/
 ├── aws-events-targets
 ├── aws-stepfunctions-tasks
 ```
