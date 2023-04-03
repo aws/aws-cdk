@@ -1,7 +1,7 @@
-import { Template } from '@aws-cdk/assertions';
-import { InstanceClass, InstanceSize, InstanceType } from '@aws-cdk/aws-ec2';
-import * as ecs from '@aws-cdk/aws-ecs';
-import { Size, Stack } from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import { InstanceClass, InstanceSize, InstanceType } from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { Size, Stack } from 'aws-cdk-lib';
 import { Compatibility, EcsEc2ContainerDefinition, MultiNodeJobDefinition } from '../lib';
 
 

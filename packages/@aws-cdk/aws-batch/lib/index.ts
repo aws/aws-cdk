@@ -1,5 +1,4 @@
 // AWS::Batch CloudFormation Resources:
-export * from './batch.generated';
 export * from './ecs-job-definition';
 export { IComputeEnvironment, ComputeEnvironmentProps } from './compute-environment-base';
 export * from './eks-job-definition';

@@ -1,15 +1,15 @@
 
-import { Template } from '@aws-cdk/assertions';
-import { Vpc } from '@aws-cdk/aws-ec2';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as efs from '@aws-cdk/aws-efs';
-import { ArnPrincipal, Role } from '@aws-cdk/aws-iam';
-import * as logs from '@aws-cdk/aws-logs';
-import { Secret } from '@aws-cdk/aws-secretsmanager';
-import { Size, Stack } from '@aws-cdk/core';
-import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
+import { Template } from 'aws-cdk-lib/assertions';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as efs from 'aws-cdk-lib/aws-efs';
+import { ArnPrincipal, Role } from 'aws-cdk-lib/aws-iam';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { Size, Stack } from 'aws-cdk-lib';
+import { capitalizePropertyNames } from 'aws-cdk-lib/core/lib/util';
 import { EcsContainerDefinitionProps, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition, EcsVolume, IEcsEc2ContainerDefinition, LinuxParameters, UlimitName } from '../lib';
-import { CfnJobDefinitionProps } from '../lib/batch.generated';
+import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
 
 
 // GIVEN

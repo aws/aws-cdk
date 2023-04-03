@@ -1,6 +1,6 @@
-import { Vpc } from '@aws-cdk/aws-ec2';
-import { App, Stack, Duration } from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { App, Stack, Duration } from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as batch from '../lib';
 import { ManagedEc2EcsComputeEnvironment } from '../lib';
 

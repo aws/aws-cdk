@@ -1,8 +1,8 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import { LaunchTemplate } from '@aws-cdk/aws-ec2';
-import { Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { App, Duration, Stack } from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { LaunchTemplate } from 'aws-cdk-lib/aws-ec2';
+import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { App, Duration, Stack } from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { AllocationStrategy, FargateComputeEnvironment, ManagedEc2EcsComputeEnvironment } from '../lib';
 
 const app = new App();

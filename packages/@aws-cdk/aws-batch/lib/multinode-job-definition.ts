@@ -1,7 +1,7 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import { ArnFormat, Lazy, Stack } from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { ArnFormat, Lazy, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnJobDefinition } from './batch.generated';
+import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { IEcsContainerDefinition } from './ecs-container-definition';
 import { Compatibility } from './ecs-job-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';

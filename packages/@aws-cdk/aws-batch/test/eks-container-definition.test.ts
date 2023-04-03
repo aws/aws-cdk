@@ -1,9 +1,9 @@
-import { Template } from '@aws-cdk/assertions';
-import * as ecs from '@aws-cdk/aws-ecs';
-import { Size, Stack } from '@aws-cdk/core';
-import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { Size, Stack } from 'aws-cdk-lib';
+import { capitalizePropertyNames } from 'aws-cdk-lib/core/lib/util';
 import { EksContainerDefinitionProps, EksContainerDefinition, EksJobDefinition, ImagePullPolicy, EksVolume, EmptyDirMediumType } from '../lib';
-import { CfnJobDefinitionProps } from '../lib/batch.generated';
+import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
 
 
 // GIVEN

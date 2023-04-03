@@ -1,12 +1,12 @@
-import { Template } from '@aws-cdk/assertions';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as eks from '@aws-cdk/aws-eks';
-import { ArnPrincipal, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { Stack, Duration } from '@aws-cdk/core';
-import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as eks from 'aws-cdk-lib/aws-eks';
+import { ArnPrincipal, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Stack, Duration } from 'aws-cdk-lib';
+import { capitalizePropertyNames } from 'aws-cdk-lib/core/lib/util';
 import * as batch from '../lib';
 import { AllocationStrategy, ManagedEc2EcsComputeEnvironment, ManagedEc2EcsComputeEnvironmentProps, ManagedEc2EksComputeEnvironment, ManagedEc2EksComputeEnvironmentProps } from '../lib';
-import { CfnComputeEnvironmentProps } from '../lib/batch.generated';
+import { CfnComputeEnvironmentProps } from 'aws-cdk-lib/aws-batch';
 
 
 const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {

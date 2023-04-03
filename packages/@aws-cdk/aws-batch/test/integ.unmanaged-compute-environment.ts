@@ -1,6 +1,6 @@
-import { ManagedPolicy, Role, ServicePrincipal } from '@aws-cdk/aws-iam';
-import { App, Stack } from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { App, Stack } from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { UnmanagedComputeEnvironment } from '../lib';
 
 const app = new App();

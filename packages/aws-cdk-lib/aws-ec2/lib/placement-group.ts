@@ -1,4 +1,4 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from '../../core';
 import { Construct } from 'constructs';
 import { CfnPlacementGroup } from './ec2.generated';
 
@@ -37,14 +37,14 @@ export interface IPlacementGroup extends IResource {
    *
    * @default - no spread level
    */
-  spreadLevel?: PlacementGroupSpreadLevel;
+  readonly spreadLevel?: PlacementGroupSpreadLevel;
 
   /**
    * Which strategy to use when launching instances
    *
    * @default - `PlacementGroupStrategy.PARTITION` if `partitions` is defined, `CLUSTER` otherwise
    */
-  strategy?: PlacementGroupStrategy;
+  readonly strategy?: PlacementGroupStrategy;
 }
 
 /**

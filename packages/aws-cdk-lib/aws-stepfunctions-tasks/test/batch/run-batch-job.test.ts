@@ -1,10 +1,10 @@
 import * as path from 'path';
-import * as batch from '@aws-cdk/aws-batch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
+import * as batch from '@aws-cdk/aws-batch-alpha';
+import * as ec2 from '../../../aws-ec2';
+import * as ecs from '../../../aws-ecs';
+import * as sfn from '../../../aws-stepfunctions';
 import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from '../../../core';
 import * as tasks from '../../lib';
 
 let stack: cdk.Stack;

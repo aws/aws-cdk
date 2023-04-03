@@ -1,6 +1,6 @@
-import { Template } from '@aws-cdk/assertions';
-import * as ecs from '@aws-cdk/aws-ecs';
-import { Size, Stack } from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { Size, Stack } from 'aws-cdk-lib';
 import { Compatibility, EcsEc2ContainerDefinition, EcsFargateContainerDefinition, EcsJobDefinition } from '../lib';
 
 

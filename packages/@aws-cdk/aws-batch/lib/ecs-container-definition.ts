@@ -1,14 +1,14 @@
-import * as ecs from '@aws-cdk/aws-ecs';
-import { IFileSystem } from '@aws-cdk/aws-efs';
-import * as iam from '@aws-cdk/aws-iam';
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Lazy, PhysicalName, Size } from '@aws-cdk/core';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { IFileSystem } from 'aws-cdk-lib/aws-efs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import { Lazy, PhysicalName, Size } from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
-import { CfnJobDefinition } from './batch.generated';
+import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { LinuxParameters } from './linux-parameters';
 
-const EFS_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/container-definition.EfsVolume');
-const HOST_VOLUME_SYMBOL = Symbol.for('@aws-cdk/aws-batch/lib/container-definition.HostVolume');
+const EFS_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.EfsVolume');
+const HOST_VOLUME_SYMBOL = Symbol.for('aws-cdk-lib/aws-batch/lib/container-definition.HostVolume');
 
 /**
  * Options to configure an EcsVolume

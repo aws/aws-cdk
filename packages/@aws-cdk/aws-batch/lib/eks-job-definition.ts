@@ -1,6 +1,6 @@
-import { ArnFormat, Lazy, Stack } from '@aws-cdk/core';
+import { ArnFormat, Lazy, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnJobDefinition } from './batch.generated';
+import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { EksContainerDefinition, EmptyDirVolume, HostPathVolume, SecretPathVolume } from './eks-container-definition';
 import { baseJobDefinitionProperties, IJobDefinition, JobDefinitionBase, JobDefinitionProps } from './job-definition-base';
 

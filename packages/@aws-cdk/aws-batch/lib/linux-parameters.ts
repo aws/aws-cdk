@@ -1,6 +1,6 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnJobDefinition } from './batch.generated';
+import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 
 /**
  * The properties for defining Linux-specific options that are applied to the container.

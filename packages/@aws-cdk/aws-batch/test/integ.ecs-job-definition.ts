@@ -1,8 +1,8 @@
-import { Vpc } from '@aws-cdk/aws-ec2';
-import { ContainerImage, FargatePlatformVersion } from '@aws-cdk/aws-ecs';
-import * as efs from '@aws-cdk/aws-efs';
-import { App, Duration, Size, Stack } from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { ContainerImage, FargatePlatformVersion } from 'aws-cdk-lib/aws-ecs';
+import * as efs from 'aws-cdk-lib/aws-efs';
+import { App, Duration, Size, Stack } from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as batch from '../lib';
 
 const app = new App();

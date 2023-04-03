@@ -1,14 +1,14 @@
-import { Template } from '@aws-cdk/assertions';
-import { InstanceClass, InstanceSize, InstanceType } from '@aws-cdk/aws-ec2';
-import * as ecs from '@aws-cdk/aws-ecs';
-import { /*Aws,*/ Duration, Size, Stack } from '@aws-cdk/core';
-import { capitalizePropertyNames } from '@aws-cdk/core/lib/util';
-import { Action, EksContainerDefinition, EcsJobDefinition, Reason, RetryStrategy, EcsEc2ContainerDefinition, EksJobDefinition, EcsJobDefinitionProps, EksJobDefinitionProps, Compatibility, MultiNodeJobDefinitionProps, MultiNodeJobDefinition } from '../lib';
-import { CfnJobDefinitionProps } from '../lib/batch.generated';
+import { Template } from 'aws-cdk-lib/assertions';
+import { InstanceClass, InstanceSize, InstanceType } from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import { /*Aws,*/ Duration, Size, Stack } from 'aws-cdk-lib';
+import { capitalizePropertyNames } from 'aws-cdk-lib/core/lib/util';
+import * as batch from '../lib';
+import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
 
 const defaultExpectedEcsProps: CfnJobDefinitionProps = {
   type: 'container',
-  platformCapabilities: [Compatibility.EC2],
+  platformCapabilities: [batch.Compatibility.EC2],
 };
 const defaultExpectedEksProps: CfnJobDefinitionProps = {
   type: 'container',
@@ -23,14 +23,14 @@ let pascalCaseExpectedEcsProps: any;
 let pascalCaseExpectedEksProps: any;
 let pascalCaseExpectedMultiNodeProps: any;
 
-let defaultEcsProps: EcsJobDefinitionProps;
-let defaultEksProps: EksJobDefinitionProps;
-let defaultMultiNodeProps: MultiNodeJobDefinitionProps;
+let defaultEcsProps: batch.EcsJobDefinitionProps;
+let defaultEksProps: batch.EksJobDefinitionProps;
+let defaultMultiNodeProps: batch.MultiNodeJobDefinitionProps;
 
 let expectedProps: any;
 let defaultProps: any;
 
-describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p type JobDefinition', (JobDefinition) => {
+describe.each([batch.EcsJobDefinition, batch.EksJobDefinition, batch.MultiNodeJobDefinition])('%p type JobDefinition', (JobDefinition) => {
   // GIVEN
   beforeEach(() => {
     stack = new Stack();
@@ -40,20 +40,20 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
     pascalCaseExpectedMultiNodeProps = capitalizePropertyNames(stack, defaultExpectedMultiNodeProps);
 
     defaultEcsProps = {
-      container: new EcsEc2ContainerDefinition(stack, 'EcsContainer', {
+      container: new batch.EcsEc2ContainerDefinition(stack, 'EcsContainer', {
         cpu: 256,
         memory: Size.mebibytes(2048),
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       }),
     };
     defaultEksProps = {
-      container: new EksContainerDefinition(stack, 'EksContainer', {
+      container: new batch.EksContainerDefinition(stack, 'EksContainer', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       }),
     };
     defaultMultiNodeProps = {
       containers: [{
-        container: new EcsEc2ContainerDefinition(stack, 'MultinodeEcsContainer', {
+        container: new batch.EcsEc2ContainerDefinition(stack, 'MultinodeEcsContainer', {
           cpu: 256,
           memory: Size.mebibytes(2048),
           image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
@@ -65,15 +65,15 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
       instanceType: InstanceType.of(InstanceClass.R4, InstanceSize.LARGE),
     };
     switch (JobDefinition) {
-      case EcsJobDefinition:
+      case batch.EcsJobDefinition:
         expectedProps = pascalCaseExpectedEcsProps;
         defaultProps = defaultEcsProps;
         break;
-      case EksJobDefinition:
+      case batch.EksJobDefinition:
         expectedProps = pascalCaseExpectedEksProps;
         defaultProps = defaultEksProps;
         break;
-      case MultiNodeJobDefinition:
+      case batch.MultiNodeJobDefinition:
         expectedProps = pascalCaseExpectedMultiNodeProps;
         defaultProps = defaultMultiNodeProps;
         break;
@@ -133,10 +133,10 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
     new JobDefinition(stack, 'JobDefn', {
       ...defaultProps,
       retryStrategies: [
-        RetryStrategy.of(Action.EXIT, Reason.CANNOT_PULL_CONTAINER),
-        RetryStrategy.of(Action.RETRY, Reason.NON_ZERO_EXIT_CODE),
-        RetryStrategy.of(Action.RETRY, Reason.SPOT_INSTANCE_RECLAIMED),
-        RetryStrategy.of(Action.RETRY, Reason.custom({
+        batch.RetryStrategy.of(batch.Action.EXIT, batch.Reason.CANNOT_PULL_CONTAINER),
+        batch.RetryStrategy.of(batch.Action.RETRY, batch.Reason.NON_ZERO_EXIT_CODE),
+        batch.RetryStrategy.of(batch.Action.RETRY, batch.Reason.SPOT_INSTANCE_RECLAIMED),
+        batch.RetryStrategy.of(batch.Action.RETRY, batch.Reason.custom({
           onExitCode: '40*',
           onReason: 'reason*',
           onStatusReason: 'statusReason',
@@ -208,7 +208,7 @@ describe.each([EcsJobDefinition, EksJobDefinition, MultiNodeJobDefinition])('%p 
       ...defaultProps,
     });
 
-    jobDefn.addRetryStrategy(RetryStrategy.of(Action.RETRY, Reason.SPOT_INSTANCE_RECLAIMED));
+    jobDefn.addRetryStrategy(batch.RetryStrategy.of(batch.Action.RETRY, batch.Reason.SPOT_INSTANCE_RECLAIMED));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {

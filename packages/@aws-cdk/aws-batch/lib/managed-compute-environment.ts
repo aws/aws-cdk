@@ -1,10 +1,10 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as eks from '@aws-cdk/aws-eks';
-import * as iam from '@aws-cdk/aws-iam';
-import { IRole } from '@aws-cdk/aws-iam';
-import { ArnFormat, Duration, Lazy, Resource, Stack } from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as eks from 'aws-cdk-lib/aws-eks';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { IRole } from 'aws-cdk-lib/aws-iam';
+import { ArnFormat, Duration, Lazy, Resource, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnComputeEnvironment } from './batch.generated';
+import { CfnComputeEnvironment } from 'aws-cdk-lib/aws-batch';
 import { IComputeEnvironment, ComputeEnvironmentBase, ComputeEnvironmentProps } from './compute-environment-base';
 
 

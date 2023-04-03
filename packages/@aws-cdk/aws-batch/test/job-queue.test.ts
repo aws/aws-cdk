@@ -1,7 +1,6 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import { Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as batch from '../lib';
 import { FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment } from '../lib';
 
 

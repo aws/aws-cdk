@@ -1,6 +1,6 @@
-import { Duration, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Resource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnJobDefinitionProps } from './batch.generated';
+import { CfnJobDefinitionProps } from 'aws-cdk-lib/aws-batch';
 
 
 /**

@@ -1,9 +1,9 @@
-import { Template } from '@aws-cdk/assertions';
-import * as batch from '@aws-cdk/aws-batch';
-import { ContainerImage } from '@aws-cdk/aws-ecs';
-import * as events from '@aws-cdk/aws-events';
-import * as sqs from '@aws-cdk/aws-sqs';
-import { Duration, Size, Stack } from '@aws-cdk/core';
+import { Template } from '../../../assertions';
+import * as batch from '@aws-cdk/aws-batch-alpha';
+import { ContainerImage } from '../../../aws-ecs';
+import * as events from '../../../aws-events';
+import * as sqs from '../../../aws-sqs';
+import { Duration, Size, Stack } from '../../../core';
 import * as targets from '../../lib';
 
 describe('Batch job event target', () => {
