@@ -5,4 +5,3 @@ export * from './basic-auth';
 export * from './source-code-providers';
 
 // AWS::Amplify CloudFormation Resources:
-export * from './amplify.generated';

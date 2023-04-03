@@ -1,8 +1,8 @@
 import * as path from 'path';
-import * as codebuild from '@aws-cdk/aws-codebuild';
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { Asset } from '@aws-cdk/aws-s3-assets';
+import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import {
   CustomResource,
   IResource,
@@ -11,10 +11,10 @@ import {
   Duration,
   NestedStack,
   Stack,
-} from '@aws-cdk/core';
-import { Provider } from '@aws-cdk/custom-resources';
+} from 'aws-cdk-lib';
+import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
-import { CfnBranch } from './amplify.generated';
+import { CfnBranch } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
 import { BasicAuth } from './basic-auth';
 import { renderEnvironmentVariables } from './utils';

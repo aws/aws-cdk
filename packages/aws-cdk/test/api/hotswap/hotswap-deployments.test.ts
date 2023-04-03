@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { Lambda, StepFunctions } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 import { CfnEvaluationException } from '../../../lib/api/evaluate-cloudformation-template';
