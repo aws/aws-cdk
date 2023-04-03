@@ -1,8 +1,8 @@
-import { Duration, Resource } from '@aws-cdk/core';
+import { Duration, Resource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { IHttpRoute } from './route';
-import { CfnAuthorizer } from '../apigatewayv2.generated';
+import { CfnAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2';
 
 import { IAuthorizer } from '../common';
 
@@ -248,7 +248,7 @@ export interface IHttpRouteAuthorizer {
   bind(options: HttpRouteAuthorizerBindOptions): HttpRouteAuthorizerConfig;
 }
 
-function undefinedIfNoKeys<A>(obj: A): A | undefined {
+function undefinedIfNoKeys<A extends { [key: string]: unknown }>(obj: A): A | undefined {
   const allUndefined = Object.values(obj).every(val => val === undefined);
   return allUndefined ? undefined : obj;
 }

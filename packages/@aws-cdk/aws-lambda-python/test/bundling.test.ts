@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Architecture, Code, Runtime } from '@aws-cdk/aws-lambda';
-import { BundlingFileAccess, DockerImage } from '@aws-cdk/core';
+import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { BundlingFileAccess, DockerImage } from 'aws-cdk-lib';
 import { Bundling } from '../lib/bundling';
 
 jest.spyOn(Code, 'fromAsset');

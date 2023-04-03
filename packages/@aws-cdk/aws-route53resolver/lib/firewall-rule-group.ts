@@ -1,8 +1,8 @@
-import { Duration, IResource, Lazy, Resource } from '@aws-cdk/core';
+import { Duration, IResource, Lazy, Resource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IFirewallDomainList } from './firewall-domain-list';
 import { FirewallRuleGroupAssociation, FirewallRuleGroupAssociationOptions } from './firewall-rule-group-association';
-import { CfnFirewallRuleGroup } from './route53resolver.generated';
+import { CfnFirewallRuleGroup } from 'aws-cdk-lib/aws-route53resolver';
 
 /**
  * A Firewall Rule Group

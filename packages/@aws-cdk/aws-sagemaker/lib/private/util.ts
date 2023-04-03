@@ -1,5 +1,5 @@
-import * as cdk from '@aws-cdk/core';
-import { md5hash } from '@aws-cdk/core/lib/helpers-internal';
+import * as cdk from 'aws-cdk-lib';
+import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Generates a hash from the provided string for the purposes of avoiding construct ID collision
