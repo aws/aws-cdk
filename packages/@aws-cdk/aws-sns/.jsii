@@ -1,0 +1,4610 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudwatch": "0.0.0",
+    "@aws-cdk/aws-codestarnotifications": "0.0.0",
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-sqs": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/aws-cloudwatch": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CloudWatch",
+          "packageId": "Amazon.CDK.AWS.CloudWatch"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudwatch",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudwatch"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudwatch"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cloudwatch",
+          "module": "aws_cdk.aws_cloudwatch"
+        }
+      }
+    },
+    "@aws-cdk/aws-codestarnotifications": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodeStarNotifications",
+          "packageId": "Amazon.CDK.AWS.CodeStarNotifications"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codestarnotifications",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codestarnotifications"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codestarnotifications"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codestarnotifications",
+          "module": "aws_cdk.aws_codestarnotifications"
+        }
+      }
+    },
+    "@aws-cdk/aws-events": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-events",
+          "module": "aws_cdk.aws_events"
+        }
+      }
+    },
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      }
+    },
+    "@aws-cdk/aws-kms": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-kms",
+          "module": "aws_cdk.aws_kms"
+        }
+      }
+    },
+    "@aws-cdk/aws-sqs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SQS",
+          "packageId": "Amazon.CDK.AWS.SQS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sqs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sqs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sqs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-sqs",
+          "module": "aws_cdk.aws_sqs"
+        }
+      }
+    },
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::SNS",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.77.0 (build 3e5fa88)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "sns"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-sns",
+  "readme": {
+    "markdown": "# Amazon Simple Notification Service Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)\n\n---\n\n<!--END STABILITY BANNER-->\n\nAdd an SNS Topic to your stack:\n\n```ts\nconst topic = new sns.Topic(this, 'Topic', {\n  displayName: 'Customer subscription topic',\n});\n```\n\nAdd a FIFO SNS topic with content-based de-duplication to your stack:\n\n```ts\nconst topic = new sns.Topic(this, 'Topic', {\n  contentBasedDeduplication: true,\n  displayName: 'Customer subscription topic',\n  fifo: true,\n});\n```\n\nNote that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically generated and added to the topic name if it is not explicitly provided.\n\n## Subscriptions\n\nVarious subscriptions can be added to the topic by calling the\n`.addSubscription(...)` method on the topic. It accepts a *subscription* object,\ndefault implementations of which can be found in the\n`@aws-cdk/aws-sns-subscriptions` package:\n\nAdd an HTTPS Subscription to your topic:\n\n```ts\nconst myTopic = new sns.Topic(this, 'MyTopic');\n\nmyTopic.addSubscription(new subscriptions.UrlSubscription('https://foobar.com/'));\n```\n\nSubscribe a queue to the topic:\n\n```ts\ndeclare const queue: sqs.Queue;\nconst myTopic = new sns.Topic(this, 'MyTopic');\n\nmyTopic.addSubscription(new subscriptions.SqsSubscription(queue));\n```\n\nNote that subscriptions of queues in different accounts need to be manually confirmed by\nreading the initial message from the queue and visiting the link found in it.\n\n### Filter policy\n\nA filter policy can be specified when subscribing an endpoint to a topic.\n\nExample with a Lambda subscription:\n\n```ts\nimport * as lambda from '@aws-cdk/aws-lambda';\n\nconst myTopic = new sns.Topic(this, 'MyTopic');\ndeclare const fn: lambda.Function;\n\n// Lambda should receive only message matching the following conditions on attributes:\n// color: 'red' or 'orange' or begins with 'bl'\n// size: anything but 'small' or 'medium'\n// price: between 100 and 200 or greater than 300\n// store: attribute must be present\nmyTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {\n  filterPolicy: {\n    color: sns.SubscriptionFilter.stringFilter({\n      allowlist: ['red', 'orange'],\n      matchPrefixes: ['bl'],\n    }),\n    size: sns.SubscriptionFilter.stringFilter({\n      denylist: ['small', 'medium'],\n    }),\n    price: sns.SubscriptionFilter.numericFilter({\n      between: { start: 100, stop: 200 },\n      greaterThan: 300,\n    }),\n    store: sns.SubscriptionFilter.existsFilter(),\n  },\n}));\n```\n\n#### Payload-based filtering\n\nTo filter messages based on the payload or body of the message, use the `filterPolicyWithMessageBody` property. This type of filter policy supports creating filters on nested objects.\n\nExample with a Lambda subscription:\n\n```ts\nimport * as lambda from '@aws-cdk/aws-lambda';\n\nconst myTopic = new sns.Topic(this, 'MyTopic');\ndeclare const fn: lambda.Function;\n\n// Lambda should receive only message matching the following conditions on message body:\n// color: 'red' or 'orange'\nmyTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {\n  filterPolicyWithMessageBody: {\n    background: sns.FilterOrPolicy.policy({\n      color: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({\n        allowlist: ['red', 'orange'],\n      })),\n    }),\n  },\n}));\n```\n\n### Example of Firehose Subscription\n\n```ts\nimport { DeliveryStream } from '@aws-cdk/aws-kinesisfirehose';\n\nconst topic = new sns.Topic(this, 'Topic');\ndeclare const stream: DeliveryStream;\n\nnew sns.Subscription(this, 'Subscription', {\n  topic,\n  endpoint: stream.deliveryStreamArn,\n  protocol: sns.SubscriptionProtocol.FIREHOSE,\n  subscriptionRoleArn: \"SAMPLE_ARN\", //role with permissions to send messages to a firehose delivery stream\n});\n```\n\n## DLQ setup for SNS Subscription\n\nCDK can attach provided Queue as DLQ for your SNS subscription.\nSee the [SNS DLQ configuration docs](https://docs.aws.amazon.com/sns/latest/dg/sns-configure-dead-letter-queue.html) for more information about this feature.\n\nExample of usage with user provided DLQ.\n\n```ts\nconst topic = new sns.Topic(this, 'Topic');\nconst dlQueue = new sqs.Queue(this, 'DeadLetterQueue', {\n  queueName: 'MySubscription_DLQ',\n  retentionPeriod: Duration.days(14),\n});\n\nnew sns.Subscription(this, 'Subscription', {\n  endpoint: 'endpoint',\n  protocol: sns.SubscriptionProtocol.LAMBDA,\n  topic,\n  deadLetterQueue: dlQueue,\n});\n```\n\n## CloudWatch Event Rule Target\n\nSNS topics can be used as targets for CloudWatch event rules.\n\nUse the `@aws-cdk/aws-events-targets.SnsTopic`:\n\n```ts\nimport * as codecommit from '@aws-cdk/aws-codecommit';\nimport * as targets from '@aws-cdk/aws-events-targets';\n\ndeclare const repo: codecommit.Repository;\nconst myTopic = new sns.Topic(this, 'Topic');\n\nrepo.onCommit('OnCommit', {\n  target: new targets.SnsTopic(myTopic),\n});\n```\n\nThis will result in adding a target to the event rule and will also modify the\ntopic resource policy to allow CloudWatch events to publish to the topic.\n\n## Topic Policy\n\nA topic policy is automatically created when `addToResourcePolicy` is called, if\none doesn't already exist. Using `addToResourcePolicy` is the simplest way to\nadd policies, but a `TopicPolicy` can also be created manually.\n\n```ts\nconst topic = new sns.Topic(this, 'Topic');\nconst topicPolicy = new sns.TopicPolicy(this, 'TopicPolicy', {\n  topics: [topic],\n});\n\ntopicPolicy.document.addStatements(new iam.PolicyStatement({\n  actions: [\"sns:Subscribe\"],\n  principals: [new iam.AnyPrincipal()],\n  resources: [topic.topicArn],\n}));\n```\n\nA policy document can also be passed on `TopicPolicy` construction\n\n```ts\nconst topic = new sns.Topic(this, 'Topic');\nconst policyDocument = new iam.PolicyDocument({\n  assignSids: true,\n  statements: [\n    new iam.PolicyStatement({\n      actions: [\"sns:Subscribe\"],\n      principals: [new iam.AnyPrincipal()],\n      resources: [topic.topicArn],\n    }),\n  ],\n});\n\nconst topicPolicy = new sns.TopicPolicy(this, 'Policy', {\n  topics: [topic],\n  policyDocument,\n});\n```\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-sns",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.SNS",
+      "packageId": "Amazon.CDK.AWS.SNS"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "sns",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.sns"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-sns"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-sns",
+      "module": "aws_cdk.aws_sns"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-sns.BetweenCondition": {
+      "assembly": "@aws-cdk/aws-sns",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Between condition for a numeric attribute."
+      },
+      "fqn": "@aws-cdk/aws-sns.BetweenCondition",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/subscription-filter.ts",
+        "line": 43
+      },
+      "name": "BetweenCondition",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The start value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 47
+          },
+          "name": "start",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The stop value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 52
+          },
+          "name": "stop",
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/subscription-filter:BetweenCondition"
+    },
+    "@aws-cdk/aws-sns.CfnSubscription": {
+      "assembly": "@aws-cdk/aws-sns",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SNS::Subscription",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html"
+        },
+        "remarks": "The `AWS::SNS::Subscription` resource subscribes an endpoint to an Amazon SNS topic. For a subscription to be created, the owner of the endpoint must confirm the subscription.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SNS::Subscription`."
+      },
+      "fqn": "@aws-cdk/aws-sns.CfnSubscription",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SNS::Subscription`."
+        },
+        "locationInModule": {
+          "filename": "lib/sns.generated.ts",
+          "line": 313
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.CfnSubscriptionProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/sns.generated.ts",
+        "line": 194
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 336
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 356
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnSubscription",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 198
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 341
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-deliverypolicy"
+            },
+            "remarks": "Enables the subscriber to define the message delivery retry strategy in the case of an HTTP/S endpoint subscribed to the topic. For more information, see `[GetSubscriptionAttributes](https://docs.aws.amazon.com/sns/latest/api/API_GetSubscriptionAttributes.html)` in the *Amazon SNS API Reference* and [Message delivery retries](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html) in the *Amazon SNS Developer Guide* .",
+            "stability": "external",
+            "summary": "The delivery policy JSON assigned to the subscription."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 238
+          },
+          "name": "deliveryPolicy",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-filterpolicy"
+            },
+            "remarks": "Enables the subscriber to filter out unwanted messages. For more information, see `[GetSubscriptionAttributes](https://docs.aws.amazon.com/sns/latest/api/API_GetSubscriptionAttributes.html)` in the *Amazon SNS API Reference* and [Message filtering](https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html) in the *Amazon SNS Developer Guide* .",
+            "stability": "external",
+            "summary": "The filter policy JSON assigned to the subscription."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 252
+          },
+          "name": "filterPolicy",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-protocol"
+            },
+            "remarks": "For more information, see the `Protocol` parameter of the `[Subscribe](https://docs.aws.amazon.com/sns/latest/api/API_Subscribe.html)` action in the *Amazon SNS API Reference* .",
+            "stability": "external",
+            "summary": "The subscription's protocol."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 224
+          },
+          "name": "protocol",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-redrivepolicy"
+            },
+            "remarks": "Messages that can't be delivered due to client errors (for example, when the subscribed endpoint is unreachable) or server errors (for example, when the service that powers the subscribed endpoint becomes unavailable) are held in the dead-letter queue for further analysis or reprocessing.\n\nFor more information about the redrive policy and dead-letter queues, see [Amazon SQS dead-letter queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html) in the *Amazon SQS Developer Guide* .",
+            "stability": "external",
+            "summary": "When specified, sends undeliverable messages to the specified Amazon SQS dead-letter queue."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 278
+          },
+          "name": "redrivePolicy",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#topicarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the topic to subscribe to."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 231
+          },
+          "name": "topicArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-endpoint"
+            },
+            "remarks": "The endpoint value depends on the protocol that you specify. For more information, see the `Endpoint` parameter of the `[Subscribe](https://docs.aws.amazon.com/sns/latest/api/API_Subscribe.html)` action in the *Amazon SNS API Reference* .",
+            "stability": "external",
+            "summary": "The subscription's endpoint."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 245
+          },
+          "name": "endpoint",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-filterpolicyscope"
+            },
+            "remarks": "- `MessageAttributes` (default) - The filter is applied on the message attributes.\n- `MessageBody` - The filter is applied on the message body.",
+            "stability": "external",
+            "summary": "This attribute lets you choose the filtering scope by using one of the following string value types:."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 262
+          },
+          "name": "filterPolicyScope",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-rawmessagedelivery"
+            },
+            "remarks": "Raw messages don't contain any JSON formatting and can be sent to Amazon SQS and HTTP/S endpoints. For more information, see `[GetSubscriptionAttributes](https://docs.aws.amazon.com/sns/latest/api/API_GetSubscriptionAttributes.html)` in the *Amazon SNS API Reference* .",
+            "stability": "external",
+            "summary": "When set to `true` , enables raw message delivery."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 269
+          },
+          "name": "rawMessageDelivery",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-region"
+            },
+            "remarks": "If no region is specified, AWS CloudFormation uses the region of the caller as the default.\n\nIf you perform an update operation that only updates the `Region` property of a `AWS::SNS::Subscription` resource, that operation will fail unless you are either:\n\n- Updating the `Region` from `NULL` to the caller region.\n- Updating the `Region` from the caller region to `NULL` .",
+            "stability": "external",
+            "summary": "For cross-region subscriptions, the region in which the topic resides."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 292
+          },
+          "name": "region",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-subscriptionrolearn"
+            },
+            "remarks": "Specify the ARN of the IAM role that has the following:\n\n- Permission to write to the Amazon Kinesis Data Firehose delivery stream\n- Amazon SNS listed as a trusted entity\n\nSpecifying a valid ARN for this attribute is required for Kinesis Data Firehose delivery stream subscriptions. For more information, see [Fanout to Amazon Kinesis Data Firehose delivery streams](https://docs.aws.amazon.com/sns/latest/dg/sns-firehose-as-subscriber.html) in the *Amazon SNS Developer Guide.*",
+            "stability": "external",
+            "summary": "This property applies only to Amazon Kinesis Data Firehose delivery stream subscriptions."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 304
+          },
+          "name": "subscriptionRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/sns.generated:CfnSubscription"
+    },
+    "@aws-cdk/aws-sns.CfnSubscriptionProps": {
+      "assembly": "@aws-cdk/aws-sns",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnSubscription`."
+      },
+      "fqn": "@aws-cdk/aws-sns.CfnSubscriptionProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sns.generated.ts",
+        "line": 20
+      },
+      "name": "CfnSubscriptionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-protocol"
+            },
+            "remarks": "For more information, see the `Protocol` parameter of the `[Subscribe](https://docs.aws.amazon.com/sns/latest/api/API_Subscribe.html)` action in the *Amazon SNS API Reference* .",
+            "stability": "external",
+            "summary": "The subscription's protocol."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 27
+          },
+          "name": "protocol",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#topicarn"
+            },
+            "stability": "external",
+            "summary": "The ARN of the topic to subscribe to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 34
+          },
+          "name": "topicArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-deliverypolicy"
+            },
+            "remarks": "Enables the subscriber to define the message delivery retry strategy in the case of an HTTP/S endpoint subscribed to the topic. For more information, see `[GetSubscriptionAttributes](https://docs.aws.amazon.com/sns/latest/api/API_GetSubscriptionAttributes.html)` in the *Amazon SNS API Reference* and [Message delivery retries](https://docs.aws.amazon.com/sns/latest/dg/sns-message-delivery-retries.html) in the *Amazon SNS Developer Guide* .",
+            "stability": "external",
+            "summary": "The delivery policy JSON assigned to the subscription."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 41
+          },
+          "name": "deliveryPolicy",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-endpoint"
+            },
+            "remarks": "The endpoint value depends on the protocol that you specify. For more information, see the `Endpoint` parameter of the `[Subscribe](https://docs.aws.amazon.com/sns/latest/api/API_Subscribe.html)` action in the *Amazon SNS API Reference* .",
+            "stability": "external",
+            "summary": "The subscription's endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 48
+          },
+          "name": "endpoint",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-filterpolicy"
+            },
+            "remarks": "Enables the subscriber to filter out unwanted messages. For more information, see `[GetSubscriptionAttributes](https://docs.aws.amazon.com/sns/latest/api/API_GetSubscriptionAttributes.html)` in the *Amazon SNS API Reference* and [Message filtering](https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html) in the *Amazon SNS Developer Guide* .",
+            "stability": "external",
+            "summary": "The filter policy JSON assigned to the subscription."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 55
+          },
+          "name": "filterPolicy",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-filterpolicyscope"
+            },
+            "remarks": "- `MessageAttributes` (default) - The filter is applied on the message attributes.\n- `MessageBody` - The filter is applied on the message body.",
+            "stability": "external",
+            "summary": "This attribute lets you choose the filtering scope by using one of the following string value types:."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 65
+          },
+          "name": "filterPolicyScope",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-rawmessagedelivery"
+            },
+            "remarks": "Raw messages don't contain any JSON formatting and can be sent to Amazon SQS and HTTP/S endpoints. For more information, see `[GetSubscriptionAttributes](https://docs.aws.amazon.com/sns/latest/api/API_GetSubscriptionAttributes.html)` in the *Amazon SNS API Reference* .",
+            "stability": "external",
+            "summary": "When set to `true` , enables raw message delivery."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 72
+          },
+          "name": "rawMessageDelivery",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-redrivepolicy"
+            },
+            "remarks": "Messages that can't be delivered due to client errors (for example, when the subscribed endpoint is unreachable) or server errors (for example, when the service that powers the subscribed endpoint becomes unavailable) are held in the dead-letter queue for further analysis or reprocessing.\n\nFor more information about the redrive policy and dead-letter queues, see [Amazon SQS dead-letter queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html) in the *Amazon SQS Developer Guide* .",
+            "stability": "external",
+            "summary": "When specified, sends undeliverable messages to the specified Amazon SQS dead-letter queue."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 81
+          },
+          "name": "redrivePolicy",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-region"
+            },
+            "remarks": "If no region is specified, AWS CloudFormation uses the region of the caller as the default.\n\nIf you perform an update operation that only updates the `Region` property of a `AWS::SNS::Subscription` resource, that operation will fail unless you are either:\n\n- Updating the `Region` from `NULL` to the caller region.\n- Updating the `Region` from the caller region to `NULL` .",
+            "stability": "external",
+            "summary": "For cross-region subscriptions, the region in which the topic resides."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 95
+          },
+          "name": "region",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-subscriptionrolearn"
+            },
+            "remarks": "Specify the ARN of the IAM role that has the following:\n\n- Permission to write to the Amazon Kinesis Data Firehose delivery stream\n- Amazon SNS listed as a trusted entity\n\nSpecifying a valid ARN for this attribute is required for Kinesis Data Firehose delivery stream subscriptions. For more information, see [Fanout to Amazon Kinesis Data Firehose delivery streams](https://docs.aws.amazon.com/sns/latest/dg/sns-firehose-as-subscriber.html) in the *Amazon SNS Developer Guide.*",
+            "stability": "external",
+            "summary": "This property applies only to Amazon Kinesis Data Firehose delivery stream subscriptions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 107
+          },
+          "name": "subscriptionRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/sns.generated:CfnSubscriptionProps"
+    },
+    "@aws-cdk/aws-sns.CfnTopic": {
+      "assembly": "@aws-cdk/aws-sns",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SNS::Topic",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html"
+        },
+        "remarks": "The `AWS::SNS::Topic` resource creates a topic to which notifications can be published.\n\n> One account can create a maximum of 100,000 standard topics and 1,000 FIFO topics. For more information, see [Amazon SNS endpoints and quotas](https://docs.aws.amazon.com/general/latest/gr/sns.html) in the *AWS General Reference* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SNS::Topic`."
+      },
+      "fqn": "@aws-cdk/aws-sns.CfnTopic",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SNS::Topic`."
+        },
+        "locationInModule": {
+          "filename": "lib/sns.generated.ts",
+          "line": 678
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.CfnTopicProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/sns.generated.ts",
+        "line": 545
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 701
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 721
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnTopic",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 549
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "TopicArn"
+            },
+            "stability": "external",
+            "summary": "Returns the ARN of an Amazon SNS topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 574
+          },
+          "name": "attrTopicArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "TopicName"
+            },
+            "stability": "external",
+            "summary": "Returns the name of an Amazon SNS topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 580
+          },
+          "name": "attrTopicName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 706
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-tags"
+            },
+            "remarks": "> To be able to tag a topic on creation, you must have the `sns:CreateTopic` and `sns:TagResource` permissions.",
+            "stability": "external",
+            "summary": "The list of tags to add to a new topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 651
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-dataprotectionpolicy"
+            },
+            "remarks": "You can only add one policy per topic.\n\nThe policy must be in JSON string format.\n\nLength Constraints: Maximum length of 30,720.",
+            "stability": "external",
+            "summary": "The body of the policy document you want to use for this topic."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 605
+          },
+          "name": "dataProtectionPolicy",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-contentbaseddeduplication"
+            },
+            "remarks": "- By default, `ContentBasedDeduplication` is set to `false` . If you create a FIFO topic and this attribute is `false` , you must specify a value for the `MessageDeduplicationId` parameter for the [Publish](https://docs.aws.amazon.com/sns/latest/api/API_Publish.html) action.\n- When you set `ContentBasedDeduplication` to `true` , Amazon SNS uses a SHA-256 hash to generate the `MessageDeduplicationId` using the body of the message (but not the attributes of the message).\n\n(Optional) To override the generated value, you can specify a value for the the `MessageDeduplicationId` parameter for the `Publish` action.",
+            "stability": "external",
+            "summary": "Enables content-based deduplication for FIFO topics."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 592
+          },
+          "name": "contentBasedDeduplication",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-displayname"
+            },
+            "remarks": "The display name must be maximum 100 characters long, including hyphens (-), underscores (_), spaces, and tabs.",
+            "stability": "external",
+            "summary": "The display name to use for an Amazon SNS topic with SMS subscriptions."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 612
+          },
+          "name": "displayName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-fifotopic"
+            },
+            "stability": "external",
+            "summary": "Set to true to create a FIFO topic."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 619
+          },
+          "name": "fifoTopic",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-kmsmasterkeyid"
+            },
+            "remarks": "For more information, see [Key terms](https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html#sse-key-terms) . For more examples, see `[KeyId](https://docs.aws.amazon.com/kms/latest/APIReference/API_DescribeKey.html#API_DescribeKey_RequestParameters)` in the *AWS Key Management Service API Reference* .\n\nThis property applies only to [server-side-encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html) .",
+            "stability": "external",
+            "summary": "The ID of an AWS managed customer master key (CMK) for Amazon SNS or a custom CMK."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 628
+          },
+          "name": "kmsMasterKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-signatureversion"
+            },
+            "remarks": "By default, `SignatureVersion` is set to `1` .",
+            "stability": "external",
+            "summary": "The signature version corresponds to the hashing algorithm used while creating the signature of the notifications, subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 635
+          },
+          "name": "signatureVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-subscription"
+            },
+            "stability": "external",
+            "summary": "The Amazon SNS subscriptions (endpoints) for this topic."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 642
+          },
+          "name": "subscription",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-sns.CfnTopic.SubscriptionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-topicname"
+            },
+            "remarks": "Topic names must include only uppercase and lowercase ASCII letters, numbers, underscores, and hyphens, and must be between 1 and 256 characters long. FIFO topic names must end with `.fifo` .\n\nIf you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the topic name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
+            "stability": "external",
+            "summary": "The name of the topic you want to create."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 662
+          },
+          "name": "topicName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-tracingconfig"
+            },
+            "remarks": "By default `TracingConfig` is set to `PassThrough` , and the topic passes through the tracing header it receives from an SNS publisher to its subscriptions. If set to `Active` , SNS will vend X-Ray segment data to topic owner account if the sampled flag in the tracing header is true. Only supported on standard topics.",
+            "stability": "external",
+            "summary": "Tracing mode of an Amazon SNS topic."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 669
+          },
+          "name": "tracingConfig",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/sns.generated:CfnTopic"
+    },
+    "@aws-cdk/aws-sns.CfnTopic.SubscriptionProperty": {
+      "assembly": "@aws-cdk/aws-sns",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic-subscription.html"
+        },
+        "remarks": "> For full control over subscription behavior (for example, delivery policy, filtering, raw message delivery, and cross-region subscriptions), use the [AWS::SNS::Subscription](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html) resource.",
+        "stability": "external",
+        "summary": "`Subscription` is an embedded property that describes the subscription endpoints of an Amazon SNS topic."
+      },
+      "fqn": "@aws-cdk/aws-sns.CfnTopic.SubscriptionProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sns.generated.ts",
+        "line": 737
+      },
+      "name": "SubscriptionProperty",
+      "namespace": "CfnTopic",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic-subscription.html#cfn-sns-topic-subscription-endpoint"
+            },
+            "remarks": "The endpoint value depends on the protocol that you specify. For more information, see the `Endpoint` parameter of the `[Subscribe](https://docs.aws.amazon.com/sns/latest/api/API_Subscribe.html)` action in the *Amazon SNS API Reference* .",
+            "stability": "external",
+            "summary": "The endpoint that receives notifications from the Amazon SNS topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 743
+          },
+          "name": "endpoint",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic-subscription.html#cfn-sns-topic-subscription-protocol"
+            },
+            "remarks": "For more information, see the `Protocol` parameter of the `[Subscribe](https://docs.aws.amazon.com/sns/latest/api/API_Subscribe.html)` action in the *Amazon SNS API Reference* .",
+            "stability": "external",
+            "summary": "The subscription's protocol."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 749
+          },
+          "name": "protocol",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/sns.generated:CfnTopic.SubscriptionProperty"
+    },
+    "@aws-cdk/aws-sns.CfnTopicPolicy": {
+      "assembly": "@aws-cdk/aws-sns",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::SNS::TopicPolicy",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html"
+        },
+        "remarks": "The `AWS::SNS::TopicPolicy` resource associates Amazon SNS topics with a policy. For an example snippet, see [Declaring an Amazon SNS policy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/quickref-iam.html#scenario-sns-policy) in the *AWS CloudFormation User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::SNS::TopicPolicy`."
+      },
+      "fqn": "@aws-cdk/aws-sns.CfnTopicPolicy",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::SNS::TopicPolicy`."
+        },
+        "locationInModule": {
+          "filename": "lib/sns.generated.ts",
+          "line": 937
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.CfnTopicPolicyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/sns.generated.ts",
+        "line": 891
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 952
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 964
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnTopicPolicy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 895
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 957
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html#cfn-sns-topicpolicy-policydocument"
+            },
+            "stability": "external",
+            "summary": "A policy document that contains permissions to add to the specified SNS topics."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 921
+          },
+          "name": "policyDocument",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html#cfn-sns-topicpolicy-topics"
+            },
+            "remarks": "You can use the `[Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html)` function to specify an `[AWS::SNS::Topic](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html)` resource.",
+            "stability": "external",
+            "summary": "The Amazon Resource Names (ARN) of the topics to which you want to add the policy."
+          },
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 928
+          },
+          "name": "topics",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/sns.generated:CfnTopicPolicy"
+    },
+    "@aws-cdk/aws-sns.CfnTopicPolicyProps": {
+      "assembly": "@aws-cdk/aws-sns",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnTopicPolicy`."
+      },
+      "fqn": "@aws-cdk/aws-sns.CfnTopicPolicyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sns.generated.ts",
+        "line": 814
+      },
+      "name": "CfnTopicPolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html#cfn-sns-topicpolicy-policydocument"
+            },
+            "stability": "external",
+            "summary": "A policy document that contains permissions to add to the specified SNS topics."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 821
+          },
+          "name": "policyDocument",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-policy.html#cfn-sns-topicpolicy-topics"
+            },
+            "remarks": "You can use the `[Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html)` function to specify an `[AWS::SNS::Topic](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sns-topic.html)` resource.",
+            "stability": "external",
+            "summary": "The Amazon Resource Names (ARN) of the topics to which you want to add the policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 828
+          },
+          "name": "topics",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/sns.generated:CfnTopicPolicyProps"
+    },
+    "@aws-cdk/aws-sns.CfnTopicProps": {
+      "assembly": "@aws-cdk/aws-sns",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnTopic`."
+      },
+      "fqn": "@aws-cdk/aws-sns.CfnTopicProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/sns.generated.ts",
+        "line": 369
+      },
+      "name": "CfnTopicProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-contentbaseddeduplication"
+            },
+            "remarks": "- By default, `ContentBasedDeduplication` is set to `false` . If you create a FIFO topic and this attribute is `false` , you must specify a value for the `MessageDeduplicationId` parameter for the [Publish](https://docs.aws.amazon.com/sns/latest/api/API_Publish.html) action.\n- When you set `ContentBasedDeduplication` to `true` , Amazon SNS uses a SHA-256 hash to generate the `MessageDeduplicationId` using the body of the message (but not the attributes of the message).\n\n(Optional) To override the generated value, you can specify a value for the the `MessageDeduplicationId` parameter for the `Publish` action.",
+            "stability": "external",
+            "summary": "Enables content-based deduplication for FIFO topics."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 381
+          },
+          "name": "contentBasedDeduplication",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-dataprotectionpolicy"
+            },
+            "remarks": "You can only add one policy per topic.\n\nThe policy must be in JSON string format.\n\nLength Constraints: Maximum length of 30,720.",
+            "stability": "external",
+            "summary": "The body of the policy document you want to use for this topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 394
+          },
+          "name": "dataProtectionPolicy",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-displayname"
+            },
+            "remarks": "The display name must be maximum 100 characters long, including hyphens (-), underscores (_), spaces, and tabs.",
+            "stability": "external",
+            "summary": "The display name to use for an Amazon SNS topic with SMS subscriptions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 401
+          },
+          "name": "displayName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-fifotopic"
+            },
+            "stability": "external",
+            "summary": "Set to true to create a FIFO topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 408
+          },
+          "name": "fifoTopic",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-kmsmasterkeyid"
+            },
+            "remarks": "For more information, see [Key terms](https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html#sse-key-terms) . For more examples, see `[KeyId](https://docs.aws.amazon.com/kms/latest/APIReference/API_DescribeKey.html#API_DescribeKey_RequestParameters)` in the *AWS Key Management Service API Reference* .\n\nThis property applies only to [server-side-encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html) .",
+            "stability": "external",
+            "summary": "The ID of an AWS managed customer master key (CMK) for Amazon SNS or a custom CMK."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 417
+          },
+          "name": "kmsMasterKeyId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-signatureversion"
+            },
+            "remarks": "By default, `SignatureVersion` is set to `1` .",
+            "stability": "external",
+            "summary": "The signature version corresponds to the hashing algorithm used while creating the signature of the notifications, subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 424
+          },
+          "name": "signatureVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-subscription"
+            },
+            "stability": "external",
+            "summary": "The Amazon SNS subscriptions (endpoints) for this topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 431
+          },
+          "name": "subscription",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-sns.CfnTopic.SubscriptionProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-tags"
+            },
+            "remarks": "> To be able to tag a topic on creation, you must have the `sns:CreateTopic` and `sns:TagResource` permissions.",
+            "stability": "external",
+            "summary": "The list of tags to add to a new topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 440
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-topicname"
+            },
+            "remarks": "Topic names must include only uppercase and lowercase ASCII letters, numbers, underscores, and hyphens, and must be between 1 and 256 characters long. FIFO topic names must end with `.fifo` .\n\nIf you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the topic name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
+            "stability": "external",
+            "summary": "The name of the topic you want to create."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 451
+          },
+          "name": "topicName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-topic.html#cfn-sns-topic-tracingconfig"
+            },
+            "remarks": "By default `TracingConfig` is set to `PassThrough` , and the topic passes through the tracing header it receives from an SNS publisher to its subscriptions. If set to `Active` , SNS will vend X-Ray segment data to topic owner account if the sampled flag in the tracing header is true. Only supported on standard topics.",
+            "stability": "external",
+            "summary": "Tracing mode of an Amazon SNS topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/sns.generated.ts",
+            "line": 458
+          },
+          "name": "tracingConfig",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/sns.generated:CfnTopicProps"
+    },
+    "@aws-cdk/aws-sns.Filter": {
+      "assembly": "@aws-cdk/aws-sns",
+      "base": "@aws-cdk/aws-sns.FilterOrPolicy",
+      "docs": {
+        "stability": "stable",
+        "summary": "Filter implementation of FilterOrPolicy."
+      },
+      "fqn": "@aws-cdk/aws-sns.Filter",
+      "initializer": {
+        "docs": {
+          "stability": "stable",
+          "summary": "Policy constructor."
+        },
+        "locationInModule": {
+          "filename": "lib/subscription.ts",
+          "line": 332
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "filter argument to construct."
+            },
+            "name": "filterDoc",
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.SubscriptionFilter"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/subscription.ts",
+        "line": 323
+      },
+      "name": "Filter",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "filter argument to construct."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 332
+          },
+          "name": "filterDoc",
+          "type": {
+            "fqn": "@aws-cdk/aws-sns.SubscriptionFilter"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Type used in DFS buildFilterPolicyWithMessageBody to determine json value type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 327
+          },
+          "name": "type",
+          "overrides": "@aws-cdk/aws-sns.FilterOrPolicy",
+          "type": {
+            "fqn": "@aws-cdk/aws-sns.FilterOrPolicyType"
+          }
+        }
+      ],
+      "symbolId": "lib/subscription:Filter"
+    },
+    "@aws-cdk/aws-sns.FilterOrPolicy": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-sns",
+      "docs": {
+        "stability": "stable",
+        "summary": "Class for building the FilterPolicy by avoiding union types."
+      },
+      "fqn": "@aws-cdk/aws-sns.FilterOrPolicy",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        }
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/subscription.ts",
+        "line": 281
+      },
+      "methods": [
+        {
+          "docs": {
+            "returns": "",
+            "stability": "stable",
+            "summary": "Filter of MessageBody."
+          },
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 287
+          },
+          "name": "filter",
+          "parameters": [
+            {
+              "name": "filter",
+              "type": {
+                "fqn": "@aws-cdk/aws-sns.SubscriptionFilter"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.Filter"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "returns": "",
+            "stability": "stable",
+            "summary": "Policy of MessageBody."
+          },
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 296
+          },
+          "name": "policy",
+          "parameters": [
+            {
+              "name": "policy",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "fqn": "@aws-cdk/aws-sns.FilterOrPolicy"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.Policy"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Check if instance is `Filter` type."
+          },
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 315
+          },
+          "name": "isFilter",
+          "returns": {
+            "type": {
+              "primitive": "boolean"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Check if instance is `Policy` type."
+          },
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 308
+          },
+          "name": "isPolicy",
+          "returns": {
+            "type": {
+              "primitive": "boolean"
+            }
+          }
+        }
+      ],
+      "name": "FilterOrPolicy",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Type switch for disambiguating between subclasses."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 303
+          },
+          "name": "type",
+          "type": {
+            "fqn": "@aws-cdk/aws-sns.FilterOrPolicyType"
+          }
+        }
+      ],
+      "symbolId": "lib/subscription:FilterOrPolicy"
+    },
+    "@aws-cdk/aws-sns.FilterOrPolicyType": {
+      "assembly": "@aws-cdk/aws-sns",
+      "docs": {
+        "stability": "stable",
+        "summary": "The type of the MessageBody at a given key value pair."
+      },
+      "fqn": "@aws-cdk/aws-sns.FilterOrPolicyType",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/subscription.ts",
+        "line": 267
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The filter of the MessageBody."
+          },
+          "name": "FILTER"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "A nested key of the MessageBody."
+          },
+          "name": "POLICY"
+        }
+      ],
+      "name": "FilterOrPolicyType",
+      "symbolId": "lib/subscription:FilterOrPolicyType"
+    },
+    "@aws-cdk/aws-sns.ITopic": {
+      "assembly": "@aws-cdk/aws-sns",
+      "docs": {
+        "stability": "stable",
+        "summary": "Represents an SNS topic."
+      },
+      "fqn": "@aws-cdk/aws-sns.ITopic",
+      "interfaces": [
+        "@aws-cdk/core.IResource",
+        "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/topic-base.ts",
+        "line": 13
+      },
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Subscribe some endpoint to this topic."
+          },
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 38
+          },
+          "name": "addSubscription",
+          "parameters": [
+            {
+              "name": "subscription",
+              "type": {
+                "fqn": "@aws-cdk/aws-sns.ITopicSubscription"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.Subscription"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "If this topic was created in this stack (`new Topic`), a topic policy\nwill be automatically created upon the first call to `addToPolicy`. If\nthe topic is imported (`Topic.import`), then this is a no-op.",
+            "stability": "stable",
+            "summary": "Adds a statement to the IAM resource policy associated with this topic."
+          },
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 47
+          },
+          "name": "addToResourcePolicy",
+          "parameters": [
+            {
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.AddToResourcePolicyResult"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant topic publishing permissions to the given identity."
+          },
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 52
+          },
+          "name": "grantPublish",
+          "parameters": [
+            {
+              "name": "identity",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Return the given named metric for this Topic."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 11
+          },
+          "name": "metric",
+          "parameters": [
+            {
+              "name": "metricName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The number of messages published to your Amazon SNS topics."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 23
+          },
+          "name": "metricNumberOfMessagesPublished",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The number of messages successfully delivered from your Amazon SNS topics to subscribing endpoints."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 29
+          },
+          "name": "metricNumberOfNotificationsDelivered",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The number of messages that Amazon SNS failed to deliver."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 35
+          },
+          "name": "metricNumberOfNotificationsFailed",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The number of messages that were rejected by subscription filter policies."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 41
+          },
+          "name": "metricNumberOfNotificationsFilteredOut",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The number of messages that were rejected by subscription filter policies because the messages' attributes are invalid."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 53
+          },
+          "name": "metricNumberOfNotificationsFilteredOutInvalidAttributes",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The number of messages that were rejected by subscription filter policies because the messages have no attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 47
+          },
+          "name": "metricNumberOfNotificationsFilteredOutNoMessageAttributes",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Average over 5 minutes",
+            "stability": "stable",
+            "summary": "Metric for the size of messages published through this topic."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 17
+          },
+          "name": "metricPublishSize",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Maximum over 5 minutes",
+            "stability": "stable",
+            "summary": "The charges you have accrued since the start of the current calendar month for sending SMS messages."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 59
+          },
+          "name": "metricSMSMonthToDateSpentUSD",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The rate of successful SMS message deliveries."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 65
+          },
+          "name": "metricSMSSuccessRate",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        }
+      ],
+      "name": "ITopic",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "remarks": "If false, this is a standard topic.",
+            "stability": "stable",
+            "summary": "Whether this topic is an Amazon SNS FIFO queue."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 33
+          },
+          "name": "fifo",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The ARN of the topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 19
+          },
+          "name": "topicArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The name of the topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 26
+          },
+          "name": "topicName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/topic-base:ITopic"
+    },
+    "@aws-cdk/aws-sns.ITopicSubscription": {
+      "assembly": "@aws-cdk/aws-sns",
+      "docs": {
+        "stability": "stable",
+        "summary": "Topic subscription."
+      },
+      "fqn": "@aws-cdk/aws-sns.ITopicSubscription",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/subscriber.ts",
+        "line": 41
+      },
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a configuration used to subscribe to an SNS topic."
+          },
+          "locationInModule": {
+            "filename": "lib/subscriber.ts",
+            "line": 47
+          },
+          "name": "bind",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "topic for which subscription will be configured."
+              },
+              "name": "topic",
+              "type": {
+                "fqn": "@aws-cdk/aws-sns.ITopic"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.TopicSubscriptionConfig"
+            }
+          }
+        }
+      ],
+      "name": "ITopicSubscription",
+      "symbolId": "lib/subscriber:ITopicSubscription"
+    },
+    "@aws-cdk/aws-sns.NumericConditions": {
+      "assembly": "@aws-cdk/aws-sns",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Conditions that can be applied to numeric attributes."
+      },
+      "fqn": "@aws-cdk/aws-sns.NumericConditions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/subscription-filter.ts",
+        "line": 58
+      },
+      "name": "NumericConditions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "Match one or more values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 71
+          },
+          "name": "allowlist",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "number"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "Match values that are between the specified values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 106
+          },
+          "name": "between",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-sns.BetweenCondition"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "Match values that are strictly between the specified values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 113
+          },
+          "name": "betweenStrict",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-sns.BetweenCondition"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "Match values that are greater than the specified value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 78
+          },
+          "name": "greaterThan",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "Match values that are greater than or equal to the specified value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 85
+          },
+          "name": "greaterThanOrEqualTo",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "Match values that are less than the specified value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 92
+          },
+          "name": "lessThan",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "Match values that are less than or equal to the specified value."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 99
+          },
+          "name": "lessThanOrEqualTo",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "deprecated": "use `allowlist`",
+            "stability": "deprecated",
+            "summary": "Match one or more values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 64
+          },
+          "name": "whitelist",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "number"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/subscription-filter:NumericConditions"
+    },
+    "@aws-cdk/aws-sns.Policy": {
+      "assembly": "@aws-cdk/aws-sns",
+      "base": "@aws-cdk/aws-sns.FilterOrPolicy",
+      "docs": {
+        "stability": "stable",
+        "summary": "Policy Implementation of FilterOrPolicy."
+      },
+      "fqn": "@aws-cdk/aws-sns.Policy",
+      "initializer": {
+        "docs": {
+          "stability": "stable",
+          "summary": "Policy constructor."
+        },
+        "locationInModule": {
+          "filename": "lib/subscription.ts",
+          "line": 349
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "policy argument to construct."
+            },
+            "name": "policyDoc",
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "fqn": "@aws-cdk/aws-sns.FilterOrPolicy"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/subscription.ts",
+        "line": 340
+      },
+      "name": "Policy",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "policy argument to construct."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 349
+          },
+          "name": "policyDoc",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-sns.FilterOrPolicy"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Type used in DFS buildFilterPolicyWithMessageBody to determine json value type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 344
+          },
+          "name": "type",
+          "overrides": "@aws-cdk/aws-sns.FilterOrPolicy",
+          "type": {
+            "fqn": "@aws-cdk/aws-sns.FilterOrPolicyType"
+          }
+        }
+      ],
+      "symbolId": "lib/subscription:Policy"
+    },
+    "@aws-cdk/aws-sns.StringConditions": {
+      "assembly": "@aws-cdk/aws-sns",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Conditions that can be applied to string attributes."
+      },
+      "fqn": "@aws-cdk/aws-sns.StringConditions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/subscription-filter.ts",
+        "line": 4
+      },
+      "name": "StringConditions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "Match one or more values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 24
+          },
+          "name": "allowlist",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "deprecated": "use `denylist`",
+            "stability": "deprecated",
+            "summary": "Match any value that doesn't include any of the specified values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 18
+          },
+          "name": "blacklist",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "Match any value that doesn't include any of the specified values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 30
+          },
+          "name": "denylist",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "stability": "stable",
+            "summary": "Matches values that begins with the specified prefixes."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 37
+          },
+          "name": "matchPrefixes",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- None",
+            "deprecated": "use `allowlist`",
+            "stability": "deprecated",
+            "summary": "Match one or more values."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 11
+          },
+          "name": "whitelist",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/subscription-filter:StringConditions"
+    },
+    "@aws-cdk/aws-sns.Subscription": {
+      "assembly": "@aws-cdk/aws-sns",
+      "base": "@aws-cdk/core.Resource",
+      "docs": {
+        "remarks": "Prefer to use the `ITopic.addSubscription()` methods to create instances of\nthis class.",
+        "stability": "stable",
+        "summary": "A new subscription."
+      },
+      "fqn": "@aws-cdk/aws-sns.Subscription",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/subscription.ts",
+          "line": 98
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.SubscriptionProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/subscription.ts",
+        "line": 87
+      },
+      "name": "Subscription",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The DLQ associated with this subscription if present."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 92
+          },
+          "name": "deadLetterQueue",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-sqs.IQueue"
+          }
+        }
+      ],
+      "symbolId": "lib/subscription:Subscription"
+    },
+    "@aws-cdk/aws-sns.SubscriptionFilter": {
+      "assembly": "@aws-cdk/aws-sns",
+      "docs": {
+        "stability": "stable",
+        "summary": "A subscription filter for an attribute."
+      },
+      "fqn": "@aws-cdk/aws-sns.SubscriptionFilter",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/subscription-filter.ts",
+          "line": 203
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "conditions that specify the message attributes that should be included, excluded, matched, etc."
+            },
+            "name": "conditions",
+            "optional": true,
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "array"
+              }
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/subscription-filter.ts",
+        "line": 119
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a subscription filter for attribute key matching."
+          },
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 195
+          },
+          "name": "existsFilter",
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.SubscriptionFilter"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a subscription filter for a numeric attribute."
+          },
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 153
+          },
+          "name": "numericFilter",
+          "parameters": [
+            {
+              "name": "numericConditions",
+              "type": {
+                "fqn": "@aws-cdk/aws-sns.NumericConditions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.SubscriptionFilter"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns a subscription filter for a string attribute."
+          },
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 123
+          },
+          "name": "stringFilter",
+          "parameters": [
+            {
+              "name": "stringConditions",
+              "type": {
+                "fqn": "@aws-cdk/aws-sns.StringConditions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.SubscriptionFilter"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "SubscriptionFilter",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "conditions that specify the message attributes that should be included, excluded, matched, etc."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription-filter.ts",
+            "line": 203
+          },
+          "name": "conditions",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/subscription-filter:SubscriptionFilter"
+    },
+    "@aws-cdk/aws-sns.SubscriptionOptions": {
+      "assembly": "@aws-cdk/aws-sns",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options for creating a new subscription."
+      },
+      "fqn": "@aws-cdk/aws-sns.SubscriptionOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/subscription.ts",
+        "line": 12
+      },
+      "name": "SubscriptionOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The meaning of this value depends on the value for 'protocol'.",
+            "stability": "stable",
+            "summary": "The subscription endpoint."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 23
+          },
+          "name": "endpoint",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "What type of subscription to add."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 16
+          },
+          "name": "protocol",
+          "type": {
+            "fqn": "@aws-cdk/aws-sns.SubscriptionProtocol"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No dead letter queue enabled.",
+            "remarks": "If not passed no dead letter queue is enabled.",
+            "stability": "stable",
+            "summary": "Queue to be used as dead letter queue."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 62
+          },
+          "name": "deadLetterQueue",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-sqs.IQueue"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- all messages are delivered",
+            "stability": "stable",
+            "summary": "The filter policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 39
+          },
+          "name": "filterPolicy",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-sns.SubscriptionFilter"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- all messages are delivered",
+            "remarks": "To apply a filter policy to the message attributes, use `filterPolicy`. A maximum of one of `filterPolicyWithMessageBody` and `filterPolicy` may be used.",
+            "stability": "stable",
+            "summary": "The filter policy that is applied on the message body."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 47
+          },
+          "name": "filterPolicyWithMessageBody",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-sns.FilterOrPolicy"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "remarks": "Raw messages are free of JSON formatting and can be\nsent to HTTP/S and Amazon SQS endpoints. For more information, see GetSubscriptionAttributes in the Amazon Simple\nNotification Service API Reference.",
+            "stability": "stable",
+            "summary": "true if raw message delivery is enabled for the subscription."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 32
+          },
+          "name": "rawMessageDelivery",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-sns-subscription.html#cfn-sns-subscription-region"
+            },
+            "default": "- the region where the CloudFormation stack is being deployed.",
+            "stability": "stable",
+            "summary": "The region where the topic resides, in the case of cross-region subscriptions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 54
+          },
+          "name": "region",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No subscription role is provided",
+            "remarks": "Required for a firehose subscription protocol.",
+            "stability": "stable",
+            "summary": "Arn of role allowing access to firehose delivery stream."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 69
+          },
+          "name": "subscriptionRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/subscription:SubscriptionOptions"
+    },
+    "@aws-cdk/aws-sns.SubscriptionProps": {
+      "assembly": "@aws-cdk/aws-sns",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties for creating a new subscription."
+      },
+      "fqn": "@aws-cdk/aws-sns.SubscriptionProps",
+      "interfaces": [
+        "@aws-cdk/aws-sns.SubscriptionOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/subscription.ts",
+        "line": 74
+      },
+      "name": "SubscriptionProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The topic to subscribe to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscription.ts",
+            "line": 78
+          },
+          "name": "topic",
+          "type": {
+            "fqn": "@aws-cdk/aws-sns.ITopic"
+          }
+        }
+      ],
+      "symbolId": "lib/subscription:SubscriptionProps"
+    },
+    "@aws-cdk/aws-sns.SubscriptionProtocol": {
+      "assembly": "@aws-cdk/aws-sns",
+      "docs": {
+        "stability": "stable",
+        "summary": "The type of subscription, controlling the type of the endpoint parameter."
+      },
+      "fqn": "@aws-cdk/aws-sns.SubscriptionProtocol",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/subscription.ts",
+        "line": 192
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "JSON-encoded message is POSTED to an HTTP url."
+          },
+          "name": "HTTP"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "JSON-encoded message is POSTed to an HTTPS url."
+          },
+          "name": "HTTPS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Notifications are sent via email."
+          },
+          "name": "EMAIL"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Notifications are JSON-encoded and sent via mail."
+          },
+          "name": "EMAIL_JSON"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Notification is delivered by SMS."
+          },
+          "name": "SMS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Notifications are enqueued into an SQS queue."
+          },
+          "name": "SQS"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "JSON-encoded notifications are sent to a mobile app endpoint."
+          },
+          "name": "APPLICATION"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Notifications trigger a Lambda function."
+          },
+          "name": "LAMBDA"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Notifications put records into a firehose delivery stream."
+          },
+          "name": "FIREHOSE"
+        }
+      ],
+      "name": "SubscriptionProtocol",
+      "symbolId": "lib/subscription:SubscriptionProtocol"
+    },
+    "@aws-cdk/aws-sns.Topic": {
+      "assembly": "@aws-cdk/aws-sns",
+      "base": "@aws-cdk/aws-sns.TopicBase",
+      "docs": {
+        "stability": "stable",
+        "summary": "A new SNS topic."
+      },
+      "fqn": "@aws-cdk/aws-sns.Topic",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/topic.ts",
+          "line": 80
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.TopicProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/topic.ts",
+        "line": 54
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Import an existing SNS topic provided an ARN."
+          },
+          "locationInModule": {
+            "filename": "lib/topic.ts",
+            "line": 63
+          },
+          "name": "fromTopicArn",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The parent creating construct."
+              },
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "docs": {
+                "summary": "The construct's name."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "topic ARN (i.e. arn:aws:sns:us-east-2:444455556666:MyTopic)."
+              },
+              "name": "topicArn",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.ITopic"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "Topic",
+      "properties": [
+        {
+          "docs": {
+            "remarks": "Set by subclasses.",
+            "stability": "stable",
+            "summary": "Controls automatic creation of policy objects."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic.ts",
+            "line": 78
+          },
+          "name": "autoCreatePolicy",
+          "overrides": "@aws-cdk/aws-sns.TopicBase",
+          "protected": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "If false, this is a standard topic.",
+            "stability": "stable",
+            "summary": "Whether this topic is an Amazon SNS FIFO queue."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic.ts",
+            "line": 76
+          },
+          "name": "fifo",
+          "overrides": "@aws-cdk/aws-sns.TopicBase",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of the topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic.ts",
+            "line": 74
+          },
+          "name": "topicArn",
+          "overrides": "@aws-cdk/aws-sns.TopicBase",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The name of the topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic.ts",
+            "line": 75
+          },
+          "name": "topicName",
+          "overrides": "@aws-cdk/aws-sns.TopicBase",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/topic:Topic"
+    },
+    "@aws-cdk/aws-sns.TopicBase": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-sns",
+      "base": "@aws-cdk/core.Resource",
+      "docs": {
+        "stability": "stable",
+        "summary": "Either a new or imported Topic."
+      },
+      "fqn": "@aws-cdk/aws-sns.TopicBase",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/topic-base.ts",
+          "line": 74
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/core.ResourceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-sns.ITopic"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/topic-base.ts",
+        "line": 58
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Subscribe some endpoint to this topic."
+          },
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 83
+          },
+          "name": "addSubscription",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "topicSubscription",
+              "type": {
+                "fqn": "@aws-cdk/aws-sns.ITopicSubscription"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.Subscription"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "If this topic was created in this stack (`new Topic`), a topic policy\nwill be automatically created upon the first call to `addToPolicy`. If\nthe topic is imported (`Topic.import`), then this is a no-op.",
+            "stability": "stable",
+            "summary": "Adds a statement to the IAM resource policy associated with this topic."
+          },
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 119
+          },
+          "name": "addToResourcePolicy",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.AddToResourcePolicyResult"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Represents a notification target That allows SNS topic to associate with this rule target."
+          },
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 147
+          },
+          "name": "bindAsNotificationRuleTarget",
+          "overrides": "@aws-cdk/aws-codestarnotifications.INotificationRuleTarget",
+          "parameters": [
+            {
+              "name": "_scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-codestarnotifications.NotificationRuleTargetConfig"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant topic publishing permissions to the given identity."
+          },
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 134
+          },
+          "name": "grantPublish",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return the given named metric for this Topic."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 71
+          },
+          "name": "metric",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "metricName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The number of messages published to your Amazon SNS topics."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 83
+          },
+          "name": "metricNumberOfMessagesPublished",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The number of messages successfully delivered from your Amazon SNS topics to subscribing endpoints."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 89
+          },
+          "name": "metricNumberOfNotificationsDelivered",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The number of messages that Amazon SNS failed to deliver."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 95
+          },
+          "name": "metricNumberOfNotificationsFailed",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The number of messages that were rejected by subscription filter policies."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 101
+          },
+          "name": "metricNumberOfNotificationsFilteredOut",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The number of messages that were rejected by subscription filter policies because the messages' attributes are invalid."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 113
+          },
+          "name": "metricNumberOfNotificationsFilteredOutInvalidAttributes",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The number of messages that were rejected by subscription filter policies because the messages have no attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 107
+          },
+          "name": "metricNumberOfNotificationsFilteredOutNoMessageAttributes",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Average over 5 minutes",
+            "stability": "stable",
+            "summary": "Metric for the size of messages published through this topic."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 77
+          },
+          "name": "metricPublishSize",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Maximum over 5 minutes",
+            "stability": "stable",
+            "summary": "The charges you have accrued since the start of the current calendar month for sending SMS messages."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 119
+          },
+          "name": "metricSMSMonthToDateSpentUSD",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Sum over 5 minutes",
+            "stability": "stable",
+            "summary": "The rate of successful SMS message deliveries."
+          },
+          "locationInModule": {
+            "filename": "lib/sns-augmentations.generated.ts",
+            "line": 125
+          },
+          "name": "metricSMSSuccessRate",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "parameters": [
+            {
+              "name": "props",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-cloudwatch.MetricOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudwatch.Metric"
+            }
+          }
+        }
+      ],
+      "name": "TopicBase",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Set by subclasses.",
+            "stability": "stable",
+            "summary": "Controls automatic creation of policy objects."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 70
+          },
+          "name": "autoCreatePolicy",
+          "protected": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "If false, this is a standard topic.",
+            "stability": "stable",
+            "summary": "Whether this topic is an Amazon SNS FIFO queue."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 63
+          },
+          "name": "fifo",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of the topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 59
+          },
+          "name": "topicArn",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The name of the topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic-base.ts",
+            "line": 61
+          },
+          "name": "topicName",
+          "overrides": "@aws-cdk/aws-sns.ITopic",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/topic-base:TopicBase"
+    },
+    "@aws-cdk/aws-sns.TopicPolicy": {
+      "assembly": "@aws-cdk/aws-sns",
+      "base": "@aws-cdk/core.Resource",
+      "docs": {
+        "remarks": "Policies define the operations that are allowed on this resource.\n\nYou almost never need to define this construct directly.\n\nAll AWS resources that support resource policies have a method called\n`addToResourcePolicy()`, which will automatically create a new resource\npolicy if one doesn't exist yet, otherwise it will add to the existing\npolicy.\n\nPrefer to use `addToResourcePolicy()` instead.",
+        "stability": "stable",
+        "summary": "The policy for an SNS Topic."
+      },
+      "fqn": "@aws-cdk/aws-sns.TopicPolicy",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/policy.ts",
+          "line": 49
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-sns.TopicPolicyProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/policy.ts",
+        "line": 37
+      },
+      "name": "TopicPolicy",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The IAM policy document for this policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/policy.ts",
+            "line": 41
+          },
+          "name": "document",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.PolicyDocument"
+          }
+        }
+      ],
+      "symbolId": "lib/policy:TopicPolicy"
+    },
+    "@aws-cdk/aws-sns.TopicPolicyProps": {
+      "assembly": "@aws-cdk/aws-sns",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties to associate SNS topics with a policy."
+      },
+      "fqn": "@aws-cdk/aws-sns.TopicPolicyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/policy.ts",
+        "line": 10
+      },
+      "name": "TopicPolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The set of topics this policy applies to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/policy.ts",
+            "line": 14
+          },
+          "name": "topics",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-sns.ITopic"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "empty policy document",
+            "stability": "stable",
+            "summary": "IAM policy document to apply to topic(s)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/policy.ts",
+            "line": 19
+          },
+          "name": "policyDocument",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.PolicyDocument"
+          }
+        }
+      ],
+      "symbolId": "lib/policy:TopicPolicyProps"
+    },
+    "@aws-cdk/aws-sns.TopicProps": {
+      "assembly": "@aws-cdk/aws-sns",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties for a new SNS topic."
+      },
+      "fqn": "@aws-cdk/aws-sns.TopicProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/topic.ts",
+        "line": 10
+      },
+      "name": "TopicProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "None",
+            "stability": "stable",
+            "summary": "Enables content-based deduplication for FIFO topics."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic.ts",
+            "line": 41
+          },
+          "name": "contentBasedDeduplication",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "None",
+            "stability": "stable",
+            "summary": "A developer-defined string that can be used to identify this SNS topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic.ts",
+            "line": 16
+          },
+          "name": "displayName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "None",
+            "stability": "stable",
+            "summary": "Set to true to create a FIFO topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic.ts",
+            "line": 48
+          },
+          "name": "fifo",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "None",
+            "stability": "stable",
+            "summary": "A KMS Key, either managed by this CDK app, or imported."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic.ts",
+            "line": 34
+          },
+          "name": "masterKey",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.IKey"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Generated name",
+            "remarks": "If you don't specify a name, AWS CloudFormation generates a unique\nphysical ID and uses that ID for the topic name. For more information,\nsee Name Type.",
+            "stability": "stable",
+            "summary": "A name for the topic."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/topic.ts",
+            "line": 27
+          },
+          "name": "topicName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/topic:TopicProps"
+    },
+    "@aws-cdk/aws-sns.TopicSubscriptionConfig": {
+      "assembly": "@aws-cdk/aws-sns",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Subscription configuration."
+      },
+      "fqn": "@aws-cdk/aws-sns.TopicSubscriptionConfig",
+      "interfaces": [
+        "@aws-cdk/aws-sns.SubscriptionOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/subscriber.ts",
+        "line": 8
+      },
+      "name": "TopicSubscriptionConfig",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "In most\ncases, it is recommended to use the `uniqueId` of the topic you are\nsubscribing to.",
+            "stability": "stable",
+            "summary": "The id of the SNS subscription resource created under `scope`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscriber.ts",
+            "line": 26
+          },
+          "name": "subscriberId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- use the topic as the scope of the subscription, in which case `subscriberId` must be defined.",
+            "remarks": "Normally you'd\nwant the subscription to be created on the consuming stack because the\ntopic is usually referenced by the consumer's resource policy (e.g. SQS\nqueue policy). Otherwise, it will cause a cyclic reference.\n\nIf this is undefined, the subscription will be created on the topic's stack.",
+            "stability": "stable",
+            "summary": "The scope in which to create the SNS subscription resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscriber.ts",
+            "line": 19
+          },
+          "name": "subscriberScope",
+          "optional": true,
+          "type": {
+            "fqn": "constructs.Construct"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- empty list",
+            "remarks": "For example for SQS subscription, the subscription needs to have a dependency on the SQS queue policy\nin order for the subscription to successfully deliver messages.",
+            "stability": "stable",
+            "summary": "The resources that need to be created before the subscription can be safely created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/subscriber.ts",
+            "line": 35
+          },
+          "name": "subscriptionDependency",
+          "optional": true,
+          "type": {
+            "fqn": "constructs.IDependable"
+          }
+        }
+      ],
+      "symbolId": "lib/subscriber:TopicSubscriptionConfig"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "CkHfm84cSb58DvN8J2llZ0caqm6882hxN8IxDYDkQbg="
+}

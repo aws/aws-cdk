@@ -1,0 +1,2135 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-cloudformation": "0.0.0",
+    "@aws-cdk/aws-ec2": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-lambda": "0.0.0",
+    "@aws-cdk/aws-logs": "0.0.0",
+    "@aws-cdk/aws-sns": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.Assets",
+          "packageId": "Amazon.CDK.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.assets",
+          "module": "aws_cdk.assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-applicationautoscaling": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ApplicationAutoScaling",
+          "packageId": "Amazon.CDK.AWS.ApplicationAutoScaling"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "applicationautoscaling",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.applicationautoscaling"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-applicationautoscaling"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-applicationautoscaling",
+          "module": "aws_cdk.aws_applicationautoscaling"
+        }
+      }
+    },
+    "@aws-cdk/aws-autoscaling-common": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.AutoScaling.Common",
+          "packageId": "Amazon.CDK.AWS.AutoScaling.Common"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "autoscaling-common",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.autoscaling.common"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-autoscaling-common"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-autoscaling-common",
+          "module": "aws_cdk.aws_autoscaling_common"
+        }
+      }
+    },
+    "@aws-cdk/aws-cloudformation": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CloudFormation",
+          "packageId": "Amazon.CDK.AWS.CloudFormation"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudformation",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudformation"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudformation"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cloudformation",
+          "module": "aws_cdk.aws_cloudformation"
+        }
+      }
+    },
+    "@aws-cdk/aws-cloudwatch": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CloudWatch",
+          "packageId": "Amazon.CDK.AWS.CloudWatch"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cloudwatch",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.cloudwatch"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-cloudwatch"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-cloudwatch",
+          "module": "aws_cdk.aws_cloudwatch"
+        }
+      }
+    },
+    "@aws-cdk/aws-codeguruprofiler": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodeGuruProfiler",
+          "packageId": "Amazon.CDK.AWS.CodeGuruProfiler"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codeguruprofiler",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codeguruprofiler"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codeguruprofiler"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codeguruprofiler",
+          "module": "aws_cdk.aws_codeguruprofiler"
+        }
+      }
+    },
+    "@aws-cdk/aws-codestarnotifications": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.CodeStarNotifications",
+          "packageId": "Amazon.CDK.AWS.CodeStarNotifications"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "codestarnotifications",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.codestarnotifications"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-codestarnotifications"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-codestarnotifications",
+          "module": "aws_cdk.aws_codestarnotifications"
+        }
+      }
+    },
+    "@aws-cdk/aws-ec2": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.EC2",
+          "packageId": "Amazon.CDK.AWS.EC2"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ec2",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ec2"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ec2"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ec2",
+          "module": "aws_cdk.aws_ec2"
+        }
+      }
+    },
+    "@aws-cdk/aws-ecr": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.ECR",
+          "packageId": "Amazon.CDK.AWS.ECR"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ecr",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ecr"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ecr"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ecr",
+          "module": "aws_cdk.aws_ecr"
+        }
+      }
+    },
+    "@aws-cdk/aws-ecr-assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Ecr.Assets",
+          "packageId": "Amazon.CDK.ECR.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ecr-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ecr.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ecr-assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ecr-assets",
+          "module": "aws_cdk.aws_ecr_assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-efs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.EFS",
+          "packageId": "Amazon.CDK.AWS.EFS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "efs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.efs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-efs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-efs",
+          "module": "aws_cdk.aws_efs"
+        }
+      }
+    },
+    "@aws-cdk/aws-events": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-events",
+          "module": "aws_cdk.aws_events"
+        }
+      }
+    },
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      }
+    },
+    "@aws-cdk/aws-kms": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-kms",
+          "module": "aws_cdk.aws_kms"
+        }
+      }
+    },
+    "@aws-cdk/aws-lambda": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Lambda",
+          "packageId": "Amazon.CDK.AWS.Lambda"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "lambda",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.lambda"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-lambda"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-lambda",
+          "module": "aws_cdk.aws_lambda"
+        }
+      }
+    },
+    "@aws-cdk/aws-logs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Logs",
+          "packageId": "Amazon.CDK.AWS.Logs"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "logs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.logs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-logs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-logs",
+          "module": "aws_cdk.aws_logs"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3",
+          "packageId": "Amazon.CDK.AWS.S3"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3",
+          "module": "aws_cdk.aws_s3"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3-assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3.Assets",
+          "packageId": "Amazon.CDK.AWS.S3.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3-assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3-assets",
+          "module": "aws_cdk.aws_s3_assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-signer": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Signer",
+          "packageId": "Amazon.CDK.AWS.Signer"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "signer",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.signer"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-signer"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-signer",
+          "module": "aws_cdk.aws_signer"
+        }
+      }
+    },
+    "@aws-cdk/aws-sns": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SNS",
+          "packageId": "Amazon.CDK.AWS.SNS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sns",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sns"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sns"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-sns",
+          "module": "aws_cdk.aws_sns"
+        }
+      }
+    },
+    "@aws-cdk/aws-sqs": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SQS",
+          "packageId": "Amazon.CDK.AWS.SQS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "sqs",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.sqs"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-sqs"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-sqs",
+          "module": "aws_cdk.aws_sqs"
+        }
+      }
+    },
+    "@aws-cdk/aws-ssm": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.SSM",
+          "packageId": "Amazon.CDK.AWS.SSM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "ssm",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.ssm"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-ssm"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-ssm",
+          "module": "aws_cdk.aws_ssm"
+        }
+      }
+    },
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "Constructs for implementing CDK custom resources",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.77.0 (build 3e5fa88)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "cloudformation",
+    "custom-resources",
+    "customresources"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/custom-resources",
+  "readme": {
+    "markdown": "# AWS CDK Custom Resources\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)\n\n---\n\n<!--END STABILITY BANNER-->\n\n## Provider Framework\n\nAWS CloudFormation [custom resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-custom-resources.html) are extension points to the provisioning\nengine. When CloudFormation needs to create, update or delete a custom resource,\nit sends a lifecycle event notification to a **custom resource provider**. The provider\nhandles the event (e.g. creates a resource) and sends back a response to CloudFormation.\n\nThe `@aws-cdk/custom-resources.Provider` construct is a \"mini-framework\" for\nimplementing providers for AWS CloudFormation custom resources. The framework offers a high-level API which makes it easier to implement robust\nand powerful custom resources. If you are looking to implement a custom resource provider, we recommend\nyou use this module unless you have good reasons not to. For an overview of different provider types you\ncould be using, see the [Custom Resource Providers section in the core library documentation](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib-readme.html#custom-resource-providers).\n\n> **N.B.**: if you use the provider framework in this module you will write AWS Lambda Functions that look a lot like, but aren't exactly the same as the Lambda Functions you would write if you wrote CloudFormation Custom Resources directly, without this framework.\n>\n> Specifically, to report success or failure, have your Lambda Function exit in the right way: return data for success, or throw an\n> exception for failure. *Do not* post the success or failure of your custom resource to an HTTPS URL as the CloudFormation\n> documentation tells you to do.\n\nThe framework has the following capabilities:\n\n* Handles responses to AWS CloudFormation and protects against blocked\n  deployments\n* Validates handler return values to help with correct handler implementation\n* Supports asynchronous handlers to enable operations that require a long waiting period for a resource, which can exceed the AWS Lambda timeout\n* Implements default behavior for physical resource IDs.\n\nThe following code shows how the `Provider` construct is used in conjunction\nwith a `CustomResource` and a user-provided AWS Lambda function which implements\nthe actual handler.\n\n```ts\ndeclare const onEvent: lambda.Function;\ndeclare const isComplete: lambda.Function;\ndeclare const myRole: iam.Role;\n\nconst myProvider = new cr.Provider(this, 'MyProvider', {\n  onEventHandler: onEvent,\n  isCompleteHandler: isComplete,        // optional async \"waiter\"\n  logRetention: logs.RetentionDays.ONE_DAY,   // default is INFINITE\n  role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal\n});\n\nnew CustomResource(this, 'Resource1', { serviceToken: myProvider.serviceToken });\nnew CustomResource(this, 'Resource2', { serviceToken: myProvider.serviceToken });\n```\n\nProviders are implemented through AWS Lambda functions that are triggered by the\nprovider framework in response to lifecycle events.\n\nAt the minimum, users must define the `onEvent` handler, which is invoked by the\nframework for all resource lifecycle events (`Create`, `Update` and `Delete`)\nand returns a result which is then submitted to CloudFormation.\n\nThe following example is a skeleton for a Python implementation of `onEvent`:\n\n```py\ndef on_event(event, context):\n  print(event)\n  request_type = event['RequestType']\n  if request_type == 'Create': return on_create(event)\n  if request_type == 'Update': return on_update(event)\n  if request_type == 'Delete': return on_delete(event)\n  raise Exception(\"Invalid request type: %s\" % request_type)\n\ndef on_create(event):\n  props = event[\"ResourceProperties\"]\n  print(\"create new resource with props %s\" % props)\n\n  # add your create code here...\n  physical_id = ...\n\n  return { 'PhysicalResourceId': physical_id }\n\ndef on_update(event):\n  physical_id = event[\"PhysicalResourceId\"]\n  props = event[\"ResourceProperties\"]\n  print(\"update resource %s with props %s\" % (physical_id, props))\n  # ...\n\ndef on_delete(event):\n  physical_id = event[\"PhysicalResourceId\"]\n  print(\"delete resource %s\" % physical_id)\n  # ...\n```\n\n> When writing your handlers, there are a couple of non-obvious corner cases you need to\n> pay attention to. See the [important cases to handle](#important-cases-to-handle) section for more information.\n\nUsers may also provide an additional handler called `isComplete`, for cases\nwhere the lifecycle operation cannot be completed immediately. The\n`isComplete` handler will be retried asynchronously after `onEvent` until it\nreturns `IsComplete: true`, or until the total provider timeout has expired.\n\nThe following example is a skeleton for a Python implementation of `isComplete`:\n\n```py\ndef is_complete(event, context):\n  physical_id = event[\"PhysicalResourceId\"]\n  request_type = event[\"RequestType\"]\n\n  # check if resource is stable based on request_type\n  is_ready = ...\n\n  return { 'IsComplete': is_ready }\n```\n\n> **Security Note**: the Custom Resource Provider Framework will write the value of `ResponseURL`,\n> which is a pre-signed S3 URL used to report the success or failure of the Custom Resource execution\n> back to CloudFormation, in a readable form to the AWS Step Functions execution history.\n>\n> Anybody who can list and read AWS StepFunction executions in your account will be able to write\n> a fake response to this URL and make your CloudFormation deployments fail.\n>\n> Do not use this library if your threat model requires that you cannot trust actors who are able\n> to list StepFunction executions in your account.\n\n### Handling Lifecycle Events: onEvent\n\nThe user-defined `onEvent` AWS Lambda function is invoked whenever a resource\nlifecycle event occurs. The function is expected to handle the event and return\na response to the framework that, at least, includes the physical resource ID.\n\nIf `onEvent` returns successfully, the framework will submit a \"SUCCESS\" response\nto AWS CloudFormation for this resource operation.  If the provider is\n[asynchronous](#asynchronous-providers-iscomplete) (`isCompleteHandler` is\ndefined), the framework will only submit a response based on the result of\n`isComplete`.\n\nIf `onEvent` throws an error, the framework will submit a \"FAILED\" response to\nAWS CloudFormation.\n\nThe input event includes the following fields derived from the [Custom Resource\nProvider Request]:\n\n|Field|Type|Description\n|-----|----|----------------\n|`RequestType`|String|The type of lifecycle event: `Create`, `Update` or `Delete`.\n|`LogicalResourceId`|String|The template developer-chosen name (logical ID) of the custom resource in the AWS CloudFormation template.\n|`PhysicalResourceId`|String|This field will only be present for `Update` and `Delete` events and includes the value returned in `PhysicalResourceId` of the previous operation.\n|`ResourceProperties`|JSON|This field contains the properties defined in the template for this custom resource.\n|`OldResourceProperties`|JSON|This field will only be present for `Update` events and contains the resource properties that were declared previous to the update request.\n|`ResourceType`|String|The resource type defined for this custom resource in the template. A provider may handle any number of custom resource types.\n|`RequestId`|String|A unique ID for the request.\n|`StackId`|String|The ARN that identifies the stack that contains the custom resource.\n\nThe return value from `onEvent` must be a JSON object with the following fields:\n\n|Field|Type|Required|Description\n|-----|----|--------|-----------\n|`PhysicalResourceId`|String|No|The allocated/assigned physical ID of the resource. If omitted for `Create` events, the event's `RequestId` will be used. For `Update`, the current physical ID will be used. If a different value is returned, CloudFormation will follow with a subsequent `Delete` for the previous ID (resource replacement). For `Delete`, it will always return the current physical resource ID, and if the user returns a different one, an error will occur.\n|`Data`|JSON|No|Resource attributes, which can later be retrieved through `Fn::GetAtt` on the custom resource object.\n|`NoEcho`|Boolean|No|Whether to mask the output of the custom resource when retrieved by using the `Fn::GetAtt` function.\n|*any*|*any*|No|Any other field included in the response will be passed through to `isComplete`. This can sometimes be useful to pass state between the handlers.\n\n[Custom Resource Provider Request]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-requests.html#crpg-ref-request-fields\n\n### Asynchronous Providers: isComplete\n\nIt is not uncommon for the provisioning of resources to be an asynchronous\noperation, which means that the operation does not immediately finish, and we\nneed to \"wait\" until the resource stabilizes.\n\nThe provider framework makes it easy to implement \"waiters\" by allowing users to\nspecify an additional AWS Lambda function in `isCompleteHandler`.\n\nThe framework will repeatedly invoke the handler every `queryInterval`. When\n`isComplete` returns with `IsComplete: true`, the framework will submit a\n\"SUCCESS\" response to AWS CloudFormation. If `totalTimeout` expires and the\noperation has not yet completed, the framework will submit a \"FAILED\" response\nwith the message \"Operation timed out\".\n\nIf an error is thrown, the framework will submit a \"FAILED\" response to AWS\nCloudFormation.\n\nThe input event to `isComplete` includes all request fields, combined with all\nfields returned from `onEvent`. If `PhysicalResourceId` has not been explicitly\nreturned from `onEvent`, it's value will be calculated based on the heuristics\ndescribed above.\n\nThe return value must be a JSON object with the following fields:\n\n|Field|Type|Required|Description\n|-----|----|--------|-----------\n|`IsComplete`|Boolean|Yes|Indicates if the operation has finished or not.\n|`Data`|JSON|No|May only be sent if `IsComplete` is `true` and includes additional resource attributes. These attributes will be **merged** with the ones returned from `onEvent`\n\n### Physical Resource IDs\n\nEvery resource in CloudFormation has a physical resource ID. When a resource is\ncreated, the `PhysicalResourceId` returned from the `Create` operation is stored\nby AWS CloudFormation and assigned to the logical ID defined for this resource\nin the template. If a `Create` operation returns without a `PhysicalResourceId`,\nthe framework will use `RequestId` as the default. This is sufficient for\nvarious cases such as \"pseudo-resources\" which only query data.\n\nFor `Update` and `Delete` operations, the resource event will always include the\ncurrent `PhysicalResourceId` of the resource.\n\nWhen an `Update` operation occurs, the default behavior is to return the current\nphysical resource ID. if the `onEvent` returns a `PhysicalResourceId` which is\ndifferent from the current one, AWS CloudFormation will treat this as a\n**resource replacement**, and it will issue a subsequent `Delete` operation for\nthe old resource.\n\nAs a rule of thumb, if your custom resource supports configuring a physical name\n(e.g. you can specify a `BucketName` when you define an `AWS::S3::Bucket`), you\nmust return this name in `PhysicalResourceId` and make sure to handle\nreplacement properly. The `S3File` example demonstrates this\nthrough the `objectKey` property.\n\n### When there are errors\n\nAs mentioned above, if any of the user handlers fail (i.e. throws an exception)\nor times out (due to their AWS Lambda timing out), the framework will trap these\nerrors and submit a \"FAILED\" response to AWS CloudFormation, along with the error\nmessage.\n\nSince errors can occur in multiple places in the provider (framework, `onEvent`,\n`isComplete`), it is important to know that there could situations where a\nresource operation fails even though the operation technically succeeded (i.e.\nisComplete throws an error).\n\nWhen AWS CloudFormation receives a \"FAILED\" response, it will attempt to roll\nback the stack to it's last state. This has different meanings for different\nlifecycle events:\n\n* If a `Create` event fails, the resource provider framework will automatically\n  ignore the subsequent `Delete` operation issued by AWS CloudFormation. The\n  framework currently does not support customizing this behavior (see\n  https://github.com/aws/aws-cdk/issues/5524).\n* If an `Update` event fails, CloudFormation will issue an additional `Update`\n  with the previous properties.\n* If a `Delete` event fails, CloudFormation will abandon this resource.\n\n### Important cases to handle\n\nYou should keep the following list in mind when writing custom resources to\nmake sure your custom resource behaves correctly in all cases:\n\n* During `Create`:\n  * If the create fails, the *provider framework* will make sure you\n    don't get a subsequent `Delete` event. If your create involves multiple distinct\n    operations, it is your responsibility to catch and rethrow and clean up\n    any partial updates that have already been performed. Make sure your\n    API call timeouts and Lambda timeouts allow for this.\n* During `Update`:\n  * If the update fails, you will get a subsequent `Update` event\n    to roll back to the previous state (with `ResourceProperties` and\n    `OldResourceProperties` reversed).\n  * If you return a different `PhysicalResourceId`, you will subsequently\n    receive a `Delete` event to clean up the previous state of the resource.\n* During `Delete`:\n  * If the behavior of your custom resource is tied to another AWS resource\n    (for example, it exists to clean the contents of a stateful resource), keep\n    in mind that your custom resource may be deleted independently of the other\n    resource and you must confirm that it is appropriate to perform the action.\n  * (only if you are *not* using the provider framework) a `Delete` event\n    may be caused by a failed `Create`. You must be able to handle the case\n    where the resource you are trying to delete hasn't even been created yet.\n* If you update the code of your custom resource and change the format of the\n  resource properties, be aware that there may still be already-deployed\n  instances of your custom resource out there, and you may still receive\n  the *old* property format in `ResourceProperties` (during `Delete` and\n  rollback `Updates`) or in `OldResourceProperties` (during rollforward\n  `Update`). You must continue to handle all possible sets of properties\n  your custom resource could have ever been created with in the past.\n\n### Provider Framework Execution Policy\n\nSimilarly to any AWS Lambda function, if the user-defined handlers require\naccess to AWS resources, you will have to define these permissions\nby calling \"grant\" methods such as `myBucket.grantRead(myHandler)`), using `myHandler.addToRolePolicy`\nor specifying an `initialPolicy` when defining the function.\n\nBear in mind that in most cases, a single provider will be used for multiple\nresource instances. This means that the execution policy of the provider must\nhave the appropriate privileges.\n\nThe following example grants the `onEvent` handler `s3:GetObject*` permissions\nto all buckets:\n\n```ts\nnew lambda.Function(this, 'OnEventHandler', {\n  runtime: lambda.Runtime.NODEJS_14_X,\n  handler: 'index.handler',\n  code: lambda.Code.fromInline('my code'),\n  initialPolicy: [\n    new iam.PolicyStatement({ actions: [ 's3:GetObject*' ], resources: [ '*' ] }),\n  ],\n});\n```\n\n### Timeouts\n\nUsers are responsible to define the timeouts for the AWS Lambda functions for\nuser-defined handlers. It is recommended not to exceed a **14 minutes** timeout,\nsince all framework functions are configured to time out after 15 minutes, which\nis the maximal AWS Lambda timeout.\n\nIf your operation takes over **14 minutes**, the recommended approach is to\nimplement an [asynchronous provider](#asynchronous-providers-iscomplete), and\nthen configure the timeouts for the asynchronous retries through the\n`queryInterval` and the `totalTimeout` options.\n\n### Provider Framework Examples\n\nThis module includes a few examples for custom resource implementations:\n\n#### S3File\n\nProvisions an object in an S3 bucket with textual contents. See the source code\nfor the\n[construct](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.ts) and\n[handler](https://github.com/aws/aws-cdk/blob/main/packages/%40aws-cdk/custom-resources/test/provider-framework/integration-test-fixtures/s3-file-handler/index.ts).\n\nThe following example will create the file `folder/file1.txt` inside `myBucket`\nwith the contents `hello!`.\n\n\n```plaintext\n// This example exists only for TypeScript\n\ndeclare const myBucket: s3.Bucket;\nnew cr.S3File(this, 'MyFile', {\n  bucket: myBucket,\n  objectKey: 'folder/file1.txt', // optional\n  content: 'hello!',\n  public: true, // optional\n});\n```\n\nThis sample demonstrates the following concepts:\n\n* Synchronous implementation (`isComplete` is not defined)\n* Automatically generates the physical name if `objectKey` is not defined\n* Handles physical name changes\n* Returns resource attributes\n* Handles deletions\n* Implemented in TypeScript\n\n#### S3Assert\n\nChecks that the textual contents of an S3 object matches a certain value. The check will be retried for 5 minutes as long as the object is not found or the value is different. See the source code for the [construct](test/provider-framework/integration-test-fixtures/s3-assert.ts) and [handler](test/provider-framework/integration-test-fixtures/s3-assert-handler/index.py).\n\nThe following example defines an `S3Assert` resource which waits until\n`myfile.txt` in `myBucket` exists and includes the contents `foo bar`:\n\n```plaintext\n// This example exists only for TypeScript\n\ndeclare const myBucket: s3.Bucket;\nnew cr.S3Assert(this, 'AssertMyFile', {\n  bucket: myBucket,\n  objectKey: 'myfile.txt',\n  expectedContent: 'foo bar',\n});\n```\n\nThis sample demonstrates the following concepts:\n\n* Asynchronous implementation\n* Non-intrinsic physical IDs\n* Implemented in Python\n\n\n### Customizing Provider Function name\n\nIn multi-account environments or when the custom resource may be re-utilized across several\nstacks it may be useful to manually set a name for the Provider Function Lambda and therefore\nhave a predefined service token ARN.\n\n```ts\ndeclare const onEvent: lambda.Function;\ndeclare const isComplete: lambda.Function;\ndeclare const myRole: iam.Role;\nconst myProvider = new cr.Provider(this, 'MyProvider', {\n  onEventHandler: onEvent,\n  isCompleteHandler: isComplete,\n  logRetention: logs.RetentionDays.ONE_DAY,\n  role: myRole,\n  providerFunctionName: 'the-lambda-name',   // Optional\n});\n\n```\n\n## Custom Resources for AWS APIs\n\nSometimes a single API call can fill the gap in the CloudFormation coverage. In\nthis case you can use the `AwsCustomResource` construct. This construct creates\na custom resource that can be customized to make specific API calls for the\n`CREATE`, `UPDATE` and `DELETE` events. Additionally, data returned by the API\ncall can be extracted and used in other constructs/resources (creating a real\nCloudFormation dependency using `Fn::GetAtt` under the hood).\n\nThe physical id of the custom resource can be specified or derived from the data\nreturned by the API call.\n\nThe `AwsCustomResource` uses the AWS SDK for JavaScript. Services, actions and\nparameters can be found in the [API documentation](https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html).\n\nPath to data must be specified using a dot notation, e.g. to get the string value\nof the `Title` attribute for the first item returned by `dynamodb.query` it should\nbe `Items.0.Title.S`.\n\nTo make sure that the newest API calls are available the latest AWS SDK v2 is installed\nin the Lambda function implementing the custom resource. The installation takes around 60\nseconds. If you prefer to optimize for speed, you can disable the installation by setting\nthe `installLatestAwsSdk` prop to `false`.\n\n### Custom Resource Execution Policy\n\nThe `policy` property defines the IAM Policy that will be applied to the API calls. This must be provided\nif an existing `role` is not specified and is optional otherwise. The library provides two factory methods\nto quickly configure this:\n\n* **`AwsCustomResourcePolicy.fromSdkCalls`** - Use this to auto-generate IAM\n  Policy statements based on the configured SDK calls. Keep two things in mind\n  when using this policy:\n  * This policy variant assumes the IAM policy name has the same name as the API\n    call. This is true in 99% of cases, but there are exceptions (for example,\n    S3's `PutBucketLifecycleConfiguration` requires\n    `s3:PutLifecycleConfiguration` permissions, Lambda's `Invoke` requires\n    `lambda:InvokeFunction` permissions). Use `fromStatements` if you want to\n    do a call that requires different IAM action names.\n  * You will have to either provide specific ARNs, or explicitly use\n    `AwsCustomResourcePolicy.ANY_RESOURCE` to allow access to any resource.\n* **`AwsCustomResourcePolicy.fromStatements`** - Use this to specify your own\n  custom statements.\n\nThe custom resource also implements `iam.IGrantable`, making it possible to use the `grantXxx()` methods.\n\nAs this custom resource uses a singleton Lambda function, it's important to note\nthat the function's role will eventually accumulate the permissions/grants from all\nresources.\n\nChained API calls can be achieved by creating dependencies:\n\n```ts\nconst awsCustom1 = new cr.AwsCustomResource(this, 'API1', {\n  onCreate: {\n    service: '...',\n    action: '...',\n    physicalResourceId: cr.PhysicalResourceId.of('...'),\n  },\n  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({\n    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,\n  }),\n});\n\nconst awsCustom2 = new cr.AwsCustomResource(this, 'API2', {\n  onCreate: {\n    service: '...',\n    action: '...',\n    parameters: {\n      text: awsCustom1.getResponseField('Items.0.text'),\n    },\n    physicalResourceId: cr.PhysicalResourceId.of('...'),\n  },\n  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({\n    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,\n  }),\n});\n```\n\n### Physical Resource Id Parameter\n\nSome AWS APIs may require passing the physical resource id in as a parameter for doing updates and deletes. You can pass it by using `PhysicalResourceIdReference`.\n\n```ts\nconst awsCustom = new cr.AwsCustomResource(this, 'aws-custom', {\n  onCreate: {\n    service: '...',\n    action: '...',\n    parameters: {\n      text: '...',\n    },\n    physicalResourceId: cr.PhysicalResourceId.of('...'),\n  },\n  onUpdate: {\n    service: '...',\n    action: '...',\n    parameters: {\n      text: '...',\n      resourceId: new cr.PhysicalResourceIdReference(),\n    },\n  },\n  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({\n    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,\n  }),\n})\n```\n\nYou can omit `PhysicalResourceId` property in `onUpdate` to passthrough the value in `onCreate`. This behavior is useful when using Update APIs that response with an empty body.\n\n> AwsCustomResource.getResponseField() and .getResponseFieldReference() will not work if the Create and Update APIs don't consistently return the same fields.\n\n### Handling Custom Resource Errors\n\nEvery error produced by the API call is treated as is and will cause a \"FAILED\" response to be submitted to CloudFormation.\nYou can ignore some errors by specifying the `ignoreErrorCodesMatching` property, which accepts a regular expression that is\ntested against the `code` property of the response. If matched, a \"SUCCESS\" response is submitted.\nNote that in such a case, the call response data and the `Data` key submitted to CloudFormation would both be an empty JSON object.\nSince a successful resource provisioning might or might not produce outputs, this presents us with some limitations:\n\n* `PhysicalResourceId.fromResponse` - Since the call response data might be empty, we cannot use it to extract the physical id.\n* `getResponseField` and `getResponseFieldReference` - Since the `Data` key is empty, the resource will not have any attributes, and therefore, invoking these functions will result in an error.\n\nIn both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.\n\n### Customizing the Lambda function implementing the custom resource\n\nUse the `role`, `timeout`, `logRetention` and `functionName` properties to customize\nthe Lambda function implementing the custom resource:\n\n```ts\ndeclare const myRole: iam.Role;\nnew cr.AwsCustomResource(this, 'Customized', {\n  role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal\n  timeout: Duration.minutes(10), // defaults to 2 minutes\n  logRetention: logs.RetentionDays.ONE_WEEK, // defaults to never delete logs\n  functionName: 'my-custom-name', // defaults to a CloudFormation generated name\n  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({\n    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,\n  }),\n});\n```\n\nAdditionally, the Lambda function can be placed in a private VPC by using the `vpc`\nand `vpcSubnets` properties.\n\n```ts\ndeclare const myVpc: ec2.Vpc;\nnew cr.AwsCustomResource(this, 'CustomizedInVpc', {\n  vpc,\n  vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_NAT },\n  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({\n    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,\n  }\n})\n```\n\nNote that Lambda functions in a VPC\n[require Network Address Translation (NAT) in order to access the internet][vpc-internet].\nThe subnets specified in `vpcSubnets` must be private subnets.\n\n[vpc-internet]: https://docs.aws.amazon.com/lambda/latest/dg/configuration-vpc.html#vpc-internet\n\n### Restricting the output of the Custom Resource\n\nCloudFormation imposes a hard limit of 4096 bytes for custom resources response\nobjects. If your API call returns an object that exceeds this limit, you can restrict\nthe data returned by the custom resource to specific paths in the API response:\n\n```ts\nnew cr.AwsCustomResource(this, 'ListObjects', {\n  onCreate: {\n    service: 's3',\n    action: 'listObjectsV2',\n    parameters: {\n      Bucket: 'my-bucket',\n    },\n    physicalResourceId: cr.PhysicalResourceId.of('id'),\n    outputPaths: ['Contents.0.Key', 'Contents.1.Key'], // Output only the two first keys\n  },\n  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({\n    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,\n  }),\n});\n```\n\nNote that even if you restrict the output of your custom resource you can still use any\npath in `PhysicalResourceId.fromResponse()`.\n\n### Custom Resource Examples\n\n#### Get the latest version of a secure SSM parameter\n\n```ts\nconst getParameter = new cr.AwsCustomResource(this, 'GetParameter', {\n  onUpdate: { // will also be called for a CREATE event\n    service: 'SSM',\n    action: 'getParameter',\n    parameters: {\n      Name: 'my-parameter',\n      WithDecryption: true,\n    },\n    physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()), // Update physical id to always fetch the latest version\n  },\n  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({\n    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,\n  }),\n});\n\n// Use the value in another construct with\ngetParameter.getResponseField('Parameter.Value');\n```\n\n#### Associate a PrivateHostedZone with VPC shared from another account\n\n```ts\nconst getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone', {\n  onCreate: {\n    assumedRoleArn: 'arn:aws:iam::OTHERACCOUNT:role/CrossAccount/ManageHostedZoneConnections',\n    service: 'Route53',\n    action: 'associateVPCWithHostedZone',\n    parameters: {\n      HostedZoneId: 'hz-123',\n      VPC: {\n\t\t    VPCId: 'vpc-123',\n\t\t    VPCRegion: 'region-for-vpc',\n      },\n    },\n    physicalResourceId: cr.PhysicalResourceId.of('${vpcStack.SharedVpc.VpcId}-${vpcStack.Region}-${PrivateHostedZone.HostedZoneId}'),\n  },\n  //Will ignore any resource and use the assumedRoleArn as resource and 'sts:AssumeRole' for service:action\n  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({\n    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,\n  }),\n});\n```\n\n---\n\nThis module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/custom-resources",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.CustomResources",
+      "packageId": "Amazon.CDK.AWS.CustomResources"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cdk-customresources",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.customresources"
+    },
+    "js": {
+      "npm": "@aws-cdk/custom-resources"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.custom-resources",
+      "module": "aws_cdk.custom_resources"
+    }
+  },
+  "types": {
+    "@aws-cdk/custom-resources.AwsCustomResource": {
+      "assembly": "@aws-cdk/custom-resources",
+      "base": "constructs.Construct",
+      "docs": {
+        "remarks": "These calls are created using\na singleton Lambda function.\n\nUse this to bridge any gap that might exist in the CloudFormation Coverage.\nYou can specify exactly which calls are invoked for the 'CREATE', 'UPDATE' and 'DELETE' life cycle events.",
+        "stability": "stable",
+        "summary": "Defines a custom resource that is materialized using specific AWS API calls."
+      },
+      "fqn": "@aws-cdk/custom-resources.AwsCustomResource",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+          "line": 377
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/custom-resources.AwsCustomResourceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-iam.IGrantable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+        "line": 354
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "Example for S3 / listBucket : 'Buckets.0.Name'\n\nNote that you cannot use this method if `ignoreErrorCodesMatching`\nis configured for any of the SDK calls. This is because in such a case,\nthe response data might not exist, and will cause a CloudFormation deploy time error.",
+            "stability": "stable",
+            "summary": "Returns response data for the AWS SDK call as string."
+          },
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 520
+          },
+          "name": "getResponseField",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the path to the data."
+              },
+              "name": "dataPath",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Example for S3 / listBucket : 'Buckets.0.Name'\n\nUse `Token.asXxx` to encode the returned `Reference` as a specific type or\nuse the convenience `getDataString` for string attributes.\n\nNote that you cannot use this method if `ignoreErrorCodesMatching`\nis configured for any of the SDK calls. This is because in such a case,\nthe response data might not exist, and will cause a CloudFormation deploy time error.",
+            "stability": "stable",
+            "summary": "Returns response data for the AWS SDK call."
+          },
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 504
+          },
+          "name": "getResponseFieldReference",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the path to the data."
+              },
+              "name": "dataPath",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/core.Reference"
+            }
+          }
+        }
+      ],
+      "name": "AwsCustomResource",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The uuid of the custom resource provider singleton lambda function."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 358
+          },
+          "name": "PROVIDER_FUNCTION_UUID",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The principal to grant permissions to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 370
+          },
+          "name": "grantPrincipal",
+          "overrides": "@aws-cdk/aws-iam.IGrantable",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IPrincipal"
+          }
+        }
+      ],
+      "symbolId": "lib/aws-custom-resource/aws-custom-resource:AwsCustomResource"
+    },
+    "@aws-cdk/custom-resources.AwsCustomResourcePolicy": {
+      "assembly": "@aws-cdk/custom-resources",
+      "docs": {
+        "stability": "stable",
+        "summary": "The IAM Policy that will be applied to the different calls."
+      },
+      "fqn": "@aws-cdk/custom-resources.AwsCustomResourcePolicy",
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+        "line": 181
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "Each SDK call with be translated to an IAM Policy Statement in the form of: `call.service:call.action` (e.g `s3:PutObject`).\n\nThis policy generator assumes the IAM policy name has the same name as the API\ncall. This is true in 99% of cases, but there are exceptions (for example,\nS3's `PutBucketLifecycleConfiguration` requires\n`s3:PutLifecycleConfiguration` permissions, Lambda's `Invoke` requires\n`lambda:InvokeFunction` permissions). Use `fromStatements` if you want to\ndo a call that requires different IAM action names.",
+            "stability": "stable",
+            "summary": "Generate IAM Policy Statements from the configured SDK calls."
+          },
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 211
+          },
+          "name": "fromSdkCalls",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "options for the policy generation."
+              },
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/custom-resources.SdkCallsPolicyOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/custom-resources.AwsCustomResourcePolicy"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Explicit IAM Policy Statements."
+          },
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 193
+          },
+          "name": "fromStatements",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the statements to propagate to the SDK calls."
+              },
+              "name": "statements",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+                  },
+                  "kind": "array"
+                }
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/custom-resources.AwsCustomResourcePolicy"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "AwsCustomResourcePolicy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Use this constant to configure access to any resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 186
+          },
+          "name": "ANY_RESOURCE",
+          "static": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "statements for explicit policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 219
+          },
+          "name": "statements",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "resources for auto-generated from SDK calls."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 219
+          },
+          "name": "resources",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/aws-custom-resource/aws-custom-resource:AwsCustomResourcePolicy"
+    },
+    "@aws-cdk/custom-resources.AwsCustomResourceProps": {
+      "assembly": "@aws-cdk/custom-resources",
+      "datatype": true,
+      "docs": {
+        "remarks": "Note that at least onCreate, onUpdate or onDelete must be specified.",
+        "stability": "stable",
+        "summary": "Properties for AwsCustomResource."
+      },
+      "fqn": "@aws-cdk/custom-resources.AwsCustomResourceProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+        "line": 227
+      },
+      "name": "AwsCustomResourceProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- AWS CloudFormation generates a unique physical ID and uses that\nID for the function's name. For more information, see Name Type.",
+            "remarks": "The function name will remain the same after the first AwsCustomResource is created in a stack.",
+            "stability": "stable",
+            "summary": "A name for the singleton Lambda function implementing this custom resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 326
+          },
+          "name": "functionName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- The value of `@aws-cdk/customresources:installLatestAwsSdkDefault`, otherwise `true`",
+            "remarks": "If not specified, this uses whatever JavaScript SDK version is the default in\nAWS Lambda at the time of execution.\n\nOtherwise, installs the latest version from 'npmjs.com'. The installation takes\naround 60 seconds and requires internet connectivity.\n\nThe default can be controlled using the context key\n`@aws-cdk/customresources:installLatestAwsSdkDefault` is.",
+            "stability": "stable",
+            "summary": "Whether to install the latest AWS SDK v2."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 317
+          },
+          "name": "installLatestAwsSdk",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "logs.RetentionDays.INFINITE",
+            "stability": "stable",
+            "summary": "The number of days log events of the singleton Lambda function implementing this custom resource are kept in CloudWatch Logs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 301
+          },
+          "name": "logRetention",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.RetentionDays"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- the call when the resource is updated",
+            "stability": "stable",
+            "summary": "The AWS SDK call to make when the resource is created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 240
+          },
+          "name": "onCreate",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/custom-resources.AwsSdkCall"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no call",
+            "stability": "stable",
+            "summary": "The AWS SDK call to make when the resource is deleted."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 254
+          },
+          "name": "onDelete",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/custom-resources.AwsSdkCall"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no call",
+            "stability": "stable",
+            "summary": "The AWS SDK call to make when the resource is updated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 247
+          },
+          "name": "onUpdate",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/custom-resources.AwsSdkCall"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no policy added",
+            "remarks": "The custom resource also implements `iam.IGrantable`, making it possible\nto use the `grantXxx()` methods.\n\nAs this custom resource uses a singleton Lambda function, it's important\nto note the that function's role will eventually accumulate the\npermissions/grants from all resources.\n\nNote that a policy must be specified if `role` is not provided, as\nby default a new role is created which requires policy changes to access\nresources.",
+            "see": "Policy.fromSdkCalls",
+            "stability": "stable",
+            "summary": "The policy that will be added to the execution role of the Lambda function implementing this custom resource provider."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 276
+          },
+          "name": "policy",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/custom-resources.AwsCustomResourcePolicy"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Custom::AWS",
+            "stability": "stable",
+            "summary": "Cloudformation Resource type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 233
+          },
+          "name": "resourceType",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- a new role is created",
+            "remarks": "This role will apply to all `AwsCustomResource`\ninstances in the stack. The role must be assumable by the\n`lambda.amazonaws.com` service principal.",
+            "stability": "stable",
+            "summary": "The execution role for the singleton Lambda function implementing this custom resource provider."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 286
+          },
+          "name": "role",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Duration.minutes(2)",
+            "stability": "stable",
+            "summary": "The timeout for the singleton Lambda function implementing this custom resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 293
+          },
+          "name": "timeout",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/core.Duration"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- the function is not provisioned inside a vpc.",
+            "stability": "stable",
+            "summary": "The vpc to provision the lambda function in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 333
+          },
+          "name": "vpc",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ec2.IVpc"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- the Vpc default strategy if not specified",
+            "remarks": "Only used if 'vpc' is supplied. Note: internet access for Lambdas\nrequires a NAT gateway, so picking Public subnets is not allowed.",
+            "stability": "stable",
+            "summary": "Which subnets from the VPC to place the lambda function in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 343
+          },
+          "name": "vpcSubnets",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ec2.SubnetSelection"
+          }
+        }
+      ],
+      "symbolId": "lib/aws-custom-resource/aws-custom-resource:AwsCustomResourceProps"
+    },
+    "@aws-cdk/custom-resources.AwsSdkCall": {
+      "assembly": "@aws-cdk/custom-resources",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "An AWS SDK call."
+      },
+      "fqn": "@aws-cdk/custom-resources.AwsSdkCall",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+        "line": 64
+      },
+      "name": "AwsSdkCall",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "see": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html",
+            "stability": "stable",
+            "summary": "The service action to call."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 77
+          },
+          "name": "action",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "see": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html",
+            "stability": "stable",
+            "summary": "The service to call."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 70
+          },
+          "name": "service",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- use latest available API version",
+            "see": "https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/locking-api-versions.html",
+            "stability": "stable",
+            "summary": "API version to use for the service."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 111
+          },
+          "name": "apiVersion",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- run without assuming role",
+            "remarks": "Example for Route53 / associateVPCWithHostedZone",
+            "stability": "stable",
+            "summary": "Used for running the SDK calls in underlying lambda with a different role Can be used primarily for cross-account requests to for example connect hostedzone with a shared vpc."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 157
+          },
+          "name": "assumedRoleArn",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- do not catch errors",
+            "remarks": "The `code` property of the\n`Error` object will be tested against this pattern. If there is a match an\nerror will not be thrown.",
+            "stability": "stable",
+            "summary": "The regex pattern to use to catch API errors."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 103
+          },
+          "name": "ignoreErrorCodesMatching",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- return all data",
+            "deprecated": "use outputPaths instead",
+            "remarks": "Use this to limit the data returned by the custom\nresource if working with API calls that could potentially result in custom\nresponse objects exceeding the hard limit of 4096 bytes.\n\nExample for ECS / updateService: 'service.deploymentConfiguration.maximumPercent'",
+            "stability": "deprecated",
+            "summary": "Restrict the data returned by the custom resource to a specific path in the API response."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 134
+          },
+          "name": "outputPath",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- return all data",
+            "remarks": "Use this to limit the data returned by the custom\nresource if working with API calls that could potentially result in custom\nresponse objects exceeding the hard limit of 4096 bytes.\n\nExample for ECS / updateService: ['service.deploymentConfiguration.maximumPercent']",
+            "stability": "stable",
+            "summary": "Restrict the data returned by the custom resource to specific paths in the API response."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 146
+          },
+          "name": "outputPaths",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no parameters",
+            "see": "https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html",
+            "stability": "stable",
+            "summary": "The parameters for the service action."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 85
+          },
+          "name": "parameters",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- no physical resource id",
+            "remarks": "Mandatory for onCreate call.\nIn onUpdate, you can omit this to passthrough it from request.",
+            "stability": "stable",
+            "summary": "The physical resource id of the custom resource for this call."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 94
+          },
+          "name": "physicalResourceId",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/custom-resources.PhysicalResourceId"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- the region where this custom resource is deployed",
+            "remarks": "**Note: Cross-region operations are generally considered an anti-pattern.**\n**Consider first deploying a stack in that region.**",
+            "stability": "stable",
+            "summary": "The region to send service requests to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 120
+          },
+          "name": "region",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/aws-custom-resource/aws-custom-resource:AwsSdkCall"
+    },
+    "@aws-cdk/custom-resources.PhysicalResourceId": {
+      "assembly": "@aws-cdk/custom-resources",
+      "docs": {
+        "stability": "stable",
+        "summary": "Physical ID of the custom resource."
+      },
+      "fqn": "@aws-cdk/custom-resources.PhysicalResourceId",
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+        "line": 38
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Extract the physical resource id from the path (dot notation) to the data in the API call response."
+          },
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 43
+          },
+          "name": "fromResponse",
+          "parameters": [
+            {
+              "name": "responsePath",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/custom-resources.PhysicalResourceId"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Explicit physical resource id."
+          },
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 50
+          },
+          "name": "of",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/custom-resources.PhysicalResourceId"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "PhysicalResourceId",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Literal string to be used as the physical id."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 58
+          },
+          "name": "id",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Path to a response data element to be used as the physical id."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 58
+          },
+          "name": "responsePath",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/aws-custom-resource/aws-custom-resource:PhysicalResourceId"
+    },
+    "@aws-cdk/custom-resources.PhysicalResourceIdReference": {
+      "assembly": "@aws-cdk/custom-resources",
+      "docs": {
+        "stability": "stable",
+        "summary": "Reference to the physical resource id that can be passed to the AWS operation as a parameter."
+      },
+      "fqn": "@aws-cdk/custom-resources.PhysicalResourceIdReference",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        }
+      },
+      "interfaces": [
+        "@aws-cdk/core.IResolvable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+        "line": 16
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Produce the Token's value at resolution time."
+          },
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 26
+          },
+          "name": "resolve",
+          "overrides": "@aws-cdk/core.IResolvable",
+          "parameters": [
+            {
+              "name": "_",
+              "type": {
+                "fqn": "@aws-cdk/core.IResolveContext"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "any"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "toJSON serialization to replace `PhysicalResourceIdReference` with a magic string."
+          },
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 22
+          },
+          "name": "toJSON",
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Returns a reversible string representation.",
+            "stability": "stable",
+            "summary": "Return a string representation of this resolvable object."
+          },
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 30
+          },
+          "name": "toString",
+          "overrides": "@aws-cdk/core.IResolvable",
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        }
+      ],
+      "name": "PhysicalResourceIdReference",
+      "properties": [
+        {
+          "docs": {
+            "remarks": "This may return an array with a single informational element indicating how\nto get this property populated, if it was skipped for performance reasons.",
+            "stability": "stable",
+            "summary": "The creation stack of this resolvable which will be appended to errors thrown during resolution."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 17
+          },
+          "name": "creationStack",
+          "overrides": "@aws-cdk/core.IResolvable",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/aws-custom-resource/aws-custom-resource:PhysicalResourceIdReference"
+    },
+    "@aws-cdk/custom-resources.Provider": {
+      "assembly": "@aws-cdk/custom-resources",
+      "base": "constructs.Construct",
+      "docs": {
+        "stability": "stable",
+        "summary": "Defines an AWS CloudFormation custom resource provider."
+      },
+      "fqn": "@aws-cdk/custom-resources.Provider",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/provider-framework/provider.ts",
+          "line": 153
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/custom-resources.ProviderProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-cloudformation.ICustomResourceProvider"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/provider-framework/provider.ts",
+        "line": 126
+      },
+      "methods": [
+        {
+          "docs": {
+            "deprecated": "use `provider.serviceToken` instead",
+            "stability": "deprecated",
+            "summary": "Called by `CustomResource` which uses this provider."
+          },
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 198
+          },
+          "name": "bind",
+          "overrides": "@aws-cdk/aws-cloudformation.ICustomResourceProvider",
+          "parameters": [
+            {
+              "name": "_scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-cloudformation.CustomResourceProviderConfig"
+            }
+          }
+        }
+      ],
+      "name": "Provider",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The user-defined AWS Lambda function which is invoked for all resource lifecycle operations (CREATE/UPDATE/DELETE)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 132
+          },
+          "name": "onEventHandler",
+          "type": {
+            "fqn": "@aws-cdk/aws-lambda.IFunction"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The service token to use in order to define custom resources that are backed by this provider."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 144
+          },
+          "name": "serviceToken",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The user-defined AWS Lambda function which is invoked asynchronously in order to determine if the operation is complete."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 138
+          },
+          "name": "isCompleteHandler",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-lambda.IFunction"
+          }
+        }
+      ],
+      "symbolId": "lib/provider-framework/provider:Provider"
+    },
+    "@aws-cdk/custom-resources.ProviderProps": {
+      "assembly": "@aws-cdk/custom-resources",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Initialization properties for the `Provider` construct."
+      },
+      "fqn": "@aws-cdk/custom-resources.ProviderProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/provider-framework/provider.ts",
+        "line": 19
+      },
+      "name": "ProviderProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "This function is responsible to begin the requested resource operation\n(CREATE/UPDATE/DELETE) and return any additional properties to add to the\nevent, which will later be passed to `isComplete`. The `PhysicalResourceId`\nproperty must be included in the response.",
+            "stability": "stable",
+            "summary": "The AWS Lambda function to invoke for all resource lifecycle operations (CREATE/UPDATE/DELETE)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 30
+          },
+          "name": "onEventHandler",
+          "type": {
+            "fqn": "@aws-cdk/aws-lambda.IFunction"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- provider is synchronous. This means that the `onEvent` handler\nis expected to finish all lifecycle operations within the initial invocation.",
+            "remarks": "This function will be called immediately after `onEvent` and then\nperiodically based on the configured query interval as long as it returns\n`false`. If the function still returns `false` and the alloted timeout has\npassed, the operation will fail.",
+            "stability": "stable",
+            "summary": "The AWS Lambda function to invoke in order to determine if the operation is complete."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 44
+          },
+          "name": "isCompleteHandler",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-lambda.IFunction"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "logs.RetentionDays.INFINITE",
+            "remarks": "When\nupdating this property, unsetting it doesn't remove the log retention policy.\nTo remove the retention policy, set the value to `INFINITE`.",
+            "stability": "stable",
+            "summary": "The number of days framework log events are kept in CloudWatch Logs."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 74
+          },
+          "name": "logRetention",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-logs.RetentionDays"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "-  CloudFormation default name from unique physical ID",
+            "remarks": "The provider lambda function name.",
+            "stability": "stable",
+            "summary": "Provider Lambda name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 120
+          },
+          "name": "providerFunctionName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Duration.seconds(5)",
+            "remarks": "The first `isComplete` will be called immediately after `handler` and then\nevery `queryInterval` seconds, and until `timeout` has been reached or until\n`isComplete` returns `true`.",
+            "stability": "stable",
+            "summary": "Time between calls to the `isComplete` handler which determines if the resource has been stabilized."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 56
+          },
+          "name": "queryInterval",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/core.Duration"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- A default role will be created.",
+            "remarks": "The role that will be assumed by the AWS Lambda.\nMust be assumable by the 'lambda.amazonaws.com' service principal.",
+            "stability": "stable",
+            "summary": "AWS Lambda execution role."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 111
+          },
+          "name": "role",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.IRole"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- If `vpc` is not supplied, no security groups are attached. Otherwise, a dedicated security\ngroup is created for each function.",
+            "remarks": "Only used if 'vpc' is supplied",
+            "stability": "stable",
+            "summary": "Security groups to attach to the provider functions."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 101
+          },
+          "name": "securityGroups",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-ec2.ISecurityGroup"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Duration.minutes(30)",
+            "remarks": "The maximum timeout is 2 hours (yes, it can exceed the AWS Lambda 15 minutes)",
+            "stability": "stable",
+            "summary": "Total timeout for the entire operation."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 65
+          },
+          "name": "totalTimeout",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/core.Duration"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- functions are not provisioned inside a vpc.",
+            "stability": "stable",
+            "summary": "The vpc to provision the lambda functions in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 81
+          },
+          "name": "vpc",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ec2.IVpc"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- the Vpc default strategy if not specified",
+            "remarks": "Only used if 'vpc' is supplied. Note: internet access for Lambdas\nrequires a NAT gateway, so picking Public subnets is not allowed.",
+            "stability": "stable",
+            "summary": "Which subnets from the VPC to place the lambda functions in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/provider-framework/provider.ts",
+            "line": 91
+          },
+          "name": "vpcSubnets",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ec2.SubnetSelection"
+          }
+        }
+      ],
+      "symbolId": "lib/provider-framework/provider:ProviderProps"
+    },
+    "@aws-cdk/custom-resources.SdkCallsPolicyOptions": {
+      "assembly": "@aws-cdk/custom-resources",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options for the auto-generation of policies based on the configured SDK calls."
+      },
+      "fqn": "@aws-cdk/custom-resources.SdkCallsPolicyOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+        "line": 163
+      },
+      "name": "SdkCallsPolicyOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "It is best to use specific resource ARN's when possible. However, you can also use `AwsCustomResourcePolicy.ANY_RESOURCE`\nto allow access to all resources. For example, when `onCreate` is used to create a resource which you don't\nknow the physical name of in advance.\n\nNote that will apply to ALL SDK calls.",
+            "stability": "stable",
+            "summary": "The resources that the calls will have access to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/aws-custom-resource/aws-custom-resource.ts",
+            "line": 174
+          },
+          "name": "resources",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/aws-custom-resource/aws-custom-resource:SdkCallsPolicyOptions"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "Y/Jev5PqwHQ9wqq2d4Z0HqAa3UZ7qhEyA80krYXlf1M="
+}

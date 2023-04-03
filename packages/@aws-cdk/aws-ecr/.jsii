@@ -1,0 +1,4404 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-events": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/aws-events": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-events",
+          "module": "aws_cdk.aws_events"
+        }
+      }
+    },
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      }
+    },
+    "@aws-cdk/aws-kms": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-kms",
+          "module": "aws_cdk.aws_kms"
+        }
+      }
+    },
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::ECR",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "1.77.0 (build 3e5fa88)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "ecr"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-ecr",
+  "readme": {
+    "markdown": "# Amazon ECR Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)\n\n---\n\n<!--END STABILITY BANNER-->\n\nThis package contains constructs for working with Amazon Elastic Container Registry.\n\n## Repositories\n\nDefine a repository by creating a new instance of `Repository`. A repository\nholds multiple versions of a single container image.\n\n```ts\nconst repository = new ecr.Repository(this, 'Repository');\n```\n\n## Image scanning\n\nAmazon ECR image scanning helps in identifying software vulnerabilities in your container images. You can manually scan container images stored in Amazon ECR, or you can configure your repositories to scan images when you push them to a repository. To create a new repository to scan on push, simply enable `imageScanOnPush` in the properties\n\n```ts\nconst repository = new ecr.Repository(this, 'Repo', {\n  imageScanOnPush: true,\n});\n```\n\nTo create an `onImageScanCompleted` event rule and trigger the event target\n\n```ts\ndeclare const repository: ecr.Repository;\ndeclare const target: SomeTarget;\n\nrepository.onImageScanCompleted('ImageScanComplete')\n  .addTarget(target);\n```\n\n### Authorization Token\n\nBesides the Amazon ECR APIs, ECR also allows the Docker CLI or a language-specific Docker library to push and pull\nimages from an ECR repository. However, the Docker CLI does not support native IAM authentication methods and\nadditional steps must be taken so that Amazon ECR can authenticate and authorize Docker push and pull requests.\nMore information can be found at at [Registry Authentication](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Registries.html#registry_auth).\n\nA Docker authorization token can be obtained using the `GetAuthorizationToken` ECR API. The following code snippets\ngrants an IAM user access to call this API.\n\n```ts\nconst user = new iam.User(this, 'User');\necr.AuthorizationToken.grantRead(user);\n```\n\nIf you access images in the [Public ECR Gallery](https://gallery.ecr.aws/) as well, it is recommended you authenticate to the registry to benefit from\nhigher rate and bandwidth limits.\n\n> See `Pricing` in https://aws.amazon.com/blogs/aws/amazon-ecr-public-a-new-public-container-registry/ and [Service quotas](https://docs.aws.amazon.com/AmazonECR/latest/public/public-service-quotas.html).\n\nThe following code snippet grants an IAM user access to retrieve an authorization token for the public gallery.\n\n```ts\nconst user = new iam.User(this, 'User');\necr.PublicGalleryAuthorizationToken.grantRead(user);\n```\n\nThis user can then proceed to login to the registry using one of the [authentication methods](https://docs.aws.amazon.com/AmazonECR/latest/public/public-registries.html#public-registry-auth).\n\n### Image tag immutability\n\nYou can set tag immutability on images in our repository using the `imageTagMutability` construct prop.\n\n```ts\nnew ecr.Repository(this, 'Repo', { imageTagMutability: ecr.TagMutability.IMMUTABLE });\n```\n\n### Encryption\n\nBy default, Amazon ECR uses server-side encryption with Amazon S3-managed encryption keys which encrypts your data at rest using an AES-256 encryption algorithm. For more control over the encryption for your Amazon ECR repositories, you can use server-side encryption with KMS keys stored in AWS Key Management Service (AWS KMS). Read more about this feature in the [ECR Developer Guide](https://docs.aws.amazon.com/AmazonECR/latest/userguide/encryption-at-rest.html).\n\nWhen you use AWS KMS to encrypt your data, you can either use the default AWS managed key, which is managed by Amazon ECR, by specifying `RepositoryEncryption.KMS` in the `encryption` property. Or specify your own customer managed KMS key, by specifying the `encryptionKey` property.\n\nWhen `encryptionKey` is set, the `encryption` property must be `KMS` or empty.\n\nIn the case `encryption` is set to `KMS` but no `encryptionKey` is set, an AWS managed KMS key is used.\n\n```ts\nnew ecr.Repository(this, 'Repo', {\n  encryption: ecr.RepositoryEncryption.KMS\n});\n```\n\nOtherwise, a customer-managed KMS key is used if `encryptionKey` was set and `encryption` was optionally set to `KMS`.\n\n```ts\nimport * as kms from '@aws-cdk/aws-kms';\n\nnew ecr.Repository(this, 'Repo', {\n  encryptionKey: new kms.Key(this, 'Key'),\n});\n```\n\n## Automatically clean up repositories\n\nYou can set life cycle rules to automatically clean up old images from your\nrepository. The first life cycle rule that matches an image will be applied\nagainst that image. For example, the following deletes images older than\n30 days, while keeping all images tagged with prod (note that the order\nis important here):\n\n```ts\ndeclare const repository: ecr.Repository;\nrepository.addLifecycleRule({ tagPrefixList: ['prod'], maxImageCount: 9999 });\nrepository.addLifecycleRule({ maxImageAge: Duration.days(30) });\n```\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-ecr",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.ECR",
+      "packageId": "Amazon.CDK.AWS.ECR"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "ecr",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.ecr"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-ecr"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-ecr",
+      "module": "aws_cdk.aws_ecr"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-ecr.AuthorizationToken": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "docs": {
+        "see": "https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry_auth.html",
+        "stability": "stable",
+        "summary": "Authorization token to access private ECR repositories in the current environment via Docker CLI."
+      },
+      "fqn": "@aws-cdk/aws-ecr.AuthorizationToken",
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/auth-token.ts",
+        "line": 8
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant access to retrieve an authorization token."
+          },
+          "locationInModule": {
+            "filename": "lib/auth-token.ts",
+            "line": 12
+          },
+          "name": "grantRead",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "static": true
+        }
+      ],
+      "name": "AuthorizationToken",
+      "symbolId": "lib/auth-token:AuthorizationToken"
+    },
+    "@aws-cdk/aws-ecr.CfnPublicRepository": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ECR::PublicRepository",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-publicrepository.html"
+        },
+        "remarks": "The `AWS::ECR::PublicRepository` resource specifies an Amazon Elastic Container Registry Public (Amazon ECR Public) repository, where users can push and pull Docker images, Open Container Initiative (OCI) images, and OCI compatible artifacts. For more information, see [Amazon ECR public repositories](https://docs.aws.amazon.com/AmazonECR/latest/public/public-repositories.html) in the *Amazon ECR Public User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ECR::PublicRepository`."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnPublicRepository",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ECR::PublicRepository`."
+        },
+        "locationInModule": {
+          "filename": "lib/ecr.generated.ts",
+          "line": 185
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-ecr.CfnPublicRepositoryProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 117
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 201
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 215
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPublicRepository",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 121
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For example, `arn:aws:ecr-public:: *123456789012* :repository/ *test-repository*` .",
+            "stability": "external",
+            "summary": "Returns the Amazon Resource Name (ARN) for the specified `AWS::ECR::PublicRepository` resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 146
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 206
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-publicrepository.html#cfn-ecr-publicrepository-tags"
+            },
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 176
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-publicrepository.html#cfn-ecr-publicrepository-repositorycatalogdata"
+            },
+            "remarks": "For more information, see [Amazon ECR Public repository catalog data](https://docs.aws.amazon.com/AmazonECR/latest/public/public-repository-catalog-data.html) in the *Amazon ECR Public User Guide* .",
+            "stability": "external",
+            "summary": "The details about the repository that are publicly visible in the Amazon ECR Public Gallery."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 153
+          },
+          "name": "repositoryCatalogData",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-publicrepository.html#cfn-ecr-publicrepository-repositorypolicytext"
+            },
+            "remarks": "For more information, see [Amazon ECR Public repository policies](https://docs.aws.amazon.com/AmazonECR/latest/public/public-repository-policies.html) in the *Amazon ECR Public User Guide* .",
+            "stability": "external",
+            "summary": "The JSON repository policy text to apply to the public repository."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 169
+          },
+          "name": "repositoryPolicyText",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-publicrepository.html#cfn-ecr-publicrepository-repositoryname"
+            },
+            "remarks": "The repository name may be specified on its own (such as `nginx-web-app` ) or it can be prepended with a namespace to group the repository into a category (such as `project-a/nginx-web-app` ). If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the repository name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
+            "stability": "external",
+            "summary": "The name to use for the public repository."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 162
+          },
+          "name": "repositoryName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnPublicRepository"
+    },
+    "@aws-cdk/aws-ecr.CfnPublicRepository.RepositoryCatalogDataProperty": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-publicrepository-repositorycatalogdata.html"
+        },
+        "stability": "external"
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnPublicRepository.RepositoryCatalogDataProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 229
+      },
+      "name": "RepositoryCatalogDataProperty",
+      "namespace": "CfnPublicRepository",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-publicrepository-repositorycatalogdata.html#cfn-ecr-publicrepository-repositorycatalogdata-abouttext"
+            },
+            "stability": "external",
+            "summary": "`CfnPublicRepository.RepositoryCatalogDataProperty.AboutText`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 235
+          },
+          "name": "aboutText",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-publicrepository-repositorycatalogdata.html#cfn-ecr-publicrepository-repositorycatalogdata-architectures"
+            },
+            "stability": "external",
+            "summary": "`CfnPublicRepository.RepositoryCatalogDataProperty.Architectures`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 241
+          },
+          "name": "architectures",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-publicrepository-repositorycatalogdata.html#cfn-ecr-publicrepository-repositorycatalogdata-operatingsystems"
+            },
+            "stability": "external",
+            "summary": "`CfnPublicRepository.RepositoryCatalogDataProperty.OperatingSystems`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 247
+          },
+          "name": "operatingSystems",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-publicrepository-repositorycatalogdata.html#cfn-ecr-publicrepository-repositorycatalogdata-repositorydescription"
+            },
+            "stability": "external",
+            "summary": "`CfnPublicRepository.RepositoryCatalogDataProperty.RepositoryDescription`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 253
+          },
+          "name": "repositoryDescription",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-publicrepository-repositorycatalogdata.html#cfn-ecr-publicrepository-repositorycatalogdata-usagetext"
+            },
+            "stability": "external",
+            "summary": "`CfnPublicRepository.RepositoryCatalogDataProperty.UsageText`."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 259
+          },
+          "name": "usageText",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnPublicRepository.RepositoryCatalogDataProperty"
+    },
+    "@aws-cdk/aws-ecr.CfnPublicRepositoryProps": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-publicrepository.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPublicRepository`."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnPublicRepositoryProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 20
+      },
+      "name": "CfnPublicRepositoryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-publicrepository.html#cfn-ecr-publicrepository-repositorycatalogdata"
+            },
+            "remarks": "For more information, see [Amazon ECR Public repository catalog data](https://docs.aws.amazon.com/AmazonECR/latest/public/public-repository-catalog-data.html) in the *Amazon ECR Public User Guide* .",
+            "stability": "external",
+            "summary": "The details about the repository that are publicly visible in the Amazon ECR Public Gallery."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 27
+          },
+          "name": "repositoryCatalogData",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-publicrepository.html#cfn-ecr-publicrepository-repositoryname"
+            },
+            "remarks": "The repository name may be specified on its own (such as `nginx-web-app` ) or it can be prepended with a namespace to group the repository into a category (such as `project-a/nginx-web-app` ). If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the repository name. For more information, see [Name Type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
+            "stability": "external",
+            "summary": "The name to use for the public repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 36
+          },
+          "name": "repositoryName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-publicrepository.html#cfn-ecr-publicrepository-repositorypolicytext"
+            },
+            "remarks": "For more information, see [Amazon ECR Public repository policies](https://docs.aws.amazon.com/AmazonECR/latest/public/public-repository-policies.html) in the *Amazon ECR Public User Guide* .",
+            "stability": "external",
+            "summary": "The JSON repository policy text to apply to the public repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 43
+          },
+          "name": "repositoryPolicyText",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-publicrepository.html#cfn-ecr-publicrepository-tags"
+            },
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 50
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnPublicRepositoryProps"
+    },
+    "@aws-cdk/aws-ecr.CfnPullThroughCacheRule": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ECR::PullThroughCacheRule",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-pullthroughcacherule.html"
+        },
+        "remarks": "Creates a pull through cache rule. A pull through cache rule provides a way to cache images from an external public registry in your Amazon ECR private registry.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ECR::PullThroughCacheRule`."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnPullThroughCacheRule",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ECR::PullThroughCacheRule`."
+        },
+        "locationInModule": {
+          "filename": "lib/ecr.generated.ts",
+          "line": 452
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-ecr.CfnPullThroughCacheRuleProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 406
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 465
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 477
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnPullThroughCacheRule",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 410
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 470
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-pullthroughcacherule.html#cfn-ecr-pullthroughcacherule-ecrrepositoryprefix"
+            },
+            "stability": "external",
+            "summary": "The Amazon ECR repository prefix associated with the pull through cache rule."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 436
+          },
+          "name": "ecrRepositoryPrefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-pullthroughcacherule.html#cfn-ecr-pullthroughcacherule-upstreamregistryurl"
+            },
+            "stability": "external",
+            "summary": "The upstream registry URL associated with the pull through cache rule."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 443
+          },
+          "name": "upstreamRegistryUrl",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnPullThroughCacheRule"
+    },
+    "@aws-cdk/aws-ecr.CfnPullThroughCacheRuleProps": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-pullthroughcacherule.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnPullThroughCacheRule`."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnPullThroughCacheRuleProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 331
+      },
+      "name": "CfnPullThroughCacheRuleProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-pullthroughcacherule.html#cfn-ecr-pullthroughcacherule-ecrrepositoryprefix"
+            },
+            "stability": "external",
+            "summary": "The Amazon ECR repository prefix associated with the pull through cache rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 338
+          },
+          "name": "ecrRepositoryPrefix",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-pullthroughcacherule.html#cfn-ecr-pullthroughcacherule-upstreamregistryurl"
+            },
+            "stability": "external",
+            "summary": "The upstream registry URL associated with the pull through cache rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 345
+          },
+          "name": "upstreamRegistryUrl",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnPullThroughCacheRuleProps"
+    },
+    "@aws-cdk/aws-ecr.CfnRegistryPolicy": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ECR::RegistryPolicy",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-registrypolicy.html"
+        },
+        "remarks": "The `AWS::ECR::RegistryPolicy` resource creates or updates the permissions policy for a private registry.\n\nA private registry policy is used to specify permissions for another AWS account and is used when configuring cross-account replication. For more information, see [Registry permissions](https://docs.aws.amazon.com/AmazonECR/latest/userguide/registry-permissions.html) in the *Amazon Elastic Container Registry User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ECR::RegistryPolicy`."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnRegistryPolicy",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ECR::RegistryPolicy`."
+        },
+        "locationInModule": {
+          "filename": "lib/ecr.generated.ts",
+          "line": 603
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-ecr.CfnRegistryPolicyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 558
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 617
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 628
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRegistryPolicy",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 562
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "RegistryId"
+            },
+            "stability": "external",
+            "summary": "The account ID of the private registry the policy is associated with."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 587
+          },
+          "name": "attrRegistryId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 622
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-registrypolicy.html#cfn-ecr-registrypolicy-policytext"
+            },
+            "stability": "external",
+            "summary": "The JSON policy text for your registry."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 594
+          },
+          "name": "policyText",
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnRegistryPolicy"
+    },
+    "@aws-cdk/aws-ecr.CfnRegistryPolicyProps": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-registrypolicy.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRegistryPolicy`."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnRegistryPolicyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 490
+      },
+      "name": "CfnRegistryPolicyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-registrypolicy.html#cfn-ecr-registrypolicy-policytext"
+            },
+            "stability": "external",
+            "summary": "The JSON policy text for your registry."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 497
+          },
+          "name": "policyText",
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnRegistryPolicyProps"
+    },
+    "@aws-cdk/aws-ecr.CfnReplicationConfiguration": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ECR::ReplicationConfiguration",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-replicationconfiguration.html"
+        },
+        "remarks": "The `AWS::ECR::ReplicationConfiguration` resource creates or updates the replication configuration for a private registry. The first time a replication configuration is applied to a private registry, a service-linked IAM role is created in your account for the replication process. For more information, see [Using Service-Linked Roles for Amazon ECR](https://docs.aws.amazon.com/AmazonECR/latest/userguide/using-service-linked-roles.html) in the *Amazon Elastic Container Registry User Guide* .\n\n> When configuring cross-account replication, the destination account must grant the source account permission to replicate. This permission is controlled using a private registry permissions policy. For more information, see `AWS::ECR::RegistryPolicy` .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ECR::ReplicationConfiguration`."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnReplicationConfiguration",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ECR::ReplicationConfiguration`."
+        },
+        "locationInModule": {
+          "filename": "lib/ecr.generated.ts",
+          "line": 754
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-ecr.CfnReplicationConfigurationProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 709
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 768
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 779
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnReplicationConfiguration",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 713
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "RegistryId"
+            },
+            "stability": "external",
+            "summary": "The account ID of the destination registry."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 738
+          },
+          "name": "attrRegistryId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 773
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-replicationconfiguration.html#cfn-ecr-replicationconfiguration-replicationconfiguration"
+            },
+            "stability": "external",
+            "summary": "The replication configuration for a registry."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 745
+          },
+          "name": "replicationConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ecr.CfnReplicationConfiguration.ReplicationConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnReplicationConfiguration"
+    },
+    "@aws-cdk/aws-ecr.CfnReplicationConfiguration.ReplicationConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-replicationconfiguration-replicationconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The replication configuration for a registry."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnReplicationConfiguration.ReplicationConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 793
+      },
+      "name": "ReplicationConfigurationProperty",
+      "namespace": "CfnReplicationConfiguration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-replicationconfiguration-replicationconfiguration.html#cfn-ecr-replicationconfiguration-replicationconfiguration-rules"
+            },
+            "stability": "external",
+            "summary": "An array of objects representing the replication destinations and repository filters for a replication configuration."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 799
+          },
+          "name": "rules",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ecr.CfnReplicationConfiguration.ReplicationRuleProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnReplicationConfiguration.ReplicationConfigurationProperty"
+    },
+    "@aws-cdk/aws-ecr.CfnReplicationConfiguration.ReplicationDestinationProperty": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-replicationconfiguration-replicationdestination.html"
+        },
+        "stability": "external",
+        "summary": "An array of objects representing the destination for a replication rule."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnReplicationConfiguration.ReplicationDestinationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 861
+      },
+      "name": "ReplicationDestinationProperty",
+      "namespace": "CfnReplicationConfiguration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-replicationconfiguration-replicationdestination.html#cfn-ecr-replicationconfiguration-replicationdestination-region"
+            },
+            "stability": "external",
+            "summary": "The Region to replicate to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 867
+          },
+          "name": "region",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-replicationconfiguration-replicationdestination.html#cfn-ecr-replicationconfiguration-replicationdestination-registryid"
+            },
+            "remarks": "When configuring cross-Region replication within your own registry, specify your own account ID.",
+            "stability": "external",
+            "summary": "The AWS account ID of the Amazon ECR private registry to replicate to."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 873
+          },
+          "name": "registryId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnReplicationConfiguration.ReplicationDestinationProperty"
+    },
+    "@aws-cdk/aws-ecr.CfnReplicationConfiguration.ReplicationRuleProperty": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-replicationconfiguration-replicationrule.html"
+        },
+        "stability": "external",
+        "summary": "An array of objects representing the replication destinations and repository filters for a replication configuration."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnReplicationConfiguration.ReplicationRuleProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 939
+      },
+      "name": "ReplicationRuleProperty",
+      "namespace": "CfnReplicationConfiguration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-replicationconfiguration-replicationrule.html#cfn-ecr-replicationconfiguration-replicationrule-destinations"
+            },
+            "stability": "external",
+            "summary": "An array of objects representing the destination for a replication rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 945
+          },
+          "name": "destinations",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ecr.CfnReplicationConfiguration.ReplicationDestinationProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-replicationconfiguration-replicationrule.html#cfn-ecr-replicationconfiguration-replicationrule-repositoryfilters"
+            },
+            "remarks": "Specifying a repository filter for a replication rule provides a method for controlling which repositories in a private registry are replicated.",
+            "stability": "external",
+            "summary": "An array of objects representing the filters for a replication rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 951
+          },
+          "name": "repositoryFilters",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "collection": {
+                    "elementtype": {
+                      "union": {
+                        "types": [
+                          {
+                            "fqn": "@aws-cdk/core.IResolvable"
+                          },
+                          {
+                            "fqn": "@aws-cdk/aws-ecr.CfnReplicationConfiguration.RepositoryFilterProperty"
+                          }
+                        ]
+                      }
+                    },
+                    "kind": "array"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnReplicationConfiguration.ReplicationRuleProperty"
+    },
+    "@aws-cdk/aws-ecr.CfnReplicationConfiguration.RepositoryFilterProperty": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-replicationconfiguration-repositoryfilter.html"
+        },
+        "remarks": "Specifying a repository filter to a replication rule provides a method for controlling which repositories in a private registry are replicated. If no repository filter is specified, all images in the repository are replicated.",
+        "stability": "external",
+        "summary": "The filter settings used with image replication."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnReplicationConfiguration.RepositoryFilterProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 1016
+      },
+      "name": "RepositoryFilterProperty",
+      "namespace": "CfnReplicationConfiguration",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-replicationconfiguration-repositoryfilter.html#cfn-ecr-replicationconfiguration-repositoryfilter-filter"
+            },
+            "remarks": "When the `PREFIX_MATCH` filter type is specified, this value is required and should be the repository name prefix to configure replication for.",
+            "stability": "external",
+            "summary": "The repository filter details."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1022
+          },
+          "name": "filter",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-replicationconfiguration-repositoryfilter.html#cfn-ecr-replicationconfiguration-repositoryfilter-filtertype"
+            },
+            "remarks": "The only supported value is `PREFIX_MATCH` , which is a repository name prefix specified with the `filter` parameter.",
+            "stability": "external",
+            "summary": "The repository filter type."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1028
+          },
+          "name": "filterType",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnReplicationConfiguration.RepositoryFilterProperty"
+    },
+    "@aws-cdk/aws-ecr.CfnReplicationConfigurationProps": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-replicationconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnReplicationConfiguration`."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnReplicationConfigurationProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 641
+      },
+      "name": "CfnReplicationConfigurationProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-replicationconfiguration.html#cfn-ecr-replicationconfiguration-replicationconfiguration"
+            },
+            "stability": "external",
+            "summary": "The replication configuration for a registry."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 648
+          },
+          "name": "replicationConfiguration",
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ecr.CfnReplicationConfiguration.ReplicationConfigurationProperty"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnReplicationConfigurationProps"
+    },
+    "@aws-cdk/aws-ecr.CfnRepository": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::ECR::Repository",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html"
+        },
+        "remarks": "The `AWS::ECR::Repository` resource specifies an Amazon Elastic Container Registry (Amazon ECR) repository, where users can push and pull Docker images, Open Container Initiative (OCI) images, and OCI compatible artifacts. For more information, see [Amazon ECR private repositories](https://docs.aws.amazon.com/AmazonECR/latest/userguide/Repositories.html) in the *Amazon ECR User Guide* .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::ECR::Repository`."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnRepository",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::ECR::Repository`."
+        },
+        "locationInModule": {
+          "filename": "lib/ecr.generated.ts",
+          "line": 1315
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-ecr.CfnRepositoryProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 1220
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1335
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1352
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnRepository",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1224
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For example, `arn:aws:ecr: *eu-west-1* : *123456789012* :repository/ *test-repository*` .",
+            "stability": "external",
+            "summary": "Returns the Amazon Resource Name (ARN) for the specified `AWS::ECR::Repository` resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1249
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "RepositoryUri"
+            },
+            "remarks": "For example, `*123456789012* .dkr.ecr. *us-west-2* .amazonaws.com/repository` .",
+            "stability": "external",
+            "summary": "Returns the URI for the specified `AWS::ECR::Repository` resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1255
+          },
+          "name": "attrRepositoryUri",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1340
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-tags"
+            },
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1306
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-repositorypolicytext"
+            },
+            "remarks": "For more information, see [Amazon ECR repository policies](https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policy-examples.html) in the *Amazon Elastic Container Registry User Guide* .",
+            "stability": "external",
+            "summary": "The JSON repository policy text to apply to the repository."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1299
+          },
+          "name": "repositoryPolicyText",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-encryptionconfiguration"
+            },
+            "remarks": "This determines how the contents of your repository are encrypted at rest.",
+            "stability": "external",
+            "summary": "The encryption configuration for the repository."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1262
+          },
+          "name": "encryptionConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ecr.CfnRepository.EncryptionConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-imagescanningconfiguration"
+            },
+            "remarks": "This determines whether images are scanned for known vulnerabilities after being pushed to the repository.",
+            "stability": "external",
+            "summary": "The image scanning configuration for the repository."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1269
+          },
+          "name": "imageScanningConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ecr.CfnRepository.ImageScanningConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-imagetagmutability"
+            },
+            "remarks": "If this parameter is omitted, the default setting of `MUTABLE` will be used which will allow image tags to be overwritten. If `IMMUTABLE` is specified, all image tags within the repository will be immutable which will prevent them from being overwritten.",
+            "stability": "external",
+            "summary": "The tag mutability setting for the repository."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1276
+          },
+          "name": "imageTagMutability",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-lifecyclepolicy"
+            },
+            "remarks": "For information about lifecycle policy syntax, see [Lifecycle policy template](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html) .",
+            "stability": "external",
+            "summary": "Creates or updates a lifecycle policy."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1283
+          },
+          "name": "lifecyclePolicy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ecr.CfnRepository.LifecyclePolicyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-repositoryname"
+            },
+            "remarks": "The repository name may be specified on its own (such as `nginx-web-app` ) or it can be prepended with a namespace to group the repository into a category (such as `project-a/nginx-web-app` ). If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the repository name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
+            "stability": "external",
+            "summary": "The name to use for the repository."
+          },
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1292
+          },
+          "name": "repositoryName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnRepository"
+    },
+    "@aws-cdk/aws-ecr.CfnRepository.EncryptionConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-repository-encryptionconfiguration.html"
+        },
+        "remarks": "By default, when no encryption configuration is set or the `AES256` encryption type is used, Amazon ECR uses server-side encryption with Amazon S3-managed encryption keys which encrypts your data at rest using an AES-256 encryption algorithm. This does not require any action on your part.\n\nFor more control over the encryption of the contents of your repository, you can use server-side encryption with AWS Key Management Service key stored in AWS Key Management Service ( AWS KMS ) to encrypt your images. For more information, see [Amazon ECR encryption at rest](https://docs.aws.amazon.com/AmazonECR/latest/userguide/encryption-at-rest.html) in the *Amazon Elastic Container Registry User Guide* .",
+        "stability": "external",
+        "summary": "The encryption configuration for the repository. This determines how the contents of your repository are encrypted at rest."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnRepository.EncryptionConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 1370
+      },
+      "name": "EncryptionConfigurationProperty",
+      "namespace": "CfnRepository",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-repository-encryptionconfiguration.html#cfn-ecr-repository-encryptionconfiguration-encryptiontype"
+            },
+            "remarks": "If you use the `KMS` encryption type, the contents of the repository will be encrypted using server-side encryption with AWS Key Management Service key stored in AWS KMS . When you use AWS KMS to encrypt your data, you can either use the default AWS managed AWS KMS key for Amazon ECR, or specify your own AWS KMS key, which you already created. For more information, see [Protecting data using server-side encryption with an AWS KMS key stored in AWS Key Management Service (SSE-KMS)](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingKMSEncryption.html) in the *Amazon Simple Storage Service Console Developer Guide* .\n\nIf you use the `AES256` encryption type, Amazon ECR uses server-side encryption with Amazon S3-managed encryption keys which encrypts the images in the repository using an AES-256 encryption algorithm. For more information, see [Protecting data using server-side encryption with Amazon S3-managed encryption keys (SSE-S3)](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html) in the *Amazon Simple Storage Service Console Developer Guide* .",
+            "stability": "external",
+            "summary": "The encryption type to use."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1380
+          },
+          "name": "encryptionType",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-repository-encryptionconfiguration.html#cfn-ecr-repository-encryptionconfiguration-kmskey"
+            },
+            "remarks": "The alias, key ID, or full ARN of the AWS KMS key can be specified. The key must exist in the same Region as the repository. If no key is specified, the default AWS managed AWS KMS key for Amazon ECR will be used.",
+            "stability": "external",
+            "summary": "If you use the `KMS` encryption type, specify the AWS KMS key to use for encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1386
+          },
+          "name": "kmsKey",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnRepository.EncryptionConfigurationProperty"
+    },
+    "@aws-cdk/aws-ecr.CfnRepository.ImageScanningConfigurationProperty": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-repository-imagescanningconfiguration.html"
+        },
+        "stability": "external",
+        "summary": "The image scanning configuration for a repository."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnRepository.ImageScanningConfigurationProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 1451
+      },
+      "name": "ImageScanningConfigurationProperty",
+      "namespace": "CfnRepository",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-repository-imagescanningconfiguration.html#cfn-ecr-repository-imagescanningconfiguration-scanonpush"
+            },
+            "remarks": "If set to `true` , images will be scanned after being pushed. If this parameter is not specified, it will default to `false` and images will not be scanned unless a scan is manually started.",
+            "stability": "external",
+            "summary": "The setting that determines whether images are scanned after being pushed to a repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1457
+          },
+          "name": "scanOnPush",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnRepository.ImageScanningConfigurationProperty"
+    },
+    "@aws-cdk/aws-ecr.CfnRepository.LifecyclePolicyProperty": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-repository-lifecyclepolicy.html"
+        },
+        "remarks": "For information about lifecycle policy syntax, see [Lifecycle policy template](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html) in the *Amazon ECR User Guide* .",
+        "stability": "external",
+        "summary": "The `LifecyclePolicy` property type specifies a lifecycle policy."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnRepository.LifecyclePolicyProperty",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 1518
+      },
+      "name": "LifecyclePolicyProperty",
+      "namespace": "CfnRepository",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-repository-lifecyclepolicy.html#cfn-ecr-repository-lifecyclepolicy-lifecyclepolicytext"
+            },
+            "stability": "external",
+            "summary": "The JSON repository policy text to apply to the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1524
+          },
+          "name": "lifecyclePolicyText",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecr-repository-lifecyclepolicy.html#cfn-ecr-repository-lifecyclepolicy-registryid"
+            },
+            "remarks": "If you do not specify a registry, the default registry is assumed.",
+            "stability": "external",
+            "summary": "The AWS account ID associated with the registry that contains the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1530
+          },
+          "name": "registryId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnRepository.LifecyclePolicyProperty"
+    },
+    "@aws-cdk/aws-ecr.CfnRepositoryProps": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnRepository`."
+      },
+      "fqn": "@aws-cdk/aws-ecr.CfnRepositoryProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/ecr.generated.ts",
+        "line": 1093
+      },
+      "name": "CfnRepositoryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-encryptionconfiguration"
+            },
+            "remarks": "This determines how the contents of your repository are encrypted at rest.",
+            "stability": "external",
+            "summary": "The encryption configuration for the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1100
+          },
+          "name": "encryptionConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ecr.CfnRepository.EncryptionConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-imagescanningconfiguration"
+            },
+            "remarks": "This determines whether images are scanned for known vulnerabilities after being pushed to the repository.",
+            "stability": "external",
+            "summary": "The image scanning configuration for the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1107
+          },
+          "name": "imageScanningConfiguration",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ecr.CfnRepository.ImageScanningConfigurationProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-imagetagmutability"
+            },
+            "remarks": "If this parameter is omitted, the default setting of `MUTABLE` will be used which will allow image tags to be overwritten. If `IMMUTABLE` is specified, all image tags within the repository will be immutable which will prevent them from being overwritten.",
+            "stability": "external",
+            "summary": "The tag mutability setting for the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1114
+          },
+          "name": "imageTagMutability",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-lifecyclepolicy"
+            },
+            "remarks": "For information about lifecycle policy syntax, see [Lifecycle policy template](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html) .",
+            "stability": "external",
+            "summary": "Creates or updates a lifecycle policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1121
+          },
+          "name": "lifecyclePolicy",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                },
+                {
+                  "fqn": "@aws-cdk/aws-ecr.CfnRepository.LifecyclePolicyProperty"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-repositoryname"
+            },
+            "remarks": "The repository name may be specified on its own (such as `nginx-web-app` ) or it can be prepended with a namespace to group the repository into a category (such as `project-a/nginx-web-app` ). If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the repository name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you cannot perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
+            "stability": "external",
+            "summary": "The name to use for the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1130
+          },
+          "name": "repositoryName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-repositorypolicytext"
+            },
+            "remarks": "For more information, see [Amazon ECR repository policies](https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-policy-examples.html) in the *Amazon Elastic Container Registry User Guide* .",
+            "stability": "external",
+            "summary": "The JSON repository policy text to apply to the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1137
+          },
+          "name": "repositoryPolicyText",
+          "optional": true,
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecr-repository.html#cfn-ecr-repository-tags"
+            },
+            "stability": "external",
+            "summary": "An array of key-value pairs to apply to this resource."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/ecr.generated.ts",
+            "line": 1144
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/ecr.generated:CfnRepositoryProps"
+    },
+    "@aws-cdk/aws-ecr.IRepository": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "docs": {
+        "stability": "stable",
+        "summary": "Represents an ECR repository."
+      },
+      "fqn": "@aws-cdk/aws-ecr.IRepository",
+      "interfaces": [
+        "@aws-cdk/core.IResource"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 13
+      },
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Add a policy statement to the repository's resource policy."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 66
+          },
+          "name": "addToResourcePolicy",
+          "parameters": [
+            {
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.AddToResourcePolicyResult"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given principal identity permissions to perform the actions on this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 71
+          },
+          "name": "grant",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            },
+            {
+              "name": "actions",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          },
+          "variadic": true
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given identity permissions to pull images in this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 76
+          },
+          "name": "grantPull",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given identity permissions to pull and push images to this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 81
+          },
+          "name": "grantPullPush",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Requires that there exists at least one CloudTrail Trail in your account\nthat captures the event. This method will not create the Trail.",
+            "stability": "stable",
+            "summary": "Define a CloudWatch event that triggers when something happens to this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 92
+          },
+          "name": "onCloudTrailEvent",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The id of the rule."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "Options for adding the rule."
+              },
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Requires that there exists at least one CloudTrail Trail in your account\nthat captures the event. This method will not create the Trail.",
+            "stability": "stable",
+            "summary": "Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 104
+          },
+          "name": "onCloudTrailImagePushed",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The id of the rule."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "Options for adding the rule."
+              },
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-ecr.OnCloudTrailImagePushedOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Use\n`rule.addEventPattern(pattern)` to specify a filter.",
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers for repository events."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 119
+          },
+          "name": "onEvent",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines an AWS CloudWatch event rule that can trigger a target when the image scan is completed."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 113
+          },
+          "name": "onImageScanCompleted",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The id of the rule."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "Options for adding the rule."
+              },
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-ecr.OnImageScanCompletedOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]",
+            "stability": "stable",
+            "summary": "Returns the URI of the repository for a certain digest. Can be used in `docker push/pull`."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 51
+          },
+          "name": "repositoryUriForDigest",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "Image digest to use (tools usually default to the image with the \"latest\" tag if omitted)."
+              },
+              "name": "digest",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]",
+            "stability": "stable",
+            "summary": "Returns the URI of the repository for a certain tag. Can be used in `docker push/pull`."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 42
+          },
+          "name": "repositoryUriForTag",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "Image tag to use (tools usually default to \"latest\" if omitted)."
+              },
+              "name": "tag",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Can be used in `docker push/pull`.\n\n    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]\n    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]",
+            "stability": "stable",
+            "summary": "Returns the URI of the repository for a certain tag or digest, inferring based on the syntax of the tag."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 61
+          },
+          "name": "repositoryUriForTagOrDigest",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "Image tag or digest to use (tools usually default to the image with the \"latest\" tag if omitted)."
+              },
+              "name": "tagOrDigest",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        }
+      ],
+      "name": "IRepository",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The ARN of the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 24
+          },
+          "name": "repositoryArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The name of the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 18
+          },
+          "name": "repositoryName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "remarks": "ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY",
+            "stability": "stable",
+            "summary": "The URI of this repository (represents the latest image):."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 33
+          },
+          "name": "repositoryUri",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/repository:IRepository"
+    },
+    "@aws-cdk/aws-ecr.LifecycleRule": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "An ECR life cycle rule."
+      },
+      "fqn": "@aws-cdk/aws-ecr.LifecycleRule",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/lifecycle.ts",
+        "line": 6
+      },
+      "name": "LifecycleRule",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "No description",
+            "stability": "stable",
+            "summary": "Describes the purpose of the rule."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lifecycle.ts",
+            "line": 28
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Specify exactly one of maxImageCount and maxImageAge.",
+            "stability": "stable",
+            "summary": "The maximum age of images to retain. The value must represent a number of days."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lifecycle.ts",
+            "line": 59
+          },
+          "name": "maxImageAge",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/core.Duration"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Specify exactly one of maxImageCount and maxImageAge.",
+            "stability": "stable",
+            "summary": "The maximum number of images to retain."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lifecycle.ts",
+            "line": 52
+          },
+          "name": "maxImageCount",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Automatically assigned",
+            "remarks": "All rules must have a unique priority, where lower numbers have\nhigher precedence. The first rule that matches is applied to an image.\n\nThere can only be one rule with a tagStatus of Any, and it must have\nthe highest rulePriority.\n\nAll rules without a specified priority will have incrementing priorities\nautomatically assigned to them, higher than any rules that DO have priorities.",
+            "stability": "stable",
+            "summary": "Controls the order in which rules are evaluated (low to high)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lifecycle.ts",
+            "line": 21
+          },
+          "name": "rulePriority",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Only if tagStatus == TagStatus.Tagged",
+            "stability": "stable",
+            "summary": "Select images that have ALL the given prefixes in their tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lifecycle.ts",
+            "line": 45
+          },
+          "name": "tagPrefixList",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "TagStatus.Tagged if tagPrefixList is given, TagStatus.Any otherwise",
+            "remarks": "Only one rule is allowed to select untagged images, and it must\nhave the highest rulePriority.",
+            "stability": "stable",
+            "summary": "Select images based on tags."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/lifecycle.ts",
+            "line": 38
+          },
+          "name": "tagStatus",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ecr.TagStatus"
+          }
+        }
+      ],
+      "symbolId": "lib/lifecycle:LifecycleRule"
+    },
+    "@aws-cdk/aws-ecr.OnCloudTrailImagePushedOptions": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options for the onCloudTrailImagePushed method."
+      },
+      "fqn": "@aws-cdk/aws-ecr.OnCloudTrailImagePushedOptions",
+      "interfaces": [
+        "@aws-cdk/aws-events.OnEventOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 396
+      },
+      "name": "OnCloudTrailImagePushedOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Watch changes to all tags",
+            "stability": "stable",
+            "summary": "Only watch changes to this image tag."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 402
+          },
+          "name": "imageTag",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/repository:OnCloudTrailImagePushedOptions"
+    },
+    "@aws-cdk/aws-ecr.OnImageScanCompletedOptions": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options for the OnImageScanCompleted method."
+      },
+      "fqn": "@aws-cdk/aws-ecr.OnImageScanCompletedOptions",
+      "interfaces": [
+        "@aws-cdk/aws-events.OnEventOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 408
+      },
+      "name": "OnImageScanCompletedOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Watch the changes to the repository with all image tags",
+            "remarks": "Leave it undefined to watch the full repository.",
+            "stability": "stable",
+            "summary": "Only watch changes to the image tags spedified."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 415
+          },
+          "name": "imageTags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/repository:OnImageScanCompletedOptions"
+    },
+    "@aws-cdk/aws-ecr.PublicGalleryAuthorizationToken": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "docs": {
+        "see": "https://docs.aws.amazon.com/AmazonECR/latest/public/public-registries.html#public-registry-auth",
+        "stability": "stable",
+        "summary": "Authorization token to access the global public ECR Gallery via Docker CLI."
+      },
+      "fqn": "@aws-cdk/aws-ecr.PublicGalleryAuthorizationToken",
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/auth-token.ts",
+        "line": 29
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant access to retrieve an authorization token."
+          },
+          "locationInModule": {
+            "filename": "lib/auth-token.ts",
+            "line": 34
+          },
+          "name": "grantRead",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "static": true
+        }
+      ],
+      "name": "PublicGalleryAuthorizationToken",
+      "symbolId": "lib/auth-token:PublicGalleryAuthorizationToken"
+    },
+    "@aws-cdk/aws-ecr.Repository": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "base": "@aws-cdk/aws-ecr.RepositoryBase",
+      "docs": {
+        "stability": "stable",
+        "summary": "Define an ECR repository."
+      },
+      "fqn": "@aws-cdk/aws-ecr.Repository",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/repository.ts",
+          "line": 593
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-ecr.RepositoryProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 492
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Returns an ECR ARN for a repository that resides in the same account/region as the current stack."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 554
+          },
+          "name": "arnForLocalRepository",
+          "parameters": [
+            {
+              "name": "repositoryName",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.IConstruct"
+              }
+            },
+            {
+              "name": "account",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 510
+          },
+          "name": "fromRepositoryArn",
+          "parameters": [
+            {
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "repositoryArn",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-ecr.IRepository"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Import a repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 496
+          },
+          "name": "fromRepositoryAttributes",
+          "parameters": [
+            {
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "attrs",
+              "type": {
+                "fqn": "@aws-cdk/aws-ecr.RepositoryAttributes"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-ecr.IRepository"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 536
+          },
+          "name": "fromRepositoryName",
+          "parameters": [
+            {
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "repositoryName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-ecr.IRepository"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "remarks": "Life cycle rules automatically expire images from the repository that match\ncertain conditions.",
+            "stability": "stable",
+            "summary": "Add a life cycle rule to the repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 641
+          },
+          "name": "addLifecycleRule",
+          "parameters": [
+            {
+              "name": "rule",
+              "type": {
+                "fqn": "@aws-cdk/aws-ecr.LifecycleRule"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Add a policy statement to the repository's resource policy."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 627
+          },
+          "name": "addToResourcePolicy",
+          "overrides": "@aws-cdk/aws-ecr.RepositoryBase",
+          "parameters": [
+            {
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.AddToResourcePolicyResult"
+            }
+          }
+        }
+      ],
+      "name": "Repository",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 588
+          },
+          "name": "repositoryArn",
+          "overrides": "@aws-cdk/aws-ecr.RepositoryBase",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The name of the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 587
+          },
+          "name": "repositoryName",
+          "overrides": "@aws-cdk/aws-ecr.RepositoryBase",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/repository:Repository"
+    },
+    "@aws-cdk/aws-ecr.RepositoryAttributes": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/aws-ecr.RepositoryAttributes",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 484
+      },
+      "name": "RepositoryAttributes",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 486
+          },
+          "name": "repositoryArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 485
+          },
+          "name": "repositoryName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/repository:RepositoryAttributes"
+    },
+    "@aws-cdk/aws-ecr.RepositoryBase": {
+      "abstract": true,
+      "assembly": "@aws-cdk/aws-ecr",
+      "base": "@aws-cdk/core.Resource",
+      "docs": {
+        "remarks": "Reused between imported repositories and owned repositories.",
+        "stability": "stable",
+        "summary": "Base class for ECR repository."
+      },
+      "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/resource.ts",
+          "line": 156
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/core.ResourceProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-ecr.IRepository"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 125
+      },
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Add a policy statement to the repository's resource policy."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 139
+          },
+          "name": "addToResourcePolicy",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "parameters": [
+            {
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.AddToResourcePolicyResult"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given principal identity permissions to perform the actions on this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 286
+          },
+          "name": "grant",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            },
+            {
+              "name": "actions",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          },
+          "variadic": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given identity permissions to use the images in this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 330
+          },
+          "name": "grantPull",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the given identity permissions to pull and push images to this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 346
+          },
+          "name": "grantPullPush",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Requires that there exists at least one CloudTrail Trail in your account\nthat captures the event. This method will not create the Trail.",
+            "stability": "stable",
+            "summary": "Define a CloudWatch event that triggers when something happens to this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 210
+          },
+          "name": "onCloudTrailEvent",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The id of the rule."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "Options for adding the rule."
+              },
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Requires that there exists at least one CloudTrail Trail in your account\nthat captures the event. This method will not create the Trail.",
+            "stability": "stable",
+            "summary": "Defines an AWS CloudWatch event rule that can trigger a target when an image is pushed to this repository."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 235
+          },
+          "name": "onCloudTrailImagePushed",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The id of the rule."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "Options for adding the rule."
+              },
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-ecr.OnCloudTrailImagePushedOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Use\n`rule.addEventPattern(pattern)` to specify a filter.",
+            "stability": "stable",
+            "summary": "Defines a CloudWatch event rule which triggers for repository events."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 273
+          },
+          "name": "onEvent",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "parameters": [
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-events.OnEventOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines an AWS CloudWatch event rule that can trigger a target when an image scan is completed."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 254
+          },
+          "name": "onImageScanCompleted",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The id of the rule."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "Options for adding the rule."
+              },
+              "name": "options",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/aws-ecr.OnImageScanCompletedOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-events.Rule"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]",
+            "stability": "stable",
+            "summary": "Returns the URL of the repository. Can be used in `docker push/pull`."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 170
+          },
+          "name": "repositoryUriForDigest",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "Optional image digest."
+              },
+              "name": "digest",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]",
+            "stability": "stable",
+            "summary": "Returns the URL of the repository. Can be used in `docker push/pull`."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 158
+          },
+          "name": "repositoryUriForTag",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "Optional image tag."
+              },
+              "name": "tag",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[:TAG]\n    ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY[@DIGEST]",
+            "stability": "stable",
+            "summary": "Returns the URL of the repository. Can be used in `docker push/pull`."
+          },
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 183
+          },
+          "name": "repositoryUriForTagOrDigest",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "Optional image tag or digest (digests must start with `sha256:`)."
+              },
+              "name": "tagOrDigest",
+              "optional": true,
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        }
+      ],
+      "name": "RepositoryBase",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 134
+          },
+          "name": "repositoryArn",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The name of the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 129
+          },
+          "name": "repositoryName",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPOSITORY",
+            "stability": "stable",
+            "summary": "The URI of this repository (represents the latest image):."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 147
+          },
+          "name": "repositoryUri",
+          "overrides": "@aws-cdk/aws-ecr.IRepository",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/repository:RepositoryBase"
+    },
+    "@aws-cdk/aws-ecr.RepositoryEncryption": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "docs": {
+        "see": "https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html#SysMetadata",
+        "stability": "stable",
+        "summary": "Indicates whether server-side encryption is enabled for the object, and whether that encryption is from the AWS Key Management Service (AWS KMS) or from Amazon S3 managed encryption (SSE-S3)."
+      },
+      "fqn": "@aws-cdk/aws-ecr.RepositoryEncryption",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/repository.ts",
+          "line": 825
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "the string value of the encryption."
+            },
+            "name": "value",
+            "type": {
+              "primitive": "string"
+            }
+          }
+        ],
+        "protected": true
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 812
+      },
+      "name": "RepositoryEncryption",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "'AES256'."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 816
+          },
+          "name": "AES_256",
+          "static": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ecr.RepositoryEncryption"
+          }
+        },
+        {
+          "const": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "'KMS'."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 820
+          },
+          "name": "KMS",
+          "static": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ecr.RepositoryEncryption"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "the string value of the encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 825
+          },
+          "name": "value",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/repository:RepositoryEncryption"
+    },
+    "@aws-cdk/aws-ecr.RepositoryProps": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/aws-ecr.RepositoryProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 418
+      },
+      "name": "RepositoryProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- `KMS` if `encryptionKey` is specified, or `AES256` otherwise.",
+            "remarks": "If you choose KMS, you can specify a KMS key via `encryptionKey`. If\nencryptionKey is not specified, an AWS managed KMS key is used.",
+            "stability": "stable",
+            "summary": "The kind of server-side encryption to apply to this repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 434
+          },
+          "name": "encryption",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ecr.RepositoryEncryption"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- If encryption is set to `KMS` and this property is undefined,\nan AWS managed KMS key is used.",
+            "remarks": "The 'encryption' property must be either not specified or set to \"KMS\".\nAn error will be emitted if encryption is set to \"AES256\".",
+            "stability": "stable",
+            "summary": "External KMS key to use for repository encryption."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 445
+          },
+          "name": "encryptionKey",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.IKey"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Enable the scan on push when creating the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 474
+          },
+          "name": "imageScanOnPush",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "TagMutability.MUTABLE",
+            "remarks": "If this parameter is omitted, the default setting of MUTABLE will be used which will allow image tags to be overwritten.",
+            "stability": "stable",
+            "summary": "The tag mutability setting for the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 481
+          },
+          "name": "imageTagMutability",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-ecr.TagMutability"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "The default registry is assumed.",
+            "see": "https://docs.aws.amazon.com/AmazonECR/latest/APIReference/API_PutLifecyclePolicy.html",
+            "stability": "stable",
+            "summary": "The AWS account ID associated with the registry that contains the repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 460
+          },
+          "name": "lifecycleRegistryId",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "No life cycle rules",
+            "stability": "stable",
+            "summary": "Life cycle rules to apply to this registry."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 452
+          },
+          "name": "lifecycleRules",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-ecr.LifecycleRule"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "RemovalPolicy.Retain",
+            "stability": "stable",
+            "summary": "Determine what happens to the repository when the resource/stack is deleted."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 467
+          },
+          "name": "removalPolicy",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/core.RemovalPolicy"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Automatically generated name.",
+            "stability": "stable",
+            "summary": "Name for this repository."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/repository.ts",
+            "line": 424
+          },
+          "name": "repositoryName",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/repository:RepositoryProps"
+    },
+    "@aws-cdk/aws-ecr.TagMutability": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "docs": {
+        "stability": "stable",
+        "summary": "The tag mutability setting for your repository."
+      },
+      "fqn": "@aws-cdk/aws-ecr.TagMutability",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/repository.ts",
+        "line": 794
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "allow image tags to be overwritten."
+          },
+          "name": "MUTABLE"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "all image tags within the repository will be immutable which will prevent them from being overwritten."
+          },
+          "name": "IMMUTABLE"
+        }
+      ],
+      "name": "TagMutability",
+      "symbolId": "lib/repository:TagMutability"
+    },
+    "@aws-cdk/aws-ecr.TagStatus": {
+      "assembly": "@aws-cdk/aws-ecr",
+      "docs": {
+        "stability": "stable",
+        "summary": "Select images based on tags."
+      },
+      "fqn": "@aws-cdk/aws-ecr.TagStatus",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/lifecycle.ts",
+        "line": 65
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Rule applies to all images."
+          },
+          "name": "ANY"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Rule applies to tagged images."
+          },
+          "name": "TAGGED"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Rule applies to untagged images."
+          },
+          "name": "UNTAGGED"
+        }
+      ],
+      "name": "TagStatus",
+      "symbolId": "lib/lifecycle:TagStatus"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "f9to/sgRYwK067tqdmGxWeiLHAbjF7VqHs7VblfJn+c="
+}

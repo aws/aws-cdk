@@ -1,0 +1,24 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.VpnPort = exports.TransportProtocol = void 0;
+/**
+ * Transport protocol for client VPN
+ */
+var TransportProtocol;
+(function (TransportProtocol) {
+    /** Transmission Control Protocol (TCP) */
+    TransportProtocol["TCP"] = "tcp";
+    /** User Datagram Protocol (UDP) */
+    TransportProtocol["UDP"] = "udp";
+})(TransportProtocol = exports.TransportProtocol || (exports.TransportProtocol = {}));
+/**
+ * Port for client VPN
+ */
+var VpnPort;
+(function (VpnPort) {
+    /** HTTPS */
+    VpnPort[VpnPort["HTTPS"] = 443] = "HTTPS";
+    /** OpenVPN */
+    VpnPort[VpnPort["OPENVPN"] = 1194] = "OPENVPN";
+})(VpnPort = exports.VpnPort || (exports.VpnPort = {}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY2xpZW50LXZwbi1lbmRwb2ludC10eXBlcy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImNsaWVudC12cG4tZW5kcG9pbnQtdHlwZXMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7O0FBa0NBOztHQUVHO0FBQ0gsSUFBWSxpQkFLWDtBQUxELFdBQVksaUJBQWlCO0lBQzNCLDBDQUEwQztJQUMxQyxnQ0FBVyxDQUFBO0lBQ1gsbUNBQW1DO0lBQ25DLGdDQUFXLENBQUE7QUFDYixDQUFDLEVBTFcsaUJBQWlCLEdBQWpCLHlCQUFpQixLQUFqQix5QkFBaUIsUUFLNUI7QUFFRDs7R0FFRztBQUNILElBQVksT0FLWDtBQUxELFdBQVksT0FBTztJQUNqQixZQUFZO0lBQ1oseUNBQVcsQ0FBQTtJQUNYLGNBQWM7SUFDZCw4Q0FBYyxDQUFBO0FBQ2hCLENBQUMsRUFMVyxPQUFPLEdBQVAsZUFBTyxLQUFQLGVBQU8sUUFLbEIiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBJUmVzb3VyY2UgfSBmcm9tICdAYXdzLWNkay9jb3JlJztcbmltcG9ydCB7IElEZXBlbmRhYmxlIH0gZnJvbSAnY29uc3RydWN0cyc7XG5pbXBvcnQgeyBJQ29ubmVjdGFibGUgfSBmcm9tICcuL2Nvbm5lY3Rpb25zJztcblxuLyoqXG4gKiBBIGNsaWVudCBWUE4gZW5kcG9pbnRcbiAqL1xuZXhwb3J0IGludGVyZmFjZSBJQ2xpZW50VnBuRW5kcG9pbnQgZXh0ZW5kcyBJUmVzb3VyY2UsIElDb25uZWN0YWJsZSB7XG4gIC8qKlxuICAgKiBUaGUgZW5kcG9pbnQgSURcbiAgICovXG4gIHJlYWRvbmx5IGVuZHBvaW50SWQ6IHN0cmluZztcblxuICAvKipcbiAgICogRGVwZW5kYWJsZSB0aGF0IGNhbiBiZSBkZXBlbmRlZCB1cG9uIHRvIGZvcmNlIHRhcmdldCBuZXR3b3JrcyBhc3NvY2lhdGlvbnNcbiAgICovXG4gIHJlYWRvbmx5IHRhcmdldE5ldHdvcmtzQXNzb2NpYXRlZDogSURlcGVuZGFibGU7XG59XG5cbi8qKlxuICogQSBjb25uZWN0aW9uIGhhbmRsZXIgZm9yIGNsaWVudCBWUE4gZW5kcG9pbnRzXG4gKi9cbmV4cG9ydCBpbnRlcmZhY2UgSUNsaWVudFZwbkNvbm5lY3Rpb25IYW5kbGVyIHtcbiAgLyoqXG4gICAqIFRoZSBuYW1lIG9mIHRoZSBmdW5jdGlvblxuICAgKi9cbiAgcmVhZG9ubHkgZnVuY3Rpb25OYW1lOiBzdHJpbmc7XG5cbiAgLyoqXG4gICAqIFRoZSBBUk4gb2YgdGhlIGZ1bmN0aW9uLlxuICAgKi9cbiAgcmVhZG9ubHkgZnVuY3Rpb25Bcm46IHN0cmluZztcbn1cblxuLyoqXG4gKiBUcmFuc3BvcnQgcHJvdG9jb2wgZm9yIGNsaWVudCBWUE5cbiAqL1xuZXhwb3J0IGVudW0gVHJhbnNwb3J0UHJvdG9jb2wge1xuICAvKiogVHJhbnNtaXNzaW9uIENvbnRyb2wgUHJvdG9jb2wgKFRDUCkgKi9cbiAgVENQID0gJ3RjcCcsXG4gIC8qKiBVc2VyIERhdGFncmFtIFByb3RvY29sIChVRFApICovXG4gIFVEUCA9ICd1ZHAnLFxufVxuXG4vKipcbiAqIFBvcnQgZm9yIGNsaWVudCBWUE5cbiAqL1xuZXhwb3J0IGVudW0gVnBuUG9ydCB7XG4gIC8qKiBIVFRQUyAqL1xuICBIVFRQUyA9IDQ0MyxcbiAgLyoqIE9wZW5WUE4gKi9cbiAgT1BFTlZQTiA9IDExOTQsXG59XG4iXX0=

@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getClusterVersionConfig = void 0;
+const lambda_layer_kubectl_v24_1 = require("@aws-cdk/lambda-layer-kubectl-v24");
+const eks = require("../lib");
+function getClusterVersionConfig(scope) {
+    return {
+        version: eks.KubernetesVersion.V1_24,
+        // Crazy type-casting is required because KubectlLayer peer depends on
+        // types from aws-cdk-lib, but we run integration tests in the @aws-cdk/
+        // v1-style directory, not in the aws-cdk-lib v2-style directory.
+        kubectlLayer: new lambda_layer_kubectl_v24_1.KubectlV24Layer(scope, 'KubectlLayer'),
+    };
+}
+exports.getClusterVersionConfig = getClusterVersionConfig;
+;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWctdGVzdHMta3ViZXJuZXRlcy12ZXJzaW9uLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiaW50ZWctdGVzdHMta3ViZXJuZXRlcy12ZXJzaW9uLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUNBLGdGQUFvRTtBQUVwRSw4QkFBOEI7QUFFOUIsU0FBZ0IsdUJBQXVCLENBQUMsS0FBZ0I7SUFDdEQsT0FBTztRQUNMLE9BQU8sRUFBRSxHQUFHLENBQUMsaUJBQWlCLENBQUMsS0FBSztRQUNwQyxzRUFBc0U7UUFDdEUsd0VBQXdFO1FBQ3hFLGlFQUFpRTtRQUNqRSxZQUFZLEVBQUUsSUFBSSwwQ0FBZSxDQUFDLEtBQUssRUFBRSxjQUFjLENBQW9DO0tBQzVGLENBQUM7QUFDSixDQUFDO0FBUkQsMERBUUM7QUFBQSxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICogYXMgbGFtYmRhIGZyb20gJ0Bhd3MtY2RrL2F3cy1sYW1iZGEnO1xuaW1wb3J0IHsgS3ViZWN0bFYyNExheWVyIH0gZnJvbSAnQGF3cy1jZGsvbGFtYmRhLWxheWVyLWt1YmVjdGwtdjI0JztcbmltcG9ydCB7IENvbnN0cnVjdCB9IGZyb20gJ2NvbnN0cnVjdHMnO1xuaW1wb3J0ICogYXMgZWtzIGZyb20gJy4uL2xpYic7XG5cbmV4cG9ydCBmdW5jdGlvbiBnZXRDbHVzdGVyVmVyc2lvbkNvbmZpZyhzY29wZTogQ29uc3RydWN0KSB7XG4gIHJldHVybiB7XG4gICAgdmVyc2lvbjogZWtzLkt1YmVybmV0ZXNWZXJzaW9uLlYxXzI0LFxuICAgIC8vIENyYXp5IHR5cGUtY2FzdGluZyBpcyByZXF1aXJlZCBiZWNhdXNlIEt1YmVjdGxMYXllciBwZWVyIGRlcGVuZHMgb25cbiAgICAvLyB0eXBlcyBmcm9tIGF3cy1jZGstbGliLCBidXQgd2UgcnVuIGludGVncmF0aW9uIHRlc3RzIGluIHRoZSBAYXdzLWNkay9cbiAgICAvLyB2MS1zdHlsZSBkaXJlY3RvcnksIG5vdCBpbiB0aGUgYXdzLWNkay1saWIgdjItc3R5bGUgZGlyZWN0b3J5LlxuICAgIGt1YmVjdGxMYXllcjogbmV3IEt1YmVjdGxWMjRMYXllcihzY29wZSwgJ0t1YmVjdGxMYXllcicpIGFzIHVua25vd24gYXMgbGFtYmRhLklMYXllclZlcnNpb24sXG4gIH07XG59OyJdfQ==

@@ -1,0 +1,6 @@
+export declare const USER_ON_EVENT_FUNCTION_ARN_ENV = "USER_ON_EVENT_FUNCTION_ARN";
+export declare const USER_IS_COMPLETE_FUNCTION_ARN_ENV = "USER_IS_COMPLETE_FUNCTION_ARN";
+export declare const WAITER_STATE_MACHINE_ARN_ENV = "WAITER_STATE_MACHINE_ARN";
+export declare const FRAMEWORK_ON_EVENT_HANDLER_NAME = "onEvent";
+export declare const FRAMEWORK_IS_COMPLETE_HANDLER_NAME = "isComplete";
+export declare const FRAMEWORK_ON_TIMEOUT_HANDLER_NAME = "onTimeout";

@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = require("@aws-cdk/core");
+const integ = require("@aws-cdk/integ-tests");
+const eks = require("../lib");
+const app = new core_1.App();
+const stack = new core_1.Stack(app, 'aws-eks-oidc-provider-test');
+new eks.OpenIdConnectProvider(stack, 'NoClientsNoThumbprint', {
+    url: `https://oidc.eks.${core_1.Stack.of(stack).region}.amazonaws.com/id/test2`,
+});
+new integ.IntegTest(app, 'aws-cdk-eks-oidc-provider', {
+    testCases: [stack],
+});
+app.synth();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuZWtzLW9pZGMtcHJvdmlkZXIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbnRlZy5la3Mtb2lkYy1wcm92aWRlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLHdDQUEyQztBQUMzQyw4Q0FBOEM7QUFDOUMsOEJBQThCO0FBRTlCLE1BQU0sR0FBRyxHQUFHLElBQUksVUFBRyxFQUFFLENBQUM7QUFDdEIsTUFBTSxLQUFLLEdBQUcsSUFBSSxZQUFLLENBQUMsR0FBRyxFQUFFLDRCQUE0QixDQUFDLENBQUM7QUFFM0QsSUFBSSxHQUFHLENBQUMscUJBQXFCLENBQUMsS0FBSyxFQUFFLHVCQUF1QixFQUFFO0lBQzVELEdBQUcsRUFBRSxvQkFBb0IsWUFBSyxDQUFDLEVBQUUsQ0FBQyxLQUFLLENBQUMsQ0FBQyxNQUFNLHlCQUF5QjtDQUN6RSxDQUFDLENBQUM7QUFFSCxJQUFJLEtBQUssQ0FBQyxTQUFTLENBQUMsR0FBRyxFQUFFLDJCQUEyQixFQUFFO0lBQ3BELFNBQVMsRUFBRSxDQUFDLEtBQUssQ0FBQztDQUNuQixDQUFDLENBQUM7QUFFSCxHQUFHLENBQUMsS0FBSyxFQUFFLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBBcHAsIFN0YWNrIH0gZnJvbSAnQGF3cy1jZGsvY29yZSc7XG5pbXBvcnQgKiBhcyBpbnRlZyBmcm9tICdAYXdzLWNkay9pbnRlZy10ZXN0cyc7XG5pbXBvcnQgKiBhcyBla3MgZnJvbSAnLi4vbGliJztcblxuY29uc3QgYXBwID0gbmV3IEFwcCgpO1xuY29uc3Qgc3RhY2sgPSBuZXcgU3RhY2soYXBwLCAnYXdzLWVrcy1vaWRjLXByb3ZpZGVyLXRlc3QnKTtcblxubmV3IGVrcy5PcGVuSWRDb25uZWN0UHJvdmlkZXIoc3RhY2ssICdOb0NsaWVudHNOb1RodW1icHJpbnQnLCB7XG4gIHVybDogYGh0dHBzOi8vb2lkYy5la3MuJHtTdGFjay5vZihzdGFjaykucmVnaW9ufS5hbWF6b25hd3MuY29tL2lkL3Rlc3QyYCxcbn0pO1xuXG5uZXcgaW50ZWcuSW50ZWdUZXN0KGFwcCwgJ2F3cy1jZGstZWtzLW9pZGMtcHJvdmlkZXInLCB7XG4gIHRlc3RDYXNlczogW3N0YWNrXSxcbn0pO1xuXG5hcHAuc3ludGgoKTtcbiJdfQ==
