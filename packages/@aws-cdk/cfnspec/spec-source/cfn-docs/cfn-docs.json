@@ -5640,7 +5640,7 @@
         "DesiredCapacity": "The desired capacity is the initial capacity of the Auto Scaling group at the time of its creation and the capacity it attempts to maintain. It can scale beyond this capacity if you configure automatic scaling.\n\nThe number must be greater than or equal to the minimum size of the group and less than or equal to the maximum size of the group. If you do not specify a desired capacity when creating the stack, the default is the minimum size of the group.\n\nCloudFormation marks the Auto Scaling group as successful (by setting its status to CREATE_COMPLETE) when the desired capacity is reached. However, if a maximum Spot price is set in the launch template or launch configuration that you specified, then desired capacity is not used as a criteria for success. Whether your request is fulfilled depends on Spot Instance capacity and your maximum price.",
         "DesiredCapacityType": "The unit of measurement for the value specified for desired capacity. Amazon EC2 Auto Scaling supports `DesiredCapacityType` for attribute-based instance type selection only. For more information, see [Creating an Auto Scaling group using attribute-based instance type selection](https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-asg-instance-type-requirements.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nBy default, Amazon EC2 Auto Scaling specifies `units` , which translates into number of instances.\n\nValid values: `units` | `vcpu` | `memory-mib`",
         "HealthCheckGracePeriod": "The amount of time, in seconds, that Amazon EC2 Auto Scaling waits before checking the health status of an EC2 instance that has come into service and marking it unhealthy due to a failed health check. This is useful if your instances do not immediately pass their health checks after they enter the `InService` state. For more information, see [Set the health check grace period for an Auto Scaling group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-check-grace-period.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nDefault: `0` seconds",
-        "HealthCheckType": "A comma-separated list of one or more health check types.\n\nThe valid values are `EC2` , `ELB` , and `VPC_LATTICE` . `EC2` is the default health check and cannot be disabled. For more information, see [Health checks for Auto Scaling instances](https://docs.aws.amazon.com/autoscaling/ec2/userguide/healthcheck.html) in the *Amazon EC2 Auto Scaling User Guide* .",
+        "HealthCheckType": "A comma-separated list of one or more health check types.\n\nThe valid values are `EC2` , `ELB` , and `VPC_LATTICE` . `EC2` is the default health check and cannot be disabled. For more information, see [Health checks for Auto Scaling instances](https://docs.aws.amazon.com/autoscaling/ec2/userguide/healthcheck.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nOnly specify `EC2` if you must clear a value that was previously set.",
         "InstanceId": "The ID of the instance used to base the launch configuration on. For more information, see [Create an Auto Scaling group using an EC2 instance](https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-asg-from-instance.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nIf you specify `LaunchTemplate` , `MixedInstancesPolicy` , or `LaunchConfigurationName` , don't specify `InstanceId` .",
         "LaunchConfigurationName": "The name of the launch configuration to use to launch instances.\n\nRequired only if you don't specify `LaunchTemplate` , `MixedInstancesPolicy` , or `InstanceId` .",
         "LaunchTemplate": "Information used to specify the launch template and version to use to launch instances. You can alternatively associate a launch template to the Auto Scaling group by specifying a `MixedInstancesPolicy` . For more information about creating launch templates, see [Create a launch template for an Auto Scaling group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-launch-template.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nIf you omit this property, you must specify `MixedInstancesPolicy` , `LaunchConfigurationName` , or `InstanceId` .",
@@ -10228,7 +10228,7 @@
     },
     "AWS::Cognito::UserPoolClient.AnalyticsConfiguration": {
       "attributes": {},
-      "description": "The Amazon Pinpoint analytics configuration necessary to collect metrics for a user pool.\n\n> In Regions where Amazon Pinpointisn't available, user pools only support sending events to Amazon Pinpoint projects in us-east-1. In Regions where Amazon Pinpoint is available, user pools support sending events to Amazon Pinpoint projects within that same Region.",
+      "description": "The Amazon Pinpoint analytics configuration necessary to collect metrics for a user pool.\n\n> In Regions where Amazon Pinpoint isn't available, user pools only support sending events to Amazon Pinpoint projects in us-east-1. In Regions where Amazon Pinpoint is available, user pools support sending events to Amazon Pinpoint projects within that same Region.",
       "properties": {
         "ApplicationArn": "The Amazon Resource Name (ARN) of an Amazon Pinpoint project. You can use the Amazon Pinpoint project for integration with the chosen user pool client. Amazon Cognito publishes events to the Amazon Pinpoint project that the app ARN declares.",
         "ApplicationId": "The application ID for an Amazon Pinpoint application.",
@@ -17051,7 +17051,7 @@
         "MaximumScalingStepSize": "The maximum number of Amazon EC2 instances that Amazon ECS will scale out at one time. The scale in process is not affected by this parameter. If this parameter is omitted, the default value of `1` is used.",
         "MinimumScalingStepSize": "The minimum number of Amazon EC2 instances that Amazon ECS will scale out at one time. The scale in process is not affected by this parameter If this parameter is omitted, the default value of `1` is used.\n\nWhen additional capacity is required, Amazon ECS will scale up the minimum scaling step size even if the actual demand is less than the minimum scaling step size.\n\nIf you use a capacity provider with an Auto Scaling group configured with more than one Amazon EC2 instance type or Availability Zone, Amazon ECS will scale up by the exact minimum scaling step size value and will ignore both the maximum scaling step size as well as the capacity demand.",
         "Status": "Determines whether to use managed scaling for the capacity provider.",
-        "TargetCapacity": "The target capacity value for the capacity provider. The specified value must be greater than `0` and less than or equal to `100` . A value of `100` results in the Amazon EC2 instances in your Auto Scaling group being completely used."
+        "TargetCapacity": "The target capacity utilization as a percentage for the capacity provider. The specified value must be greater than `0` and less than or equal to `100` . For example, if you want the capacity provider to maintain 10% spare capacity, then that means the utilization is 90%, so use a `targetCapacity` of `90` . The default value of `100` percent results in the Amazon EC2 instances in your Auto Scaling group being completely used."
       }
     },
     "AWS::ECS::Cluster": {
@@ -17158,7 +17158,7 @@
         "Ref": "`Ref` returns the Amazon Resource Name (ARN).\n\nIn the following example, the `Ref` function returns the ARN of the `MyECSService` service, such as `arn:aws:ecs:us-west-2:123456789012:service/sample-webapp` .\n\n`{ \"Ref\": \"MyECSService\" }`",
         "ServiceArn": "Not currently supported in AWS CloudFormation ."
       },
-      "description": "The `AWS::ECS::Service` resource creates an Amazon Elastic Container Service (Amazon ECS) service that runs and maintains the requested number of tasks and associated load balancers.\n\n> The stack update fails if you change any properties that require replacement and at least one Amazon ECS Service Connect `ServiceConnectService` is configured. This is because AWS CloudFormation creates the replacement service first, but each `ServiceConnectService` must have a name that is unique in the namespace.",
+      "description": "The `AWS::ECS::Service` resource creates an Amazon Elastic Container Service (Amazon ECS) service that runs and maintains the requested number of tasks and associated load balancers.\n\n> The stack update fails if you change any properties that require replacement and at least one Amazon ECS Service Connect `ServiceConnectService` is configured. This is because AWS CloudFormation creates the replacement service first, but each `ServiceConnectService` must have a name that is unique in the namespace. > Starting April 15, 2023, AWS ; will not onboard new customers to Amazon Elastic Inference (EI), and will help current customers migrate their workloads to options that offer better price and performance. After April 15, 2023, new customers will not be able to launch instances with Amazon EI accelerators in Amazon SageMaker, Amazon ECS , or Amazon EC2 . However, customers who have used Amazon EI at least once during the past 30-day period are considered current customers and will be able to continue using the service.",
       "properties": {
         "CapacityProviderStrategy": "The capacity provider strategy to use for the service.\n\nIf a `capacityProviderStrategy` is specified, the `launchType` parameter must be omitted. If no `capacityProviderStrategy` or `launchType` is specified, the `defaultCapacityProviderStrategy` for the cluster is used.\n\nA capacity provider strategy may contain a maximum of 6 capacity providers.",
         "Cluster": "The short name or full Amazon Resource Name (ARN) of the cluster that you run your service on. If you do not specify a cluster, the default cluster is assumed.",
@@ -25415,7 +25415,7 @@
       "description": "Configuration for pre-signed S3 URLs.",
       "properties": {
         "ExpiresInSec": "How long (in seconds) pre-signed URLs are valid. Valid values are 60 - 3600, the default value is 3600 seconds. Pre-signed URLs are generated when Jobs receives an MQTT request for the job document.",
-        "RoleArn": "The ARN of an IAM role that grants grants permission to download files from the S3 bucket where the job data/updates are stored. The role must also grant permission for IoT to download the files.\n\n> For information about addressing the confused deputy problem, see [cross-service confused deputy prevention](https://docs.aws.amazon.com/iot/latest/developerguide/cross-service-confused-deputy-prevention.html) in the *AWS IoT Core developer guide* ."
+        "RoleArn": "The ARN of an IAM role that grants permission to download files from the S3 bucket where the job data/updates are stored. The role must also grant permission for IoT to download the files.\n\n> For information about addressing the confused deputy problem, see [cross-service confused deputy prevention](https://docs.aws.amazon.com/iot/latest/developerguide/cross-service-confused-deputy-prevention.html) in the *AWS IoT Core developer guide* ."
       }
     },
     "AWS::IoT::JobTemplate.RateIncreaseCriteria": {
@@ -54985,14 +54985,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "`Ref` returns `CrlId` ."
+        "Ref": "The name of the CRL."
       },
-      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
+      "description": "Creates a Crl.",
       "properties": {
-        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
-        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
-        "Name": "The name of the certificate revocation list (CRL).",
-        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
+        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
+        "Enabled": "The enabled status of the resource.",
+        "Name": "The customer specified name of the resource.",
+        "Tags": "A list of Tags.",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -55000,18 +55000,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "`Ref` returns `ProfileId` ."
+        "Ref": "The name of the Profile"
       },
-      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
+      "description": "Creates a Profile.",
       "properties": {
-        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
-        "Enabled": "Indicates whether the profile is enabled.",
-        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
-        "Name": "The name of the profile.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
-        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
-        "Tags": "The tags to attach to the profile."
+        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
+        "Enabled": "The enabled status of the resource.",
+        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
+        "Name": "The customer specified name of the resource.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
+        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
+        "Tags": "A list of Tags."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -55020,7 +55020,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
+      "description": "Creates a TrustAnchor.",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -55030,15 +55030,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "The trust anchor type and its related certificate data.",
+      "description": "Object representing the TrustAnchor type and its related certificate data.",
       "properties": {
-        "SourceData": "The data field of the trust anchor depending on its type.",
-        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
+        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
+        "SourceType": "The type of the TrustAnchor."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "The data field of the trust anchor depending on its type.",
+      "description": "A union object representing the data field of the TrustAnchor depending on its type",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -61946,7 +61946,7 @@
       "description": "Creates a listener for a service. Before you start using your Amazon VPC Lattice service, you must add one or more listeners. A listener is a process that checks for connection requests to your services. For more information, see [Listeners](https://docs.aws.amazon.com/vpc-lattice/latest/ug/listeners.html) in the *Amazon VPC Lattice User Guide* .",
       "properties": {
         "DefaultAction": "The action for the default rule. Each listener has a default rule. Each rule consists of a priority, one or more actions, and one or more conditions. The default rule is the rule that's used if no other rules match. Each rule must include exactly one of the following types of actions: `forward` or `fixed-response` , and it must be the last action to be performed.",
-        "Name": "The name of the listener. A listener name must be unique within a service. The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as the first or last character, or immediately after another hyphen.\n\nIf you don't specify a name, AWS CloudFormation generates one. However, if you specify a name, and later want to replace the resource, you must specify a new name.",
+        "Name": "The name of the listener. A listener name must be unique within a service. The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as the first or last character, or immediately after another hyphen.\n\nIf you don't specify a name, CloudFormation generates one. However, if you specify a name, and later want to replace the resource, you must specify a new name.",
         "Port": "The listener port. You can specify a value from `1` to `65535` . For HTTP, the default is `80` . For HTTPS, the default is `443` .",
         "Protocol": "The listener protocol HTTP or HTTPS.",
         "ServiceIdentifier": "The ID or Amazon Resource Name (ARN) of the service.",
@@ -61987,7 +61987,7 @@
       "attributes": {
         "Ref": "`Ref` returns the Amazon Resource Name (ARN) of the resource policy."
       },
-      "description": "Retrieves information about the resource policy. The resource policy is an IAM policy created by AWS RAM on behalf of the resource owner when they share a resource.",
+      "description": "Retrieves information about the resource policy. The resource policy is an IAM policy created on behalf of the resource owner when they share a resource.",
       "properties": {
         "Policy": "The Amazon Resource Name (ARN) of the service network or service.",
         "ResourceArn": "An IAM policy."
@@ -62004,7 +62004,7 @@
         "Action": "Describes the action for a rule. Each rule must include exactly one of the following types of actions: `forward` or `fixed-response` , and it must be the last action to be performed.",
         "ListenerIdentifier": "The ID or Amazon Resource Name (ARN) of the listener.",
         "Match": "The rule match.",
-        "Name": "The name of the rule. The name must be unique within the listener. The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as the first or last character, or immediately after another hyphen.\n\nIf you don't specify a name, AWS CloudFormation generates one. However, if you specify a name, and later want to replace the resource, you must specify a new name.",
+        "Name": "The name of the rule. The name must be unique within the listener. The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as the first or last character, or immediately after another hyphen.\n\nIf you don't specify a name, CloudFormation generates one. However, if you specify a name, and later want to replace the resource, you must specify a new name.",
         "Priority": "The priority assigned to the rule. Each rule for a specific listener must have a unique priority. The lower the priority number the higher the priority.",
         "ServiceIdentifier": "The ID or Amazon Resource Name (ARN) of the service.",
         "Tags": "The tags for the rule."
@@ -62106,7 +62106,7 @@
         "AuthType": "The type of IAM policy.\n\n- `NONE` : The resource does not use an IAM policy. This is the default.\n- `AWS_IAM` : The resource uses an IAM policy. When this type is used, auth is enabled and an auth policy is required.",
         "CertificateArn": "The Amazon Resource Name (ARN) of the certificate.",
         "CustomDomainName": "The custom domain name of the service.",
-        "Name": "The name of the service. The name must be unique within the account. The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as the first or last character, or immediately after another hyphen.\n\nIf you don't specify a name, AWS CloudFormation generates one. However, if you specify a name, and later want to replace the resource, you must specify a new name.",
+        "Name": "The name of the service. The name must be unique within the account. The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as the first or last character, or immediately after another hyphen.\n\nIf you don't specify a name, CloudFormation generates one. However, if you specify a name, and later want to replace the resource, you must specify a new name.",
         "Tags": "The tags for the service."
       }
     },
@@ -62129,7 +62129,7 @@
       "description": "Creates a service network. A service network is a logical boundary for a collection of services. You can associate services and VPCs with a service network.\n\nFor more information, see [Service networks](https://docs.aws.amazon.com/vpc-lattice/latest/ug/service-networks.html) in the *Amazon VPC Lattice User Guide* .",
       "properties": {
         "AuthType": "The type of IAM policy.\n\n- `NONE` : The resource does not use an IAM policy. This is the default.\n- `AWS_IAM` : The resource uses an IAM policy. When this type is used, auth is enabled and an auth policy is required.",
-        "Name": "The name of the service network. The name must be unique to the account. The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as the first or last character, or immediately after another hyphen.\n\nIf you don't specify a name, AWS CloudFormation generates one. However, if you specify a name, and later want to replace the resource, you must specify a new name.",
+        "Name": "The name of the service network. The name must be unique to the account. The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as the first or last character, or immediately after another hyphen.\n\nIf you don't specify a name, CloudFormation generates one. However, if you specify a name, and later want to replace the resource, you must specify a new name.",
         "Tags": "The tags for the service network."
       }
     },
@@ -62196,7 +62196,7 @@
       "description": "Creates a target group. A target group is a collection of targets, or compute resources, that run your application or service. A target group can only be used by a single service.\n\nFor more information, see [Target groups](https://docs.aws.amazon.com/vpc-lattice/latest/ug/target-groups.html) in the *Amazon VPC Lattice User Guide* .",
       "properties": {
         "Config": "The target group configuration. If `type` is set to `LAMBDA` , this parameter doesn't apply.",
-        "Name": "The name of the target group. The name must be unique within the account. The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as the first or last character, or immediately after another hyphen.\n\nIf you don't specify a name, AWS CloudFormation generates one. However, if you specify a name, and later want to replace the resource, you must specify a new name.",
+        "Name": "The name of the target group. The name must be unique within the account. The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as the first or last character, or immediately after another hyphen.\n\nIf you don't specify a name, CloudFormation generates one. However, if you specify a name, and later want to replace the resource, you must specify a new name.",
         "Tags": "The tags for the target group.",
         "Targets": "Describes a target.",
         "Type": "The type of target group."
