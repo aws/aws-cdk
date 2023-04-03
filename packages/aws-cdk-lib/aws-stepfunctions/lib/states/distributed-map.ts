@@ -1,7 +1,7 @@
-import * as iam from '@aws-cdk/aws-iam';
-import { IBucket } from '@aws-cdk/aws-s3';
 import { Construct } from 'constructs';
 import { Map, MapProps, MapStateMode } from './map';
+import * as iam from '../../../aws-iam';
+import { IBucket } from '../../../aws-s3';
 import { FieldUtils } from '../fields';
 import { StateMachineType } from '../state-machine';
 import { INextable } from '../types';
