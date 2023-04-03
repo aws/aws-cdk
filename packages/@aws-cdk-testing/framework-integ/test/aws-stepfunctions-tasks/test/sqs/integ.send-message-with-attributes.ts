@@ -1,8 +1,8 @@
-import * as sqs from '@aws-cdk/aws-sqs';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as cdk from '@aws-cdk/core';
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
-import { SqsMessageAttributeDataType, SqsSendMessage } from '../../lib';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
+import * as cdk from 'aws-cdk-lib';
+import { SqsSendMessage, SqsMessageAttributeDataType } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
  * Creates a state machine with a task state to send a message to an SQS
