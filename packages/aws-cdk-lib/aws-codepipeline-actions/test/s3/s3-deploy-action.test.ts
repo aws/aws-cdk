@@ -1,6 +1,5 @@
-import { Match, Template } from '../../../assertions';
+import { Template } from '../../../assertions';
 import * as codepipeline from '../../../aws-codepipeline';
-import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import { App, Duration, SecretValue, Stack } from '../../../core';
 import * as cpactions from '../../lib';
@@ -178,26 +177,6 @@ describe('S3 Deploy Action', () => {
   });
 });
 
-test('KMSEncryptionKeyARN value', () => {
-  const stack = new Stack();
-  minimalPipeline(stack);
-
-  Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    'Stages': [
-      {},
-      {
-        'Actions': [
-          {
-            'Configuration': {
-              'KMSEncryptionKeyARN': Match.anyValue(),
-            },
-          },
-        ],
-      },
-    ],
-  });
-});
-
 interface MinimalPipelineOptions {
   readonly accessControl?: s3.BucketAccessControl;
   readonly bucket?: s3.IBucket;
@@ -207,9 +186,6 @@ interface MinimalPipelineOptions {
 }
 
 function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): codepipeline.IStage {
-  const key: kms.IKey = new kms.Key(stack, 'EnvVarEncryptKey', {
-    description: 'sample key',
-  });
   const sourceOutput = new codepipeline.Artifact();
   const sourceAction = new cpactions.GitHubSourceAction({
     actionName: 'Source',
@@ -239,7 +215,6 @@ function minimalPipeline(stack: Stack, options: MinimalPipelineOptions = {}): co
         extract: options.extract,
         input: sourceOutput,
         objectKey: options.objectKey,
-        encryptionKey: key,
       }),
     ],
   });

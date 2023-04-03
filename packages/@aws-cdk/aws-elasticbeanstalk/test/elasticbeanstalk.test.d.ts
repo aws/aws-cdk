@@ -1,1 +1,0 @@
-import '@aws-cdk/assertions';

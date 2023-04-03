@@ -1,5 +1,4 @@
 import * as codepipeline from '../../../aws-codepipeline';
-import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import { Duration } from '../../../core';
 import { kebab as toKebabCase } from 'case';
@@ -87,13 +86,6 @@ export interface S3DeployActionProps extends codepipeline.CommonAwsActionProps {
    * @default - none, decided by the HTTP client
    */
   readonly cacheControl?: CacheControl[];
-
-  /**
-   * The AWS KMS encryption key for the host bucket.
-   * The encryptionKey parameter encrypts uploaded artifacts with the provided AWS KMS key.
-   * @default - none
-   */
-    readonly encryptionKey?: kms.IKey;
 }
 
 /**
@@ -137,7 +129,6 @@ export class S3DeployAction extends Action {
         ObjectKey: this.props.objectKey,
         CannedACL: acl ? toKebabCase(acl.toString()) : undefined,
         CacheControl: this.props.cacheControl && this.props.cacheControl.map(ac => ac.value).join(', '),
-        KMSEncryptionKeyARN: this.props.encryptionKey?.keyArn,
       },
     };
   }
