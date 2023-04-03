@@ -1,4 +1,4 @@
-import { Template, Annotations, Match } from '../../../assertions';
+import { Template, Annotations, Match, Capture } from '../../../assertions';
 import * as ccommit from '../../../aws-codecommit';
 import { Pipeline } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
@@ -456,25 +456,41 @@ test('selfMutationProject is undefined if switched off', () => {
 
 test('pipeline asset action can have named assets', () => {
   // GIVEN
-  const assetNames = ['namedFileA', 'File name with Spaces', 'this one will be a very long image name', 'tarball image'];
+  const fileAsset1 = 'namedFileA';
+  const fileAsset2 = 'File name with Spaces';
+  const imageAsset1 = 'this one will be a very long image name';
+  const imageAsset2 = 'tarball image';
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     selfMutation: false,
   });
-  pipeline.addStage(new NamedAssetApp(pipelineStack, 'Stage', { fileAsset1: assetNames[0], fileAsset2: assetNames[1], imageAsset1: assetNames[2], imageAsset2: assetNames[3] }));
+  pipeline.addStage(new NamedAssetApp(pipelineStack, 'NamedAssetApp', { fileAsset1, fileAsset2, imageAsset1, imageAsset2 }));
 
   // WHEN
   const template = Template.fromStack(pipelineStack);
 
+
   // THEN
+  const assetActions = new Capture();
   template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
-    Stages: Match.arrayWith([{
-      Actions: Match.arrayWith(assetNames.map(((name) => ({
-        Name: name,
-      })))),
-      Name: 'Assets',
-    }]),
+    Stages: Match.arrayWith([
+      Match.objectLike({
+        Name: 'Source',
+      }),
+      Match.objectLike({
+        Name: 'Build',
+      }),
+      Match.objectLike({
+        Name: 'Assets',
+        Actions: assetActions,
+      }),
+      Match.objectLike({
+        Name: 'NamedAssetApp',
+      }),
+    ]),
   });
+
+  expect(assetActions.asArray().map(action => action.Name)).toEqual(expect.arrayContaining([fileAsset1, fileAsset2, imageAsset1, imageAsset2].map(name => name.replace(/ /g, '_'))));
 });
 
 interface ReuseCodePipelineStackProps extends cdk.StackProps {
