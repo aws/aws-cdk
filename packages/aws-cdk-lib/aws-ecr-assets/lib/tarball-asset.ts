@@ -17,6 +17,14 @@ export interface TarballImageAssetProps {
    * is located as a resource inside your project.
    */
   readonly tarballFile: string;
+
+  /**
+   * A display name for the asset.
+   *
+   * Used in pipelines to have easily recognizable assets in the build stage
+   * @default - Auto-generated names are used
+   */
+  readonly displayName?: string;
 }
 
 /**
@@ -58,7 +66,7 @@ export class TarballImageAsset extends Construct implements IAsset {
 
   /**
    * A display name for this image asset
-   * 
+   *
    * @default - Uses an auto-generated name
    */
   public readonly imageName?: string;
@@ -69,6 +77,8 @@ export class TarballImageAsset extends Construct implements IAsset {
     if (!fs.existsSync(props.tarballFile)) {
       throw new Error(`Cannot find file at ${props.tarballFile}`);
     }
+
+    this.imageName = props.displayName;
 
     const stagedTarball = new AssetStaging(this, 'Staging', { sourcePath: props.tarballFile });
 

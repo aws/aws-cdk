@@ -233,7 +233,8 @@ export class MegaAssetsApp extends Stage {
 export interface NamedAssetAppProps extends StageProps {
   readonly fileAsset1: string
   readonly fileAsset2: string
-  readonly imageAsset: string
+  readonly imageAsset1: string
+  readonly imageAsset2: string
 }
 
 export class NamedAssetApp extends Stage {
@@ -242,19 +243,27 @@ export class NamedAssetApp extends Stage {
 
     const stack = new Stack(this, 'Stack');
 
-    new s3_assets.Asset(stack, props.fileAsset1, {
+    new s3_assets.Asset(stack, 'FileAsset1', {
       path: path.join(__dirname, 'assets', 'test-file-asset.txt'),
       assetHash: 'FileAsset1',
+      displayName: props.fileAsset1,
     });
 
-    new s3_assets.Asset(stack, props.fileAsset2, {
+    new s3_assets.Asset(stack, 'FileAsset2', {
       path: path.join(__dirname, 'assets', 'test-file-asset-two.txt'),
       assetHash: 'FileAsset2',
+      displayName: props.fileAsset2,
     });
 
-    new ecr_assets.DockerImageAsset(stack, props.imageAsset, {
+    new ecr_assets.DockerImageAsset(stack, 'DockerImageAsset1', {
       directory: path.join(__dirname, 'assets', 'test-docker-asset'),
       extraHash: 'ImageAsset1',
+      displayName: props.imageAsset1,
+    });
+
+    new ecr_assets.TarballImageAsset(stack, 'DockerImageAsset2', {
+      tarballFile: path.join(__dirname, 'assets', 'empty.tar'),
+      displayName: props.imageAsset2,
     });
   }
 }

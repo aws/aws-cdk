@@ -286,6 +286,14 @@ export interface DockerImageAssetProps extends DockerImageAssetOptions {
    * Any directory inside with a name that matches the CDK output folder (cdk.out by default) will be excluded from the asset
    */
   readonly directory: string;
+
+  /**
+   * A display name for the asset.
+   *
+   * Used in pipelines to have easily recognizable assets in the build stage
+   * @default - Auto-generated names are used
+   */
+  readonly displayName?: string;
 }
 
 /**
@@ -327,7 +335,7 @@ export class DockerImageAsset extends Construct implements IAsset {
 
   /**
    * A display name for this image asset
-   * 
+   *
    * @default - Uses an auto-generated name
    */
   public readonly imageName?: string;
@@ -381,6 +389,8 @@ export class DockerImageAsset extends Construct implements IAsset {
 
     // none of the properties use tokens
     validateProps(props);
+
+    this.imageName = props.displayName;
 
     // resolve full path
     const dir = path.resolve(props.directory);

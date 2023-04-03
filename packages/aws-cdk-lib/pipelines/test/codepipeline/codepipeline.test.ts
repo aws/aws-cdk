@@ -454,14 +454,14 @@ test('selfMutationProject is undefined if switched off', () => {
   expect(() => pipeline.selfMutationProject).toThrow(/No selfMutationProject/);
 });
 
-test('pipeline asset actions can be named after their StackAssets', () => {
+test('pipeline asset action can have named assets', () => {
   // GIVEN
-  const assetNames = ['namedFileA', 'File name with Spaces', 'this one will be a very long image name'];
+  const assetNames = ['namedFileA', 'File name with Spaces', 'this one will be a very long image name', 'tarball image'];
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk', {
     selfMutation: false,
   });
-  pipeline.addStage(new NamedAssetApp(pipelineStack, 'Stage', { fileAsset1: assetNames[0], fileAsset2: assetNames[1], imageAsset: assetNames[2] }));
+  pipeline.addStage(new NamedAssetApp(pipelineStack, 'Stage', { fileAsset1: assetNames[0], fileAsset2: assetNames[1], imageAsset1: assetNames[2], imageAsset2: assetNames[3] }));
 
   // WHEN
   const template = Template.fromStack(pipelineStack);

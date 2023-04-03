@@ -45,6 +45,14 @@ export interface AssetProps extends AssetOptions {
    * - A directory, in which case it will be archived into a .zip file and uploaded to S3.
    */
   readonly path: string;
+
+  /**
+   * A display name for the asset.
+   *
+   * Used in pipelines to have easily recognizable assets in the build stage
+   * @default - Auto-generated names are used
+   */
+  readonly displayName?: string;
 }
 
 /**
@@ -116,7 +124,7 @@ export class Asset extends Construct implements cdk.IAsset {
 
   /**
    * Display name for the asset, used in some higher level constructs like pipelines
-   * 
+   *
    * @default - Auto-generated names are used.
    */
   public readonly assetName?: string;
@@ -130,6 +138,7 @@ export class Asset extends Construct implements cdk.IAsset {
     super(scope, id);
 
     this.isBundled = props.bundling != null;
+    this.assetName = props.displayName;
 
     // stage the asset source (conditionally).
     const staging = new cdk.AssetStaging(this, 'Stage', {
