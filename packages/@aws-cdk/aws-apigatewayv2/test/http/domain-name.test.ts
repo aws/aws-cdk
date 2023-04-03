@@ -1,7 +1,7 @@
-import { Template } from '@aws-cdk/assertions';
-import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import { Bucket } from '@aws-cdk/aws-s3';
-import { Stack } from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { Bucket } from 'aws-cdk-lib/aws-s3';
+import { Stack } from 'aws-cdk-lib';
 import { DomainName, EndpointType, HttpApi, SecurityPolicy } from '../../lib';
 
 const domainName = 'example.com';

@@ -1,8 +1,8 @@
-import { Resource } from '@aws-cdk/core';
+import { Resource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
-import { CfnAuthorizer } from '../apigatewayv2.generated';
+import { CfnAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2';
 
 import { IAuthorizer } from '../common';
 

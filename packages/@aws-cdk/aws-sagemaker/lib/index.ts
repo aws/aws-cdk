@@ -8,4 +8,3 @@ export * from './model-data';
 export * from './scalable-instance-count';
 
 // AWS::SageMaker CloudFormation Resources:
-export * from './sagemaker.generated';

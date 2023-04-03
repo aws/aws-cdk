@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { AssetMetadataEntry } from '@aws-cdk/cloud-assembly-schema';
 import { testStack } from './util';
 import { MockSdk } from './util/mock-sdk';
