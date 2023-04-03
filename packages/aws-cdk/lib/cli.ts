@@ -77,8 +77,8 @@ async function parseCommandLineArguments(args: string[]) {
     .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified', requiresArg: true })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
-    .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
-    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
+    .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: undefined })
+    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: undefined })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable the copy of assets which allows local debugging via the SAM CLI to reference the original source files)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
@@ -381,7 +381,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     function tryResolve(plugin: string): string {
       try {
         return require.resolve(plugin);
-      } catch (e) {
+      } catch (e: any) {
         error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
         throw new Error(`Unable to resolve plug-in: ${plugin}`);
       }
@@ -470,7 +470,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return cli.list(args.STACKS, { long: args.long, json: argv.json });
 
       case 'diff':
-        const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL);
+        const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
         return cli.diff({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
@@ -575,8 +575,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           selector,
           toolkitStackName,
           roleArn: args.roleArn,
-          execute: args.execute,
-          changeSetName: args.changeSetName,
+          deploymentMethod: {
+            method: 'change-set',
+            execute: args.execute,
+            changeSetName: args.changeSetName,
+          },
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
           recordResourceMapping: args['record-resource-mapping'],
@@ -596,7 +599,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           toolkitStackName,
           roleArn: args.roleArn,
           reuseAssets: args['build-exclude'],
-          changeSetName: args.changeSetName,
+          deploymentMethod: {
+            method: 'change-set',
+            changeSetName: args.changeSetName,
+          },
           force: args.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
@@ -616,10 +622,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'synthesize':
       case 'synth':
+        const quiet = configuration.settings.get(['quiet']) ?? args.quiet;
         if (args.exclusively) {
-          return cli.synth(args.STACKS, args.exclusively, args.quiet, args.validation, argv.json);
+          return cli.synth(args.STACKS, args.exclusively, quiet, args.validation, argv.json);
         } else {
-          return cli.synth(args.STACKS, true, args.quiet, args.validation, argv.json);
+          return cli.synth(args.STACKS, true, quiet, args.validation, argv.json);
         }
 
       case 'notices':

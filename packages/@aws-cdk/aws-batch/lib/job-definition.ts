@@ -1,9 +1,9 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as iam from '@aws-cdk/aws-iam';
-import { ArnFormat, Duration, IResource, Resource, Stack } from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { ArnFormat, Duration, IResource, Resource, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnJobDefinition } from './batch.generated';
+import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { ExposedSecret } from './exposed-secret';
 import { JobDefinitionImageConfig } from './job-definition-image-config';
 

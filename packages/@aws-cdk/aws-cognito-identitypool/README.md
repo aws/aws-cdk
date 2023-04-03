@@ -32,7 +32,7 @@ sign-in options for your app users.
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts nofixture
-import { IdentityPool, UserPoolAuthenticationProvider } from '@aws-cdk/aws-cognito-identitypool';
+import { IdentityPool, UserPoolAuthenticationProvider } from '@aws-cdk/aws-cognito-identitypool-alpha';
 ```
 
 ## Table of Contents
@@ -77,7 +77,7 @@ By default, both the authenticated and unauthenticated roles will have no permis
 to roles using the public `authenticatedRole` and `unauthenticatedRole` properties: 
 
 ```ts
-import * as dynamodb from '@aws-cdk/aws-dynamodb';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
 const identityPool = new IdentityPool(this, 'myIdentityPool');
 declare const table: dynamodb.Table;
@@ -259,7 +259,7 @@ Using a [token-based approach](https://docs.aws.amazon.com/cognito/latest/develo
 `cognito:preferred_role` claims from the identity provider:
 
 ```ts
-import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool';
+import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
 new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
@@ -273,7 +273,7 @@ new IdentityPool(this, 'myidentitypool', {
 Using a rule-based approach to role mapping allows roles to be assigned based on custom claims passed from the identity provider:
 
 ```ts
-import { IdentityPoolProviderUrl, RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool';
+import { IdentityPoolProviderUrl, RoleMappingMatchType } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
 declare const adminRole: iam.Role;
 declare const nonAdminRole: iam.Role;
@@ -302,7 +302,7 @@ new IdentityPool(this, 'myidentitypool', {
 Role mappings can also be added after instantiation with the Identity Pool's `addRoleMappings` method:
 
 ```ts
-import { IdentityPoolRoleMapping } from '@aws-cdk/aws-cognito-identitypool';
+import { IdentityPoolRoleMapping } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
 declare const identityPool: IdentityPool;
 declare const myAddedRoleMapping1: IdentityPoolRoleMapping;
@@ -318,7 +318,7 @@ Role mappings must be associated with the url of an Identity Provider which can 
 `IdentityPoolProviderUrl`. Supported Providers have static Urls that can be used:
 
 ```ts
-import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool';
+import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
 new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
@@ -332,7 +332,7 @@ new IdentityPool(this, 'myidentitypool', {
 For identity providers that don't have static Urls, a custom Url or User Pool Client Url can be supplied:
 
 ```ts
-import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool';
+import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
 new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
@@ -354,8 +354,8 @@ This is because by default, the key in the Cloudformation role mapping hash is t
 cannot be references. For example:
 
 ```ts
-import { UserPool } from '@aws-cdk/aws-cognito';
-import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
+import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
 declare const userPool : UserPool;
 new IdentityPool(this, 'myidentitypool', {

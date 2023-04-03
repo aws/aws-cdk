@@ -1,13 +1,13 @@
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as events from '@aws-cdk/aws-events';
-import * as iam from '@aws-cdk/aws-iam';
-import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import { Code, JobExecutable, JobExecutableConfig, JobType } from '.';
 import { IConnection } from './connection';
-import { CfnJob } from './glue.generated';
+import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { ISecurityConfiguration } from './security-configuration';
 
 /**
