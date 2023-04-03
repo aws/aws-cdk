@@ -1,4 +1,4 @@
-import { App, CfnResource, Stack } from '@aws-cdk/core';
+import { App, CfnResource, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '../../../lib';
 
 const app = new App();

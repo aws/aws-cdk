@@ -1,0 +1,3513 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      }
+    },
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "The CDK Construct Library for AWS::KMS",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "5.0.0 (build 4ff1caa)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "kms"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-kms",
+  "readme": {
+    "markdown": "# AWS Key Management Service Construct Library\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)\n\n![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)\n\n---\n\n<!--END STABILITY BANNER-->\n\nDefine a KMS key:\n\n```ts\nnew kms.Key(this, 'MyKey', {\n  enableKeyRotation: true,\n});\n```\n\nDefine a KMS key with waiting period:\n\nSpecifies the number of days in the waiting period before AWS KMS deletes a CMK that has been removed from a CloudFormation stack.\n\n```ts\nconst key = new kms.Key(this, 'MyKey', {\n  pendingWindow: Duration.days(10), // Default to 30 Days\n});\n```\n\n\nAdd a couple of aliases:\n\n```ts\nconst key = new kms.Key(this, 'MyKey');\nkey.addAlias('alias/foo');\nkey.addAlias('alias/bar');\n```\n\n\nDefine a key with specific key spec and key usage:\n\nValid `keySpec` values depends on `keyUsage` value.\n\n```ts\nconst key = new kms.Key(this, 'MyKey', {\n  keySpec: kms.KeySpec.ECC_SECG_P256K1, // Default to SYMMETRIC_DEFAULT\n  keyUsage: kms.KeyUsage.SIGN_VERIFY,    // and ENCRYPT_DECRYPT\n});\n```\n\n## Sharing keys between stacks\n\nTo use a KMS key in a different stack in the same CDK application,\npass the construct to the other stack:\n\n```ts lit=test/integ.key-sharing.lit.ts\n\n/**\n * Stack that defines the key\n */\nclass KeyStack extends cdk.Stack {\n  public readonly key: kms.Key;\n\n  constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {\n    super(scope, id, props);\n    this.key = new kms.Key(this, 'MyKey', { removalPolicy: cdk.RemovalPolicy.DESTROY });\n  }\n}\n\ninterface UseStackProps extends cdk.StackProps {\n  key: kms.IKey; // Use IKey here\n}\n\n/**\n * Stack that uses the key\n */\nclass UseStack extends cdk.Stack {\n  constructor(scope: cdk.App, id: string, props: UseStackProps) {\n    super(scope, id, props);\n\n    // Use the IKey object here.\n    new kms.Alias(this, 'Alias', {\n      aliasName: 'alias/foo',\n      targetKey: props.key,\n    });\n  }\n}\n\nconst keyStack = new KeyStack(app, 'KeyStack');\nnew UseStack(app, 'UseStack', { key: keyStack.key });\n```\n\n\n## Importing existing keys\n\n### Import key by ARN\n\nTo use a KMS key that is not defined in this CDK app, but is created through other means, use\n`Key.fromKeyArn(parent, name, ref)`:\n\n```ts\nconst myKeyImported = kms.Key.fromKeyArn(this, 'MyImportedKey', 'arn:aws:...');\n\n// you can do stuff with this imported key.\nmyKeyImported.addAlias('alias/foo');\n```\n\nNote that a call to `.addToResourcePolicy(statement)` on `myKeyImported` will not have\nan affect on the key's policy because it is not owned by your stack. The call\nwill be a no-op.\n\n### Import key by alias\n\nIf a Key has an associated Alias, the Alias can be imported by name and used in place\nof the Key as a reference. A common scenario for this is in referencing AWS managed keys.\n\n```ts\nimport * as cloudtrail from '@aws-cdk/aws-cloudtrail';\n\nconst myKeyAlias = kms.Alias.fromAliasName(this, 'myKey', 'alias/aws/s3');\nconst trail = new cloudtrail.Trail(this, 'myCloudTrail', {\n  sendToCloudWatchLogs: true,\n  kmsKey: myKeyAlias,\n});\n```\n\nNote that calls to `addToResourcePolicy` and `grant*` methods on `myKeyAlias` will be\nno-ops, and `addAlias` and `aliasTargetKey` will fail, as the imported alias does not\nhave a reference to the underlying KMS Key.\n\n### Lookup key by alias\n\nIf you can't use a KMS key imported by alias (e.g. because you need access to the key id), you can lookup the key with `Key.fromLookup()`.\n\nIn general, the preferred method would be to use `Alias.fromAliasName()` which returns an `IAlias` object which extends `IKey`. However, some services need to have access to the underlying key id. In this case, `Key.fromLookup()` allows to lookup the key id.\n\nThe result of the `Key.fromLookup()` operation will be written to a file\ncalled `cdk.context.json`. You must commit this file to source control so\nthat the lookup values are available in non-privileged environments such\nas CI build steps, and to ensure your template builds are repeatable.\n\nHere's how `Key.fromLookup()` can be used:\n\n```ts\nconst myKeyLookup = kms.Key.fromLookup(this, 'MyKeyLookup', {\n  aliasName: 'alias/KeyAlias',\n});\n\nconst role = new iam.Role(this, 'MyRole', {\n  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),\n});\nmyKeyLookup.grantEncryptDecrypt(role);\n```\n\nNote that a call to `.addToResourcePolicy(statement)` on `myKeyLookup` will not have\nan affect on the key's policy because it is not owned by your stack. The call\nwill be a no-op.\n\n## Key Policies\n\nControlling access and usage of KMS Keys requires the use of key policies (resource-based policies attached to the key);\nthis is in contrast to most other AWS resources where access can be entirely controlled with IAM policies,\nand optionally complemented with resource policies. For more in-depth understanding of KMS key access and policies, see\n\n* https://docs.aws.amazon.com/kms/latest/developerguide/control-access-overview.html\n* https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html\n\nKMS keys can be created to trust IAM policies. This is the default behavior for both the KMS APIs and in\nthe console. This behavior is enabled by the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag,\nwhich is set for all new projects; for existing projects, this same behavior can be enabled by\npassing the `trustAccountIdentities` property as `true` when creating the key:\n\n```ts\nnew kms.Key(this, 'MyKey', { trustAccountIdentities: true });\n```\n\nWith either the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag set,\nor the `trustAccountIdentities` prop set, the Key will be given the following default key policy:\n\n```json\n{\n  \"Effect\": \"Allow\",\n  \"Principal\": {\"AWS\": \"arn:aws:iam::111122223333:root\"},\n  \"Action\": \"kms:*\",\n  \"Resource\": \"*\"\n}\n```\n\nThis policy grants full access to the key to the root account user.\nThis enables the root account user -- via IAM policies -- to grant access to other IAM principals.\nWith the above default policy, future permissions can be added to either the key policy or IAM principal policy.\n\n```ts\nconst key = new kms.Key(this, 'MyKey');\nconst user = new iam.User(this, 'MyUser');\nkey.grantEncrypt(user); // Adds encrypt permissions to user policy; key policy is unmodified.\n```\n\nAdopting the default KMS key policy (and so trusting account identities)\nsolves many issues around cyclic dependencies between stacks.\nWithout this default key policy, future permissions must be added to both the key policy and IAM principal policy,\nwhich can cause cyclic dependencies if the permissions cross stack boundaries.\n(For example, an encrypted bucket in one stack, and Lambda function that accesses it in another.)\n\n### Appending to or replacing the default key policy\n\nThe default key policy can be amended or replaced entirely, depending on your use case and requirements.\nA common addition to the key policy would be to add other key admins that are allowed to administer the key\n(e.g., change permissions, revoke, delete). Additional key admins can be specified at key creation or after\nvia the `grantAdmin` method.\n\n```ts\nconst myTrustedAdminRole = iam.Role.fromRoleArn(this, 'TrustedRole', 'arn:aws:iam:....');\nconst key = new kms.Key(this, 'MyKey', {\n  admins: [myTrustedAdminRole],\n});\n\nconst secondKey = new kms.Key(this, 'MyKey2');\nsecondKey.grantAdmin(myTrustedAdminRole);\n```\n\nAlternatively, a custom key policy can be specified, which will replace the default key policy.\n\n> **Note**: In applications without the '@aws-cdk/aws-kms:defaultKeyPolicies' feature flag set\nand with `trustedAccountIdentities` set to false (the default), specifying a policy at key creation _appends_ the\nprovided policy to the default key policy, rather than _replacing_ the default policy.\n\n```ts\nconst myTrustedAdminRole = iam.Role.fromRoleArn(this, 'TrustedRole', 'arn:aws:iam:....');\n// Creates a limited admin policy and assigns to the account root.\nconst myCustomPolicy = new iam.PolicyDocument({\n  statements: [new iam.PolicyStatement({\n    actions: [\n      'kms:Create*',\n      'kms:Describe*',\n      'kms:Enable*',\n      'kms:List*',\n      'kms:Put*',\n    ],\n    principals: [new iam.AccountRootPrincipal()],\n    resources: ['*'],\n  })],\n});\nconst key = new kms.Key(this, 'MyKey', {\n  policy: myCustomPolicy,\n});\n```\n\n> **Warning:** Replacing the default key policy with one that only grants access to a specific user or role\nruns the risk of the key becoming unmanageable if that user or role is deleted.\nIt is highly recommended that the key policy grants access to the account root, rather than specific principals.\nSee https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html for more information.\n\n### HMAC specific key policies\n\nHMAC keys have a different key policy than other KMS keys. They have a policy for generating and for verifying a MAC.\nThe respective policies can be attached to a principal via the `grantGenerateMac` and `grantVerifyMac` methods.\n\n```ts\nconst key = new kms.Key(this, 'MyKey');\nconst user = new iam.User(this, 'MyUser');\nkey.grantGenerateMac(user); // Adds 'kms:GenerateMac' to the principal's policy\nkey.grantVerifyMac(user); // Adds 'kms:VerifyMac' to the principal's policy\n```\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-kms",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.KMS",
+      "packageId": "Amazon.CDK.AWS.KMS"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "kms",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.kms"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-kms"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-kms",
+      "module": "aws_cdk.aws_kms"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-kms.Alias": {
+      "assembly": "@aws-cdk/aws-kms",
+      "base": "@aws-cdk/core.Resource",
+      "docs": {
+        "custom": {
+          "resource": "AWS::KMS::Alias"
+        },
+        "remarks": "Using an alias to refer to a key can help you simplify key\nmanagement. For example, when rotating keys, you can just update the alias\nmapping instead of tracking and changing key IDs. For more information, see\nWorking with Aliases in the AWS Key Management Service Developer Guide.\n\nYou can also add an alias for a key by calling `key.addAlias(alias)`.",
+        "stability": "stable",
+        "summary": "Defines a display name for a customer master key (CMK) in AWS Key Management Service (AWS KMS)."
+      },
+      "fqn": "@aws-cdk/aws-kms.Alias",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/alias.ts",
+          "line": 181
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.AliasProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-kms.IAlias"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/alias.ts",
+        "line": 132
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Import an existing KMS Alias defined outside the CDK app."
+          },
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 140
+          },
+          "name": "fromAliasAttributes",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The parent creating construct (usually `this`)."
+              },
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "docs": {
+                "summary": "The construct's name."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the properties of the referenced KMS Alias."
+              },
+              "name": "attrs",
+              "type": {
+                "fqn": "@aws-cdk/aws-kms.AliasAttributes"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.IAlias"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "remarks": "This method should be used\ninstead of 'fromAliasAttributes' when the underlying KMS Key ARN is not available.\nThis Alias will not have a direct reference to the KMS Key, so addAlias and grant* methods are not supported.",
+            "stability": "stable",
+            "summary": "Import an existing KMS Alias defined outside the CDK app, by the alias name."
+          },
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 157
+          },
+          "name": "fromAliasName",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The parent creating construct (usually `this`)."
+              },
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "docs": {
+                "summary": "The construct's name."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "The full name of the KMS Alias (e.g., 'alias/aws/s3', 'alias/myKeyAlias')."
+              },
+              "name": "aliasName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.IAlias"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a new alias for the key."
+          },
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 73
+          },
+          "name": "addAlias",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "alias",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.Alias"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Adds a statement to the KMS key resource policy."
+          },
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 77
+          },
+          "name": "addToResourcePolicy",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            },
+            {
+              "name": "allowNoOp",
+              "optional": true,
+              "type": {
+                "primitive": "boolean"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.AddToResourcePolicyResult"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable"
+          },
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 220
+          },
+          "name": "generatePhysicalName",
+          "overrides": "@aws-cdk/core.Resource",
+          "protected": true,
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the indicated permissions on this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 81
+          },
+          "name": "grant",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            },
+            {
+              "name": "actions",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          },
+          "variadic": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant decryption permissions using this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 85
+          },
+          "name": "grantDecrypt",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant encryption permissions using this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 89
+          },
+          "name": "grantEncrypt",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant encryption and decryption permissions using this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 93
+          },
+          "name": "grantEncryptDecrypt",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant permissions to generating MACs to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 97
+          },
+          "name": "grantGenerateMac",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant permissions to verifying MACs to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 101
+          },
+          "name": "grantVerifyMac",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        }
+      ],
+      "name": "Alias",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The name of the alias."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 178
+          },
+          "name": "aliasName",
+          "overrides": "@aws-cdk/aws-kms.IAlias",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The Key to which the Alias refers."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 179
+          },
+          "name": "aliasTargetKey",
+          "overrides": "@aws-cdk/aws-kms.IAlias",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.IKey"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of the key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 61
+          },
+          "name": "keyArn",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The ID of the key (the part that looks something like: 1234abcd-12ab-34cd-56ef-1234567890ab)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 69
+          },
+          "name": "keyId",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/alias:Alias"
+    },
+    "@aws-cdk/aws-kms.AliasAttributes": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties of a reference to an existing KMS Alias."
+      },
+      "fqn": "@aws-cdk/aws-kms.AliasAttributes",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/alias.ts",
+        "line": 109
+      },
+      "name": "AliasAttributes",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "This value must begin with alias/ followed by a name (i.e. alias/ExampleAlias)",
+            "stability": "stable",
+            "summary": "Specifies the alias name."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 113
+          },
+          "name": "aliasName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The customer master key (CMK) to which the Alias refers."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 118
+          },
+          "name": "aliasTargetKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.IKey"
+          }
+        }
+      ],
+      "symbolId": "lib/alias:AliasAttributes"
+    },
+    "@aws-cdk/aws-kms.AliasProps": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Construction properties for a KMS Key Alias object."
+      },
+      "fqn": "@aws-cdk/aws-kms.AliasProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/alias.ts",
+        "line": 33
+      },
+      "name": "AliasProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The name must start with alias followed by a\nforward slash, such as alias/. You can't specify aliases that begin with\nalias/AWS. These aliases are reserved.",
+            "stability": "stable",
+            "summary": "The name of the alias."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 39
+          },
+          "name": "aliasName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Specify the key's\nglobally unique identifier or Amazon Resource Name (ARN). You can't\nspecify another alias.",
+            "stability": "stable",
+            "summary": "The ID of the key for which you are creating the alias."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 46
+          },
+          "name": "targetKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.IKey"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- The alias will be deleted",
+            "stability": "stable",
+            "summary": "Policy to apply when the alias is removed from this stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 53
+          },
+          "name": "removalPolicy",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/core.RemovalPolicy"
+          }
+        }
+      ],
+      "symbolId": "lib/alias:AliasProps"
+    },
+    "@aws-cdk/aws-kms.CfnAlias": {
+      "assembly": "@aws-cdk/aws-kms",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::KMS::Alias",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html"
+        },
+        "remarks": "The `AWS::KMS::Alias` resource specifies a display name for a [KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#kms_keys) . You can use an alias to identify a KMS key in the AWS KMS console, in the [DescribeKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_DescribeKey.html) operation, and in [cryptographic operations](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#cryptographic-operations) , such as [Decrypt](https://docs.aws.amazon.com/kms/latest/APIReference/API_Decrypt.html) and [GenerateDataKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_GenerateDataKey.html) .\n\n> Adding, deleting, or updating an alias can allow or deny permission to the KMS key. For details, see [ABAC for AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/abac.html) in the *AWS Key Management Service Developer Guide* .\n\nUsing an alias to refer to a KMS key can help you simplify key management. For example, an alias in your code can be associated with different KMS keys in different AWS Regions . For more information, see [Using aliases](https://docs.aws.amazon.com/kms/latest/developerguide/kms-alias.html) in the *AWS Key Management Service Developer Guide* .\n\nWhen specifying an alias, observe the following rules.\n\n- Each alias is associated with one KMS key, but multiple aliases can be associated with the same KMS key.\n- The alias and its associated KMS key must be in the same AWS account and Region.\n- The alias name must be unique in the AWS account and Region. However, you can create aliases with the same name in different AWS Regions . For example, you can have an `alias/projectKey` in multiple Regions, each of which is associated with a KMS key in its Region.\n- Each alias name must begin with `alias/` followed by a name, such as `alias/exampleKey` . The alias name can contain only alphanumeric characters, forward slashes (/), underscores (_), and dashes (-). Alias names cannot begin with `alias/aws/` . That alias name prefix is reserved for [AWS managed keys](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk) .\n\n*Regions*\n\nAWS KMS CloudFormation resources are available in all AWS Regions in which AWS KMS and AWS CloudFormation are supported.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::KMS::Alias`."
+      },
+      "fqn": "@aws-cdk/aws-kms.CfnAlias",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::KMS::Alias`."
+        },
+        "locationInModule": {
+          "filename": "lib/kms.generated.ts",
+          "line": 204
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.CfnAliasProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/kms.generated.ts",
+        "line": 135
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 219
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 231
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnAlias",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 139
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 224
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html#cfn-kms-alias-aliasname"
+            },
+            "remarks": "> If you change the value of the `AliasName` property, the existing alias is deleted and a new alias is created for the specified KMS key. This change can disrupt applications that use the alias. It can also allow or deny access to a KMS key affected by attribute-based access control (ABAC).\n\nThe alias must be string of 1-256 characters. It can contain only alphanumeric characters, forward slashes (/), underscores (_), and dashes (-). The alias name cannot begin with `alias/aws/` . The `alias/aws/` prefix is reserved for [AWS managed keys](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk) .\n\n*Pattern* : `^alias/[a-zA-Z0-9/_-]+$`\n\n*Minimum* : `1`\n\n*Maximum* : `256`",
+            "stability": "external",
+            "summary": "Specifies the alias name. This value must begin with `alias/` followed by a name, such as `alias/ExampleAlias` ."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 175
+          },
+          "name": "aliasName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html#cfn-kms-alias-targetkeyid"
+            },
+            "remarks": "A valid key ID is required. If you supply a null or empty string value, this operation returns an error.\n\nFor help finding the key ID and ARN, see [Finding the key ID and ARN](https://docs.aws.amazon.com/kms/latest/developerguide/viewing-keys.html#find-cmk-id-arn) in the *AWS Key Management Service Developer Guide* .\n\nSpecify the key ID or the key ARN of the KMS key.\n\nFor example:\n\n- Key ID: `1234abcd-12ab-34cd-56ef-1234567890ab`\n- Key ARN: `arn:aws:kms:us-east-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab`\n\nTo get the key ID and key ARN for a KMS key, use [ListKeys](https://docs.aws.amazon.com/kms/latest/APIReference/API_ListKeys.html) or [DescribeKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_DescribeKey.html) .",
+            "stability": "external",
+            "summary": "Associates the alias with the specified [customer managed key](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#customer-cmk) . The KMS key must be in the same AWS account and Region."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 195
+          },
+          "name": "targetKeyId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kms.generated:CfnAlias"
+    },
+    "@aws-cdk/aws-kms.CfnAliasProps": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnAlias`."
+      },
+      "fqn": "@aws-cdk/aws-kms.CfnAliasProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kms.generated.ts",
+        "line": 20
+      },
+      "name": "CfnAliasProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html#cfn-kms-alias-aliasname"
+            },
+            "remarks": "> If you change the value of the `AliasName` property, the existing alias is deleted and a new alias is created for the specified KMS key. This change can disrupt applications that use the alias. It can also allow or deny access to a KMS key affected by attribute-based access control (ABAC).\n\nThe alias must be string of 1-256 characters. It can contain only alphanumeric characters, forward slashes (/), underscores (_), and dashes (-). The alias name cannot begin with `alias/aws/` . The `alias/aws/` prefix is reserved for [AWS managed keys](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#aws-managed-cmk) .\n\n*Pattern* : `^alias/[a-zA-Z0-9/_-]+$`\n\n*Minimum* : `1`\n\n*Maximum* : `256`",
+            "stability": "external",
+            "summary": "Specifies the alias name. This value must begin with `alias/` followed by a name, such as `alias/ExampleAlias` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 37
+          },
+          "name": "aliasName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-alias.html#cfn-kms-alias-targetkeyid"
+            },
+            "remarks": "A valid key ID is required. If you supply a null or empty string value, this operation returns an error.\n\nFor help finding the key ID and ARN, see [Finding the key ID and ARN](https://docs.aws.amazon.com/kms/latest/developerguide/viewing-keys.html#find-cmk-id-arn) in the *AWS Key Management Service Developer Guide* .\n\nSpecify the key ID or the key ARN of the KMS key.\n\nFor example:\n\n- Key ID: `1234abcd-12ab-34cd-56ef-1234567890ab`\n- Key ARN: `arn:aws:kms:us-east-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab`\n\nTo get the key ID and key ARN for a KMS key, use [ListKeys](https://docs.aws.amazon.com/kms/latest/APIReference/API_ListKeys.html) or [DescribeKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_DescribeKey.html) .",
+            "stability": "external",
+            "summary": "Associates the alias with the specified [customer managed key](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#customer-cmk) . The KMS key must be in the same AWS account and Region."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 57
+          },
+          "name": "targetKeyId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/kms.generated:CfnAliasProps"
+    },
+    "@aws-cdk/aws-kms.CfnKey": {
+      "assembly": "@aws-cdk/aws-kms",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::KMS::Key",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html"
+        },
+        "remarks": "The `AWS::KMS::Key` resource specifies an [KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#kms_keys) in AWS Key Management Service . You can use this resource to create symmetric encryption KMS keys, asymmetric KMS keys for encryption or signing, and symmetric HMAC KMS keys. You can use `AWS::KMS::Key` to create [multi-Region primary keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html#mrk-primary-key) of all supported types. To replicate a multi-Region key, use the `AWS::KMS::ReplicaKey` resource.\n\n> If you change the value of the `KeySpec` , `KeyUsage` , or `MultiRegion` properties of an existing KMS key, the update request fails, regardless of the value of the [`UpdateReplacePolicy` attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatereplacepolicy.html) . This prevents you from accidentally deleting a KMS key by changing any of its immutable property values. > AWS KMS replaced the term *customer master key (CMK)* with *AWS KMS key* and *KMS key* . The concept has not changed. To prevent breaking changes, AWS KMS is keeping some variations of this term.\n\nYou can use symmetric encryption KMS keys to encrypt and decrypt small amounts of data, but they are more commonly used to generate data keys and data key pairs. You can also use a symmetric encryption KMS key to encrypt data stored in AWS services that are [integrated with AWS KMS](https://docs.aws.amazon.com//kms/features/#AWS_Service_Integration) . For more information, see [Symmetric encryption KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#symmetric-cmks) in the *AWS Key Management Service Developer Guide* .\n\nYou can use asymmetric KMS keys to encrypt and decrypt data or sign messages and verify signatures. To create an asymmetric key, you must specify an asymmetric `KeySpec` value and a `KeyUsage` value. For details, see [Asymmetric keys in AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/symmetric-asymmetric.html) in the *AWS Key Management Service Developer Guide* .\n\nYou can use HMAC KMS keys (which are also symmetric keys) to generate and verify hash-based message authentication codes. To create an HMAC key, you must specify an HMAC `KeySpec` value and a `KeyUsage` value of `GENERATE_VERIFY_MAC` . For details, see [HMAC keys in AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/hmac.html) in the *AWS Key Management Service Developer Guide* .\n\nYou can also create symmetric encryption, asymmetric, and HMAC multi-Region primary keys. To create a multi-Region primary key, set the `MultiRegion` property to `true` . For information about multi-Region keys, see [Multi-Region keys in AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nYou cannot use the `AWS::KMS::Key` resource to specify a KMS key with [imported key material](https://docs.aws.amazon.com/kms/latest/developerguide/importing-keys.html) or a KMS key in a [custom key store](https://docs.aws.amazon.com/kms/latest/developerguide/custom-key-store-overview.html) .\n\n*Regions*\n\nAWS KMS CloudFormation resources are available in all Regions in which AWS KMS and AWS CloudFormation are supported. You can use the `AWS::KMS::Key` resource to create and manage all KMS key types that are supported in a Region.",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::KMS::Key`."
+      },
+      "fqn": "@aws-cdk/aws-kms.CfnKey",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::KMS::Key`."
+        },
+        "locationInModule": {
+          "filename": "lib/kms.generated.ts",
+          "line": 711
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.CfnKeyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/kms.generated.ts",
+        "line": 503
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 734
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 753
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnKey",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 507
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "For information about the key ARN of a KMS key, see [Key ARN](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-id-key-ARN) in the *AWS Key Management Service Developer Guide* .",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the KMS key, such as `arn:aws:kms:us-west-2:111122223333:key/1234abcd-12ab-34cd-56ef-1234567890ab` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 534
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "KeyId"
+            },
+            "remarks": "For information about the key ID of a KMS key, see [Key ID](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#key-id-key-id) in the *AWS Key Management Service Developer Guide* .",
+            "stability": "external",
+            "summary": "The key ID of the KMS key, such as `1234abcd-12ab-34cd-56ef-1234567890ab` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 542
+          },
+          "name": "attrKeyId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 739
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-tags"
+            },
+            "remarks": "> Tagging or untagging a KMS key can allow or deny permission to the KMS key. For details, see [ABAC for AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/abac.html) in the *AWS Key Management Service Developer Guide* .\n\nFor information about tags in AWS KMS , see [Tagging keys](https://docs.aws.amazon.com/kms/latest/developerguide/tagging-keys.html) in the *AWS Key Management Service Developer Guide* . For information about tags in CloudFormation, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags to the replica key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 702
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-keypolicy"
+            },
+            "remarks": "- The key policy must allow the caller to make a subsequent [PutKeyPolicy](https://docs.aws.amazon.com/kms/latest/APIReference/API_PutKeyPolicy.html) request on the KMS key. This reduces the risk that the KMS key becomes unmanageable. For more information, refer to the scenario in the [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam) section of the **AWS Key Management Service Developer Guide** .\n- Each statement in the key policy must contain one or more principals. The principals in the key policy must exist and be visible to AWS KMS . When you create a new AWS principal (for example, an IAM user or role), you might need to enforce a delay before including the new principal in a key policy because the new principal might not be immediately visible to AWS KMS . For more information, see [Changes that I make are not always immediately visible](https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_general.html#troubleshoot_general_eventual-consistency) in the *AWS Identity and Access Management User Guide* .\n\nIf you are unsure of which policy to use, consider the *default key policy* . This is the key policy that AWS KMS applies to KMS keys that are created by using the CreateKey API with no specified key policy. It gives the AWS account that owns the key permission to perform all operations on the key. It also allows you write IAM policies to authorize access to the key. For details, see [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default) in the *AWS Key Management Service Developer Guide* .\n\nA key policy document can include only the following characters:\n\n- Printable ASCII characters\n- Printable characters in the Basic Latin and Latin-1 Supplement character set\n- The tab ( `\\ u0009` ), line feed ( `\\ u000A` ), and carriage return ( `\\ u000D` ) special characters\n\n*Minimum* : `1`\n\n*Maximum* : `32768`",
+            "stability": "external",
+            "summary": "The key policy that authorizes use of the KMS key. The key policy must conform to the following rules."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 564
+          },
+          "name": "keyPolicy",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-description"
+            },
+            "remarks": "Use a description that helps you to distinguish this KMS key from others in the account, such as its intended use.",
+            "stability": "external",
+            "summary": "A description of the KMS key."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 571
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-enabled"
+            },
+            "remarks": "When `Enabled` is `true` , the *key state* of the KMS key is `Enabled` . When `Enabled` is `false` , the key state of the KMS key is `Disabled` . The default value is `true` .\n\nThe actual key state of the KMS key might be affected by actions taken outside of CloudFormation, such as running the [EnableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_EnableKey.html) , [DisableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_DisableKey.html) , or [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operations.\n\nFor information about the key states of a KMS key, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* .",
+            "stability": "external",
+            "summary": "Specifies whether the KMS key is enabled. Disabled KMS keys cannot be used in cryptographic operations."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 584
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-enablekeyrotation"
+            },
+            "remarks": "By default, automatic key rotation is not enabled.\n\nAWS KMS supports automatic rotation only for symmetric encryption KMS keys ( `KeySpec` = `SYMMETRIC_DEFAULT` ). For asymmetric KMS keys and HMAC KMS keys, omit the `EnableKeyRotation` property or set it to `false` .\n\nTo enable automatic key rotation of the key material for a multi-Region KMS key, set `EnableKeyRotation` to `true` on the primary key (created by using `AWS::KMS::Key` ). AWS KMS copies the rotation status to all replica keys. For details, see [Rotating multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-manage.html#multi-region-rotate) in the *AWS Key Management Service Developer Guide* .\n\nWhen you enable automatic rotation, AWS KMS automatically creates new key material for the KMS key one year after the enable date and every year thereafter. AWS KMS retains all key material until you delete the KMS key. For detailed information about automatic key rotation, see [Rotating KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html) in the *AWS Key Management Service Developer Guide* .",
+            "stability": "external",
+            "summary": "Enables automatic rotation of the key material for the specified KMS key."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 597
+          },
+          "name": "enableKeyRotation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-keyspec"
+            },
+            "remarks": "The default value, `SYMMETRIC_DEFAULT` , creates a KMS key with a 256-bit symmetric key for encryption and decryption. In China Regions, `SYMMETRIC_DEFAULT` creates a 128-bit symmetric key that uses SM4 encryption. You can't change the `KeySpec` value after the KMS key is created. For help choosing a key spec for your KMS key, see [Choosing a KMS key type](https://docs.aws.amazon.com/kms/latest/developerguide/symm-asymm-choose.html) in the *AWS Key Management Service Developer Guide* .\n\nThe `KeySpec` property determines the type of key material in the KMS key and the algorithms that the KMS key supports. To further restrict the algorithms that can be used with the KMS key, use a condition key in its key policy or IAM policy. For more information, see [AWS KMS condition keys](https://docs.aws.amazon.com/kms/latest/developerguide/policy-conditions.html#conditions-kms) in the *AWS Key Management Service Developer Guide* .\n\n> If you change the value of the `KeySpec` property on an existing KMS key, the update request fails, regardless of the value of the [`UpdateReplacePolicy` attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatereplacepolicy.html) . This prevents you from accidentally deleting a KMS key by changing an immutable property value. > [AWS services that are integrated with AWS KMS](https://docs.aws.amazon.com/kms/features/#AWS_Service_Integration) use symmetric encryption KMS keys to protect your data. These services do not support encryption with asymmetric KMS keys. For help determining whether a KMS key is asymmetric, see [Identifying asymmetric KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/find-symm-asymm.html) in the *AWS Key Management Service Developer Guide* .\n\nAWS KMS supports the following key specs for KMS keys:\n\n- Symmetric encryption key (default)\n\n- `SYMMETRIC_DEFAULT` (AES-256-GCM)\n- HMAC keys (symmetric)\n\n- `HMAC_224`\n- `HMAC_256`\n- `HMAC_384`\n- `HMAC_512`\n- Asymmetric RSA key pairs\n\n- `RSA_2048`\n- `RSA_3072`\n- `RSA_4096`\n- Asymmetric NIST-recommended elliptic curve key pairs\n\n- `ECC_NIST_P256` (secp256r1)\n- `ECC_NIST_P384` (secp384r1)\n- `ECC_NIST_P521` (secp521r1)\n- Other asymmetric elliptic curve key pairs\n\n- `ECC_SECG_P256K1` (secp256k1), commonly used for cryptocurrencies.\n- SM2 key pairs (China Regions only)\n\n- `SM2`",
+            "stability": "external",
+            "summary": "Specifies the type of KMS key to create."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 636
+          },
+          "name": "keySpec",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-keyusage"
+            },
+            "remarks": "> If you change the value of the `KeyUsage` property on an existing KMS key, the update request fails, regardless of the value of the [`UpdateReplacePolicy` attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatereplacepolicy.html) . This prevents you from accidentally deleting a KMS key by changing an immutable property value.\n\nSelect only one valid value.\n\n- For symmetric encryption KMS keys, omit the property or specify `ENCRYPT_DECRYPT` .\n- For asymmetric KMS keys with RSA key material, specify `ENCRYPT_DECRYPT` or `SIGN_VERIFY` .\n- For asymmetric KMS keys with ECC key material, specify `SIGN_VERIFY` .\n- For asymmetric KMS keys with SM2 (China Regions only) key material, specify `ENCRYPT_DECRYPT` or `SIGN_VERIFY` .\n- For HMAC KMS keys, specify `GENERATE_VERIFY_MAC` .",
+            "stability": "external",
+            "summary": "Determines the [cryptographic operations](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#cryptographic-operations) for which you can use the KMS key. The default value is `ENCRYPT_DECRYPT` . This property is required for asymmetric KMS keys and HMAC KMS keys. You can't change the `KeyUsage` value after the KMS key is created."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 653
+          },
+          "name": "keyUsage",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-multiregion"
+            },
+            "remarks": "You can't change the `MultiRegion` value after the KMS key is created.\n\nFor a list of AWS Regions in which multi-Region keys are supported, see [Multi-Region keys in AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the ** .\n\n> If you change the value of the `MultiRegion` property on an existing KMS key, the update request fails, regardless of the value of the [`UpdateReplacePolicy` attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatereplacepolicy.html) . This prevents you from accidentally deleting a KMS key by changing an immutable property value.\n\nFor a multi-Region key, set to this property to `true` . For a single-Region key, omit this property or set it to `false` . The default value is `false` .\n\n*Multi-Region keys* are an AWS KMS feature that lets you create multiple interoperable KMS keys in different AWS Regions . Because these KMS keys have the same key ID, key material, and other metadata, you can use them to encrypt data in one AWS Region and decrypt it in a different AWS Region without making a cross-Region call or exposing the plaintext data. For more information, see [Multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nYou can create a symmetric encryption, HMAC, or asymmetric multi-Region KMS key, and you can create a multi-Region key with imported key material. However, you cannot create a multi-Region key in a custom key store.\n\nTo create a replica of this primary key in a different AWS Region , create an [AWS::KMS::ReplicaKey](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html) resource in a CloudFormation stack in the replica Region. Specify the key ARN of this primary key.",
+            "stability": "external",
+            "summary": "Creates a multi-Region primary key that you can replicate in other AWS Regions ."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 672
+          },
+          "name": "multiRegion",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-pendingwindowindays"
+            },
+            "remarks": "Enter a value between 7 and 30 days. The default value is 30 days.\n\nWhen you remove a KMS key from a CloudFormation stack, AWS KMS schedules the KMS key for deletion and starts the mandatory waiting period. The `PendingWindowInDays` property determines the length of waiting period. During the waiting period, the key state of KMS key is `Pending Deletion` or `Pending Replica Deletion` , which prevents the KMS key from being used in cryptographic operations. When the waiting period expires, AWS KMS permanently deletes the KMS key.\n\nAWS KMS will not delete a [multi-Region primary key](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) that has replica keys. If you remove a multi-Region primary key from a CloudFormation stack, its key state changes to `PendingReplicaDeletion` so it cannot be replicated or used in cryptographic operations. This state can persist indefinitely. When the last of its replica keys is deleted, the key state of the primary key changes to `PendingDeletion` and the waiting period specified by `PendingWindowInDays` begins. When this waiting period expires, AWS KMS deletes the primary key. For details, see [Deleting multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-delete.html) in the *AWS Key Management Service Developer Guide* .\n\nYou cannot use a CloudFormation template to cancel deletion of the KMS key after you remove it from the stack, regardless of the waiting period. If you specify a KMS key in your template, even one with the same name, CloudFormation creates a new KMS key. To cancel deletion of a KMS key, use the AWS KMS console or the [CancelKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_CancelKeyDeletion.html) operation.\n\nFor information about the `Pending Deletion` and `Pending Replica Deletion` key states, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* . For more information about deleting KMS keys, see the [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operation in the *AWS Key Management Service API Reference* and [Deleting KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html) in the *AWS Key Management Service Developer Guide* .\n\n*Minimum* : 7\n\n*Maximum* : 30",
+            "stability": "external",
+            "summary": "Specifies the number of days in the waiting period before AWS KMS deletes a KMS key that has been removed from a CloudFormation stack."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 691
+          },
+          "name": "pendingWindowInDays",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/kms.generated:CfnKey"
+    },
+    "@aws-cdk/aws-kms.CfnKeyProps": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnKey`."
+      },
+      "fqn": "@aws-cdk/aws-kms.CfnKeyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kms.generated.ts",
+        "line": 244
+      },
+      "name": "CfnKeyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-keypolicy"
+            },
+            "remarks": "- The key policy must allow the caller to make a subsequent [PutKeyPolicy](https://docs.aws.amazon.com/kms/latest/APIReference/API_PutKeyPolicy.html) request on the KMS key. This reduces the risk that the KMS key becomes unmanageable. For more information, refer to the scenario in the [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam) section of the **AWS Key Management Service Developer Guide** .\n- Each statement in the key policy must contain one or more principals. The principals in the key policy must exist and be visible to AWS KMS . When you create a new AWS principal (for example, an IAM user or role), you might need to enforce a delay before including the new principal in a key policy because the new principal might not be immediately visible to AWS KMS . For more information, see [Changes that I make are not always immediately visible](https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_general.html#troubleshoot_general_eventual-consistency) in the *AWS Identity and Access Management User Guide* .\n\nIf you are unsure of which policy to use, consider the *default key policy* . This is the key policy that AWS KMS applies to KMS keys that are created by using the CreateKey API with no specified key policy. It gives the AWS account that owns the key permission to perform all operations on the key. It also allows you write IAM policies to authorize access to the key. For details, see [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default) in the *AWS Key Management Service Developer Guide* .\n\nA key policy document can include only the following characters:\n\n- Printable ASCII characters\n- Printable characters in the Basic Latin and Latin-1 Supplement character set\n- The tab ( `\\ u0009` ), line feed ( `\\ u000A` ), and carriage return ( `\\ u000D` ) special characters\n\n*Minimum* : `1`\n\n*Maximum* : `32768`",
+            "stability": "external",
+            "summary": "The key policy that authorizes use of the KMS key. The key policy must conform to the following rules."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 266
+          },
+          "name": "keyPolicy",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-description"
+            },
+            "remarks": "Use a description that helps you to distinguish this KMS key from others in the account, such as its intended use.",
+            "stability": "external",
+            "summary": "A description of the KMS key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 273
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-enabled"
+            },
+            "remarks": "When `Enabled` is `true` , the *key state* of the KMS key is `Enabled` . When `Enabled` is `false` , the key state of the KMS key is `Disabled` . The default value is `true` .\n\nThe actual key state of the KMS key might be affected by actions taken outside of CloudFormation, such as running the [EnableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_EnableKey.html) , [DisableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_DisableKey.html) , or [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operations.\n\nFor information about the key states of a KMS key, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* .",
+            "stability": "external",
+            "summary": "Specifies whether the KMS key is enabled. Disabled KMS keys cannot be used in cryptographic operations."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 286
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-enablekeyrotation"
+            },
+            "remarks": "By default, automatic key rotation is not enabled.\n\nAWS KMS supports automatic rotation only for symmetric encryption KMS keys ( `KeySpec` = `SYMMETRIC_DEFAULT` ). For asymmetric KMS keys and HMAC KMS keys, omit the `EnableKeyRotation` property or set it to `false` .\n\nTo enable automatic key rotation of the key material for a multi-Region KMS key, set `EnableKeyRotation` to `true` on the primary key (created by using `AWS::KMS::Key` ). AWS KMS copies the rotation status to all replica keys. For details, see [Rotating multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-manage.html#multi-region-rotate) in the *AWS Key Management Service Developer Guide* .\n\nWhen you enable automatic rotation, AWS KMS automatically creates new key material for the KMS key one year after the enable date and every year thereafter. AWS KMS retains all key material until you delete the KMS key. For detailed information about automatic key rotation, see [Rotating KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html) in the *AWS Key Management Service Developer Guide* .",
+            "stability": "external",
+            "summary": "Enables automatic rotation of the key material for the specified KMS key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 299
+          },
+          "name": "enableKeyRotation",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-keyspec"
+            },
+            "remarks": "The default value, `SYMMETRIC_DEFAULT` , creates a KMS key with a 256-bit symmetric key for encryption and decryption. In China Regions, `SYMMETRIC_DEFAULT` creates a 128-bit symmetric key that uses SM4 encryption. You can't change the `KeySpec` value after the KMS key is created. For help choosing a key spec for your KMS key, see [Choosing a KMS key type](https://docs.aws.amazon.com/kms/latest/developerguide/symm-asymm-choose.html) in the *AWS Key Management Service Developer Guide* .\n\nThe `KeySpec` property determines the type of key material in the KMS key and the algorithms that the KMS key supports. To further restrict the algorithms that can be used with the KMS key, use a condition key in its key policy or IAM policy. For more information, see [AWS KMS condition keys](https://docs.aws.amazon.com/kms/latest/developerguide/policy-conditions.html#conditions-kms) in the *AWS Key Management Service Developer Guide* .\n\n> If you change the value of the `KeySpec` property on an existing KMS key, the update request fails, regardless of the value of the [`UpdateReplacePolicy` attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatereplacepolicy.html) . This prevents you from accidentally deleting a KMS key by changing an immutable property value. > [AWS services that are integrated with AWS KMS](https://docs.aws.amazon.com/kms/features/#AWS_Service_Integration) use symmetric encryption KMS keys to protect your data. These services do not support encryption with asymmetric KMS keys. For help determining whether a KMS key is asymmetric, see [Identifying asymmetric KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/find-symm-asymm.html) in the *AWS Key Management Service Developer Guide* .\n\nAWS KMS supports the following key specs for KMS keys:\n\n- Symmetric encryption key (default)\n\n- `SYMMETRIC_DEFAULT` (AES-256-GCM)\n- HMAC keys (symmetric)\n\n- `HMAC_224`\n- `HMAC_256`\n- `HMAC_384`\n- `HMAC_512`\n- Asymmetric RSA key pairs\n\n- `RSA_2048`\n- `RSA_3072`\n- `RSA_4096`\n- Asymmetric NIST-recommended elliptic curve key pairs\n\n- `ECC_NIST_P256` (secp256r1)\n- `ECC_NIST_P384` (secp384r1)\n- `ECC_NIST_P521` (secp521r1)\n- Other asymmetric elliptic curve key pairs\n\n- `ECC_SECG_P256K1` (secp256k1), commonly used for cryptocurrencies.\n- SM2 key pairs (China Regions only)\n\n- `SM2`",
+            "stability": "external",
+            "summary": "Specifies the type of KMS key to create."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 338
+          },
+          "name": "keySpec",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-keyusage"
+            },
+            "remarks": "> If you change the value of the `KeyUsage` property on an existing KMS key, the update request fails, regardless of the value of the [`UpdateReplacePolicy` attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatereplacepolicy.html) . This prevents you from accidentally deleting a KMS key by changing an immutable property value.\n\nSelect only one valid value.\n\n- For symmetric encryption KMS keys, omit the property or specify `ENCRYPT_DECRYPT` .\n- For asymmetric KMS keys with RSA key material, specify `ENCRYPT_DECRYPT` or `SIGN_VERIFY` .\n- For asymmetric KMS keys with ECC key material, specify `SIGN_VERIFY` .\n- For asymmetric KMS keys with SM2 (China Regions only) key material, specify `ENCRYPT_DECRYPT` or `SIGN_VERIFY` .\n- For HMAC KMS keys, specify `GENERATE_VERIFY_MAC` .",
+            "stability": "external",
+            "summary": "Determines the [cryptographic operations](https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html#cryptographic-operations) for which you can use the KMS key. The default value is `ENCRYPT_DECRYPT` . This property is required for asymmetric KMS keys and HMAC KMS keys. You can't change the `KeyUsage` value after the KMS key is created."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 355
+          },
+          "name": "keyUsage",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-multiregion"
+            },
+            "remarks": "You can't change the `MultiRegion` value after the KMS key is created.\n\nFor a list of AWS Regions in which multi-Region keys are supported, see [Multi-Region keys in AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the ** .\n\n> If you change the value of the `MultiRegion` property on an existing KMS key, the update request fails, regardless of the value of the [`UpdateReplacePolicy` attribute](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-updatereplacepolicy.html) . This prevents you from accidentally deleting a KMS key by changing an immutable property value.\n\nFor a multi-Region key, set to this property to `true` . For a single-Region key, omit this property or set it to `false` . The default value is `false` .\n\n*Multi-Region keys* are an AWS KMS feature that lets you create multiple interoperable KMS keys in different AWS Regions . Because these KMS keys have the same key ID, key material, and other metadata, you can use them to encrypt data in one AWS Region and decrypt it in a different AWS Region without making a cross-Region call or exposing the plaintext data. For more information, see [Multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nYou can create a symmetric encryption, HMAC, or asymmetric multi-Region KMS key, and you can create a multi-Region key with imported key material. However, you cannot create a multi-Region key in a custom key store.\n\nTo create a replica of this primary key in a different AWS Region , create an [AWS::KMS::ReplicaKey](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html) resource in a CloudFormation stack in the replica Region. Specify the key ARN of this primary key.",
+            "stability": "external",
+            "summary": "Creates a multi-Region primary key that you can replicate in other AWS Regions ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 374
+          },
+          "name": "multiRegion",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-pendingwindowindays"
+            },
+            "remarks": "Enter a value between 7 and 30 days. The default value is 30 days.\n\nWhen you remove a KMS key from a CloudFormation stack, AWS KMS schedules the KMS key for deletion and starts the mandatory waiting period. The `PendingWindowInDays` property determines the length of waiting period. During the waiting period, the key state of KMS key is `Pending Deletion` or `Pending Replica Deletion` , which prevents the KMS key from being used in cryptographic operations. When the waiting period expires, AWS KMS permanently deletes the KMS key.\n\nAWS KMS will not delete a [multi-Region primary key](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) that has replica keys. If you remove a multi-Region primary key from a CloudFormation stack, its key state changes to `PendingReplicaDeletion` so it cannot be replicated or used in cryptographic operations. This state can persist indefinitely. When the last of its replica keys is deleted, the key state of the primary key changes to `PendingDeletion` and the waiting period specified by `PendingWindowInDays` begins. When this waiting period expires, AWS KMS deletes the primary key. For details, see [Deleting multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-delete.html) in the *AWS Key Management Service Developer Guide* .\n\nYou cannot use a CloudFormation template to cancel deletion of the KMS key after you remove it from the stack, regardless of the waiting period. If you specify a KMS key in your template, even one with the same name, CloudFormation creates a new KMS key. To cancel deletion of a KMS key, use the AWS KMS console or the [CancelKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_CancelKeyDeletion.html) operation.\n\nFor information about the `Pending Deletion` and `Pending Replica Deletion` key states, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* . For more information about deleting KMS keys, see the [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operation in the *AWS Key Management Service API Reference* and [Deleting KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html) in the *AWS Key Management Service Developer Guide* .\n\n*Minimum* : 7\n\n*Maximum* : 30",
+            "stability": "external",
+            "summary": "Specifies the number of days in the waiting period before AWS KMS deletes a KMS key that has been removed from a CloudFormation stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 393
+          },
+          "name": "pendingWindowInDays",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-tags"
+            },
+            "remarks": "> Tagging or untagging a KMS key can allow or deny permission to the KMS key. For details, see [ABAC for AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/abac.html) in the *AWS Key Management Service Developer Guide* .\n\nFor information about tags in AWS KMS , see [Tagging keys](https://docs.aws.amazon.com/kms/latest/developerguide/tagging-keys.html) in the *AWS Key Management Service Developer Guide* . For information about tags in CloudFormation, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags to the replica key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 404
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kms.generated:CfnKeyProps"
+    },
+    "@aws-cdk/aws-kms.CfnReplicaKey": {
+      "assembly": "@aws-cdk/aws-kms",
+      "base": "@aws-cdk/core.CfnResource",
+      "docs": {
+        "custom": {
+          "cloudformationResource": "AWS::KMS::ReplicaKey",
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html"
+        },
+        "remarks": "The `AWS::KMS::ReplicaKey` resource specifies a multi-Region replica key that is based on a multi-Region primary key.\n\n*Multi-Region keys* are an AWS KMS feature that lets you create multiple interoperable KMS keys in different AWS Regions . Because these KMS keys have the same key ID, key material, and other metadata, you can use them to encrypt data in one AWS Region and decrypt it in a different AWS Region without making a cross-Region call or exposing the plaintext data. For more information, see [Multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the *AWS Key Management Service Developer Guide* .\n\nA multi-Region *primary key* is a fully functional symmetric encryption KMS key, HMAC KMS key, or asymmetric KMS key that is also the model for replica keys in other AWS Regions . To create a multi-Region primary key, add an [AWS::KMS::Key](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html) resource to your CloudFormation stack. Set its `MultiRegion` property to true.\n\nA multi-Region *replica key* is a fully functional KMS key that has the same key ID and key material as a multi-Region primary key, but is located in a different AWS Region of the same AWS partition. There can be multiple replicas of a primary key, but each must be in a different AWS Region .\n\nWhen you create a replica key in AWS CloudFormation , the replica key is created in the AWS Region represented by the endpoint you use for the request. If you try to replicate a multi-Region key into a Region in which the key type is not supported, the request will fail.\n\nA primary key and its replicas have the same key ID and key material. They also have the same key spec, key usage, key material origin, and automatic key rotation status. These properties are known as *shared properties* . If they change, AWS KMS synchronizes the change to all related multi-Region keys. All other properties of a replica key can differ, including its key policy, tags, aliases, and key state. AWS KMS does not synchronize these properties.\n\n*Regions*\n\nAWS KMS CloudFormation resources are available in all AWS Regions in which AWS KMS and AWS CloudFormation are supported. You can use the `AWS::KMS::ReplicaKey` resource to create replica keys in all Regions that support multi-Region KMS keys. For details, see [Multi-Region keys in AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html) in the ** .",
+        "stability": "external",
+        "summary": "A CloudFormation `AWS::KMS::ReplicaKey`."
+      },
+      "fqn": "@aws-cdk/aws-kms.CfnReplicaKey",
+      "initializer": {
+        "docs": {
+          "stability": "external",
+          "summary": "Create a new `AWS::KMS::ReplicaKey`."
+        },
+        "locationInModule": {
+          "filename": "lib/kms.generated.ts",
+          "line": 1097
+        },
+        "parameters": [
+          {
+            "docs": {
+              "summary": "- scope in which this resource is defined."
+            },
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- scoped id of the resource."
+            },
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "docs": {
+              "summary": "- resource properties."
+            },
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.CfnReplicaKeyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IInspectable"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/kms.generated.ts",
+        "line": 952
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "external",
+            "summary": "Examines the CloudFormation resource and discloses attributes."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 1118
+          },
+          "name": "inspect",
+          "overrides": "@aws-cdk/core.IInspectable",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "- tree inspector to collect and process attributes."
+              },
+              "name": "inspector",
+              "type": {
+                "fqn": "@aws-cdk/core.TreeInspector"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 1134
+          },
+          "name": "renderProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "parameters": [
+            {
+              "name": "props",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "protected": true,
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "CfnReplicaKey",
+      "properties": [
+        {
+          "const": true,
+          "docs": {
+            "stability": "external",
+            "summary": "The CloudFormation resource type name for this resource class."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 956
+          },
+          "name": "CFN_RESOURCE_TYPE_NAME",
+          "static": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "Arn"
+            },
+            "remarks": "The key ARNs of related multi-Region keys differ only in the Region value. For information about the key ARNs of multi-Region keys, see [How multi-Region keys work](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html#mrk-how-it-works) in the *AWS Key Management Service Developer Guide* .",
+            "stability": "external",
+            "summary": "The Amazon Resource Name (ARN) of the replica key, such as `arn:aws:kms:us-west-2:111122223333:key/mrk-1234abcd12ab34cd56ef1234567890ab` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 983
+          },
+          "name": "attrArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "cloudformationAttribute": "KeyId"
+            },
+            "remarks": "Related multi-Region keys have the same key ID. For information about the key IDs of multi-Region keys, see [How multi-Region keys work](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview.html#mrk-how-it-works) in the *AWS Key Management Service Developer Guide* .",
+            "stability": "external",
+            "summary": "The key ID of the replica key, such as `mrk-1234abcd12ab34cd56ef1234567890ab` ."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 991
+          },
+          "name": "attrKeyId",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "external"
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 1123
+          },
+          "name": "cfnProperties",
+          "overrides": "@aws-cdk/core.CfnResource",
+          "protected": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "any"
+              },
+              "kind": "map"
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html#cfn-kms-replicakey-tags"
+            },
+            "remarks": "> Tagging or untagging a KMS key can allow or deny permission to the KMS key. For details, see [ABAC for AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/abac.html) in the *AWS Key Management Service Developer Guide* .\n\nTags are not a shared property of multi-Region keys. You can specify the same tags or different tags for each key in a set of related multi-Region keys. AWS KMS does not synchronize this property.\n\nEach tag consists of a tag key and a tag value. Both the tag key and the tag value are required, but the tag value can be an empty (null) string. You cannot have more than one tag on a KMS key with the same tag key. If you specify an existing tag key with a different tag value, AWS KMS replaces the current tag value with the specified one.\n\nWhen you assign tags to an AWS resource, AWS generates a cost allocation report with usage and costs aggregated by tags. Tags can also be used to control access to a KMS key. For details, see [Tagging keys](https://docs.aws.amazon.com/kms/latest/developerguide/tagging-keys.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags to the replica key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 1088
+          },
+          "name": "tags",
+          "type": {
+            "fqn": "@aws-cdk/core.TagManager"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html#cfn-kms-replicakey-keypolicy"
+            },
+            "remarks": "The key policy is not a shared property of multi-Region keys. You can specify the same key policy or a different key policy for each key in a set of related multi-Region keys. AWS KMS does not synchronize this property.\n\nThe key policy must conform to the following rules.\n\n- The key policy must give the caller [PutKeyPolicy](https://docs.aws.amazon.com/kms/latest/APIReference/API_PutKeyPolicy.html) permission on the KMS key. This reduces the risk that the KMS key becomes unmanageable. For more information, refer to the scenario in the [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam) section of the **AWS Key Management Service Developer Guide** .\n- Each statement in the key policy must contain one or more principals. The principals in the key policy must exist and be visible to AWS KMS . When you create a new AWS principal (for example, an IAM user or role), you might need to enforce a delay before including the new principal in a key policy because the new principal might not be immediately visible to AWS KMS . For more information, see [Changes that I make are not always immediately visible](https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_general.html#troubleshoot_general_eventual-consistency) in the *AWS Identity and Access Management User Guide* .\n\nA key policy document can include only the following characters:\n\n- Printable ASCII characters from the space character ( `\\ u0020` ) through the end of the ASCII character range.\n- Printable characters in the Basic Latin and Latin-1 Supplement character set (through `\\ u00FF` ).\n- The tab ( `\\ u0009` ), line feed ( `\\ u000A` ), and carriage return ( `\\ u000D` ) special characters\n\n*Minimum* : `1`\n\n*Maximum* : `32768`",
+            "stability": "external",
+            "summary": "The key policy that authorizes use of the replica key."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 1015
+          },
+          "name": "keyPolicy",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html#cfn-kms-replicakey-primarykeyarn"
+            },
+            "remarks": "The primary key must be in a different AWS Region of the same AWS partition. You can create only one replica of a given primary key in each AWS Region .\n\n> If you change the `PrimaryKeyArn` value of a replica key, the existing replica key is scheduled for deletion and a new replica key is created based on the specified primary key. While it is scheduled for deletion, the existing replica key becomes unusable. You can cancel the scheduled deletion of the key outside of CloudFormation.\n>\n> However, if you inadvertently delete a replica key, you can decrypt ciphertext encrypted by that replica key by using any related multi-Region key. If necessary, you can recreate the replica in the same Region after the previous one is completely deleted. For details, see [Deleting multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-delete.html) in the *AWS Key Management Service Developer Guide*\n\nSpecify the key ARN of an existing multi-Region primary key. For example, `arn:aws:kms:us-east-2:111122223333:key/mrk-1234abcd12ab34cd56ef1234567890ab` .",
+            "stability": "external",
+            "summary": "Specifies the multi-Region primary key to replicate."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 1028
+          },
+          "name": "primaryKeyArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html#cfn-kms-replicakey-description"
+            },
+            "remarks": "The default value is an empty string (no description).\n\nThe description is not a shared property of multi-Region keys. You can specify the same description or a different description for each key in a set of related multi-Region keys. AWS Key Management Service does not synchronize this property.",
+            "stability": "external",
+            "summary": "A description of the KMS key."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 1039
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html#cfn-kms-replicakey-enabled"
+            },
+            "remarks": "When `Enabled` is `true` , the *key state* of the KMS key is `Enabled` . When `Enabled` is `false` , the key state of the KMS key is `Disabled` . The default value is `true` .\n\nThe actual key state of the replica might be affected by actions taken outside of CloudFormation, such as running the [EnableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_EnableKey.html) , [DisableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_DisableKey.html) , or [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operations. Also, while the replica key is being created, its key state is `Creating` . When the process is complete, the key state of the replica key changes to `Enabled` .\n\nFor information about the key states of a KMS key, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* .",
+            "stability": "external",
+            "summary": "Specifies whether the replica key is enabled. Disabled KMS keys cannot be used in cryptographic operations."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 1052
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html#cfn-kms-replicakey-pendingwindowindays"
+            },
+            "remarks": "Enter a value between 7 and 30 days. The default value is 30 days.\n\nWhen you remove a replica key from a CloudFormation stack, AWS KMS schedules the replica key for deletion and starts the mandatory waiting period. The `PendingWindowInDays` property determines the length of waiting period. During the waiting period, the key state of replica key is `Pending Deletion` , which prevents it from being used in cryptographic operations. When the waiting period expires, AWS KMS permanently deletes the replica key.\n\nIf the KMS key is a multi-Region primary key with replica keys, the waiting period begins when the last of its replica keys is deleted. Otherwise, the waiting period begins immediately.\n\nYou cannot use a CloudFormation template to cancel deletion of the replica after you remove it from the stack, regardless of the waiting period. However, if you specify a replica key in your template that is based on the same primary key as the original replica key, CloudFormation creates a new replica key with the same key ID, key material, and other shared properties of the original replica key. This new replica key can decrypt ciphertext that was encrypted under the original replica key, or any related multi-Region key.\n\nFor detailed information about deleting multi-Region keys, see [Deleting multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-delete.html) in the *AWS Key Management Service Developer Guide* .\n\nFor information about the `PendingDeletion` key state, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* . For more information about deleting KMS keys, see the [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operation in the *AWS Key Management Service API Reference* and [Deleting KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html) in the *AWS Key Management Service Developer Guide* .\n\n*Minimum* : 7\n\n*Maximum* : 30",
+            "stability": "external",
+            "summary": "Specifies the number of days in the waiting period before AWS KMS deletes a replica key that has been removed from a CloudFormation stack."
+          },
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 1073
+          },
+          "name": "pendingWindowInDays",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/kms.generated:CfnReplicaKey"
+    },
+    "@aws-cdk/aws-kms.CfnReplicaKeyProps": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "docs": {
+        "custom": {
+          "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html"
+        },
+        "stability": "external",
+        "summary": "Properties for defining a `CfnReplicaKey`."
+      },
+      "fqn": "@aws-cdk/aws-kms.CfnReplicaKeyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/kms.generated.ts",
+        "line": 766
+      },
+      "name": "CfnReplicaKeyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html#cfn-kms-replicakey-keypolicy"
+            },
+            "remarks": "The key policy is not a shared property of multi-Region keys. You can specify the same key policy or a different key policy for each key in a set of related multi-Region keys. AWS KMS does not synchronize this property.\n\nThe key policy must conform to the following rules.\n\n- The key policy must give the caller [PutKeyPolicy](https://docs.aws.amazon.com/kms/latest/APIReference/API_PutKeyPolicy.html) permission on the KMS key. This reduces the risk that the KMS key becomes unmanageable. For more information, refer to the scenario in the [Default key policy](https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam) section of the **AWS Key Management Service Developer Guide** .\n- Each statement in the key policy must contain one or more principals. The principals in the key policy must exist and be visible to AWS KMS . When you create a new AWS principal (for example, an IAM user or role), you might need to enforce a delay before including the new principal in a key policy because the new principal might not be immediately visible to AWS KMS . For more information, see [Changes that I make are not always immediately visible](https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_general.html#troubleshoot_general_eventual-consistency) in the *AWS Identity and Access Management User Guide* .\n\nA key policy document can include only the following characters:\n\n- Printable ASCII characters from the space character ( `\\ u0020` ) through the end of the ASCII character range.\n- Printable characters in the Basic Latin and Latin-1 Supplement character set (through `\\ u00FF` ).\n- The tab ( `\\ u0009` ), line feed ( `\\ u000A` ), and carriage return ( `\\ u000D` ) special characters\n\n*Minimum* : `1`\n\n*Maximum* : `32768`",
+            "stability": "external",
+            "summary": "The key policy that authorizes use of the replica key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 790
+          },
+          "name": "keyPolicy",
+          "type": {
+            "primitive": "any"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html#cfn-kms-replicakey-primarykeyarn"
+            },
+            "remarks": "The primary key must be in a different AWS Region of the same AWS partition. You can create only one replica of a given primary key in each AWS Region .\n\n> If you change the `PrimaryKeyArn` value of a replica key, the existing replica key is scheduled for deletion and a new replica key is created based on the specified primary key. While it is scheduled for deletion, the existing replica key becomes unusable. You can cancel the scheduled deletion of the key outside of CloudFormation.\n>\n> However, if you inadvertently delete a replica key, you can decrypt ciphertext encrypted by that replica key by using any related multi-Region key. If necessary, you can recreate the replica in the same Region after the previous one is completely deleted. For details, see [Deleting multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-delete.html) in the *AWS Key Management Service Developer Guide*\n\nSpecify the key ARN of an existing multi-Region primary key. For example, `arn:aws:kms:us-east-2:111122223333:key/mrk-1234abcd12ab34cd56ef1234567890ab` .",
+            "stability": "external",
+            "summary": "Specifies the multi-Region primary key to replicate."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 803
+          },
+          "name": "primaryKeyArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html#cfn-kms-replicakey-description"
+            },
+            "remarks": "The default value is an empty string (no description).\n\nThe description is not a shared property of multi-Region keys. You can specify the same description or a different description for each key in a set of related multi-Region keys. AWS Key Management Service does not synchronize this property.",
+            "stability": "external",
+            "summary": "A description of the KMS key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 814
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html#cfn-kms-replicakey-enabled"
+            },
+            "remarks": "When `Enabled` is `true` , the *key state* of the KMS key is `Enabled` . When `Enabled` is `false` , the key state of the KMS key is `Disabled` . The default value is `true` .\n\nThe actual key state of the replica might be affected by actions taken outside of CloudFormation, such as running the [EnableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_EnableKey.html) , [DisableKey](https://docs.aws.amazon.com/kms/latest/APIReference/API_DisableKey.html) , or [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operations. Also, while the replica key is being created, its key state is `Creating` . When the process is complete, the key state of the replica key changes to `Enabled` .\n\nFor information about the key states of a KMS key, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* .",
+            "stability": "external",
+            "summary": "Specifies whether the replica key is enabled. Disabled KMS keys cannot be used in cryptographic operations."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 827
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "union": {
+              "types": [
+                {
+                  "primitive": "boolean"
+                },
+                {
+                  "fqn": "@aws-cdk/core.IResolvable"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html#cfn-kms-replicakey-pendingwindowindays"
+            },
+            "remarks": "Enter a value between 7 and 30 days. The default value is 30 days.\n\nWhen you remove a replica key from a CloudFormation stack, AWS KMS schedules the replica key for deletion and starts the mandatory waiting period. The `PendingWindowInDays` property determines the length of waiting period. During the waiting period, the key state of replica key is `Pending Deletion` , which prevents it from being used in cryptographic operations. When the waiting period expires, AWS KMS permanently deletes the replica key.\n\nIf the KMS key is a multi-Region primary key with replica keys, the waiting period begins when the last of its replica keys is deleted. Otherwise, the waiting period begins immediately.\n\nYou cannot use a CloudFormation template to cancel deletion of the replica after you remove it from the stack, regardless of the waiting period. However, if you specify a replica key in your template that is based on the same primary key as the original replica key, CloudFormation creates a new replica key with the same key ID, key material, and other shared properties of the original replica key. This new replica key can decrypt ciphertext that was encrypted under the original replica key, or any related multi-Region key.\n\nFor detailed information about deleting multi-Region keys, see [Deleting multi-Region keys](https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-delete.html) in the *AWS Key Management Service Developer Guide* .\n\nFor information about the `PendingDeletion` key state, see [Key state: Effect on your KMS key](https://docs.aws.amazon.com/kms/latest/developerguide/key-state.html) in the *AWS Key Management Service Developer Guide* . For more information about deleting KMS keys, see the [ScheduleKeyDeletion](https://docs.aws.amazon.com/kms/latest/APIReference/API_ScheduleKeyDeletion.html) operation in the *AWS Key Management Service API Reference* and [Deleting KMS keys](https://docs.aws.amazon.com/kms/latest/developerguide/deleting-keys.html) in the *AWS Key Management Service Developer Guide* .\n\n*Minimum* : 7\n\n*Maximum* : 30",
+            "stability": "external",
+            "summary": "Specifies the number of days in the waiting period before AWS KMS deletes a replica key that has been removed from a CloudFormation stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 848
+          },
+          "name": "pendingWindowInDays",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "link": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-replicakey.html#cfn-kms-replicakey-tags"
+            },
+            "remarks": "> Tagging or untagging a KMS key can allow or deny permission to the KMS key. For details, see [ABAC for AWS KMS](https://docs.aws.amazon.com/kms/latest/developerguide/abac.html) in the *AWS Key Management Service Developer Guide* .\n\nTags are not a shared property of multi-Region keys. You can specify the same tags or different tags for each key in a set of related multi-Region keys. AWS KMS does not synchronize this property.\n\nEach tag consists of a tag key and a tag value. Both the tag key and the tag value are required, but the tag value can be an empty (null) string. You cannot have more than one tag on a KMS key with the same tag key. If you specify an existing tag key with a different tag value, AWS KMS replaces the current tag value with the specified one.\n\nWhen you assign tags to an AWS resource, AWS generates a cost allocation report with usage and costs aggregated by tags. Tags can also be used to control access to a KMS key. For details, see [Tagging keys](https://docs.aws.amazon.com/kms/latest/developerguide/tagging-keys.html) .",
+            "stability": "external",
+            "summary": "Assigns one or more tags to the replica key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/kms.generated.ts",
+            "line": 863
+          },
+          "name": "tags",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/core.CfnTag"
+              },
+              "kind": "array"
+            }
+          }
+        }
+      ],
+      "symbolId": "lib/kms.generated:CfnReplicaKeyProps"
+    },
+    "@aws-cdk/aws-kms.IAlias": {
+      "assembly": "@aws-cdk/aws-kms",
+      "docs": {
+        "remarks": "An alias can be used in all places that expect a key.",
+        "stability": "stable",
+        "summary": "A KMS Key alias."
+      },
+      "fqn": "@aws-cdk/aws-kms.IAlias",
+      "interfaces": [
+        "@aws-cdk/aws-kms.IKey"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/alias.ts",
+        "line": 14
+      },
+      "name": "IAlias",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The name of the alias."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 20
+          },
+          "name": "aliasName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The Key to which the Alias refers."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/alias.ts",
+            "line": 27
+          },
+          "name": "aliasTargetKey",
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.IKey"
+          }
+        }
+      ],
+      "symbolId": "lib/alias:IAlias"
+    },
+    "@aws-cdk/aws-kms.IKey": {
+      "assembly": "@aws-cdk/aws-kms",
+      "docs": {
+        "stability": "stable",
+        "summary": "A KMS Key, either managed by this CDK app, or imported."
+      },
+      "fqn": "@aws-cdk/aws-kms.IKey",
+      "interfaces": [
+        "@aws-cdk/core.IResource"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/key.ts",
+        "line": 27
+      },
+      "methods": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a new alias for the key."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 46
+          },
+          "name": "addAlias",
+          "parameters": [
+            {
+              "name": "alias",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.Alias"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Adds a statement to the KMS key resource policy."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 55
+          },
+          "name": "addToResourcePolicy",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The policy statement to add."
+              },
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            },
+            {
+              "docs": {
+                "summary": "If this is set to `false` and there is no policy defined (i.e. external key), the operation will fail. Otherwise, it will no-op."
+              },
+              "name": "allowNoOp",
+              "optional": true,
+              "type": {
+                "primitive": "boolean"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.AddToResourcePolicyResult"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant the indicated permissions on this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 60
+          },
+          "name": "grant",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            },
+            {
+              "name": "actions",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          },
+          "variadic": true
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant decryption permissions using this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 65
+          },
+          "name": "grantDecrypt",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant encryption permissions using this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 70
+          },
+          "name": "grantEncrypt",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant encryption and decryption permissions using this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 75
+          },
+          "name": "grantEncryptDecrypt",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant permissions to generating MACs to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 80
+          },
+          "name": "grantGenerateMac",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant permissions to verifying MACs to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 85
+          },
+          "name": "grantVerifyMac",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        }
+      ],
+      "name": "IKey",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The ARN of the key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 33
+          },
+          "name": "keyArn",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "custom": {
+              "attribute": "true"
+            },
+            "stability": "stable",
+            "summary": "The ID of the key (the part that looks something like: 1234abcd-12ab-34cd-56ef-1234567890ab)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 41
+          },
+          "name": "keyId",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/key:IKey"
+    },
+    "@aws-cdk/aws-kms.Key": {
+      "assembly": "@aws-cdk/aws-kms",
+      "base": "@aws-cdk/core.Resource",
+      "docs": {
+        "custom": {
+          "resource": "AWS::KMS::Key"
+        },
+        "stability": "stable",
+        "summary": "Defines a KMS key."
+      },
+      "fqn": "@aws-cdk/aws-kms.Key",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/key.ts",
+          "line": 666
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.KeyProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/aws-kms.IKey"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/key.ts",
+        "line": 523
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "This is most useful when combined with the cloudformation-include module.\nThis method is different than `fromKeyArn()` because the `IKey`\nreturned from this method is mutable;\nmeaning, calling any mutating methods on it,\nlike `IKey.addToResourcePolicy()`,\nwill actually be reflected in the resulting template,\nas opposed to the object returned from `fromKeyArn()`,\non which calling those methods would have no effect.",
+            "stability": "stable",
+            "summary": "Create a mutable `IKey` based on a low-level `CfnKey`."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 569
+          },
+          "name": "fromCfnKey",
+          "parameters": [
+            {
+              "name": "cfnKey",
+              "type": {
+                "fqn": "@aws-cdk/aws-kms.CfnKey"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.IKey"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Import an externally defined KMS Key using its ARN."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 531
+          },
+          "name": "fromKeyArn",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the construct that will \"own\" the imported key."
+              },
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the id of the imported key in the construct tree."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the ARN of an existing KMS key."
+              },
+              "name": "keyArn",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.IKey"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "remarks": "This function only needs to be used to use Keys not defined in your CDK\napplication. If you are looking to share a Key between stacks, you can\npass the `Key` object between stacks and use it as normal. In addition,\nit's not necessary to use this method if an interface accepts an `IKey`.\nIn this case, `Alias.fromAliasName()` can be used which returns an alias\nthat extends `IKey`.\n\nCalling this method will lead to a lookup when the CDK CLI is executed.\nYou can therefore not use any values that will only be available at\nCloudFormation execution time (i.e., Tokens).\n\nThe Key information will be cached in `cdk.context.json` and the same Key\nwill be used on future runs. To refresh the lookup, you will have to\nevict the value from the cache using the `cdk context` command. See\nhttps://docs.aws.amazon.com/cdk/latest/guide/context.html for more information.",
+            "stability": "stable",
+            "summary": "Import an existing Key by querying the AWS environment this stack is deployed to."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 626
+          },
+          "name": "fromLookup",
+          "parameters": [
+            {
+              "name": "scope",
+              "type": {
+                "fqn": "constructs.Construct"
+              }
+            },
+            {
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/aws-kms.KeyLookupOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.IKey"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Defines a new alias for the key."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 129
+          },
+          "name": "addAlias",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "aliasName",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-kms.Alias"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Adds a statement to the KMS key resource policy."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 145
+          },
+          "name": "addToResourcePolicy",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The policy statement to add."
+              },
+              "name": "statement",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.PolicyStatement"
+              }
+            },
+            {
+              "docs": {
+                "summary": "If this is set to `false` and there is no policy defined (i.e. external key), the operation will fail. Otherwise, it will no-op."
+              },
+              "name": "allowNoOp",
+              "optional": true,
+              "type": {
+                "primitive": "boolean"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.AddToResourcePolicyResult"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "This modifies both the principal's policy as well as the resource policy,\nsince the default CloudFormation setup for KMS keys is that the policy\nmust not be empty and so default grants won't work.",
+            "stability": "stable",
+            "summary": "Grant the indicated permissions on this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 164
+          },
+          "name": "grant",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            },
+            {
+              "name": "actions",
+              "type": {
+                "primitive": "string"
+              },
+              "variadic": true
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          },
+          "variadic": true
+        },
+        {
+          "docs": {
+            "remarks": "Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions\nto use the key in cryptographic operations (e.g., encrypt, decrypt).",
+            "stability": "stable",
+            "summary": "Grant admins permissions using this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 770
+          },
+          "name": "grantAdmin",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant decryption permissions using this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 201
+          },
+          "name": "grantDecrypt",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant encryption permissions using this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 208
+          },
+          "name": "grantEncrypt",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant encryption and decryption permissions using this key to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 215
+          },
+          "name": "grantEncryptDecrypt",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant permissions to generating MACs to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 222
+          },
+          "name": "grantGenerateMac",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grant permissions to verifying MACs to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 229
+          },
+          "name": "grantVerifyMac",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.Grant"
+            }
+          }
+        }
+      ],
+      "name": "Key",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The ARN of the key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 661
+          },
+          "name": "keyArn",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The ID of the key (the part that looks something like: 1234abcd-12ab-34cd-56ef-1234567890ab)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 662
+          },
+          "name": "keyId",
+          "overrides": "@aws-cdk/aws-kms.IKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "If specified, grants will default identity policies instead of to both\nresource and identity policies. This matches the default behavior when creating\nKMS keys via the API or console.",
+            "stability": "stable",
+            "summary": "Optional property to control trusting account identities."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 664
+          },
+          "name": "trustAccountIdentities",
+          "protected": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "If specified, addToResourcePolicy can be used to edit this policy.\nOtherwise this method will no-op.",
+            "stability": "stable",
+            "summary": "Optional policy document that represents the resource policy of this key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 663
+          },
+          "name": "policy",
+          "optional": true,
+          "protected": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.PolicyDocument"
+          }
+        }
+      ],
+      "symbolId": "lib/key:Key"
+    },
+    "@aws-cdk/aws-kms.KeyLookupOptions": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Properties for looking up an existing Key."
+      },
+      "fqn": "@aws-cdk/aws-kms.KeyLookupOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/key-lookup.ts",
+        "line": 4
+      },
+      "name": "KeyLookupOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Must be in the format `alias/<AliasName>`.",
+            "stability": "stable",
+            "summary": "The alias name of the Key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key-lookup.ts",
+            "line": 10
+          },
+          "name": "aliasName",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/key-lookup:KeyLookupOptions"
+    },
+    "@aws-cdk/aws-kms.KeyProps": {
+      "assembly": "@aws-cdk/aws-kms",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Construction properties for a KMS Key object."
+      },
+      "fqn": "@aws-cdk/aws-kms.KeyProps",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/key.ts",
+        "line": 400
+      },
+      "name": "KeyProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "[]",
+            "remarks": "Key administrators have permissions to manage the key (e.g., change permissions, revoke), but do not have permissions\nto use the key in cryptographic operations (e.g., encrypt, decrypt).\n\nThese principals will be added to the default key policy (if none specified), or to the specified policy (if provided).",
+            "stability": "stable",
+            "summary": "A list of principals to add as key administrators to the key policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 474
+          },
+          "name": "admins",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-iam.IPrincipal"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No alias is added for the key.",
+            "remarks": "More aliases can be added later by calling `addAlias`.",
+            "stability": "stable",
+            "summary": "Initial alias to add to the key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 416
+          },
+          "name": "alias",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No description.",
+            "remarks": "Use a description that helps your users decide\nwhether the key is appropriate for a particular task.",
+            "stability": "stable",
+            "summary": "A description of the key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 407
+          },
+          "name": "description",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- Key is enabled.",
+            "stability": "stable",
+            "summary": "Indicates whether the key is available for use."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 430
+          },
+          "name": "enabled",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "stability": "stable",
+            "summary": "Indicates whether AWS KMS rotates the key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 423
+          },
+          "name": "enableKeyRotation",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "KeySpec.SYMMETRIC_DEFAULT",
+            "remarks": "IMPORTANT: If you change this property of an existing key, the existing key is scheduled for deletion\nand a new key is created with the specified value.",
+            "stability": "stable",
+            "summary": "The cryptographic configuration of the key. The valid value depends on usage of the key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 440
+          },
+          "name": "keySpec",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.KeySpec"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "KeyUsage.ENCRYPT_DECRYPT",
+            "remarks": "IMPORTANT: If you change this property of an existing key, the existing key is scheduled for deletion\nand a new key is created with the specified value.",
+            "stability": "stable",
+            "summary": "The cryptographic operations for which the key can be used."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 450
+          },
+          "name": "keyUsage",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-kms.KeyUsage"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- 30 days",
+            "remarks": "When you remove a customer master key (CMK) from a CloudFormation stack, AWS KMS schedules the CMK for deletion\nand starts the mandatory waiting period. The PendingWindowInDays property determines the length of waiting period.\nDuring the waiting period, the key state of CMK is Pending Deletion, which prevents the CMK from being used in\ncryptographic operations. When the waiting period expires, AWS KMS permanently deletes the CMK.\n\nEnter a value between 7 and 30 days.",
+            "see": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kms-key.html#cfn-kms-key-pendingwindowindays",
+            "stability": "stable",
+            "summary": "Specifies the number of days in the waiting period before AWS KMS deletes a CMK that has been removed from a CloudFormation stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 515
+          },
+          "name": "pendingWindow",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/core.Duration"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- A policy document with permissions for the account root to\nadminister the key will be created.",
+            "remarks": "NOTE - If the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set (the default for new projects),\nthis policy will *override* the default key policy and become the only key policy for the key. If the\nfeature flag is not set, this policy will be appended to the default key policy.",
+            "stability": "stable",
+            "summary": "Custom policy document to attach to the KMS key."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 462
+          },
+          "name": "policy",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.PolicyDocument"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "RemovalPolicy.Retain",
+            "remarks": "This is useful when one wants to\nretain access to data that was encrypted with a key that is being retired.",
+            "stability": "stable",
+            "summary": "Whether the encryption key should be retained when it is removed from the Stack."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 482
+          },
+          "name": "removalPolicy",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/core.RemovalPolicy"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- false, unless the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set.",
+            "deprecated": "redundant with the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag",
+            "remarks": "Setting this to true adds a default statement which delegates key\naccess control completely to the identity's IAM policy (similar\nto how it works for other AWS resources). This matches the default behavior\nwhen creating KMS keys via the API or console.\n\nIf the `@aws-cdk/aws-kms:defaultKeyPolicies` feature flag is set (the default for new projects),\nthis flag will always be treated as 'true' and does not need to be explicitly set.",
+            "see": "https://docs.aws.amazon.com/kms/latest/developerguide/key-policies.html#key-policy-default-allow-root-enable-iam",
+            "stability": "deprecated",
+            "summary": "Whether the key usage can be granted by IAM policies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/key.ts",
+            "line": 499
+          },
+          "name": "trustAccountIdentities",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/key:KeyProps"
+    },
+    "@aws-cdk/aws-kms.KeySpec": {
+      "assembly": "@aws-cdk/aws-kms",
+      "docs": {
+        "stability": "stable",
+        "summary": "The key spec, represents the cryptographic configuration of keys."
+      },
+      "fqn": "@aws-cdk/aws-kms.KeySpec",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/key.ts",
+        "line": 281
+      },
+      "members": [
+        {
+          "docs": {
+            "remarks": "Valid usage: ENCRYPT_DECRYPT",
+            "stability": "stable",
+            "summary": "The default key spec."
+          },
+          "name": "SYMMETRIC_DEFAULT"
+        },
+        {
+          "docs": {
+            "remarks": "Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY",
+            "stability": "stable",
+            "summary": "RSA with 2048 bits of key."
+          },
+          "name": "RSA_2048"
+        },
+        {
+          "docs": {
+            "remarks": "Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY",
+            "stability": "stable",
+            "summary": "RSA with 3072 bits of key."
+          },
+          "name": "RSA_3072"
+        },
+        {
+          "docs": {
+            "remarks": "Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY",
+            "stability": "stable",
+            "summary": "RSA with 4096 bits of key."
+          },
+          "name": "RSA_4096"
+        },
+        {
+          "docs": {
+            "remarks": "Valid usage: SIGN_VERIFY",
+            "stability": "stable",
+            "summary": "NIST FIPS 186-4, Section 6.4, ECDSA signature using the curve specified by the key and SHA-256 for the message digest."
+          },
+          "name": "ECC_NIST_P256"
+        },
+        {
+          "docs": {
+            "remarks": "Valid usage: SIGN_VERIFY",
+            "stability": "stable",
+            "summary": "NIST FIPS 186-4, Section 6.4, ECDSA signature using the curve specified by the key and SHA-384 for the message digest."
+          },
+          "name": "ECC_NIST_P384"
+        },
+        {
+          "docs": {
+            "remarks": "Valid usage: SIGN_VERIFY",
+            "stability": "stable",
+            "summary": "NIST FIPS 186-4, Section 6.4, ECDSA signature using the curve specified by the key and SHA-512 for the message digest."
+          },
+          "name": "ECC_NIST_P521"
+        },
+        {
+          "docs": {
+            "remarks": "Valid usage: SIGN_VERIFY",
+            "stability": "stable",
+            "summary": "Standards for Efficient Cryptography 2, Section 2.4.1, ECDSA signature on the Koblitz curve."
+          },
+          "name": "ECC_SECG_P256K1"
+        },
+        {
+          "docs": {
+            "remarks": "Valid usage: GENERATE_VERIFY_MAC",
+            "stability": "stable",
+            "summary": "Hash-Based Message Authentication Code as defined in RFC 2104 using the message digest function SHA224."
+          },
+          "name": "HMAC_224"
+        },
+        {
+          "docs": {
+            "remarks": "Valid usage: GENERATE_VERIFY_MAC",
+            "stability": "stable",
+            "summary": "Hash-Based Message Authentication Code as defined in RFC 2104 using the message digest function SHA256."
+          },
+          "name": "HMAC_256"
+        },
+        {
+          "docs": {
+            "remarks": "Valid usage: GENERATE_VERIFY_MAC",
+            "stability": "stable",
+            "summary": "Hash-Based Message Authentication Code as defined in RFC 2104 using the message digest function SHA384."
+          },
+          "name": "HMAC_384"
+        },
+        {
+          "docs": {
+            "remarks": "Valid usage: GENERATE_VERIFY_MAC",
+            "stability": "stable",
+            "summary": "Hash-Based Message Authentication Code as defined in RFC 2104 using the message digest function SHA512."
+          },
+          "name": "HMAC_512"
+        },
+        {
+          "docs": {
+            "remarks": "Valid usage: ENCRYPT_DECRYPT and SIGN_VERIFY",
+            "stability": "stable",
+            "summary": "Elliptic curve key spec available only in China Regions."
+          },
+          "name": "SM2"
+        }
+      ],
+      "name": "KeySpec",
+      "symbolId": "lib/key:KeySpec"
+    },
+    "@aws-cdk/aws-kms.KeyUsage": {
+      "assembly": "@aws-cdk/aws-kms",
+      "docs": {
+        "stability": "stable",
+        "summary": "The key usage, represents the cryptographic operations of keys."
+      },
+      "fqn": "@aws-cdk/aws-kms.KeyUsage",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/key.ts",
+        "line": 380
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Encryption and decryption."
+          },
+          "name": "ENCRYPT_DECRYPT"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Signing and verification."
+          },
+          "name": "SIGN_VERIFY"
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Generating and verifying MACs."
+          },
+          "name": "GENERATE_VERIFY_MAC"
+        }
+      ],
+      "name": "KeyUsage",
+      "symbolId": "lib/key:KeyUsage"
+    },
+    "@aws-cdk/aws-kms.ViaServicePrincipal": {
+      "assembly": "@aws-cdk/aws-kms",
+      "base": "@aws-cdk/aws-iam.PrincipalBase",
+      "docs": {
+        "stability": "stable",
+        "summary": "A principal to allow access to a key if it's being used through another AWS service."
+      },
+      "fqn": "@aws-cdk/aws-kms.ViaServicePrincipal",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/via-service-principal.ts",
+          "line": 9
+        },
+        "parameters": [
+          {
+            "name": "serviceName",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "basePrincipal",
+            "optional": true,
+            "type": {
+              "fqn": "@aws-cdk/aws-iam.IPrincipal"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/via-service-principal.ts",
+        "line": 6
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return whether or not this principal is equal to the given principal."
+          },
+          "locationInModule": {
+            "filename": "lib/via-service-principal.ts",
+            "line": 28
+          },
+          "name": "dedupeString",
+          "overrides": "@aws-cdk/aws-iam.PrincipalBase",
+          "returns": {
+            "optional": true,
+            "type": {
+              "primitive": "string"
+            }
+          }
+        }
+      ],
+      "name": "ViaServicePrincipal",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Return the policy fragment that identifies this principal in a Policy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/via-service-principal.ts",
+            "line": 14
+          },
+          "name": "policyFragment",
+          "overrides": "@aws-cdk/aws-iam.PrincipalBase",
+          "type": {
+            "fqn": "@aws-cdk/aws-iam.PrincipalPolicyFragment"
+          }
+        }
+      ],
+      "symbolId": "lib/via-service-principal:ViaServicePrincipal"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "pYUEqjCEXA/AN4XK94ng8O2yp6oc3auMqOBBjI1y9jY="
+}

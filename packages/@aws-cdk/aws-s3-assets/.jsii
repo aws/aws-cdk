@@ -1,0 +1,734 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/assets": "0.0.0",
+    "@aws-cdk/aws-iam": "0.0.0",
+    "@aws-cdk/aws-kms": "0.0.0",
+    "@aws-cdk/aws-s3": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/assets": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.Assets",
+          "packageId": "Amazon.CDK.Assets"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-assets",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.assets"
+        },
+        "js": {
+          "npm": "@aws-cdk/assets"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.assets",
+          "module": "aws_cdk.assets"
+        }
+      }
+    },
+    "@aws-cdk/aws-events": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.Events",
+          "packageId": "Amazon.CDK.AWS.Events"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "events",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.events"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-events"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-events",
+          "module": "aws_cdk.aws_events"
+        }
+      }
+    },
+    "@aws-cdk/aws-iam": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.IAM",
+          "packageId": "Amazon.CDK.AWS.IAM"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "iam",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.iam"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-iam"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-iam",
+          "module": "aws_cdk.aws_iam"
+        }
+      }
+    },
+    "@aws-cdk/aws-kms": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.KMS",
+          "packageId": "Amazon.CDK.AWS.KMS"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "kms",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.kms"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-kms"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-kms",
+          "module": "aws_cdk.aws_kms"
+        }
+      }
+    },
+    "@aws-cdk/aws-s3": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.AWS.S3",
+          "packageId": "Amazon.CDK.AWS.S3"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "s3",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.services.s3"
+        },
+        "js": {
+          "npm": "@aws-cdk/aws-s3"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.aws-s3",
+          "module": "aws_cdk.aws_s3"
+        }
+      }
+    },
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "Deploy local files and directories to S3",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "5.0.0 (build 4ff1caa)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "s3",
+    "constructs",
+    "assets"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/aws-s3-assets",
+  "readme": {
+    "markdown": "# AWS CDK Assets\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)\n\n---\n\n<!--END STABILITY BANNER-->\n\nAssets are local files or directories which are needed by a CDK app. A common\nexample is a directory which contains the handler code for a Lambda function,\nbut assets can represent any artifact that is needed for the app's operation.\n\nWhen deploying a CDK app that includes constructs with assets, the CDK toolkit\nwill first upload all the assets to S3, and only then deploy the stacks. The S3\nlocations of the uploaded assets will be passed in as CloudFormation Parameters\nto the relevant stacks.\n\nThe following JavaScript example defines a directory asset which is archived as\na .zip file and uploaded to S3 during deployment.\n\n```ts lit=test/integ.assets.directory.lit.ts\nconst asset = new assets.Asset(this, 'SampleAsset', {\n  path: path.join(__dirname, 'sample-asset-directory'),\n});\n```\n\nThe following JavaScript example defines a file asset, which is uploaded as-is\nto an S3 bucket during deployment.\n\n```ts lit=test/integ.assets.file.lit.ts\nconst asset = new assets.Asset(this, 'SampleAsset', {\n  path: path.join(__dirname, 'file-asset.txt'),\n});\n```\n\n## Attributes\n\n`Asset` constructs expose the following deploy-time attributes:\n\n * `s3BucketName` - the name of the assets S3 bucket.\n * `s3ObjectKey` - the S3 object key of the asset file (whether it's a file or a zip archive)\n * `s3ObjectUrl` - the S3 object URL of the asset (i.e. s3://mybucket/mykey.zip)\n * `httpUrl` - the S3 HTTP URL of the asset (i.e. https://s3.us-east-1.amazonaws.com/mybucket/mykey.zip)\n\nIn the following example, the various asset attributes are exported as stack outputs:\n\n```ts lit=test/integ.assets.refs.lit.ts\n    const asset = new assets.Asset(this, 'SampleAsset', {\n      path: path.join(__dirname, 'sample-asset-directory'),\n    });\n\n    new cdk.CfnOutput(this, 'S3BucketName', { value: asset.s3BucketName });\n    new cdk.CfnOutput(this, 'S3ObjectKey', { value: asset.s3ObjectKey });\n    new cdk.CfnOutput(this, 'S3HttpURL', { value: asset.httpUrl });\n    new cdk.CfnOutput(this, 'S3ObjectURL', { value: asset.s3ObjectUrl });\n```\n\n## Permissions\n\nIAM roles, users or groups which need to be able to read assets in runtime will should be\ngranted IAM permissions. To do that use the `asset.grantRead(principal)` method:\n\nThe following example grants an IAM group read permissions on an asset:\n\n```ts lit=test/integ.assets.permissions.lit.ts\nconst group = new iam.Group(this, 'MyUserGroup');\nasset.grantRead(group);\n```\n\n## How does it work\n\nWhen an asset is defined in a construct, a construct metadata entry\n`aws:cdk:asset` is emitted with instructions on where to find the asset and what\ntype of packaging to perform (`zip` or `file`). Furthermore, the synthesized\nCloudFormation template will also include two CloudFormation parameters: one for\nthe asset's bucket and one for the asset S3 key. Those parameters are used to\nreference the deploy-time values of the asset (using `{ Ref: \"Param\" }`).\n\nThen, when the stack is deployed, the toolkit will package the asset (i.e. zip\nthe directory), calculate an MD5 hash of the contents and will render an S3 key\nfor this asset within the toolkit's asset store. If the file doesn't exist in\nthe asset store, it is uploaded during deployment.\n\n> The toolkit's asset store is an S3 bucket created by the toolkit for each\n  environment the toolkit operates in (environment = account + region).\n\nNow, when the toolkit deploys the stack, it will set the relevant CloudFormation\nParameters to point to the actual bucket and key for each asset.\n\n## Asset Bundling\n\nWhen defining an asset, you can use the `bundling` option to specify a command\nto run inside a docker container. The command can read the contents of the asset\nsource from `/asset-input` and is expected to write files under `/asset-output`\n(directories mapped inside the container). The files under `/asset-output` will\nbe zipped and uploaded to S3 as the asset.\n\nThe following example uses custom asset bundling to convert a markdown file to html:\n\n```ts lit=test/integ.assets.bundling.lit.ts\nconst asset = new assets.Asset(this, 'BundledAsset', {\n  path: path.join(__dirname, 'markdown-asset'), // /asset-input and working directory in the container\n  bundling: {\n    image: DockerImage.fromBuild(path.join(__dirname, 'alpine-markdown')), // Build an image\n    command: [\n      'sh', '-c', `\n        markdown index.md > /asset-output/index.html\n      `,\n    ],\n  },\n});\n```\n\nThe bundling docker image (`image`) can either come from a registry (`DockerImage.fromRegistry`)\nor it can be built from a `Dockerfile` located inside your project (`DockerImage.fromBuild`).\n\nYou can set the `CDK_DOCKER` environment variable in order to provide a custom\ndocker program to execute. This may sometime be needed when building in\nenvironments where the standard docker cannot be executed (see\nhttps://github.com/aws/aws-cdk/issues/8460 for details).\n\nUse `local` to specify a local bundling provider. The provider implements a\nmethod `tryBundle()` which should return `true` if local bundling was performed.\nIf `false` is returned, docker bundling will be done:\n\n```ts\nclass MyBundle implements ILocalBundling {\n  public tryBundle(outputDir: string, options: BundlingOptions) {\n    const canRunLocally = true // replace with actual logic\n    if (canRunLocally) {\n      // perform local bundling here\n      return true;\n    }\n    return false;\n  }\n}\n\nnew assets.Asset(this, 'BundledAsset', {\n  path: '/path/to/asset',\n  bundling: {\n    local: new MyBundle(),\n    // Docker bundling fallback\n    image: DockerImage.fromRegistry('alpine'),\n    entrypoint: ['/bin/sh', '-c'],\n    command: ['bundle'],\n  },\n});\n```\n\nAlthough optional, it's recommended to provide a local bundling method which can\ngreatly improve performance.\n\nIf the bundling output contains a single archive file (zip or jar) it will be\nuploaded to S3 as-is and will not be zipped. Otherwise the contents of the\noutput directory will be zipped and the zip file will be uploaded to S3. This\nis the default behavior for `bundling.outputType` (`BundlingOutput.AUTO_DISCOVER`).\n\nUse `BundlingOutput.NOT_ARCHIVED` if the bundling output must always be zipped:\n\n```ts\nconst asset = new assets.Asset(this, 'BundledAsset', {\n  path: '/path/to/asset',\n  bundling: {\n    image: DockerImage.fromRegistry('alpine'),\n    command: ['command-that-produces-an-archive.sh'],\n    outputType: BundlingOutput.NOT_ARCHIVED, // Bundling output will be zipped even though it produces a single archive file.\n  },\n});\n```\n\nUse `BundlingOutput.ARCHIVED` if the bundling output contains a single archive file and\nyou don't want it to be zipped.\n\n### Docker options\n\nDepending on your build environment, you may need to pass certain docker options to the `docker run` command that bundles assets.\nThis can be done using [BundlingOptions](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.BundlingOptions.html) properties.\n\nSome optional properties to pass to the docker bundling\n\n```ts\nconst asset = new assets.Asset(this, 'BundledAsset', {\n  path: '/path/to/asset',\n  bundling: {\n    image: ambda.Runtime.PYTHON_3_9.bundlingImage,,\n    command: [\n      'bash', '-c',\n      'pip install -r requirements.txt -t /asset-output && cp -au . /asset-output'\n    ],\n    securityOpt: 'no-new-privileges:true', // https://docs.docker.com/engine/reference/commandline/run/#optional-security-options---security-opt\n    network: 'host', //https://docs.docker.com/engine/reference/commandline/run/#connect-a-container-to-a-network---network\n  },\n});\n```\n\n## CloudFormation Resource Metadata\n\n> NOTE: This section is relevant for authors of AWS Resource Constructs.\n\nIn certain situations, it is desirable for tools to be able to know that a certain CloudFormation\nresource is using a local asset. For example, SAM CLI can be used to invoke AWS Lambda functions\nlocally for debugging purposes.\n\nTo enable such use cases, external tools will consult a set of metadata entries on AWS CloudFormation\nresources:\n\n* `aws:asset:path` points to the local path of the asset.\n* `aws:asset:property` is the name of the resource property where the asset is used\n\nUsing these two metadata entries, tools will be able to identify that assets are used\nby a certain resource, and enable advanced local experiences.\n\nTo add these metadata entries to a resource, use the\n`asset.addResourceMetadata(resource, property)` method.\n\nSee https://github.com/aws/aws-cdk/issues/1432 for more details\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/aws-s3-assets",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.AWS.S3.Assets",
+      "packageId": "Amazon.CDK.AWS.S3.Assets"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "s3-assets",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.services.s3.assets"
+    },
+    "js": {
+      "npm": "@aws-cdk/aws-s3-assets"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.aws-s3-assets",
+      "module": "aws_cdk.aws_s3_assets"
+    }
+  },
+  "types": {
+    "@aws-cdk/aws-s3-assets.Asset": {
+      "assembly": "@aws-cdk/aws-s3-assets",
+      "base": "constructs.Construct",
+      "docs": {
+        "stability": "stable",
+        "summary": "An asset represents a local file or directory, which is automatically uploaded to S3 and then can be referenced within a CDK application."
+      },
+      "fqn": "@aws-cdk/aws-s3-assets.Asset",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/asset.ts",
+          "line": 122
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/aws-s3-assets.AssetProps"
+            }
+          }
+        ]
+      },
+      "interfaces": [
+        "@aws-cdk/core.IAsset"
+      ],
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/asset.ts",
+        "line": 54
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "This can be used by tools such as SAM CLI to provide local\nexperience such as local invocation and debugging of Lambda functions.\n\nAsset metadata will only be included if the stack is synthesized with the\n\"aws:cdk:enable-asset-metadata\" context key defined, which is the default\nbehavior when synthesizing via the CDK Toolkit.",
+            "see": "https://github.com/aws/aws-cdk/issues/1432",
+            "stability": "stable",
+            "summary": "Adds CloudFormation template metadata to the specified resource with information that indicates which resource property is mapped to this local asset."
+          },
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 186
+          },
+          "name": "addResourceMetadata",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "The CloudFormation resource which is using this asset [disable-awslint:ref-via-interface]."
+              },
+              "name": "resource",
+              "type": {
+                "fqn": "@aws-cdk/core.CfnResource"
+              }
+            },
+            {
+              "docs": {
+                "summary": "The property name where this asset is referenced (e.g. \"Code\" for AWS::Lambda::Function)."
+              },
+              "name": "resourceProperty",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Grants read permissions to the principal on the assets bucket."
+          },
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 202
+          },
+          "name": "grantRead",
+          "parameters": [
+            {
+              "name": "grantee",
+              "type": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              }
+            }
+          ]
+        }
+      ],
+      "name": "Asset",
+      "properties": [
+        {
+          "docs": {
+            "remarks": "As this is a plain string, it\ncan be used in construct IDs in order to enforce creation of a new resource when the content\nhash has changed.",
+            "stability": "stable",
+            "summary": "A hash of this asset, which is available at construction time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 115
+          },
+          "name": "assetHash",
+          "overrides": "@aws-cdk/core.IAsset",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "If asset staging is disabled, this will just be the original path.\nIf asset staging is enabled it will be the staged path.",
+            "stability": "stable",
+            "summary": "The path to the asset, relative to the current Cloud Assembly."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 89
+          },
+          "name": "assetPath",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The S3 bucket in which this asset resides."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 94
+          },
+          "name": "bucket",
+          "type": {
+            "fqn": "@aws-cdk/aws-s3.IBucket"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "For example, `https://s3.us-west-1.amazonaws.com/bucket/key`",
+            "stability": "stable",
+            "summary": "Attribute which represents the S3 HTTP URL of this asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 75
+          },
+          "name": "httpUrl",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Allows constructs to ensure that the\ncorrect file type was used.",
+            "stability": "stable",
+            "summary": "Indicates if this asset is a single file."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 100
+          },
+          "name": "isFile",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Allows constructs to ensure that the\ncorrect file type was used.",
+            "stability": "stable",
+            "summary": "Indicates if this asset is a zip archive."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 106
+          },
+          "name": "isZipArchive",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Attribute that represents the name of the bucket this asset exists in."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 58
+          },
+          "name": "s3BucketName",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Attribute which represents the S3 object key of this asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 63
+          },
+          "name": "s3ObjectKey",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "remarks": "For example, `s3://bucket/key`",
+            "stability": "stable",
+            "summary": "Attribute which represents the S3 URL of this asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 81
+          },
+          "name": "s3ObjectUrl",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "deprecated": "use `httpUrl`",
+            "stability": "deprecated",
+            "summary": "Attribute which represents the S3 URL of this asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 69
+          },
+          "name": "s3Url",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "docs": {
+            "deprecated": "see `assetHash`",
+            "stability": "deprecated",
+            "summary": "A cryptographic hash of the asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 113
+          },
+          "name": "sourceHash",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/asset:Asset"
+    },
+    "@aws-cdk/aws-s3-assets.AssetOptions": {
+      "assembly": "@aws-cdk/aws-s3-assets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/aws-s3-assets.AssetOptions",
+      "interfaces": [
+        "@aws-cdk/assets.CopyOptions",
+        "@aws-cdk/core.FileCopyOptions",
+        "@aws-cdk/core.AssetOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/asset.ts",
+        "line": 11
+      },
+      "name": "AssetOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- No principals that can read file asset.",
+            "remarks": "You can use `asset.grantRead(principal)` to grant read permissions later.",
+            "stability": "stable",
+            "summary": "A list of principals that should be able to read this asset from S3."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 18
+          },
+          "name": "readers",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "fqn": "@aws-cdk/aws-iam.IGrantable"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- automatically calculate source hash based on the contents\nof the source file or directory.",
+            "deprecated": "see `assetHash` and `assetHashType`",
+            "remarks": "For consistency,\nthis custom hash will be SHA256 hashed and encoded as hex. The resulting hash will be\nthe asset hash.\n\nNOTE: the source hash is used in order to identify a specific revision of the asset,\nand used for optimizing and caching deployment activities related to this asset such as\npackaging, uploading to Amazon S3, etc. If you chose to customize the source hash,\nyou will need to make sure it is updated every time the source changes, or otherwise\nit is possible that some deployments will not be invalidated.",
+            "stability": "deprecated",
+            "summary": "Custom hash to use when identifying the specific version of the asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 36
+          },
+          "name": "sourceHash",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/asset:AssetOptions"
+    },
+    "@aws-cdk/aws-s3-assets.AssetProps": {
+      "assembly": "@aws-cdk/aws-s3-assets",
+      "datatype": true,
+      "docs": {
+        "stability": "stable"
+      },
+      "fqn": "@aws-cdk/aws-s3-assets.AssetProps",
+      "interfaces": [
+        "@aws-cdk/aws-s3-assets.AssetOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/asset.ts",
+        "line": 39
+      },
+      "name": "AssetProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "The path should refer to one of the following:\n- A regular file or a .zip file, in which case the file will be uploaded as-is to S3.\n- A directory, in which case it will be archived into a .zip file and uploaded to S3.",
+            "stability": "stable",
+            "summary": "The disk location of the asset."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/asset.ts",
+            "line": 47
+          },
+          "name": "path",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/asset:AssetProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "B/IoCVufZ9Eo7A45NAFq5HWAiV+mATkg+gG6CCbqm/Q="
+}

@@ -1,7 +1,7 @@
-import { Template } from '@aws-cdk/assertions';
-import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import { Metric } from '@aws-cdk/aws-cloudwatch';
-import { Stack } from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { Metric } from 'aws-cdk-lib/aws-cloudwatch';
+import { Stack } from 'aws-cdk-lib';
 import { DomainName, HttpApi, HttpStage } from '../../lib';
 
 describe('HttpStage', () => {

@@ -1,0 +1,21 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MutatingPolicyDocumentAdapter = void 0;
+const policy_document_1 = require("../policy-document");
+/**
+ * A PolicyDocument adapter that can modify statements flowing through it
+ */
+class MutatingPolicyDocumentAdapter extends policy_document_1.PolicyDocument {
+    constructor(wrapped, mutator) {
+        super();
+        this.wrapped = wrapped;
+        this.mutator = mutator;
+    }
+    addStatements(...statements) {
+        for (const st of statements) {
+            this.wrapped.addStatements(this.mutator(st));
+        }
+    }
+}
+exports.MutatingPolicyDocumentAdapter = MutatingPolicyDocumentAdapter;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicG9saWN5ZG9jLWFkYXB0ZXIuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJwb2xpY3lkb2MtYWRhcHRlci50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7QUFBQSx3REFBb0Q7QUFHcEQ7O0dBRUc7QUFDSCxNQUFhLDZCQUE4QixTQUFRLGdDQUFjO0lBQy9ELFlBQTZCLE9BQXVCLEVBQW1CLE9BQWdEO1FBQ3JILEtBQUssRUFBRSxDQUFDO1FBRG1CLFlBQU8sR0FBUCxPQUFPLENBQWdCO1FBQW1CLFlBQU8sR0FBUCxPQUFPLENBQXlDO0tBRXRIO0lBRU0sYUFBYSxDQUFDLEdBQUcsVUFBNkI7UUFDbkQsS0FBSyxNQUFNLEVBQUUsSUFBSSxVQUFVLEVBQUU7WUFDM0IsSUFBSSxDQUFDLE9BQU8sQ0FBQyxhQUFhLENBQUMsSUFBSSxDQUFDLE9BQU8sQ0FBQyxFQUFFLENBQUMsQ0FBQyxDQUFDO1NBQzlDO0tBQ0Y7Q0FDRjtBQVZELHNFQVVDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgUG9saWN5RG9jdW1lbnQgfSBmcm9tICcuLi9wb2xpY3ktZG9jdW1lbnQnO1xuaW1wb3J0IHsgUG9saWN5U3RhdGVtZW50IH0gZnJvbSAnLi4vcG9saWN5LXN0YXRlbWVudCc7XG5cbi8qKlxuICogQSBQb2xpY3lEb2N1bWVudCBhZGFwdGVyIHRoYXQgY2FuIG1vZGlmeSBzdGF0ZW1lbnRzIGZsb3dpbmcgdGhyb3VnaCBpdFxuICovXG5leHBvcnQgY2xhc3MgTXV0YXRpbmdQb2xpY3lEb2N1bWVudEFkYXB0ZXIgZXh0ZW5kcyBQb2xpY3lEb2N1bWVudCB7XG4gIGNvbnN0cnVjdG9yKHByaXZhdGUgcmVhZG9ubHkgd3JhcHBlZDogUG9saWN5RG9jdW1lbnQsIHByaXZhdGUgcmVhZG9ubHkgbXV0YXRvcjogKHM6IFBvbGljeVN0YXRlbWVudCkgPT4gUG9saWN5U3RhdGVtZW50KSB7XG4gICAgc3VwZXIoKTtcbiAgfVxuXG4gIHB1YmxpYyBhZGRTdGF0ZW1lbnRzKC4uLnN0YXRlbWVudHM6IFBvbGljeVN0YXRlbWVudFtdKTogdm9pZCB7XG4gICAgZm9yIChjb25zdCBzdCBvZiBzdGF0ZW1lbnRzKSB7XG4gICAgICB0aGlzLndyYXBwZWQuYWRkU3RhdGVtZW50cyh0aGlzLm11dGF0b3Ioc3QpKTtcbiAgICB9XG4gIH1cbn1cbiJdfQ==

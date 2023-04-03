@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const cdk = require("@aws-cdk/core");
+const integ_tests_1 = require("@aws-cdk/integ-tests");
+const ec2 = require("../lib");
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'integtest-vpc-reserved-azs');
+new ec2.Vpc(stack, 'MyVpc', {
+    reservedAzs: 2,
+    maxAzs: 3,
+});
+new integ_tests_1.IntegTest(app, 'vpc-reserved-azs', {
+    testCases: [stack],
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcudnBjLXJlc2VydmVkLWF6cy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImludGVnLnZwYy1yZXNlcnZlZC1henMudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSxxQ0FBcUM7QUFDckMsc0RBQWlEO0FBQ2pELDhCQUE4QjtBQUU5QixNQUFNLEdBQUcsR0FBRyxJQUFJLEdBQUcsQ0FBQyxHQUFHLEVBQUUsQ0FBQztBQUMxQixNQUFNLEtBQUssR0FBRyxJQUFJLEdBQUcsQ0FBQyxLQUFLLENBQUMsR0FBRyxFQUFFLDRCQUE0QixDQUFDLENBQUM7QUFFL0QsSUFBSSxHQUFHLENBQUMsR0FBRyxDQUFDLEtBQUssRUFBRSxPQUFPLEVBQUU7SUFDMUIsV0FBVyxFQUFFLENBQUM7SUFDZCxNQUFNLEVBQUUsQ0FBQztDQUNWLENBQUMsQ0FBQztBQUVILElBQUksdUJBQVMsQ0FBQyxHQUFHLEVBQUUsa0JBQWtCLEVBQUU7SUFDckMsU0FBUyxFQUFFLENBQUMsS0FBSyxDQUFDO0NBQ25CLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCAqIGFzIGNkayBmcm9tICdAYXdzLWNkay9jb3JlJztcbmltcG9ydCB7IEludGVnVGVzdCB9IGZyb20gJ0Bhd3MtY2RrL2ludGVnLXRlc3RzJztcbmltcG9ydCAqIGFzIGVjMiBmcm9tICcuLi9saWInO1xuXG5jb25zdCBhcHAgPSBuZXcgY2RrLkFwcCgpO1xuY29uc3Qgc3RhY2sgPSBuZXcgY2RrLlN0YWNrKGFwcCwgJ2ludGVndGVzdC12cGMtcmVzZXJ2ZWQtYXpzJyk7XG5cbm5ldyBlYzIuVnBjKHN0YWNrLCAnTXlWcGMnLCB7XG4gIHJlc2VydmVkQXpzOiAyLFxuICBtYXhBenM6IDMsXG59KTtcblxubmV3IEludGVnVGVzdChhcHAsICd2cGMtcmVzZXJ2ZWQtYXpzJywge1xuICB0ZXN0Q2FzZXM6IFtzdGFja10sXG59KTsiXX0=

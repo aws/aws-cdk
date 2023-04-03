@@ -1,0 +1,44 @@
+"use strict";
+var _a;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ClientVpnAuthorizationRule = void 0;
+const jsiiDeprecationWarnings = require("../.warnings.jsii.js");
+const JSII_RTTI_SYMBOL_1 = Symbol.for("jsii.rtti");
+const core_1 = require("@aws-cdk/core");
+const ec2_generated_1 = require("./ec2.generated");
+/**
+ * A client VPN authorization rule
+ */
+class ClientVpnAuthorizationRule extends core_1.Resource {
+    constructor(scope, id, props) {
+        try {
+            jsiiDeprecationWarnings._aws_cdk_aws_ec2_ClientVpnAuthorizationRuleProps(props);
+        }
+        catch (error) {
+            if (process.env.JSII_DEBUG !== "1" && error.name === "DeprecationError") {
+                Error.captureStackTrace(error, ClientVpnAuthorizationRule);
+            }
+            throw error;
+        }
+        if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
+            throw new Error('ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified');
+        }
+        if (props.clientVpnEndoint && props.clientVpnEndpoint) {
+            throw new Error('ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
+                ', but not both');
+        }
+        const clientVpnEndpoint = props.clientVpnEndoint || props.clientVpnEndpoint;
+        super(scope, id);
+        new ec2_generated_1.CfnClientVpnAuthorizationRule(this, 'Resource', {
+            clientVpnEndpointId: clientVpnEndpoint.endpointId,
+            targetNetworkCidr: props.cidr,
+            accessGroupId: props.groupId,
+            authorizeAllGroups: !props.groupId,
+            description: props.description,
+        });
+    }
+}
+_a = JSII_RTTI_SYMBOL_1;
+ClientVpnAuthorizationRule[_a] = { fqn: "@aws-cdk/aws-ec2.ClientVpnAuthorizationRule", version: "0.0.0" };
+exports.ClientVpnAuthorizationRule = ClientVpnAuthorizationRule;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY2xpZW50LXZwbi1hdXRob3JpemF0aW9uLXJ1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJjbGllbnQtdnBuLWF1dGhvcml6YXRpb24tcnVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7QUFBQSx3Q0FBeUM7QUFHekMsbURBQWdFO0FBOENoRTs7R0FFRztBQUNILE1BQWEsMEJBQTJCLFNBQVEsZUFBUTtJQUN0RCxZQUFZLEtBQWdCLEVBQUUsRUFBVSxFQUFFLEtBQXNDOzs7Ozs7K0NBRHJFLDBCQUEwQjs7OztRQUVuQyxJQUFJLENBQUMsS0FBSyxDQUFDLGdCQUFnQixJQUFJLENBQUMsS0FBSyxDQUFDLGlCQUFpQixFQUFFO1lBQ3ZELE1BQU0sSUFBSSxLQUFLLENBQ2IseUdBQXlHLENBQzFHLENBQUM7U0FDSDtRQUNELElBQUksS0FBSyxDQUFDLGdCQUFnQixJQUFJLEtBQUssQ0FBQyxpQkFBaUIsRUFBRTtZQUNyRCxNQUFNLElBQUksS0FBSyxDQUNiLHlHQUF5RztnQkFDdkcsZ0JBQWdCLENBQ25CLENBQUM7U0FDSDtRQUNELE1BQU0saUJBQWlCLEdBQUcsS0FBSyxDQUFDLGdCQUFnQixJQUFJLEtBQUssQ0FBQyxpQkFBaUIsQ0FBQztRQUM1RSxLQUFLLENBQUMsS0FBSyxFQUFFLEVBQUUsQ0FBQyxDQUFDO1FBQ2pCLElBQUksNkNBQTZCLENBQUMsSUFBSSxFQUFFLFVBQVUsRUFBRTtZQUNsRCxtQkFBbUIsRUFBRSxpQkFBa0IsQ0FBQyxVQUFVO1lBQ2xELGlCQUFpQixFQUFFLEtBQUssQ0FBQyxJQUFJO1lBQzdCLGFBQWEsRUFBRSxLQUFLLENBQUMsT0FBTztZQUM1QixrQkFBa0IsRUFBRSxDQUFDLEtBQUssQ0FBQyxPQUFPO1lBQ2xDLFdBQVcsRUFBRSxLQUFLLENBQUMsV0FBVztTQUMvQixDQUFDLENBQUM7S0FDSjs7OztBQXRCVSxnRUFBMEIiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBSZXNvdXJjZSB9IGZyb20gJ0Bhd3MtY2RrL2NvcmUnO1xuaW1wb3J0IHsgQ29uc3RydWN0IH0gZnJvbSAnY29uc3RydWN0cyc7XG5pbXBvcnQgeyBJQ2xpZW50VnBuRW5kcG9pbnQgfSBmcm9tICcuL2NsaWVudC12cG4tZW5kcG9pbnQtdHlwZXMnO1xuaW1wb3J0IHsgQ2ZuQ2xpZW50VnBuQXV0aG9yaXphdGlvblJ1bGUgfSBmcm9tICcuL2VjMi5nZW5lcmF0ZWQnO1xuXG4vKipcbiAqIE9wdGlvbnMgZm9yIGEgQ2xpZW50VnBuQXV0aG9yaXphdGlvblJ1bGVcbiAqL1xuZXhwb3J0IGludGVyZmFjZSBDbGllbnRWcG5BdXRob3JpemF0aW9uUnVsZU9wdGlvbnMge1xuICAvKipcbiAgICogVGhlIElQdjQgYWRkcmVzcyByYW5nZSwgaW4gQ0lEUiBub3RhdGlvbiwgb2YgdGhlIG5ldHdvcmsgZm9yIHdoaWNoIGFjY2Vzc1xuICAgKiBpcyBiZWluZyBhdXRob3JpemVkLlxuICAgKi9cbiAgcmVhZG9ubHkgY2lkcjogc3RyaW5nO1xuXG4gIC8qKlxuICAgKiBUaGUgSUQgb2YgdGhlIGdyb3VwIHRvIGdyYW50IGFjY2VzcyB0bywgZm9yIGV4YW1wbGUsIHRoZSBBY3RpdmUgRGlyZWN0b3J5XG4gICAqIGdyb3VwIG9yIGlkZW50aXR5IHByb3ZpZGVyIChJZFApIGdyb3VwLlxuICAgKlxuICAgKiBAZGVmYXVsdCAtIGF1dGhvcml6ZSBhbGwgZ3JvdXBzXG4gICAqL1xuICByZWFkb25seSBncm91cElkPzogc3RyaW5nO1xuXG4gIC8qKlxuICAgKiBBIGJyaWVmIGRlc2NyaXB0aW9uIG9mIHRoZSBhdXRob3JpemF0aW9uIHJ1bGUuXG4gICAqXG4gICAqIEBkZWZhdWx0IC0gbm8gZGVzY3JpcHRpb25cbiAgICovXG4gIHJlYWRvbmx5IGRlc2NyaXB0aW9uPzogc3RyaW5nO1xufVxuXG4vKipcbiAqIFByb3BlcnRpZXMgZm9yIGEgQ2xpZW50VnBuQXV0aG9yaXphdGlvblJ1bGVcbiAqL1xuZXhwb3J0IGludGVyZmFjZSBDbGllbnRWcG5BdXRob3JpemF0aW9uUnVsZVByb3BzIGV4dGVuZHMgQ2xpZW50VnBuQXV0aG9yaXphdGlvblJ1bGVPcHRpb25zIHtcbiAgLyoqXG4gICAqIFRoZSBjbGllbnQgVlBOIGVuZHBvaW50IHRvIHdoaWNoIHRvIGFkZCB0aGUgcnVsZS5cbiAgICogQGRlZmF1bHQgY2xpZW50VnBuRW5kcG9pbnQgaXMgcmVxdWlyZWRcbiAgICovXG4gIHJlYWRvbmx5IGNsaWVudFZwbkVuZHBvaW50PzogSUNsaWVudFZwbkVuZHBvaW50O1xuXG4gIC8qKlxuICAgKiBUaGUgY2xpZW50IFZQTiBlbmRwb2ludCB0byB3aGljaCB0byBhZGQgdGhlIHJ1bGUuXG4gICAqIEBkZXByZWNhdGVkIFVzZSBgY2xpZW50VnBuRW5kcG9pbnRgIGluc3RlYWRcbiAgICogQGRlZmF1bHQgY2xpZW50VnBuRW5kcG9pbnQgaXMgcmVxdWlyZWRcbiAgICovXG4gIHJlYWRvbmx5IGNsaWVudFZwbkVuZG9pbnQ/OiBJQ2xpZW50VnBuRW5kcG9pbnQ7XG59XG5cbi8qKlxuICogQSBjbGllbnQgVlBOIGF1dGhvcml6YXRpb24gcnVsZVxuICovXG5leHBvcnQgY2xhc3MgQ2xpZW50VnBuQXV0aG9yaXphdGlvblJ1bGUgZXh0ZW5kcyBSZXNvdXJjZSB7XG4gIGNvbnN0cnVjdG9yKHNjb3BlOiBDb25zdHJ1Y3QsIGlkOiBzdHJpbmcsIHByb3BzOiBDbGllbnRWcG5BdXRob3JpemF0aW9uUnVsZVByb3BzKSB7XG4gICAgaWYgKCFwcm9wcy5jbGllbnRWcG5FbmRvaW50ICYmICFwcm9wcy5jbGllbnRWcG5FbmRwb2ludCkge1xuICAgICAgdGhyb3cgbmV3IEVycm9yKFxuICAgICAgICAnQ2xpZW50VnBuQXV0aG9yaXphdGlvblJ1bGU6IGVpdGhlciBjbGllbnRWcG5FbmRwb2ludCBvciBjbGllbnRWcG5FbmRvaW50IChkZXByZWNhdGVkKSBtdXN0IGJlIHNwZWNpZmllZCcsXG4gICAgICApO1xuICAgIH1cbiAgICBpZiAocHJvcHMuY2xpZW50VnBuRW5kb2ludCAmJiBwcm9wcy5jbGllbnRWcG5FbmRwb2ludCkge1xuICAgICAgdGhyb3cgbmV3IEVycm9yKFxuICAgICAgICAnQ2xpZW50VnBuQXV0aG9yaXphdGlvblJ1bGU6IGVpdGhlciBjbGllbnRWcG5FbmRwb2ludCBvciBjbGllbnRWcG5FbmRvaW50IChkZXByZWNhdGVkKSBtdXN0IGJlIHNwZWNpZmllZCcgK1xuICAgICAgICAgICcsIGJ1dCBub3QgYm90aCcsXG4gICAgICApO1xuICAgIH1cbiAgICBjb25zdCBjbGllbnRWcG5FbmRwb2ludCA9IHByb3BzLmNsaWVudFZwbkVuZG9pbnQgfHwgcHJvcHMuY2xpZW50VnBuRW5kcG9pbnQ7XG4gICAgc3VwZXIoc2NvcGUsIGlkKTtcbiAgICBuZXcgQ2ZuQ2xpZW50VnBuQXV0aG9yaXphdGlvblJ1bGUodGhpcywgJ1Jlc291cmNlJywge1xuICAgICAgY2xpZW50VnBuRW5kcG9pbnRJZDogY2xpZW50VnBuRW5kcG9pbnQhLmVuZHBvaW50SWQsXG4gICAgICB0YXJnZXROZXR3b3JrQ2lkcjogcHJvcHMuY2lkcixcbiAgICAgIGFjY2Vzc0dyb3VwSWQ6IHByb3BzLmdyb3VwSWQsXG4gICAgICBhdXRob3JpemVBbGxHcm91cHM6ICFwcm9wcy5ncm91cElkLFxuICAgICAgZGVzY3JpcHRpb246IHByb3BzLmRlc2NyaXB0aW9uLFxuICAgIH0pO1xuICB9XG59XG4iXX0=

@@ -1,0 +1,498 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "This module is deprecated. All types are now available under the core module",
+  "docs": {
+    "stability": "deprecated"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "5.0.0 (build 4ff1caa)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "constructs",
+    "assets"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/assets",
+  "readme": {
+    "markdown": "# AWS CDK Assets\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![Deprecated](https://img.shields.io/badge/deprecated-critical.svg?style=for-the-badge)\n\n> This API may emit warnings. Backward compatibility is not guaranteed.\n\n---\n\n<!--END STABILITY BANNER-->\n\nAll types moved to @aws-cdk/core.\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/assets",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.Assets",
+      "packageId": "Amazon.CDK.Assets"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "cdk-assets",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.assets"
+    },
+    "js": {
+      "npm": "@aws-cdk/assets"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.assets",
+      "module": "aws_cdk.assets"
+    }
+  },
+  "types": {
+    "@aws-cdk/assets.CopyOptions": {
+      "assembly": "@aws-cdk/assets",
+      "datatype": true,
+      "docs": {
+        "deprecated": "see `core.CopyOptions`",
+        "stability": "deprecated",
+        "summary": "Obtains applied when copying directories into the staging location."
+      },
+      "fqn": "@aws-cdk/assets.CopyOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/fs/options.ts",
+        "line": 8
+      },
+      "name": "CopyOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "nothing is excluded",
+            "stability": "deprecated",
+            "summary": "Glob patterns to exclude from the copy."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fs/options.ts",
+            "line": 22
+          },
+          "name": "exclude",
+          "optional": true,
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "Never",
+            "deprecated": "use `followSymlinks` instead",
+            "stability": "deprecated",
+            "summary": "A strategy for how to handle symlinks."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fs/options.ts",
+            "line": 15
+          },
+          "name": "follow",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/assets.FollowMode"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- GLOB for file assets, DOCKER or GLOB for docker assets depending on whether the\n'@aws-cdk/aws-ecr-assets:dockerIgnoreSupport' flag is set.",
+            "stability": "deprecated",
+            "summary": "The ignore behavior to use for exclude patterns."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fs/options.ts",
+            "line": 30
+          },
+          "name": "ignoreMode",
+          "optional": true,
+          "type": {
+            "fqn": "@aws-cdk/core.IgnoreMode"
+          }
+        }
+      ],
+      "symbolId": "lib/fs/options:CopyOptions"
+    },
+    "@aws-cdk/assets.FingerprintOptions": {
+      "assembly": "@aws-cdk/assets",
+      "datatype": true,
+      "docs": {
+        "deprecated": "see `core.FingerprintOptions`",
+        "stability": "deprecated",
+        "summary": "Options related to calculating source hash."
+      },
+      "fqn": "@aws-cdk/assets.FingerprintOptions",
+      "interfaces": [
+        "@aws-cdk/assets.CopyOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/fs/options.ts",
+        "line": 37
+      },
+      "name": "FingerprintOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "- hash is only based on source content",
+            "stability": "deprecated",
+            "summary": "Extra information to encode into the fingerprint (e.g. build instructions and other inputs)."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/fs/options.ts",
+            "line": 44
+          },
+          "name": "extraHash",
+          "optional": true,
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/fs/options:FingerprintOptions"
+    },
+    "@aws-cdk/assets.FollowMode": {
+      "assembly": "@aws-cdk/assets",
+      "docs": {
+        "deprecated": "see `core.SymlinkFollowMode`",
+        "stability": "deprecated",
+        "summary": "Symlink follow mode."
+      },
+      "fqn": "@aws-cdk/assets.FollowMode",
+      "kind": "enum",
+      "locationInModule": {
+        "filename": "lib/fs/follow-mode.ts",
+        "line": 5
+      },
+      "members": [
+        {
+          "docs": {
+            "stability": "deprecated",
+            "summary": "Never follow symlinks."
+          },
+          "name": "NEVER"
+        },
+        {
+          "docs": {
+            "stability": "deprecated",
+            "summary": "Materialize all symlinks, whether they are internal or external to the source directory."
+          },
+          "name": "ALWAYS"
+        },
+        {
+          "docs": {
+            "stability": "deprecated",
+            "summary": "Only follows symlinks that are external to the source directory."
+          },
+          "name": "EXTERNAL"
+        },
+        {
+          "docs": {
+            "remarks": "This is the safest mode of operation as it ensures that copy operations\nwon't materialize files from the user's file system. Internal symlinks are\nnot followed.\n\nIf the copy operation runs into an external symlink, it will fail.",
+            "stability": "deprecated",
+            "summary": "Forbids source from having any symlinks pointing outside of the source tree."
+          },
+          "name": "BLOCK_EXTERNAL"
+        }
+      ],
+      "name": "FollowMode",
+      "symbolId": "lib/fs/follow-mode:FollowMode"
+    },
+    "@aws-cdk/assets.IAsset": {
+      "assembly": "@aws-cdk/assets",
+      "docs": {
+        "deprecated": "use `core.IAsset`",
+        "stability": "deprecated",
+        "summary": "Common interface for all assets."
+      },
+      "fqn": "@aws-cdk/assets.IAsset",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/api.ts",
+        "line": 6
+      },
+      "name": "IAsset",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "As this is a plain\nstring, it can be used in construct IDs in order to enforce creation of a new resource when\nthe content hash has changed.",
+            "stability": "deprecated",
+            "summary": "A hash of the source of this asset, which is available at construction time."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/api.ts",
+            "line": 12
+          },
+          "name": "sourceHash",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/api:IAsset"
+    },
+    "@aws-cdk/assets.Staging": {
+      "assembly": "@aws-cdk/assets",
+      "base": "@aws-cdk/core.AssetStaging",
+      "docs": {
+        "deprecated": "use `core.AssetStaging`",
+        "stability": "deprecated",
+        "summary": "Deprecated."
+      },
+      "fqn": "@aws-cdk/assets.Staging",
+      "initializer": {
+        "docs": {
+          "stability": "deprecated"
+        },
+        "locationInModule": {
+          "filename": "lib/staging.ts",
+          "line": 22
+        },
+        "parameters": [
+          {
+            "name": "scope",
+            "type": {
+              "fqn": "constructs.Construct"
+            }
+          },
+          {
+            "name": "id",
+            "type": {
+              "primitive": "string"
+            }
+          },
+          {
+            "name": "props",
+            "type": {
+              "fqn": "@aws-cdk/assets.StagingProps"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/staging.ts",
+        "line": 21
+      },
+      "name": "Staging",
+      "symbolId": "lib/staging:Staging"
+    },
+    "@aws-cdk/assets.StagingProps": {
+      "assembly": "@aws-cdk/assets",
+      "datatype": true,
+      "docs": {
+        "deprecated": "use `core.AssetStagingProps`",
+        "stability": "deprecated",
+        "summary": "Deprecated."
+      },
+      "fqn": "@aws-cdk/assets.StagingProps",
+      "interfaces": [
+        "@aws-cdk/assets.FingerprintOptions"
+      ],
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/staging.ts",
+        "line": 10
+      },
+      "name": "StagingProps",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "deprecated",
+            "summary": "Local file or directory to stage."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/staging.ts",
+            "line": 14
+          },
+          "name": "sourcePath",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/staging:StagingProps"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "IoWGKDxr3AJzRDXbWz6iw8z0p8OQNsm4hUtWcdBJDkQ="
+}

@@ -1,0 +1,2411 @@
+{
+  "author": {
+    "name": "Amazon Web Services",
+    "organization": true,
+    "roles": [
+      "author"
+    ],
+    "url": "https://aws.amazon.com"
+  },
+  "bundled": {
+    "fs-extra": "^9.1.0"
+  },
+  "dependencies": {
+    "@aws-cdk/cloud-assembly-schema": "0.0.0",
+    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/cx-api": "0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "dependencyClosure": {
+    "@aws-cdk/cloud-assembly-schema": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CloudAssembly.Schema",
+          "packageId": "Amazon.CDK.CloudAssembly.Schema"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cloud-assembly-schema",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cloudassembly.schema"
+        },
+        "js": {
+          "npm": "@aws-cdk/cloud-assembly-schema"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cloud-assembly-schema",
+          "module": "aws_cdk.cloud_assembly_schema"
+        }
+      }
+    },
+    "@aws-cdk/core": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK",
+          "packageId": "Amazon.CDK"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "core",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.core"
+        },
+        "js": {
+          "npm": "@aws-cdk/core"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.core",
+          "module": "aws_cdk.core"
+        }
+      }
+    },
+    "@aws-cdk/cx-api": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.CXAPI",
+          "packageId": "Amazon.CDK.CXAPI"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-cx-api",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.cxapi"
+        },
+        "js": {
+          "npm": "@aws-cdk/cx-api"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.cx-api",
+          "module": "aws_cdk.cx_api"
+        }
+      }
+    },
+    "@aws-cdk/region-info": {
+      "targets": {
+        "dotnet": {
+          "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+          "namespace": "Amazon.CDK.RegionInfo",
+          "packageId": "Amazon.CDK.RegionInfo"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "cdk-region-info",
+            "groupId": "software.amazon.awscdk"
+          },
+          "package": "software.amazon.awscdk.regioninfo"
+        },
+        "js": {
+          "npm": "@aws-cdk/region-info"
+        },
+        "python": {
+          "classifiers": [
+            "Framework :: AWS CDK",
+            "Framework :: AWS CDK :: 2"
+          ],
+          "distName": "aws-cdk.region-info",
+          "module": "aws_cdk.region_info"
+        }
+      }
+    },
+    "constructs": {
+      "targets": {
+        "dotnet": {
+          "namespace": "Constructs",
+          "packageId": "Constructs"
+        },
+        "go": {
+          "moduleName": "github.com/aws/constructs-go"
+        },
+        "java": {
+          "maven": {
+            "artifactId": "constructs",
+            "groupId": "software.constructs"
+          },
+          "package": "software.constructs"
+        },
+        "js": {
+          "npm": "constructs"
+        },
+        "python": {
+          "distName": "constructs",
+          "module": "constructs"
+        }
+      }
+    }
+  },
+  "description": "An assertion library for use with CDK Apps",
+  "docs": {
+    "stability": "stable"
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "jsiiVersion": "5.0.0 (build 4ff1caa)",
+  "keywords": [
+    "aws",
+    "cdk",
+    "assert"
+  ],
+  "license": "Apache-2.0",
+  "metadata": {
+    "jsii": {
+      "compiledWithDeprecationWarnings": true,
+      "pacmak": {
+        "hasDefaultInterfaces": true
+      },
+      "rosetta": {
+        "strict": true
+      }
+    }
+  },
+  "name": "@aws-cdk/assertions",
+  "readme": {
+    "markdown": "# Assertions\n<!--BEGIN STABILITY BANNER-->\n\n---\n\n![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)\n\n---\n\n<!--END STABILITY BANNER-->\n\nIf you're migrating from the old `assert` library, the migration guide can be found in\n[our GitHub repository](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/assertions/MIGRATING.md).\n\nFunctions for writing test asserting against CDK applications, with focus on CloudFormation templates.\n\nThe `Template` class includes a set of methods for writing assertions against CloudFormation templates. Use one of the `Template.fromXxx()` static methods to create an instance of this class.\n\nTo create `Template` from CDK stack, start off with:\n\n```ts nofixture\nimport { Stack } from '@aws-cdk/core';\nimport { Template } from '@aws-cdk/assertions';\n\nconst stack = new Stack(/* ... */);\n// ...\nconst template = Template.fromStack(stack);\n```\n\nAlternatively, assertions can be run on an existing CloudFormation template -\n\n```ts fixture=init\nconst templateJson = '{ \"Resources\": ... }'; /* The CloudFormation template as JSON serialized string. */\nconst template = Template.fromString(templateJson);\n```\n\n**Cyclical Resources Note**\n\nIf allowing cyclical references is desired, for example in the case of unprocessed Transform templates, supply TemplateParsingOptions and\nset skipCyclicalDependenciesCheck to true. In all other cases, will fail on detecting cyclical dependencies.\n\n## Full Template Match\n\nThe simplest assertion would be to assert that the template matches a given\ntemplate.\n\n```ts\ntemplate.templateMatches({\n  Resources: {\n    BarLogicalId: {\n      Type: 'Foo::Bar',\n      Properties: {\n        Baz: 'Qux',\n      },\n    },\n  },\n});\n```\n\nBy default, the `templateMatches()` API will use the an 'object-like' comparison,\nwhich means that it will allow for the actual template to be a superset of the\ngiven expectation. See [Special Matchers](#special-matchers) for details on how\nto change this.\n\nSnapshot testing is a common technique to store a snapshot of the output and\ncompare it during future changes. Since CloudFormation templates are human readable,\nthey are a good target for snapshot testing.\n\nThe `toJSON()` method on the `Template` can be used to produce a well formatted JSON\nof the CloudFormation template that can be used as a snapshot.\n\nSee [Snapshot Testing in Jest](https://jestjs.io/docs/snapshot-testing) and [Snapshot\nTesting in Java](https://json-snapshot.github.io/).\n\n## Counting Resources\n\nThis module allows asserting the number of resources of a specific type found\nin a template.\n\n```ts\ntemplate.resourceCountIs('Foo::Bar', 2);\n```\n\nYou can also count the number of resources of a specific type whose `Properties`\nsection contains the specified properties:\n\n```ts\ntemplate.resourcePropertiesCountIs('Foo::Bar', {\n  Foo: 'Bar',\n  Baz: 5,\n  Qux: [ 'Waldo', 'Fred' ],\n}, 1);\n```\n\n## Resource Matching & Retrieval\n\nBeyond resource counting, the module also allows asserting that a resource with\nspecific properties are present.\n\nThe following code asserts that the `Properties` section of a resource of type\n`Foo::Bar` contains the specified properties -\n\n```ts\ntemplate.hasResourceProperties('Foo::Bar', {\n  Lorem: 'Ipsum',\n  Baz: 5,\n  Qux: [ 'Waldo', 'Fred' ],\n});\n```\n\nYou can also assert that the `Properties` section of all resources of type\n`Foo::Bar` contains the specified properties -\n\n```ts\ntemplate.allResourcesProperties('Foo::Bar', {\n  Lorem: 'Ipsum',\n  Baz: 5,\n  Qux: [ 'Waldo', 'Fred' ],\n});\n```\n\nAlternatively, if you would like to assert the entire resource definition, you\ncan use the `hasResource()` API.\n\n```ts\ntemplate.hasResource('Foo::Bar', {\n  Properties: { Lorem: 'Ipsum' },\n  DependsOn: [ 'Waldo', 'Fred' ],\n});\n```\n\nYou can also assert the definitions of all resources of a type using the\n`allResources()` API.\n\n```ts\ntemplate.allResources('Foo::Bar', {\n  Properties: { Lorem: 'Ipsum' },\n  DependsOn: [ 'Waldo', 'Fred' ],\n});\n```\n\nBeyond assertions, the module provides APIs to retrieve matching resources.\nThe `findResources()` API is complementary to the `hasResource()` API, except,\ninstead of asserting its presence, it returns the set of matching resources.\n\nBy default, the `hasResource()` and `hasResourceProperties()` APIs perform deep\npartial object matching. This behavior can be configured using matchers.\nSee subsequent section on [special matchers](#special-matchers).\n\n## Output and Mapping sections\n\nThe module allows you to assert that the CloudFormation template contains an Output\nthat matches specific properties. The following code asserts that a template contains\nan Output with a `logicalId` of `Foo` and the specified properties -\n\n```ts\nconst expected = {\n  Value: 'Bar',\n  Export: { Name: 'ExportBaz' },\n};\ntemplate.hasOutput('Foo', expected);\n```\n\nIf you want to match against all Outputs in the template, use `*` as the `logicalId`.\n\n```ts\ntemplate.hasOutput('*', {\n  Value: 'Bar',\n  Export: { Name: 'ExportBaz' },\n});\n```\n\n`findOutputs()` will return a set of outputs that match the `logicalId` and `props`,\nand you can use the `'*'` special case as well.\n\n```ts\nconst result = template.findOutputs('*', { Value: 'Fred' });\nexpect(result.Foo).toEqual({ Value: 'Fred', Description: 'FooFred' });\nexpect(result.Bar).toEqual({ Value: 'Fred', Description: 'BarFred' });\n```\n\nThe APIs `hasMapping()`, `findMappings()`, `hasCondition()`, and `hasCondtions()` provide similar functionalities.\n\n## Special Matchers\n\nThe expectation provided to the `hasXxx()`, `findXxx()` and `templateMatches()`\nAPIs, besides carrying literal values, as seen in the above examples, also accept\nspecial matchers.\n\nThey are available as part of the `Match` class.\n\n### Object Matchers\n\nThe `Match.objectLike()` API can be used to assert that the target is a superset\nobject of the provided pattern.\nThis API will perform a deep partial match on the target.\nDeep partial matching is where objects are matched partially recursively. At each\nlevel, the list of keys in the target is a subset of the provided pattern.\n\n```ts\n// Given a template -\n// {\n//   \"Resources\": {\n//     \"MyBar\": {\n//       \"Type\": \"Foo::Bar\",\n//       \"Properties\": {\n//         \"Fred\": {\n//           \"Wobble\": \"Flob\",\n//           \"Bob\": \"Cat\"\n//         }\n//       }\n//     }\n//   }\n// }\n\n// The following will NOT throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', {\n  Fred: Match.objectLike({\n    Wobble: 'Flob',\n  }),\n});\n\n// The following will throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', {\n  Fred: Match.objectLike({\n    Brew: 'Coffee',\n  }),\n});\n```\n\nThe `Match.objectEquals()` API can be used to assert a target as a deep exact\nmatch.\n\n### Presence and Absence\n\nThe `Match.absent()` matcher can be used to specify that a specific\nvalue should not exist on the target. This can be used within `Match.objectLike()`\nor outside of any matchers.\n\n```ts\n// Given a template -\n// {\n//   \"Resources\": {\n//     \"MyBar\": {\n//       \"Type\": \"Foo::Bar\",\n//       \"Properties\": {\n//         \"Fred\": {\n//           \"Wobble\": \"Flob\",\n//         }\n//       }\n//     }\n//   }\n// }\n\n// The following will NOT throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', {\n  Fred: Match.objectLike({\n    Bob: Match.absent(),\n  }),\n});\n\n// The following will throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', {\n  Fred: Match.objectLike({\n    Wobble: Match.absent(),\n  }),\n});\n```\n\nThe `Match.anyValue()` matcher can be used to specify that a specific value should be found\nat the location. This matcher will fail if when the target location has null-ish values\n(i.e., `null` or `undefined`).\n\nThis matcher can be combined with any of the other matchers.\n\n```ts\n// Given a template -\n// {\n//   \"Resources\": {\n//     \"MyBar\": {\n//       \"Type\": \"Foo::Bar\",\n//       \"Properties\": {\n//         \"Fred\": {\n//           \"Wobble\": [\"Flob\", \"Flib\"],\n//         }\n//       }\n//     }\n//   }\n// }\n\n// The following will NOT throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', {\n  Fred: {\n    Wobble: [ Match.anyValue(), Match.anyValue() ],\n  },\n});\n\n// The following will throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', {\n  Fred: {\n    Wimble: Match.anyValue(),\n  },\n});\n```\n\n### Array Matchers\n\nThe `Match.arrayWith()` API can be used to assert that the target is equal to or a subset\nof the provided pattern array.\nThis API will perform subset match on the target.\n\n```ts\n// Given a template -\n// {\n//   \"Resources\": {\n//     \"MyBar\": {\n//       \"Type\": \"Foo::Bar\",\n//       \"Properties\": {\n//         \"Fred\": [\"Flob\", \"Cat\"]\n//       }\n//     }\n//   }\n// }\n\n// The following will NOT throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', {\n  Fred: Match.arrayWith(['Flob']),\n});\n\n// The following will throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', Match.objectLike({\n  Fred: Match.arrayWith(['Wobble']),\n}));\n```\n\n*Note:* The list of items in the pattern array should be in order as they appear in the\ntarget array. Out of order will be recorded as a match failure.\n\nAlternatively, the `Match.arrayEquals()` API can be used to assert that the target is\nexactly equal to the pattern array.\n\n### String Matchers\n\nThe `Match.stringLikeRegexp()` API can be used to assert that the target matches the\nprovided regular expression.\n\n```ts\n// Given a template -\n// {\n//   \"Resources\": {\n//     \"MyBar\": {\n//       \"Type\": \"Foo::Bar\",\n//       \"Properties\": {\n//         \"Template\": \"const includeHeaders = true;\"\n//       }\n//     }\n//   }\n// }\n\n// The following will NOT throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', {\n  Template: Match.stringLikeRegexp('includeHeaders = (true|false)'),\n});\n\n// The following will throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', {\n  Template: Match.stringLikeRegexp('includeHeaders = null'),\n});\n```\n\n### Not Matcher\n\nThe not matcher inverts the search pattern and matches all patterns in the path that does\nnot match the pattern specified.\n\n```ts\n// Given a template -\n// {\n//   \"Resources\": {\n//     \"MyBar\": {\n//       \"Type\": \"Foo::Bar\",\n//       \"Properties\": {\n//         \"Fred\": [\"Flob\", \"Cat\"]\n//       }\n//     }\n//   }\n// }\n\n// The following will NOT throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', {\n  Fred: Match.not(['Flob']),\n});\n\n// The following will throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', Match.objectLike({\n  Fred: Match.not(['Flob', 'Cat']),\n}));\n```\n\n### Serialized JSON\n\nOften, we find that some CloudFormation Resource types declare properties as a string,\nbut actually expect JSON serialized as a string.\nFor example, the [`BuildSpec` property of `AWS::CodeBuild::Project`][Pipeline BuildSpec],\nthe [`Definition` property of `AWS::StepFunctions::StateMachine`][StateMachine Definition],\nto name a couple.\n\nThe `Match.serializedJson()` matcher allows deep matching within a stringified JSON.\n\n```ts\n// Given a template -\n// {\n//   \"Resources\": {\n//     \"MyBar\": {\n//       \"Type\": \"Foo::Bar\",\n//       \"Properties\": {\n//         \"Baz\": \"{ \\\"Fred\\\": [\\\"Waldo\\\", \\\"Willow\\\"] }\"\n//       }\n//     }\n//   }\n// }\n\n// The following will NOT throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', {\n  Baz: Match.serializedJson({\n    Fred: Match.arrayWith([\"Waldo\"]),\n  }),\n});\n\n// The following will throw an assertion error\ntemplate.hasResourceProperties('Foo::Bar', {\n  Baz: Match.serializedJson({\n    Fred: [\"Waldo\", \"Johnny\"],\n  }),\n});\n```\n\n[Pipeline BuildSpec]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-source.html#cfn-codebuild-project-source-buildspec\n[StateMachine Definition]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-stepfunctions-statemachine.html#cfn-stepfunctions-statemachine-definition\n\n## Capturing Values\n\nThe matcher APIs documented above allow capturing values in the matching entry\n(Resource, Output, Mapping, etc.). The following code captures a string from a\nmatching resource.\n\n```ts\n// Given a template -\n// {\n//   \"Resources\": {\n//     \"MyBar\": {\n//       \"Type\": \"Foo::Bar\",\n//       \"Properties\": {\n//         \"Fred\": [\"Flob\", \"Cat\"],\n//         \"Waldo\": [\"Qix\", \"Qux\"],\n//       }\n//     }\n//   }\n// }\n\nconst fredCapture = new Capture();\nconst waldoCapture = new Capture();\ntemplate.hasResourceProperties('Foo::Bar', {\n  Fred: fredCapture,\n  Waldo: [\"Qix\", waldoCapture],\n});\n\nfredCapture.asArray(); // returns [\"Flob\", \"Cat\"]\nwaldoCapture.asString(); // returns \"Qux\"\n```\n\nWith captures, a nested pattern can also be specified, so that only targets\nthat match the nested pattern will be captured. This pattern can be literals or\nfurther Matchers.\n\n```ts\n// Given a template -\n// {\n//   \"Resources\": {\n//     \"MyBar1\": {\n//       \"Type\": \"Foo::Bar\",\n//       \"Properties\": {\n//         \"Fred\": [\"Flob\", \"Cat\"],\n//       }\n//     }\n//     \"MyBar2\": {\n//       \"Type\": \"Foo::Bar\",\n//       \"Properties\": {\n//         \"Fred\": [\"Qix\", \"Qux\"],\n//       }\n//     }\n//   }\n// }\n\nconst capture = new Capture(Match.arrayWith(['Cat']));\ntemplate.hasResourceProperties('Foo::Bar', {\n  Fred: capture,\n});\n\ncapture.asArray(); // returns ['Flob', 'Cat']\n```\n\nWhen multiple resources match the given condition, each `Capture` defined in\nthe condition will capture all matching values. They can be paged through using\nthe `next()` API. The following example illustrates this -\n\n```ts\n// Given a template -\n// {\n//   \"Resources\": {\n//     \"MyBar\": {\n//       \"Type\": \"Foo::Bar\",\n//       \"Properties\": {\n//         \"Fred\": \"Flob\",\n//       }\n//     },\n//     \"MyBaz\": {\n//       \"Type\": \"Foo::Bar\",\n//       \"Properties\": {\n//         \"Fred\": \"Quib\",\n//       }\n//     }\n//   }\n// }\n\nconst fredCapture = new Capture();\ntemplate.hasResourceProperties('Foo::Bar', {\n  Fred: fredCapture,\n});\n\nfredCapture.asString(); // returns \"Flob\"\nfredCapture.next();     // returns true\nfredCapture.asString(); // returns \"Quib\"\n```\n\n## Asserting Annotations\n\nIn addition to template matching, we provide an API for annotation matching.\n[Annotations](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.Annotations.html)\ncan be added via the [Aspects](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.Aspects.html)\nAPI. You can learn more about Aspects [here](https://docs.aws.amazon.com/cdk/v2/guide/aspects.html).\n\nSay you have a `MyAspect` and a `MyStack` that uses `MyAspect`:\n\n```ts nofixture\nimport * as cdk from '@aws-cdk/core';\nimport { Construct, IConstruct } from 'constructs';\n\nclass MyAspect implements cdk.IAspect {\n  public visit(node: IConstruct): void {\n    if (node instanceof cdk.CfnResource && node.cfnResourceType === 'Foo::Bar') {\n      this.error(node, 'we do not want a Foo::Bar resource');\n    }\n  }\n\n  protected error(node: IConstruct, message: string): void {\n    cdk.Annotations.of(node).addError(message);\n  }\n}\n\nclass MyStack extends cdk.Stack {\n  constructor(scope: Construct, id: string) {\n    super(scope, id);\n\n    const stack = new cdk.Stack();\n    new cdk.CfnResource(stack, 'Foo', {\n      type: 'Foo::Bar',\n      properties: {\n        Fred: 'Thud',\n      },\n    });\n    cdk.Aspects.of(stack).add(new MyAspect());\n  }\n}\n```\n\nWe can then assert that the stack contains the expected Error:\n\n```ts\n// import { Annotations } from '@aws-cdk/assertions';\n\nAnnotations.fromStack(stack).hasError(\n  '/Default/Foo',\n  'we do not want a Foo::Bar resource',\n);\n```\n\nHere are the available APIs for `Annotations`:\n\n- `hasError()`, `hasNoError()`, and `findError()`\n- `hasWarning()`, `hasNoWarning()`, and `findWarning()`\n- `hasInfo()`, `hasNoInfo()`, and `findInfo()`\n\nThe corresponding `findXxx()` API is complementary to the `hasXxx()` API, except instead\nof asserting its presence, it returns the set of matching messages.\n\nIn addition, this suite of APIs is compatible with `Matchers` for more fine-grained control.\nFor example, the following assertion works as well:\n\n```ts\nAnnotations.fromStack(stack).hasError(\n  '/Default/Foo',\n  Match.stringLikeRegexp('.*Foo::Bar.*'),\n);\n```\n"
+  },
+  "repository": {
+    "directory": "packages/@aws-cdk/assertions",
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git"
+  },
+  "schema": "jsii/0.10.0",
+  "targets": {
+    "dotnet": {
+      "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png",
+      "namespace": "Amazon.CDK.Assertions",
+      "packageId": "Amazon.CDK.Assertions"
+    },
+    "java": {
+      "maven": {
+        "artifactId": "assertions",
+        "groupId": "software.amazon.awscdk"
+      },
+      "package": "software.amazon.awscdk.assertions"
+    },
+    "js": {
+      "npm": "@aws-cdk/assertions"
+    },
+    "python": {
+      "classifiers": [
+        "Framework :: AWS CDK",
+        "Framework :: AWS CDK :: 2"
+      ],
+      "distName": "aws-cdk.assertions",
+      "module": "aws_cdk.assertions"
+    }
+  },
+  "types": {
+    "@aws-cdk/assertions.Annotations": {
+      "assembly": "@aws-cdk/assertions",
+      "docs": {
+        "remarks": "Focused on asserting annotations.",
+        "stability": "stable",
+        "summary": "Suite of assertions that can be run on a CDK Stack."
+      },
+      "fqn": "@aws-cdk/assertions.Annotations",
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/annotations.ts",
+        "line": 10
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Base your assertions on the messages returned by a synthesized CDK `Stack`."
+          },
+          "locationInModule": {
+            "filename": "lib/annotations.ts",
+            "line": 15
+          },
+          "name": "fromStack",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the CDK Stack to run assertions on."
+              },
+              "name": "stack",
+              "type": {
+                "fqn": "@aws-cdk/core.Stack"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Annotations"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Get the set of matching errors of a given construct path and message."
+          },
+          "locationInModule": {
+            "filename": "lib/annotations.ts",
+            "line": 57
+          },
+          "name": "findError",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all errors in the template.",
+                "summary": "the construct path to the error."
+              },
+              "name": "constructPath",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "This should be a string or Matcher object.",
+                "summary": "the error message as should be expected."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "fqn": "@aws-cdk/cx-api.SynthesisMessage"
+                },
+                "kind": "array"
+              }
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Get the set of matching infos of a given construct path and message."
+          },
+          "locationInModule": {
+            "filename": "lib/annotations.ts",
+            "line": 129
+          },
+          "name": "findInfo",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all infos in the template.",
+                "summary": "the construct path to the info."
+              },
+              "name": "constructPath",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "This should be a string or Matcher object.",
+                "summary": "the info message as should be expected."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "fqn": "@aws-cdk/cx-api.SynthesisMessage"
+                },
+                "kind": "array"
+              }
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Get the set of matching warning of a given construct path and message."
+          },
+          "locationInModule": {
+            "filename": "lib/annotations.ts",
+            "line": 93
+          },
+          "name": "findWarning",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all warnings in the template.",
+                "summary": "the construct path to the warning."
+              },
+              "name": "constructPath",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "This should be a string or Matcher object.",
+                "summary": "the warning message as should be expected."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "fqn": "@aws-cdk/cx-api.SynthesisMessage"
+                },
+                "kind": "array"
+              }
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Assert that an error with the given message exists in the synthesized CDK `Stack`."
+          },
+          "locationInModule": {
+            "filename": "lib/annotations.ts",
+            "line": 31
+          },
+          "name": "hasError",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all errors in the template.",
+                "summary": "the construct path to the error."
+              },
+              "name": "constructPath",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "This should be a string or Matcher object.",
+                "summary": "the error message as should be expected."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Assert that an info with the given message exists in the synthesized CDK `Stack`."
+          },
+          "locationInModule": {
+            "filename": "lib/annotations.ts",
+            "line": 103
+          },
+          "name": "hasInfo",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all info in the template.",
+                "summary": "the construct path to the info."
+              },
+              "name": "constructPath",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "This should be a string or Matcher object.",
+                "summary": "the info message as should be expected."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Assert that an error with the given message does not exist in the synthesized CDK `Stack`."
+          },
+          "locationInModule": {
+            "filename": "lib/annotations.ts",
+            "line": 44
+          },
+          "name": "hasNoError",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all errors in the template.",
+                "summary": "the construct path to the error."
+              },
+              "name": "constructPath",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "This should be a string or Matcher object.",
+                "summary": "the error message as should be expected."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Assert that an info with the given message does not exist in the synthesized CDK `Stack`."
+          },
+          "locationInModule": {
+            "filename": "lib/annotations.ts",
+            "line": 116
+          },
+          "name": "hasNoInfo",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all info in the template.",
+                "summary": "the construct path to the info."
+              },
+              "name": "constructPath",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "This should be a string or Matcher object.",
+                "summary": "the info message as should be expected."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Assert that an warning with the given message does not exist in the synthesized CDK `Stack`."
+          },
+          "locationInModule": {
+            "filename": "lib/annotations.ts",
+            "line": 80
+          },
+          "name": "hasNoWarning",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all warnings in the template.",
+                "summary": "the construct path to the warning."
+              },
+              "name": "constructPath",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "This should be a string or Matcher object.",
+                "summary": "the warning message as should be expected."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Assert that an warning with the given message exists in the synthesized CDK `Stack`."
+          },
+          "locationInModule": {
+            "filename": "lib/annotations.ts",
+            "line": 67
+          },
+          "name": "hasWarning",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all warnings in the template.",
+                "summary": "the construct path to the warning."
+              },
+              "name": "constructPath",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "This should be a string or Matcher object.",
+                "summary": "the warning message as should be expected."
+              },
+              "name": "message",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        }
+      ],
+      "name": "Annotations",
+      "symbolId": "lib/annotations:Annotations"
+    },
+    "@aws-cdk/assertions.Capture": {
+      "assembly": "@aws-cdk/assertions",
+      "base": "@aws-cdk/assertions.Matcher",
+      "docs": {
+        "remarks": "Using an instance of this class within a Matcher will capture the matching value.\nThe `as*()` APIs on the instance can be used to get the captured value.",
+        "stability": "stable",
+        "summary": "Capture values while matching templates."
+      },
+      "fqn": "@aws-cdk/assertions.Capture",
+      "initializer": {
+        "docs": {
+          "stability": "stable",
+          "summary": "Initialize a new capture."
+        },
+        "locationInModule": {
+          "filename": "lib/capture.ts",
+          "line": 21
+        },
+        "parameters": [
+          {
+            "docs": {
+              "remarks": "If a nested pattern is provided `objectLike()` matching is applied.",
+              "summary": "a nested pattern or Matcher."
+            },
+            "name": "pattern",
+            "optional": true,
+            "type": {
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/capture.ts",
+        "line": 10
+      },
+      "methods": [
+        {
+          "docs": {
+            "remarks": "An error is generated if no value is captured or if the value is not an array.",
+            "stability": "stable",
+            "summary": "Retrieve the captured value as an array."
+          },
+          "locationInModule": {
+            "filename": "lib/capture.ts",
+            "line": 103
+          },
+          "name": "asArray",
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "array"
+              }
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "An error is generated if no value is captured or if the value is not a boolean.",
+            "stability": "stable",
+            "summary": "Retrieve the captured value as a boolean."
+          },
+          "locationInModule": {
+            "filename": "lib/capture.ts",
+            "line": 90
+          },
+          "name": "asBoolean",
+          "returns": {
+            "type": {
+              "primitive": "boolean"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "An error is generated if no value is captured or if the value is not a number.",
+            "stability": "stable",
+            "summary": "Retrieve the captured value as a number."
+          },
+          "locationInModule": {
+            "filename": "lib/capture.ts",
+            "line": 77
+          },
+          "name": "asNumber",
+          "returns": {
+            "type": {
+              "primitive": "number"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "An error is generated if no value is captured or if the value is not an object.",
+            "stability": "stable",
+            "summary": "Retrieve the captured value as a JSON object."
+          },
+          "locationInModule": {
+            "filename": "lib/capture.ts",
+            "line": 116
+          },
+          "name": "asObject",
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "An error is generated if no value is captured or if the value is not a string.",
+            "stability": "stable",
+            "summary": "Retrieve the captured value as a string."
+          },
+          "locationInModule": {
+            "filename": "lib/capture.ts",
+            "line": 64
+          },
+          "name": "asString",
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        },
+        {
+          "docs": {
+            "returns": "true if another capture is present, false otherwise",
+            "stability": "stable",
+            "summary": "When multiple results are captured, move the iterator to the next result."
+          },
+          "locationInModule": {
+            "filename": "lib/capture.ts",
+            "line": 52
+          },
+          "name": "next",
+          "returns": {
+            "type": {
+              "primitive": "boolean"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Every Matcher must implement this method.\nThis method will be invoked by the assertions framework. Do not call this method directly.",
+            "stability": "stable",
+            "summary": "Test whether a target matches the provided pattern."
+          },
+          "locationInModule": {
+            "filename": "lib/capture.ts",
+            "line": 26
+          },
+          "name": "test",
+          "overrides": "@aws-cdk/assertions.Matcher",
+          "parameters": [
+            {
+              "name": "actual",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.MatchResult"
+            }
+          }
+        }
+      ],
+      "name": "Capture",
+      "properties": [
+        {
+          "docs": {
+            "remarks": "This is collected as part of the result and may be presented to the user.",
+            "stability": "stable",
+            "summary": "A name for the matcher."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/capture.ts",
+            "line": 11
+          },
+          "name": "name",
+          "overrides": "@aws-cdk/assertions.Matcher",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/capture:Capture"
+    },
+    "@aws-cdk/assertions.Match": {
+      "abstract": true,
+      "assembly": "@aws-cdk/assertions",
+      "docs": {
+        "stability": "stable",
+        "summary": "Partial and special matching during template assertions."
+      },
+      "fqn": "@aws-cdk/assertions.Match",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        }
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/match.ts",
+        "line": 10
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Use this matcher in the place of a field's value, if the field must not be present."
+          },
+          "locationInModule": {
+            "filename": "lib/match.ts",
+            "line": 14
+          },
+          "name": "absent",
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Matcher"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Matches any non-null value at the target."
+          },
+          "locationInModule": {
+            "filename": "lib/match.ts",
+            "line": 81
+          },
+          "name": "anyValue",
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Matcher"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "remarks": "The set of elements (or matchers) must match exactly and in order.",
+            "stability": "stable",
+            "summary": "Matches the specified pattern with the array found in the same relative path of the target."
+          },
+          "locationInModule": {
+            "filename": "lib/match.ts",
+            "line": 32
+          },
+          "name": "arrayEquals",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the pattern to match."
+              },
+              "name": "pattern",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "array"
+                }
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Matcher"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "remarks": "The set of elements (or matchers) must be in the same order as would be found.",
+            "stability": "stable",
+            "summary": "Matches the specified pattern with the array found in the same relative path of the target."
+          },
+          "locationInModule": {
+            "filename": "lib/match.ts",
+            "line": 23
+          },
+          "name": "arrayWith",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the pattern to match."
+              },
+              "name": "pattern",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "array"
+                }
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Matcher"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Deep exact matching of the specified pattern to the target."
+          },
+          "locationInModule": {
+            "filename": "lib/match.ts",
+            "line": 40
+          },
+          "name": "exact",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the pattern to match."
+              },
+              "name": "pattern",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Matcher"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Matches any target which does NOT follow the specified pattern."
+          },
+          "locationInModule": {
+            "filename": "lib/match.ts",
+            "line": 66
+          },
+          "name": "not",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the pattern to NOT match."
+              },
+              "name": "pattern",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Matcher"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "remarks": "The keys and their values (or matchers) must match exactly with the target.",
+            "stability": "stable",
+            "summary": "Matches the specified pattern to an object found in the same relative path of the target."
+          },
+          "locationInModule": {
+            "filename": "lib/match.ts",
+            "line": 58
+          },
+          "name": "objectEquals",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the pattern to match."
+              },
+              "name": "pattern",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Matcher"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "remarks": "The keys and their values (or matchers) must be present in the target but the target can be a superset.",
+            "stability": "stable",
+            "summary": "Matches the specified pattern to an object found in the same relative path of the target."
+          },
+          "locationInModule": {
+            "filename": "lib/match.ts",
+            "line": 49
+          },
+          "name": "objectLike",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the pattern to match."
+              },
+              "name": "pattern",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Matcher"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Matches any string-encoded JSON and applies the specified pattern after parsing it."
+          },
+          "locationInModule": {
+            "filename": "lib/match.ts",
+            "line": 74
+          },
+          "name": "serializedJson",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the pattern to match after parsing the encoded JSON."
+              },
+              "name": "pattern",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Matcher"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Matches targets according to a regular expression."
+          },
+          "locationInModule": {
+            "filename": "lib/match.ts",
+            "line": 88
+          },
+          "name": "stringLikeRegexp",
+          "parameters": [
+            {
+              "name": "pattern",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Matcher"
+            }
+          },
+          "static": true
+        }
+      ],
+      "name": "Match",
+      "symbolId": "lib/match:Match"
+    },
+    "@aws-cdk/assertions.MatchCapture": {
+      "assembly": "@aws-cdk/assertions",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Information about a value captured during match."
+      },
+      "fqn": "@aws-cdk/assertions.MatchCapture",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/matcher.ts",
+        "line": 63
+      },
+      "name": "MatchCapture",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The instance of Capture class to which this capture is associated with."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 67
+          },
+          "name": "capture",
+          "type": {
+            "fqn": "@aws-cdk/assertions.Capture"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The value that was captured."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 71
+          },
+          "name": "value",
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/matcher:MatchCapture"
+    },
+    "@aws-cdk/assertions.MatchFailure": {
+      "assembly": "@aws-cdk/assertions",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Match failure details."
+      },
+      "fqn": "@aws-cdk/assertions.MatchFailure",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/matcher.ts",
+        "line": 33
+      },
+      "name": "MatchFailure",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "The matcher that had the failure."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 37
+          },
+          "name": "matcher",
+          "type": {
+            "fqn": "@aws-cdk/assertions.Matcher"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "stability": "stable",
+            "summary": "Failure message."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 50
+          },
+          "name": "message",
+          "type": {
+            "primitive": "string"
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "If the failure occurred at root of the match tree, set the path to an empty list.\nIf it occurs in the 5th index of an array nested within the 'foo' key of an object,\nset the path as `['/foo', '[5]']`.",
+            "stability": "stable",
+            "summary": "The relative path in the target where the failure occurred."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 45
+          },
+          "name": "path",
+          "type": {
+            "collection": {
+              "elementtype": {
+                "primitive": "string"
+              },
+              "kind": "array"
+            }
+          }
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "default": "1",
+            "stability": "stable",
+            "summary": "The cost of this particular mismatch."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 57
+          },
+          "name": "cost",
+          "optional": true,
+          "type": {
+            "primitive": "number"
+          }
+        }
+      ],
+      "symbolId": "lib/matcher:MatchFailure"
+    },
+    "@aws-cdk/assertions.MatchResult": {
+      "assembly": "@aws-cdk/assertions",
+      "docs": {
+        "stability": "stable",
+        "summary": "The result of `Match.test()`."
+      },
+      "fqn": "@aws-cdk/assertions.MatchResult",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        },
+        "locationInModule": {
+          "filename": "lib/matcher.ts",
+          "line": 90
+        },
+        "parameters": [
+          {
+            "name": "target",
+            "type": {
+              "primitive": "any"
+            }
+          }
+        ]
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/matcher.ts",
+        "line": 77
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Compose the results of a previous match as a subtree."
+          },
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 144
+          },
+          "name": "compose",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the id of the parent tree."
+              },
+              "name": "id",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "name": "inner",
+              "type": {
+                "fqn": "@aws-cdk/assertions.MatchResult"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.MatchResult"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "This API *must* be called prior to analyzing these results.",
+            "stability": "stable",
+            "summary": "Prepare the result to be analyzed."
+          },
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 164
+          },
+          "name": "finished",
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.MatchResult"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "If not, the result is a success",
+            "stability": "stable",
+            "summary": "Does the result contain any failures."
+          },
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 126
+          },
+          "name": "hasFailed",
+          "returns": {
+            "type": {
+              "primitive": "boolean"
+            }
+          }
+        },
+        {
+          "docs": {
+            "deprecated": "use recordFailure()",
+            "stability": "deprecated",
+            "summary": "DEPRECATED."
+          },
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 98
+          },
+          "name": "push",
+          "parameters": [
+            {
+              "name": "matcher",
+              "type": {
+                "fqn": "@aws-cdk/assertions.Matcher"
+              }
+            },
+            {
+              "name": "path",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "string"
+                  },
+                  "kind": "array"
+                }
+              }
+            },
+            {
+              "name": "message",
+              "type": {
+                "primitive": "string"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.MatchResult"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Record a capture against in this match result."
+          },
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 379
+          },
+          "name": "recordCapture",
+          "parameters": [
+            {
+              "name": "options",
+              "type": {
+                "fqn": "@aws-cdk/assertions.MatchCapture"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Record a new failure into this result at a specific path."
+          },
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 105
+          },
+          "name": "recordFailure",
+          "parameters": [
+            {
+              "name": "failure",
+              "type": {
+                "fqn": "@aws-cdk/assertions.MatchFailure"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.MatchResult"
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Do a deep render of the match result, showing the structure mismatches in context."
+          },
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 210
+          },
+          "name": "renderMismatch",
+          "returns": {
+            "type": {
+              "primitive": "string"
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "Prefer using `renderMismatch` over this method. It is left for backwards\ncompatibility for test suites that expect it, but `renderMismatch()` will\nproduce better output.",
+            "stability": "stable",
+            "summary": "Render the failed match in a presentable way."
+          },
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 183
+          },
+          "name": "toHumanStrings",
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "string"
+                },
+                "kind": "array"
+              }
+            }
+          }
+        }
+      ],
+      "name": "MatchResult",
+      "properties": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The cost of the failures so far."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 136
+          },
+          "name": "failCost",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The number of failures."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 131
+          },
+          "name": "failCount",
+          "type": {
+            "primitive": "number"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Whether the match is a success."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 121
+          },
+          "name": "isSuccess",
+          "type": {
+            "primitive": "boolean"
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The target for which this result was generated."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 81
+          },
+          "name": "target",
+          "type": {
+            "primitive": "any"
+          }
+        }
+      ],
+      "symbolId": "lib/matcher:MatchResult"
+    },
+    "@aws-cdk/assertions.Matcher": {
+      "abstract": true,
+      "assembly": "@aws-cdk/assertions",
+      "docs": {
+        "stability": "stable",
+        "summary": "Represents a matcher that can perform special data matching capabilities between a given pattern and a target."
+      },
+      "fqn": "@aws-cdk/assertions.Matcher",
+      "initializer": {
+        "docs": {
+          "stability": "stable"
+        }
+      },
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/matcher.ts",
+        "line": 7
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Check whether the provided object is a subtype of the `IMatcher`."
+          },
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 11
+          },
+          "name": "isMatcher",
+          "parameters": [
+            {
+              "name": "x",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "primitive": "boolean"
+            }
+          },
+          "static": true
+        },
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "Every Matcher must implement this method.\nThis method will be invoked by the assertions framework. Do not call this method directly.",
+            "returns": "the list of match failures. An empty array denotes a successful match.",
+            "stability": "stable",
+            "summary": "Test whether a target matches the provided pattern."
+          },
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 27
+          },
+          "name": "test",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the target to match."
+              },
+              "name": "actual",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.MatchResult"
+            }
+          }
+        }
+      ],
+      "name": "Matcher",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "remarks": "This is collected as part of the result and may be presented to the user.",
+            "stability": "stable",
+            "summary": "A name for the matcher."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/matcher.ts",
+            "line": 18
+          },
+          "name": "name",
+          "type": {
+            "primitive": "string"
+          }
+        }
+      ],
+      "symbolId": "lib/matcher:Matcher"
+    },
+    "@aws-cdk/assertions.Template": {
+      "assembly": "@aws-cdk/assertions",
+      "docs": {
+        "remarks": "Typically used, as part of unit tests, to validate that the rendered\nCloudFormation template has expected resources and properties.",
+        "stability": "stable",
+        "summary": "Suite of assertions that can be run on a CDK stack."
+      },
+      "fqn": "@aws-cdk/assertions.Template",
+      "kind": "class",
+      "locationInModule": {
+        "filename": "lib/template.ts",
+        "line": 19
+      },
+      "methods": [
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Base your assertions from an existing CloudFormation template formatted as an in-memory JSON object."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 38
+          },
+          "name": "fromJSON",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the CloudFormation template formatted as a nested set of records."
+              },
+              "name": "template",
+              "type": {
+                "collection": {
+                  "elementtype": {
+                    "primitive": "any"
+                  },
+                  "kind": "map"
+                }
+              }
+            },
+            {
+              "docs": {
+                "summary": "Optional param to configure template parsing behavior, such as disregarding circular dependencies."
+              },
+              "name": "templateParsingOptions",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/assertions.TemplateParsingOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Template"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Base your assertions on the CloudFormation template synthesized by a CDK `Stack`."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 27
+          },
+          "name": "fromStack",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the CDK Stack to run assertions on."
+              },
+              "name": "stack",
+              "type": {
+                "fqn": "@aws-cdk/core.Stack"
+              }
+            },
+            {
+              "docs": {
+                "summary": "Optional param to configure template parsing behavior, such as disregarding circular dependencies."
+              },
+              "name": "templateParsingOptions",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/assertions.TemplateParsingOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Template"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Base your assertions from an existing CloudFormation template formatted as a JSON string."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 49
+          },
+          "name": "fromString",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the CloudFormation template in."
+              },
+              "name": "template",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "Optional param to configure template parsing behavior, such as disregarding circular dependencies."
+              },
+              "name": "templateParsingOptions",
+              "optional": true,
+              "type": {
+                "fqn": "@aws-cdk/assertions.TemplateParsingOptions"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "fqn": "@aws-cdk/assertions.Template"
+            }
+          },
+          "static": true
+        },
+        {
+          "docs": {
+            "remarks": "By default, performs partial matching on the resource, via the `Match.objectLike()`.\nTo configure different behavior, use other matchers in the `Match` class.",
+            "stability": "stable",
+            "summary": "Assert that all resources of the given type contain the given definition in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 145
+          },
+          "name": "allResources",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "ex: `AWS::S3::Bucket`",
+                "summary": "the resource type;"
+              },
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the entire definition of the resources as they should be expected in the template."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "remarks": "By default, performs partial matching on the `Properties` key of the resource, via the\n`Match.objectLike()`. To configure different behavior, use other matchers in the `Match` class.",
+            "stability": "stable",
+            "summary": "Assert that all resources of the given type contain the given properties CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 160
+          },
+          "name": "allResourcesProperties",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "ex: `AWS::S3::Bucket`",
+                "summary": "the resource type;"
+              },
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the 'Properties' section of the resource as should be expected in the template."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Get the set of matching Conditions that match the given properties in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 263
+          },
+          "name": "findConditions",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all conditions in the template.",
+                "summary": "the name of the condition."
+              },
+              "name": "logicalId",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "When a literal object is provided, performs a partial match via `Match.objectLike()`.\nUse the `Match` APIs to configure a different behaviour.",
+                "summary": "by default, matches all Conditions in the template."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "any"
+                    },
+                    "kind": "map"
+                  }
+                },
+                "kind": "map"
+              }
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Get the set of matching Mappings that match the given properties in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 238
+          },
+          "name": "findMappings",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all mappings in the template.",
+                "summary": "the name of the mapping."
+              },
+              "name": "logicalId",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "When a literal object is provided, performs a partial match via `Match.objectLike()`.\nUse the `Match` APIs to configure a different behaviour.",
+                "summary": "by default, matches all Mappings in the template."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "any"
+                    },
+                    "kind": "map"
+                  }
+                },
+                "kind": "map"
+              }
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Get the set of matching Outputs that match the given properties in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 213
+          },
+          "name": "findOutputs",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all outputs in the template.",
+                "summary": "the name of the output."
+              },
+              "name": "logicalId",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "When a literal object is provided, performs a partial match via `Match.objectLike()`.\nUse the `Match` APIs to configure a different behaviour.",
+                "summary": "by default, matches all Outputs in the template."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "any"
+                    },
+                    "kind": "map"
+                  }
+                },
+                "kind": "map"
+              }
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Get the set of matching Parameters that match the given properties in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 188
+          },
+          "name": "findParameters",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all parameters in the template.",
+                "summary": "the name of the parameter."
+              },
+              "name": "logicalId",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "When a literal object is provided, performs a partial match via `Match.objectLike()`.\nUse the `Match` APIs to configure a different behaviour.",
+                "summary": "by default, matches all Parameters in the template."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "any"
+                    },
+                    "kind": "map"
+                  }
+                },
+                "kind": "map"
+              }
+            }
+          }
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Get the set of matching resources of a given type and properties in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 133
+          },
+          "name": "findResources",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the type to match in the CloudFormation template."
+              },
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "remarks": "When a literal is provided, performs a partial match via `Match.objectLike()`.\nUse the `Match` APIs to configure a different behaviour.",
+                "summary": "by default, matches all resources with the given type."
+              },
+              "name": "props",
+              "optional": true,
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ],
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "collection": {
+                    "elementtype": {
+                      "primitive": "any"
+                    },
+                    "kind": "map"
+                  }
+                },
+                "kind": "map"
+              }
+            }
+          }
+        },
+        {
+          "docs": {
+            "remarks": "By default, performs partial matching on the resource, via the `Match.objectLike()`.\nTo configure different behavior, use other matchers in the `Match` class.",
+            "stability": "stable",
+            "summary": "Assert that a Condition with the given properties exists in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 249
+          },
+          "name": "hasCondition",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all conditions in the template.",
+                "summary": "the name of the mapping."
+              },
+              "name": "logicalId",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the output as should be expected in the template."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "remarks": "By default, performs partial matching on the resource, via the `Match.objectLike()`.\nTo configure different behavior, use other matchers in the `Match` class.",
+            "stability": "stable",
+            "summary": "Assert that a Mapping with the given properties exists in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 224
+          },
+          "name": "hasMapping",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all mappings in the template.",
+                "summary": "the name of the mapping."
+              },
+              "name": "logicalId",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the output as should be expected in the template."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "remarks": "By default, performs partial matching on the resource, via the `Match.objectLike()`.\nTo configure different behavior, use other matchers in the `Match` class.",
+            "stability": "stable",
+            "summary": "Assert that an Output with the given properties exists in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 199
+          },
+          "name": "hasOutput",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all outputs in the template.",
+                "summary": "the name of the output."
+              },
+              "name": "logicalId",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the output as should be expected in the template."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "remarks": "By default, performs partial matching on the parameter, via the `Match.objectLike()`.\nTo configure different behavior, use other matchers in the `Match` class.",
+            "stability": "stable",
+            "summary": "Assert that a Parameter with the given properties exists in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 174
+          },
+          "name": "hasParameter",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "Provide `'*'` to match all parameters in the template.",
+                "summary": "the name of the parameter."
+              },
+              "name": "logicalId",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the parameter as should be expected in the template."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "remarks": "By default, performs partial matching on the resource, via the `Match.objectLike()`.\nTo configure different behavior, use other matchers in the `Match` class.",
+            "stability": "stable",
+            "summary": "Assert that a resource of the given type and given definition exists in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 119
+          },
+          "name": "hasResource",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "ex: `AWS::S3::Bucket`",
+                "summary": "the resource type;"
+              },
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the entire definition of the resource as should be expected in the template."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "remarks": "By default, performs partial matching on the `Properties` key of the resource, via the\n`Match.objectLike()`. To configure different behavior, use other matchers in the `Match` class.",
+            "stability": "stable",
+            "summary": "Assert that a resource of the given type and properties exists in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 104
+          },
+          "name": "hasResourceProperties",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "ex: `AWS::S3::Bucket`",
+                "summary": "the resource type;"
+              },
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the 'Properties' section of the resource as should be expected in the template."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Assert that the given number of resources of the given type exist in the template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 75
+          },
+          "name": "resourceCountIs",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "ex: `AWS::S3::Bucket`",
+                "summary": "the resource type;"
+              },
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "number of expected instances."
+              },
+              "name": "count",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Assert that the given number of resources of the given type and properties exists in the CloudFormation template."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 89
+          },
+          "name": "resourcePropertiesCountIs",
+          "parameters": [
+            {
+              "docs": {
+                "remarks": "ex: `AWS::S3::Bucket`",
+                "summary": "the resource type;"
+              },
+              "name": "type",
+              "type": {
+                "primitive": "string"
+              }
+            },
+            {
+              "docs": {
+                "summary": "the 'Properties' section of the resource as should be expected in the template."
+              },
+              "name": "props",
+              "type": {
+                "primitive": "any"
+              }
+            },
+            {
+              "docs": {
+                "summary": "number of expected instances."
+              },
+              "name": "count",
+              "type": {
+                "primitive": "number"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "Assert that the CloudFormation template matches the given value."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 271
+          },
+          "name": "templateMatches",
+          "parameters": [
+            {
+              "docs": {
+                "summary": "the expected CloudFormation template as key-value pairs."
+              },
+              "name": "expected",
+              "type": {
+                "primitive": "any"
+              }
+            }
+          ]
+        },
+        {
+          "docs": {
+            "stability": "stable",
+            "summary": "The CloudFormation template deserialized into an object."
+          },
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 65
+          },
+          "name": "toJSON",
+          "returns": {
+            "type": {
+              "collection": {
+                "elementtype": {
+                  "primitive": "any"
+                },
+                "kind": "map"
+              }
+            }
+          }
+        }
+      ],
+      "name": "Template",
+      "symbolId": "lib/template:Template"
+    },
+    "@aws-cdk/assertions.TemplateParsingOptions": {
+      "assembly": "@aws-cdk/assertions",
+      "datatype": true,
+      "docs": {
+        "stability": "stable",
+        "summary": "Options to configure template parsing behavior, such as disregarding circular dependencies."
+      },
+      "fqn": "@aws-cdk/assertions.TemplateParsingOptions",
+      "kind": "interface",
+      "locationInModule": {
+        "filename": "lib/template.ts",
+        "line": 288
+      },
+      "name": "TemplateParsingOptions",
+      "properties": [
+        {
+          "abstract": true,
+          "docs": {
+            "default": "false",
+            "remarks": "Should be set to false other than for\ntemplates that are valid despite containing cycles, such as unprocessed transform stacks.",
+            "stability": "stable",
+            "summary": "If set to true, will skip checking for cyclical / circular dependencies."
+          },
+          "immutable": true,
+          "locationInModule": {
+            "filename": "lib/template.ts",
+            "line": 295
+          },
+          "name": "skipCyclicalDependenciesCheck",
+          "optional": true,
+          "type": {
+            "primitive": "boolean"
+          }
+        }
+      ],
+      "symbolId": "lib/template:TemplateParsingOptions"
+    }
+  },
+  "version": "0.0.0",
+  "fingerprint": "q/KpkMaQCewR+puEfxuXFkKW7BtiQM+HNpxU7Tt6BMM="
+}

@@ -1,0 +1,26 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Reference = void 0;
+const intrinsic_1 = require("./private/intrinsic");
+const REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.Reference');
+/**
+ * An intrinsic Token that represents a reference to a construct.
+ *
+ * References are recorded.
+ */
+class Reference extends intrinsic_1.Intrinsic {
+    /**
+     * Check whether this is actually a Reference
+     */
+    static isReference(x) {
+        return typeof x === 'object' && x !== null && REFERENCE_SYMBOL in x;
+    }
+    constructor(value, target, displayName, typeHint) {
+        super(value, { typeHint });
+        Object.defineProperty(this, REFERENCE_SYMBOL, { value: true });
+        this.target = target;
+        this.displayName = displayName || 'Reference';
+    }
+}
+exports.Reference = Reference;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicmVmZXJlbmNlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsicmVmZXJlbmNlLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7OztBQUNBLG1EQUFnRDtBQUdoRCxNQUFNLGdCQUFnQixHQUFHLE1BQU0sQ0FBQyxHQUFHLENBQUMseUJBQXlCLENBQUMsQ0FBQztBQUUvRDs7OztHQUlHO0FBQ0gsTUFBc0IsU0FBVSxTQUFRLHFCQUFTO0lBQy9DOztPQUVHO0lBQ0ksTUFBTSxDQUFDLFdBQVcsQ0FBQyxDQUFNO1FBQzlCLE9BQU8sT0FBTyxDQUFDLEtBQUssUUFBUSxJQUFJLENBQUMsS0FBSyxJQUFJLElBQUksZ0JBQWdCLElBQUksQ0FBQyxDQUFDO0lBQ3RFLENBQUM7SUFLRCxZQUFZLEtBQVUsRUFBRSxNQUFrQixFQUFFLFdBQW9CLEVBQUUsUUFBNkI7UUFDN0YsS0FBSyxDQUFDLEtBQUssRUFBRSxFQUFFLFFBQVEsRUFBRSxDQUFDLENBQUM7UUFDM0IsTUFBTSxDQUFDLGNBQWMsQ0FBQyxJQUFJLEVBQUUsZ0JBQWdCLEVBQUUsRUFBRSxLQUFLLEVBQUUsSUFBSSxFQUFFLENBQUMsQ0FBQztRQUMvRCxJQUFJLENBQUMsTUFBTSxHQUFHLE1BQU0sQ0FBQztRQUNyQixJQUFJLENBQUMsV0FBVyxHQUFHLFdBQVcsSUFBSSxXQUFXLENBQUM7SUFDaEQsQ0FBQztDQUNGO0FBakJELDhCQWlCQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IElDb25zdHJ1Y3QgfSBmcm9tICdjb25zdHJ1Y3RzJztcbmltcG9ydCB7IEludHJpbnNpYyB9IGZyb20gJy4vcHJpdmF0ZS9pbnRyaW5zaWMnO1xuaW1wb3J0IHsgUmVzb2x1dGlvblR5cGVIaW50IH0gZnJvbSAnLi90eXBlLWhpbnRzJztcblxuY29uc3QgUkVGRVJFTkNFX1NZTUJPTCA9IFN5bWJvbC5mb3IoJ0Bhd3MtY2RrL2NvcmUuUmVmZXJlbmNlJyk7XG5cbi8qKlxuICogQW4gaW50cmluc2ljIFRva2VuIHRoYXQgcmVwcmVzZW50cyBhIHJlZmVyZW5jZSB0byBhIGNvbnN0cnVjdC5cbiAqXG4gKiBSZWZlcmVuY2VzIGFyZSByZWNvcmRlZC5cbiAqL1xuZXhwb3J0IGFic3RyYWN0IGNsYXNzIFJlZmVyZW5jZSBleHRlbmRzIEludHJpbnNpYyB7XG4gIC8qKlxuICAgKiBDaGVjayB3aGV0aGVyIHRoaXMgaXMgYWN0dWFsbHkgYSBSZWZlcmVuY2VcbiAgICovXG4gIHB1YmxpYyBzdGF0aWMgaXNSZWZlcmVuY2UoeDogYW55KTogeCBpcyBSZWZlcmVuY2Uge1xuICAgIHJldHVybiB0eXBlb2YgeCA9PT0gJ29iamVjdCcgJiYgeCAhPT0gbnVsbCAmJiBSRUZFUkVOQ0VfU1lNQk9MIGluIHg7XG4gIH1cblxuICBwdWJsaWMgcmVhZG9ubHkgdGFyZ2V0OiBJQ29uc3RydWN0O1xuICBwdWJsaWMgcmVhZG9ubHkgZGlzcGxheU5hbWU6IHN0cmluZztcblxuICBjb25zdHJ1Y3Rvcih2YWx1ZTogYW55LCB0YXJnZXQ6IElDb25zdHJ1Y3QsIGRpc3BsYXlOYW1lPzogc3RyaW5nLCB0eXBlSGludD86IFJlc29sdXRpb25UeXBlSGludCkge1xuICAgIHN1cGVyKHZhbHVlLCB7IHR5cGVIaW50IH0pO1xuICAgIE9iamVjdC5kZWZpbmVQcm9wZXJ0eSh0aGlzLCBSRUZFUkVOQ0VfU1lNQk9MLCB7IHZhbHVlOiB0cnVlIH0pO1xuICAgIHRoaXMudGFyZ2V0ID0gdGFyZ2V0O1xuICAgIHRoaXMuZGlzcGxheU5hbWUgPSBkaXNwbGF5TmFtZSB8fCAnUmVmZXJlbmNlJztcbiAgfVxufVxuXG4iXX0=

@@ -1,0 +1,32 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CfnInclude = void 0;
+const cfn_element_1 = require("./cfn-element");
+/**
+ * Includes a CloudFormation template into a stack. All elements of the template will be merged into
+ * the current stack, together with any elements created programmatically.
+ *
+ * @deprecated use the CfnInclude class from the cloudformation-include module instead
+ */
+class CfnInclude extends cfn_element_1.CfnElement {
+    /**
+     * Creates an adopted template construct. The template will be incorporated into the stack as-is with no changes at all.
+     * This means that logical IDs of entities within this template may conflict with logical IDs of entities that are part of the
+     * stack.
+     * @param scope The parent construct of this template
+     * @param id The ID of this construct
+     * @param props Initialization properties.
+     */
+    constructor(scope, id, props) {
+        super(scope, id);
+        this.template = props.template;
+    }
+    /**
+     * @internal
+     */
+    _toCloudFormation() {
+        return this.template;
+    }
+}
+exports.CfnInclude = CfnInclude;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiY2ZuLWluY2x1ZGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJjZm4taW5jbHVkZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7QUFDQSwrQ0FBMkM7QUFjM0M7Ozs7O0dBS0c7QUFDSCxNQUFhLFVBQVcsU0FBUSx3QkFBVTtJQU14Qzs7Ozs7OztPQU9HO0lBQ0gsWUFBWSxLQUFnQixFQUFFLEVBQVUsRUFBRSxLQUFzQjtRQUM5RCxLQUFLLENBQUMsS0FBSyxFQUFFLEVBQUUsQ0FBQyxDQUFDO1FBQ2pCLElBQUksQ0FBQyxRQUFRLEdBQUcsS0FBSyxDQUFDLFFBQVEsQ0FBQztJQUNqQyxDQUFDO0lBRUQ7O09BRUc7SUFDSSxpQkFBaUI7UUFDdEIsT0FBTyxJQUFJLENBQUMsUUFBUSxDQUFDO0lBQ3ZCLENBQUM7Q0FDRjtBQXpCRCxnQ0F5QkMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBDb25zdHJ1Y3QgfSBmcm9tICdjb25zdHJ1Y3RzJztcbmltcG9ydCB7IENmbkVsZW1lbnQgfSBmcm9tICcuL2Nmbi1lbGVtZW50JztcblxuLyoqXG4gKiBDb25zdHJ1Y3Rpb24gcHJvcGVydGllcyBmb3IgYENmbkluY2x1ZGVgLlxuICpcbiAqIEBkZXByZWNhdGVkIHVzZSB0aGUgQ2ZuSW5jbHVkZSBjbGFzcyBmcm9tIHRoZSBjbG91ZGZvcm1hdGlvbi1pbmNsdWRlIG1vZHVsZSBpbnN0ZWFkXG4gKi9cbmV4cG9ydCBpbnRlcmZhY2UgQ2ZuSW5jbHVkZVByb3BzIHtcbiAgLyoqXG4gICAqIFRoZSBDbG91ZEZvcm1hdGlvbiB0ZW1wbGF0ZSB0byBpbmNsdWRlIGluIHRoZSBzdGFjayAoYXMgaXMpLlxuICAgKi9cbiAgcmVhZG9ubHkgdGVtcGxhdGU6IG9iamVjdDtcbn1cblxuLyoqXG4gKiBJbmNsdWRlcyBhIENsb3VkRm9ybWF0aW9uIHRlbXBsYXRlIGludG8gYSBzdGFjay4gQWxsIGVsZW1lbnRzIG9mIHRoZSB0ZW1wbGF0ZSB3aWxsIGJlIG1lcmdlZCBpbnRvXG4gKiB0aGUgY3VycmVudCBzdGFjaywgdG9nZXRoZXIgd2l0aCBhbnkgZWxlbWVudHMgY3JlYXRlZCBwcm9ncmFtbWF0aWNhbGx5LlxuICpcbiAqIEBkZXByZWNhdGVkIHVzZSB0aGUgQ2ZuSW5jbHVkZSBjbGFzcyBmcm9tIHRoZSBjbG91ZGZvcm1hdGlvbi1pbmNsdWRlIG1vZHVsZSBpbnN0ZWFkXG4gKi9cbmV4cG9ydCBjbGFzcyBDZm5JbmNsdWRlIGV4dGVuZHMgQ2ZuRWxlbWVudCB7XG4gIC8qKlxuICAgKiBUaGUgaW5jbHVkZWQgdGVtcGxhdGUuXG4gICAqL1xuICBwdWJsaWMgcmVhZG9ubHkgdGVtcGxhdGU6IG9iamVjdDtcblxuICAvKipcbiAgICogQ3JlYXRlcyBhbiBhZG9wdGVkIHRlbXBsYXRlIGNvbnN0cnVjdC4gVGhlIHRlbXBsYXRlIHdpbGwgYmUgaW5jb3Jwb3JhdGVkIGludG8gdGhlIHN0YWNrIGFzLWlzIHdpdGggbm8gY2hhbmdlcyBhdCBhbGwuXG4gICAqIFRoaXMgbWVhbnMgdGhhdCBsb2dpY2FsIElEcyBvZiBlbnRpdGllcyB3aXRoaW4gdGhpcyB0ZW1wbGF0ZSBtYXkgY29uZmxpY3Qgd2l0aCBsb2dpY2FsIElEcyBvZiBlbnRpdGllcyB0aGF0IGFyZSBwYXJ0IG9mIHRoZVxuICAgKiBzdGFjay5cbiAgICogQHBhcmFtIHNjb3BlIFRoZSBwYXJlbnQgY29uc3RydWN0IG9mIHRoaXMgdGVtcGxhdGVcbiAgICogQHBhcmFtIGlkIFRoZSBJRCBvZiB0aGlzIGNvbnN0cnVjdFxuICAgKiBAcGFyYW0gcHJvcHMgSW5pdGlhbGl6YXRpb24gcHJvcGVydGllcy5cbiAgICovXG4gIGNvbnN0cnVjdG9yKHNjb3BlOiBDb25zdHJ1Y3QsIGlkOiBzdHJpbmcsIHByb3BzOiBDZm5JbmNsdWRlUHJvcHMpIHtcbiAgICBzdXBlcihzY29wZSwgaWQpO1xuICAgIHRoaXMudGVtcGxhdGUgPSBwcm9wcy50ZW1wbGF0ZTtcbiAgfVxuXG4gIC8qKlxuICAgKiBAaW50ZXJuYWxcbiAgICovXG4gIHB1YmxpYyBfdG9DbG91ZEZvcm1hdGlvbigpIHtcbiAgICByZXR1cm4gdGhpcy50ZW1wbGF0ZTtcbiAgfVxufVxuIl19

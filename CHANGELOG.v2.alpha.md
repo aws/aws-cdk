@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.72.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.71.0-alpha.0...v2.72.0-alpha.0) (2023-03-29)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **servicecatalogappregistry:** This commit involves share replacement during the deployment of `ApplicationAssociator` due to share construct id update. After this change, frequent share replacements due to structural change in `Application` construct should be avoided. `Application.shareApplication` starts to require construct id (first argument) and share name (added in `ShareOption`) as input.
+* **ivs:** Renamed ChannelProps.name to ChannelProps.channelName
+* Renamed PlaybackKeyPairProps.name to PlaybackKeyPairProps.playbackKeyPairName
+* Channel now generates a physical name if one is not provided
+* PlaybackKeyPair now generates a physical name if one is not provided
+
+### Bug Fixes
+
+* **integ-runner:** update workflow doesn't support resource replacement ([#24720](https://github.com/aws/aws-cdk/issues/24720)) ([07d3aa7](https://github.com/aws/aws-cdk/commit/07d3aa74e6c1a7b3b7ddf298cf3cc4b7ff180b48))
+* **ivs:** Not a standard physical name pattern ([#24706](https://github.com/aws/aws-cdk/issues/24706)) ([7d17fe3](https://github.com/aws/aws-cdk/commit/7d17fe32d20cd847733bffdd899c4659a7b0003c))
+* **servicecatalogappregistry:** RAM Share is replaced on every change to Application ([#24760](https://github.com/aws/aws-cdk/issues/24760)) ([8977d0d](https://github.com/aws/aws-cdk/commit/8977d0d2b567c9fcf32076b66f2dcb7f993bb22a))
+
+## [2.71.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.70.0-alpha.0...v2.71.0-alpha.0) (2023-03-28)
+
 ## [2.70.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.69.0-alpha.0...v2.70.0-alpha.0) (2023-03-22)
 
 
