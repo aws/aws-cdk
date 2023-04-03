@@ -309,13 +309,15 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
     for (const entry of manifest.entries) {
       let assetType: AssetType;
       let isTemplate = false;
-      let assetName: string | undefined = entry.name;
+      let assetName: string | undefined;
 
       if (entry instanceof DockerImageManifestEntry) {
         assetType = AssetType.DOCKER_IMAGE;
+        assetName = entry.source.name;
       } else if (entry instanceof FileManifestEntry) {
         isTemplate = entry.source.packaging === 'file' && entry.source.path === stackArtifact.templateFile;
         assetType = AssetType.FILE;
+        assetName = entry.source.name;
       } else {
         throw new Error(`Unrecognized asset type: ${entry.type}`);
       }
