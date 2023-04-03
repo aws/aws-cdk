@@ -9,6 +9,7 @@ import { Annotations } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { Construct } from 'constructs';
 import { PHYSICAL_RESOURCE_ID_REFERENCE } from './runtime';
+import { FactName } from '../../../region-info';
 
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
@@ -405,11 +406,18 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     this.props = props;
 
+    // Runtime regional fact should always return a known runtime string that lambda.Runtime
+    // can index off, but for type safety we also default it here.
+    const runtimeName = cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION);
+    const runtime = runtimeName
+      ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true })
+      : lambda.Runtime.NODEJS_16_X;
+
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
         exclude: ['*.ts'],
       }),
-      runtime: lambda.Runtime.NODEJS_14_X,
+      runtime,
       handler: 'index.handler',
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',

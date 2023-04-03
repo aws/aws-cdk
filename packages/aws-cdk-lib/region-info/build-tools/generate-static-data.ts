@@ -12,6 +12,7 @@ import {
   RULE_CLASSIC_PARTITION_BECOMES_OPT_IN,
 } from '../lib/aws-entities';
 import { Default } from '../lib/default';
+import { Runtime } from '../../aws-lambda';
 
 export async function main(): Promise<void> {
   checkRegions(APPMESH_ECR_ACCOUNTS);
@@ -72,6 +73,8 @@ export async function main(): Promise<void> {
     registerFact(region, 'DLC_REPOSITORY_ACCOUNT', DLC_REPOSITORY_ACCOUNTS[region]);
 
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
+
+    registerFact(region, 'DEFAULT_CR_NODE_VERSION', ['aws', 'aws-cn'].includes(partition) ? Runtime.NODEJS_16_X.toString() : Runtime.NODEJS_14_X.toString()); 
 
     const firehoseCidrBlock = FIREHOSE_CIDR_BLOCKS[region];
     if (firehoseCidrBlock) {
