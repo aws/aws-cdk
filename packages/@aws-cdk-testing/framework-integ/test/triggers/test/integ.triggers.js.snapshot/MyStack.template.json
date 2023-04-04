@@ -237,7 +237,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "69c304a3f7ac849a04d2998eb55063905ceeae0c50a408f6f9b98eff6832b5b0.zip"
+     "S3Key": "e6b302aaee9bb5261338cf6b21e540e805eeaf2c18eb3246f7556104f361f68d.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -411,7 +411,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "aa1959bb6ee212354a5363c6469bb9dc0d3096ccc4b66f277b3d5e171a9462d1.zip"
+     "S3Key": "004b12857696fed3c10ad54c8e3cabd07cdf653ec469cbadab6c64ae6c9ce690.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -435,7 +435,7 @@
     "MyAssertionLambdaFunctionServiceRole36146F3B"
    ]
   },
-  "MyAssertionLambdaFunctionCurrentVersionF4FA4C80e2c1d671ec67fab13e46054563e433a6": {
+  "MyAssertionLambdaFunctionCurrentVersionF4FA4C80f14c7075b9f4d7c63066e881d45e211c": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -453,7 +453,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80e2c1d671ec67fab13e46054563e433a6"
+     "Ref": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80f14c7075b9f4d7c63066e881d45e211c"
     },
     "InvocationType": "RequestResponse",
     "Timeout": "60000"
