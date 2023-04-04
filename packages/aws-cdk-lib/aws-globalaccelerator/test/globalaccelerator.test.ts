@@ -222,7 +222,7 @@ test('create accelerator with uniqueResourceName if acceleratorName is not speci
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::GlobalAccelerator::Accelerator', {
     Enabled: true,
-    Name: 'Stack-Accelerator-472129D8',
+    Name: 'StackAccelerator472129D8',
   });
 });
 

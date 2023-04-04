@@ -87,9 +87,7 @@ export class Accelerator extends cdk.Resource implements IAccelerator {
 
     this.validateAcceleratorName(props.acceleratorName);
     const name = props.acceleratorName ?? cdk.Names.uniqueResourceName(this, {
-      separator: '-',
       maxLength: 64,
-      allowedSpecialCharacters: '/_-',
     });
     const resource = new ga.CfnAccelerator(this, 'Resource', {
       enabled: props.enabled ?? true,
