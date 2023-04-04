@@ -12,8 +12,9 @@ import {
   Duration,
   NestedStack,
   Stack,
+  CustomResourceProvider,
 } from 'aws-cdk-lib';
-import { Provider } from 'aws-cdk-lib/custom-resources';
+import { AwsCustomResource, Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { CfnBranch } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
@@ -237,7 +238,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
           __dirname,
           'asset-deployment-handler/index.js',
         ),
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: AwsCustomResource.regionalDefaultRuntime(scope),
         handler: 'onEvent',
         initialPolicy: [
           new iam.PolicyStatement({
@@ -261,7 +262,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
           __dirname,
           'asset-deployment-handler/index.js',
         ),
-        runtime: lambda.Runtime.NODEJS_14_X,
+        runtime: AwsCustomResource.regionalDefaultRuntime(scope),
         handler: 'isComplete',
         initialPolicy: [
           new iam.PolicyStatement({

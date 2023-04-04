@@ -3,6 +3,7 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
 import { Construct } from 'constructs';
+import { AwsCustomResource } from '../../custom-resources';
 
 /**
  * Properties for EvaluateExpression
@@ -19,7 +20,7 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
    * The runtime language to use to evaluate the expression.
    *
-   * @default lambda.Runtime.NODEJS_14_X
+   * @default lambda.Runtime.NODEJS_16_X
    */
   readonly runtime?: lambda.Runtime;
 }
@@ -56,7 +57,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
 
-    this.evalFn = createEvalFn(this.props.runtime ?? lambda.Runtime.NODEJS_14_X, this);
+    this.evalFn = createEvalFn(this.props.runtime ?? AwsCustomResource.regionalDefaultRuntime(scope), this);
 
     this.taskPolicies = [
       new iam.PolicyStatement({

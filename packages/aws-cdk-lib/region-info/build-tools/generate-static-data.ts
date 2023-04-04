@@ -1,8 +1,17 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import {
-  APPMESH_ECR_ACCOUNTS, AWS_CDK_METADATA, CLOUDWATCH_LAMBDA_INSIGHTS_ARNS, DLC_REPOSITORY_ACCOUNTS,
-  ELBV2_ACCOUNTS, FIREHOSE_CIDR_BLOCKS, PARTITION_MAP, ROUTE_53_BUCKET_WEBSITE_ZONE_IDS, EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS, ADOT_LAMBDA_LAYER_ARNS,
+  APPMESH_ECR_ACCOUNTS,
+  AWS_CDK_METADATA,
+  CLOUDWATCH_LAMBDA_INSIGHTS_ARNS,
+  DLC_REPOSITORY_ACCOUNTS,
+  ELBV2_ACCOUNTS,
+  FIREHOSE_CIDR_BLOCKS,
+  PARTITION_MAP,
+  ROUTE_53_BUCKET_WEBSITE_ZONE_IDS,
+  EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS,
+  ADOT_LAMBDA_LAYER_ARNS,
+  CR_DEFAULT_RUNTIME_MAP,
 } from './fact-tables';
 import {
   AWS_REGIONS,
@@ -12,7 +21,6 @@ import {
   RULE_CLASSIC_PARTITION_BECOMES_OPT_IN,
 } from '../lib/aws-entities';
 import { Default } from '../lib/default';
-import { Runtime } from '../../aws-lambda';
 
 export async function main(): Promise<void> {
   checkRegions(APPMESH_ECR_ACCOUNTS);
@@ -74,13 +82,7 @@ export async function main(): Promise<void> {
 
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
 
-    registerFact(
-      region,
-      'DEFAULT_CR_NODE_VERSION',
-      ['aws', 'aws-cn', 'aws-us-gov'].includes(partition)
-        ? Runtime.NODEJS_16_X.toString()
-        : Runtime.NODEJS_14_X.toString()
-    ); 
+    registerFact(region, 'DEFAULT_CR_NODE_VERSION', CR_DEFAULT_RUNTIME_MAP[partition]); 
 
     const firehoseCidrBlock = FIREHOSE_CIDR_BLOCKS[region];
     if (firehoseCidrBlock) {

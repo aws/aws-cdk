@@ -13,6 +13,7 @@ import { Lazy } from '../lazy';
 import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
+import { FactName } from '../../../region-info';
 
 const ENTRYPOINT_FILENAME = '__entrypoint__';
 const ENTRYPOINT_NODEJS_SOURCE = path.join(__dirname, 'nodejs-entrypoint.js');
@@ -205,6 +206,11 @@ export class CustomResourceProvider extends Construct {
 
   private policyStatements?: any[];
   private _role?: CfnResource;
+
+  public static regionalDefaultRuntime(scope: Construct): CustomResourceProviderRuntime {
+    const runtimeName = Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION);
+    return Object.values(CustomResourceProviderRuntime).find(value => value === runtimeName) ?? CustomResourceProviderRuntime.NODEJS_14_X;
+  }
 
   protected constructor(scope: Construct, id: string, props: CustomResourceProviderProps) {
     super(scope, id);

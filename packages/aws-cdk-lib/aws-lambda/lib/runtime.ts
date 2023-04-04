@@ -268,4 +268,9 @@ export class Runtime {
       other.family === this.family &&
       other.supportsInlineCode === this.supportsInlineCode;
   }
+
+  // Used to construct default custom resource runtime by region
+  public static fromRegionDefaultString(name: string): Runtime {
+    return new Runtime(name, RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  }
 }

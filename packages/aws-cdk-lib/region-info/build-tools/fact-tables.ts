@@ -100,15 +100,34 @@ export const EBS_ENV_ENDPOINT_HOSTED_ZONE_IDS: { [region: string]: string } = {
   'us-west-2': 'Z38NKT9BP95V3O',
 };
 
-interface Region { partition: string, domainSuffix: string }
+enum Partition {
+  Default = 'aws',
+  Cn = 'aws-cn',
+  UsGov = 'aws-us-gov',
+  UsIso = 'aws-iso',
+  UsIsoB = 'aws-iso-b',
+}
+
+interface Region { partition: Partition, domainSuffix: string }
 
 export const PARTITION_MAP: { [region: string]: Region } = {
-  'default': { partition: 'aws', domainSuffix: 'amazonaws.com' },
-  'cn-': { partition: 'aws-cn', domainSuffix: 'amazonaws.com.cn' },
-  'us-gov-': { partition: 'aws-us-gov', domainSuffix: 'amazonaws.com' },
-  'us-iso-': { partition: 'aws-iso', domainSuffix: 'c2s.ic.gov' },
-  'us-isob-': { partition: 'aws-iso-b', domainSuffix: 'sc2s.sgov.gov' },
+  'default': { partition: Partition.Default, domainSuffix: 'amazonaws.com' },
+  'cn-': { partition: Partition.Cn, domainSuffix: 'amazonaws.com.cn' },
+  'us-gov-': { partition: Partition.UsGov, domainSuffix: 'amazonaws.com' },
+  'us-iso-': { partition: Partition.UsIso, domainSuffix: 'c2s.ic.gov' },
+  'us-isob-': { partition: Partition.UsIsoB, domainSuffix: 'sc2s.sgov.gov' },
 };
+
+// Compute this from our Partition list so new ones are added automatically
+export const CR_DEFAULT_RUNTIME_MAP: { [partition: string]: string } = Object.values(Partition)
+  .reduce((accum, partition) => {
+    const hasNode16 = [Partition.Default, Partition.Cn, Partition.UsGov].includes(partition);
+
+    return {
+      ...accum,
+      [partition]: hasNode16 ?  'nodejs16.x' : 'nodejs14.x',
+    };
+  }, {});
 
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy

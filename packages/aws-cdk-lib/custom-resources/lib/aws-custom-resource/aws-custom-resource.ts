@@ -373,6 +373,15 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
   private readonly customResource: cdk.CustomResource;
   private readonly props: AwsCustomResourceProps;
 
+  public static regionalDefaultRuntime(scope: Construct): lambda.Runtime {
+    // Runtime regional fact should always return a known runtime string that lambda.Runtime
+    // can index off, but for type safety we also default it here.
+    const runtimeName = cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION);
+    return runtimeName
+      ? lambda.Runtime.fromRegionDefaultString(runtimeName)
+      : lambda.Runtime.NODEJS_16_X;
+  }
+
   // 'props' cannot be optional, even though all its properties are optional.
   // this is because at least one sdk call must be provided.
   constructor(scope: Construct, id: string, props: AwsCustomResourceProps) {
@@ -406,18 +415,11 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     this.props = props;
 
-    // Runtime regional fact should always return a known runtime string that lambda.Runtime
-    // can index off, but for type safety we also default it here.
-    const runtimeName = cdk.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION);
-    const runtime = runtimeName
-      ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true })
-      : lambda.Runtime.NODEJS_16_X;
-
     const provider = new lambda.SingletonFunction(this, 'Provider', {
       code: lambda.Code.fromAsset(path.join(__dirname, 'runtime'), {
         exclude: ['*.ts'],
       }),
-      runtime,
+      runtime: AwsCustomResource.regionalDefaultRuntime(scope),
       handler: 'index.handler',
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',
