@@ -661,12 +661,14 @@ export class Repository extends RepositoryBase {
     this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
   }
 
+  /**
+   * Add a policy statement to the repository's resource policy.
+   *
+   * While other resources policies in AWS either require or accept a resource section,
+   * Cfn for ECR does not allow us to specify a resource policy.
+   * It will fail if a resource section is present at all.
+   */
   public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
-    // Other resource policies in AWS either require or accept a resource section.
-    // Strangely, not only does Cfn for ECR not allow
-    // us to specify a resource policy for a specific image,
-    // it will straight up fail if a resource section is present at all.
-    // When it fails, the error message is unhelpful. Hence this warning.
     if (statement.resources) {
       Annotations.of(this).addWarning('ECR resource policy does not allow resource statements.');
     }
