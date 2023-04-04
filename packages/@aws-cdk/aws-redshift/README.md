@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
@@ -27,7 +21,7 @@ To set up a Redshift cluster, define a `Cluster`. It will be launched in a VPC.
 You can specify a VPC, otherwise one will be created. The nodes are always launched in private subnets and are encrypted by default.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 const vpc = new ec2.Vpc(this, 'Vpc');
 const cluster = new Cluster(this, 'Redshift', {
@@ -50,8 +44,8 @@ Depending on your use case, you can make the cluster publicly accessible with th
 Amazon Redshift logs information about connections and user activities in your database. These logs help you to monitor the database for security and troubleshooting purposes, a process called database auditing. To send these logs to an S3 bucket, specify the `loggingProperties` when creating a new cluster.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as s3 from '@aws-cdk/aws-s3';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 
 const vpc = new ec2.Vpc(this, 'Vpc');
 const bucket = s3.Bucket.fromBucketName(this, 'bucket', 'logging-bucket');
@@ -125,7 +119,7 @@ Manager encryption key. You can specify the encryption key used for this purpose
 supplying a key in the `encryptionKey` property.
 
 ```ts fixture=cluster
-import * as kms from '@aws-cdk/aws-kms';
+import * as kms from 'aws-cdk-lib/aws-kms';
 
 const encryptionKey = new kms.Key(this, 'Key');
 new User(this, 'User', {
@@ -217,7 +211,7 @@ new Table(this, 'Table', {
 Table columns can be configured to use a specific compression encoding:
 
 ```ts fixture=cluster
-import { ColumnEncoding } from '@aws-cdk/aws-redshift';
+import { ColumnEncoding } from '@aws-cdk/aws-redshift-alpha';
 
 new Table(this, 'Table', {
   tableColumns: [
@@ -349,7 +343,7 @@ cluster.addRotationMultiUser('MultiUserRotation', {
 You can add a parameter to a parameter group with`ClusterParameterGroup.addParameter()`.
 
 ```ts
-import { ClusterParameterGroup } from '@aws-cdk/aws-redshift';
+import { ClusterParameterGroup } from '@aws-cdk/aws-redshift-alpha';
 
 const params = new ClusterParameterGroup(this, 'Params', {
   description: 'desc',
@@ -364,8 +358,8 @@ params.addParameter('enable_user_activity_logging', 'true');
 Additionally, you can add a parameter to the cluster's associated parameter group with `Cluster.addToParameterGroup()`. If the cluster does not have an associated parameter group, a new parameter group is created.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
 declare const vpc: ec2.Vpc;
 
 const cluster = new Cluster(this, 'Cluster', {
@@ -384,8 +378,8 @@ cluster.addToParameterGroup('enable_user_activity_logging', 'true');
 In most cases, existing clusters [must be manually rebooted](https://docs.aws.amazon.com/redshift/latest/mgmt/working-with-parameter-groups.html) to apply parameter changes. You can automate parameter related reboots by setting the cluster's `rebootForParameterChanges` property to `true` , or by using `Cluster.enableRebootForParameterChanges()`.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
 declare const vpc: ec2.Vpc;
 
 const cluster = new Cluster(this, 'Cluster', {
@@ -405,8 +399,8 @@ cluster.enableRebootForParameterChanges()
 If you configure your cluster to be publicly accessible, you can optionally select an *elastic IP address* to use for the external IP address. An elastic IP address is a static IP address that is associated with your AWS account. You can use an elastic IP address to connect to your cluster from outside the VPC. An elastic IP address gives you the ability to change your underlying configuration without affecting the IP address that clients use to connect to your cluster. This approach can be helpful for situations such as recovery after a failure.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
 declare const vpc: ec2.Vpc;
 
 new Cluster(this, 'Redshift', {
@@ -423,7 +417,7 @@ new Cluster(this, 'Redshift', {
 If the Cluster is in a VPC and you want to connect to it using the private IP address from within the cluster, it is important to enable *DNS resolution* and *DNS hostnames* in the VPC config. If these parameters would not be set, connections from within the VPC would connect to the elastic IP address and not the private IP address.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 const vpc = new ec2.Vpc(this, 'VPC', {
   enableDnsSupport: true,
   enableDnsHostnames: true,
@@ -445,8 +439,8 @@ In some cases, you might want to associate the cluster with an elastic IP addres
 When you use Amazon Redshift enhanced VPC routing, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your virtual private cloud (VPC) based on the Amazon VPC service. By using enhanced VPC routing, you can use standard VPC features, such as VPC security groups, network access control lists (ACLs), VPC endpoints, VPC endpoint policies, internet gateways, and Domain Name System (DNS) servers, as described in the Amazon VPC User Guide. You use these features to tightly manage the flow of data between your Amazon Redshift cluster and other resources. When you use enhanced VPC routing to route traffic through your VPC, you can also use VPC flow logs to monitor COPY and UNLOAD traffic.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
 declare const vpc: ec2.Vpc;
 
 new Cluster(this, 'Redshift', {
@@ -468,8 +462,8 @@ Some Amazon Redshift features require Amazon Redshift to access other AWS servic
 When you create an IAM role and set it as the default for the cluster using console, you don't have to provide the IAM role's Amazon Resource Name (ARN) to perform authentication and authorization.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const vpc: ec2.Vpc;
 
 const defaultRole = new iam.Role(this, 'DefaultRole', {
@@ -490,8 +484,8 @@ new Cluster(this, 'Redshift', {
 A default role can also be added to a cluster using the `addDefaultIamRole` method.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const vpc: ec2.Vpc;
 
 const defaultRole = new iam.Role(this, 'DefaultRole', {
@@ -515,8 +509,8 @@ redshiftCluster.addDefaultIamRole(defaultRole);
 Attaching IAM roles to a Redshift Cluster grants permissions to the Redshift service to perform actions on your behalf.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const vpc: ec2.Vpc
 
 const role = new iam.Role(this, 'Role', {
@@ -534,8 +528,8 @@ const cluster = new Cluster(this, 'Redshift', {
 Additional IAM roles can be attached to a cluster using the `addIamRole` method.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const vpc: ec2.Vpc
 
 const role = new iam.Role(this, 'Role', {

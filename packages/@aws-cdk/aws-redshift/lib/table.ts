@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import * as cdk from '@aws-cdk/core';
-import { REDSHIFT_COLUMN_ID } from '@aws-cdk/cx-api';
+import * as cdk from 'aws-cdk-lib';
+import { REDSHIFT_COLUMN_ID } from 'aws-cdk-lib/cx-api';
 import { Construct, IConstruct } from 'constructs';
 import { ICluster } from './cluster';
 import { DatabaseOptions } from './database-options';
@@ -297,7 +297,7 @@ export class Table extends TableBase {
   private validateDistKeyColumns(columns: Column[]): void {
     try {
       getDistKeyColumn(columns);
-    } catch (err) {
+    } catch {
       throw new Error('Only one column can be configured as distKey.');
     }
   }

@@ -1,5 +1,5 @@
-import * as kms from '@aws-cdk/aws-kms';
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 
 /**

@@ -16,7 +16,7 @@ test('if this test fails, run "yarn update-schema"', () => {
 
     try {
       expect(actual).toEqual(expected);
-    } catch (err) {
+    } catch (err: any) {
       // I couldn't for the life of me figure out how to provide additional error message
       // to jest...any ideas?
       err.message = `Whoops, Looks like the schema has changed. Did you forget to run 'yarn update-schema'?\n\n${err.message}`;

@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { bold, reset, green, yellow, red } from 'chalk';
 import { stderr } from './console-listener';
 import { HistoryActivityPrinter } from '../../lib/api/util/cloudformation/stack-activity-monitor';
@@ -222,3 +223,48 @@ test('prints "Failed Resources:" list, when at least one deployment fails', () =
   expect(output[2].trim()).toStrictEqual('Failed resources:');
   expect(output[3].trim()).toStrictEqual(`stack-name | ${HUMAN_TIME} | ${red('UPDATE_FAILED       ')} | AWS::CloudFormation::Stack | ${red(bold('stack1'))}`);
 });
+
+test('print failed resources because of hook failures', () => {
+  const historyActivityPrinter = new HistoryActivityPrinter({
+    resourceTypeColumnWidth: 23,
+    resourcesTotal: 1,
+    stream: process.stderr,
+  });
+
+  const output = stderr.inspectSync(() => {
+    historyActivityPrinter.addActivity({
+      event: {
+        LogicalResourceId: 'stack1',
+        ResourceStatus: 'IN_PROGRESS',
+        Timestamp: new Date(TIMESTAMP),
+        ResourceType: 'AWS::CloudFormation::Stack',
+        StackId: '',
+        EventId: '',
+        StackName: 'stack-name',
+        HookStatus: 'HOOK_COMPLETE_FAILED',
+        HookType: 'hook1',
+        HookStatusReason: 'stack1 must obey certain rules',
+      },
+    });
+    historyActivityPrinter.addActivity({
+      event: {
+        LogicalResourceId: 'stack1',
+        ResourceStatus: 'UPDATE_FAILED',
+        Timestamp: new Date(TIMESTAMP),
+        ResourceType: 'AWS::CloudFormation::Stack',
+        StackId: '',
+        EventId: '',
+        StackName: 'stack-name',
+        ResourceStatusReason: 'The following hook(s) failed: hook1',
+      },
+    });
+    historyActivityPrinter.stop();
+  });
+
+  expect(output.length).toStrictEqual(4);
+  expect(output[0].trim()).toStrictEqual(`stack-name | 0/2 | ${HUMAN_TIME} | ${reset('IN_PROGRESS         ')} | AWS::CloudFormation::Stack | ${reset(bold('stack1'))}`);
+  expect(output[1].trim()).toStrictEqual(`stack-name | 0/2 | ${HUMAN_TIME} | ${red('UPDATE_FAILED       ')} | AWS::CloudFormation::Stack | ${red(bold('stack1 The following hook(s) failed: hook1 : stack1 must obey certain rules'))}`);
+  expect(output[2].trim()).toStrictEqual('Failed resources:');
+  expect(output[3].trim()).toStrictEqual(`stack-name | ${HUMAN_TIME} | ${red('UPDATE_FAILED       ')} | AWS::CloudFormation::Stack | ${red(bold('stack1 The following hook(s) failed: hook1 : stack1 must obey certain rules'))}`);
+});
+
