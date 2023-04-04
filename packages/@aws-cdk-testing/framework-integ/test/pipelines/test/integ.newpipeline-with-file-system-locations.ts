@@ -1,12 +1,12 @@
 import * as path from 'path';
-import * as codebuild from '@aws-cdk/aws-codebuild';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as s3_assets from '@aws-cdk/aws-s3-assets';
-import { App, Stack, StackProps, Stage, StageProps, Aws, RemovalPolicy, DefaultStackSynthesizer } from '@aws-cdk/core';
-import { IntegTest } from '@aws-cdk/integ-tests';
+import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
+import { App, Stack, StackProps, Stage, StageProps, Aws, RemovalPolicy, DefaultStackSynthesizer } from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
-import * as pipelines from '../lib';
+import * as pipelines from 'aws-cdk-lib/pipelines';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
