@@ -2,10 +2,10 @@ import * as path from 'path';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { debug, print } from '../lib/logging';
-import { formatAsBanner } from '../lib/util/console-formatters';
 import { cdkCacheDir, rootDir } from './util/directories';
 import { getLatestVersionFromNpm } from './util/npm';
+import { debug, print } from '../lib/logging';
+import { formatAsBanner } from '../lib/util/console-formatters';
 
 const ONE_DAY_IN_SECONDS = 1 * 24 * 60 * 60;
 
@@ -56,7 +56,7 @@ export class VersionCheckTTL {
         return true;
       }
       return false;
-    } catch (err) {
+    } catch (err: any) {
       if (err.code === 'ENOENT') {
         return true;
       } else {
@@ -117,7 +117,7 @@ export async function displayVersionMessage(currentVersion = versionNumber(), ve
       const bannerMsg = formatAsBanner(getVersionMessage(currentVersion, laterVersion));
       bannerMsg.forEach((e) => print(e));
     }
-  } catch (err) {
+  } catch (err: any) {
     debug(`Could not run version check - ${err.message}`);
   }
 }

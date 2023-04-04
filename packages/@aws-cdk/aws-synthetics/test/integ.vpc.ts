@@ -1,8 +1,8 @@
 /// !cdk-integ canary-vpc
 
 import * as path from 'path';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
 import * as synthetics from '../lib';
 
 /*
@@ -22,7 +22,7 @@ new synthetics.Canary(stack, 'MyVpcCanary', {
     handler: 'canary.handler',
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary.zip')),
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_3,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
   vpc,
 });
 

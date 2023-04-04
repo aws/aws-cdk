@@ -176,7 +176,7 @@ export function* findInnerPackages(dir: string): IterableIterator<string> {
     try {
       const stat = fs.statSync(path.join(dir, fname));
       if (!stat.isDirectory()) { continue; }
-    } catch (e) {
+    } catch (e: any) {
       // Survive invalid symlinks
       if (e.code !== 'ENOENT') { throw e; }
       continue;

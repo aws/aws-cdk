@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "ImportedRoleTest/DefaultTest": {
+      "stacks": [
+        "integ-iam-imported-role-role-stack"
+      ],
+      "assertionStack": "ImportedRoleTestAssertions",
+      "assertionStackName": "ImportedRoleTestAssertions"
+    }
+  }
+}

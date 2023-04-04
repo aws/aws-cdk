@@ -18,12 +18,13 @@
     "glob": "^7.2.3"
   },
   "devDependencies": {
+    "@types/conventional-commits-parser": "3.0.2",
     "@types/fs-extra": "^9.0.13",
     "@types/glob": "^7.2.0",
     "@types/jest": "^27.5.2",
     "jest": "^27.5.1",
-    "make-runnable": "^1.4.0",
-    "typescript": "~3.9.10"
+    "make-runnable": "^1.4.1",
+    "typescript": "~4.9.5"
   },
   "jest": {
     "testMatch": [

@@ -15,13 +15,11 @@
   },
   "devDependencies": {
     "@types/eslint": "^7.29.0",
-    "@types/fs-extra": "^8.1.2",
+    "@types/fs-extra": "^9.0.13",
     "@types/jest": "^27.5.2",
-    "@types/node": "^14.18.34",
     "@types/estree": "*",
-    "eslint-plugin-rulesdir": "^0.2.1",
     "jest": "^27.5.1",
-    "typescript": "~3.9.10"
+    "typescript": "~4.9.5"
   },
   "dependencies": {
     "@typescript-eslint/parser": "^4.33.0",

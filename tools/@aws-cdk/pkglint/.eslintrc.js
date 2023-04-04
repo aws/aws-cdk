@@ -34,9 +34,9 @@ module.exports = {
   },
   ignorePatterns: ['*.js', '*.d.ts', 'node_modules/', '*.generated.ts'],
   rules: {
-    '@aws-cdk/no-core-construct': [ 'error' ],
-    '@aws-cdk/no-qualified-construct': [ 'error' ],
-    '@aws-cdk/invalid-cfn-imports': [ 'error' ],
+    '@aws-cdk/no-core-construct': ['error'],
+    '@aws-cdk/no-qualified-construct': ['error'],
+    '@aws-cdk/invalid-cfn-imports': ['error'],
     // Require use of the `import { foo } from 'bar';` form instead of `import foo = require('bar');`
     '@typescript-eslint/no-require-imports': ['error'],
     '@typescript-eslint/indent': ['error', 2],
@@ -72,11 +72,8 @@ module.exports = {
     // Require all imported libraries actually resolve (!!required for import/no-extraneous-dependencies to work!!)
     'import/no-unresolved': ['error'],
 
-    // Require an ordering on all imports -- unfortunately a different ordering than TSLint used to
-    // enforce, but there are no compatible ESLint rules as far as I can tell :(
-    //
-    // WARNING for now, otherwise this will mess up all open PRs. Make it into an error after a transitionary period.
-    'import/order': ['warn', {
+    // Require an ordering on all imports
+    'import/order': ['error', {
       groups: ['builtin', 'external'],
       alphabetize: { order: 'asc', caseInsensitive: true },
     }],

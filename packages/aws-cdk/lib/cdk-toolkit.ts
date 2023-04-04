@@ -5,13 +5,13 @@ import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
-import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
 import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
+import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
@@ -24,6 +24,7 @@ import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
+import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
 export interface CdkToolkitProps {
 
@@ -85,7 +86,7 @@ export enum AssetBuildTime {
    * Build assets just-in-time, before publishing
    */
   JUST_IN_TIME,
-};
+}
 
 /**
  * Toolkit logic
@@ -179,14 +180,13 @@ export class CdkToolkit {
       }
     }
 
-    if (options.hotswap) {
-      warning('⚠️ The --hotswap flag deliberately introduces CloudFormation drift to speed up deployments');
-      warning('⚠️ It should only be used for development - never use it for your production Stacks!');
+    if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
+      warning('⚠️ The --hotswap and --hotswap-fallback flags deliberately introduce CloudFormation drift to speed up deployments');
+      warning('⚠️ They should only be used for development - never use them for your production Stacks!\n');
     }
 
     const stacks = stackCollection.stackArtifacts;
     const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
-
 
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
@@ -489,11 +489,7 @@ export class CdkToolkit {
       roleArn: options.roleArn,
       toolkitStackName: options.toolkitStackName,
       tags,
-      deploymentMethod: {
-        method: 'change-set',
-        changeSetName: options.changeSetName,
-        execute: options.execute,
-      },
+      deploymentMethod: options.deploymentMethod,
       usePreviousParameters: true,
       progress: options.progress,
       rollback: options.rollback,
@@ -612,16 +608,16 @@ export class CdkToolkit {
   /**
    * Bootstrap the CDK Toolkit stack in the accounts used by the specified stack(s).
    *
-   * @param environmentSpecs environment names that need to have toolkit support
-   *             provisioned, as a glob filter. If none is provided,
-   *             all stacks are implicitly selected.
-   * @param toolkitStackName the name to be used for the CDK Toolkit stack.
+   * @param userEnvironmentSpecs environment names that need to have toolkit support
+   *             provisioned, as a glob filter. If none is provided, all stacks are implicitly selected.
+   * @param bootstrapper Legacy or modern.
+   * @param options The name, role ARN, bootstrapping parameters, etc. to be used for the CDK Toolkit stack.
    */
   public async bootstrap(userEnvironmentSpecs: string[], bootstrapper: Bootstrapper, options: BootstrapEnvironmentOptions): Promise<void> {
     // If there is an '--app' argument and an environment looks like a glob, we
-    // select the environments from the app. Otherwise use what the user said.
+    // select the environments from the app. Otherwise, use what the user said.
 
-    // By default glob for everything
+    // By default, glob for everything
     const environmentSpecs = userEnvironmentSpecs.length > 0 ? [...userEnvironmentSpecs] : ['**'];
 
     // Partition into globs and non-globs (this will mutate environmentSpecs).
@@ -766,8 +762,6 @@ export class CdkToolkit {
   }
 
   private async invokeDeployFromWatch(options: WatchOptions, cloudWatchLogMonitor?: CloudWatchLogEventMonitor): Promise<void> {
-    // 'watch' has different defaults than regular 'deploy'
-    const hotswap = options.hotswap === undefined ? true : options.hotswap;
     const deployOptions: DeployOptions = {
       ...options,
       requireApproval: RequireApproval.Never,
@@ -777,14 +771,14 @@ export class CdkToolkit {
       watch: false,
       cloudWatchLogMonitor,
       cacheCloudAssembly: false,
-      hotswap: hotswap,
-      extraUserAgent: `cdk-watch/hotswap-${hotswap ? 'on' : 'off'}`,
+      hotswap: options.hotswap,
+      extraUserAgent: `cdk-watch/hotswap-${options.hotswap !== HotswapMode.FALL_BACK ? 'on' : 'off'}`,
       concurrency: options.concurrency,
     };
 
     try {
       await this.deploy(deployOptions);
-    } catch (e) {
+    } catch {
       // just continue - deploy will show the error
     }
   }
@@ -952,9 +946,9 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - false for regular deployments, true for 'watch' deployments
+   * @default - `HotswapMode.FALL_BACK` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
    */
-  readonly hotswap?: boolean;
+  readonly hotswap: HotswapMode;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
@@ -1087,7 +1081,7 @@ export interface ImportOptions extends CfnDeployOptions {
   readonly recordResourceMapping?: string;
 
   /**
-   * Path to a file with with the physical resource mapping to CDK constructs in JSON format
+   * Path to a file with the physical resource mapping to CDK constructs in JSON format
    *
    * @default - No mapping file
    */

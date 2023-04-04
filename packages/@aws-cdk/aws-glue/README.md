@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
@@ -87,6 +81,23 @@ new glue.Job(this, 'PythonShellJob', {
     script: glue.Code.fromBucket(bucket, 'script.py'),
   }),
   description: 'an example Python Shell job',
+});
+```
+
+### Ray Jobs
+
+These jobs run in a Ray environment managed by AWS Glue.
+
+```ts
+new glue.Job(this, 'RayJob', {
+  executable: glue.JobExecutable.pythonRay({
+    glueVersion: glue.GlueVersion.V4_0,
+    pythonVersion: glue.PythonVersion.THREE_NINE,
+    script: glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py')),
+  }),
+  workerType: glue.WorkerType.Z_2X,
+  workerCount: 2,
+  description: 'an example Ray job'
 });
 ```
 

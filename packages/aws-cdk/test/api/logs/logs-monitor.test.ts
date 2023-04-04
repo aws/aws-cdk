@@ -1,6 +1,7 @@
+/* eslint-disable import/order */
 import { blue, yellow } from 'chalk';
 import { CloudWatchLogEventMonitor } from '../../../lib/api/logs/logs-monitor';
-import { sleep } from '../../integ/helpers/aws';
+import { sleep } from '../../util';
 import { MockSdk } from '../../util/mock-sdk';
 
 let sdk: MockSdk;

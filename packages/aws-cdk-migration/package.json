@@ -35,12 +35,11 @@
   "license": "Apache-2.0",
   "dependencies": {
     "glob": "^7.2.3",
-    "typescript": "~3.9.10"
+    "typescript": "~4.9.5"
   },
   "devDependencies": {
     "@types/glob": "^7.2.0",
     "@types/jest": "^27.5.2",
-    "@types/node": "^14.18.34",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0"
   },

@@ -1,0 +1,19 @@
+{
+  "version": "30.1.0",
+  "testCases": {
+    "aws-cdk-eks-cluster/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-cluster-test"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-cluster/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksclusterDefaultTestDeployAssertFBF4B356"
+    }
+  }
+}

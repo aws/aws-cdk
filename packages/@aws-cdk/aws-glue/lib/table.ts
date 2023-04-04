@@ -1,13 +1,13 @@
-import * as iam from '@aws-cdk/aws-iam';
-import * as kms from '@aws-cdk/aws-kms';
-import * as s3 from '@aws-cdk/aws-s3';
-import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack } from '@aws-cdk/core';
-import * as cr from '@aws-cdk/custom-resources';
-import { AwsCustomResource } from '@aws-cdk/custom-resources';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib';
+import * as cr from 'aws-cdk-lib/custom-resources';
+import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
-import { CfnTable } from './glue.generated';
+import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import { Column } from './schema';
 
 /**
@@ -385,6 +385,8 @@ export class Table extends Resource implements ITable {
       policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
         resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
+      // APIs are available in 2.1055.0
+      installLatestAwsSdk: false,
     });
     this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
 

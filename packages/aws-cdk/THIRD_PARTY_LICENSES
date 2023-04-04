@@ -1,6 +1,6 @@
 The aws-cdk package includes the following third-party software/licensing:
 
-** @jsii/check-node@1.72.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.72.0 | Apache-2.0
+** @jsii/check-node@1.78.1 - https://www.npmjs.com/package/@jsii/check-node/v/1.78.1 | Apache-2.0
 jsii
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -37,7 +37,7 @@ THE SOFTWARE.
 
 ----------------
 
-** acorn@8.8.1 - https://www.npmjs.com/package/acorn/v/8.8.1 | MIT
+** acorn@8.8.2 - https://www.npmjs.com/package/acorn/v/8.8.2 | MIT
 MIT License
 
 Copyright (C) 2012-2022 by various contributors (see AUTHORS)
@@ -67,7 +67,7 @@ THE SOFTWARE.
 
 ----------------
 
-** ajv@8.11.2 - https://www.npmjs.com/package/ajv/v/8.11.2 | MIT
+** ajv@8.12.0 - https://www.npmjs.com/package/ajv/v/8.12.0 | MIT
 The MIT License (MIT)
 
 Copyright (c) 2015-2021 Evgeny Poberezkin
@@ -268,7 +268,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1274.0 - https://www.npmjs.com/package/aws-sdk/v/2.1274.0 | Apache-2.0
+** aws-sdk@2.1329.0 - https://www.npmjs.com/package/aws-sdk/v/2.1329.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -2208,10 +2208,10 @@ IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ----------------
 
-** minimatch@5.1.1 - https://www.npmjs.com/package/minimatch/v/5.1.1 | ISC
+** minimatch@5.1.6 - https://www.npmjs.com/package/minimatch/v/5.1.6 | ISC
 The ISC License
 
-Copyright (c) 2011-2022 Isaac Z. Schlueter and Contributors
+Copyright (c) 2011-2023 Isaac Z. Schlueter and Contributors
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that the above
@@ -2475,7 +2475,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** raw-body@2.5.1 - https://www.npmjs.com/package/raw-body/v/2.5.1 | MIT
+** raw-body@2.5.2 - https://www.npmjs.com/package/raw-body/v/2.5.2 | MIT
 The MIT License (MIT)
 
 Copyright (c) 2013-2014 Jonathan Ong <me@jongleberry.com>
@@ -2545,7 +2545,7 @@ IN THE SOFTWARE.
 
 ----------------
 
-** readable-stream@2.3.7 - https://www.npmjs.com/package/readable-stream/v/2.3.7 | MIT
+** readable-stream@2.3.8 - https://www.npmjs.com/package/readable-stream/v/2.3.8 | MIT
 Node.js is licensed for use as follows:
 
 """
@@ -2597,7 +2597,7 @@ IN THE SOFTWARE.
 
 ----------------
 
-** readable-stream@3.6.0 - https://www.npmjs.com/package/readable-stream/v/3.6.0 | MIT
+** readable-stream@3.6.1 - https://www.npmjs.com/package/readable-stream/v/3.6.1 | MIT
 Node.js is licensed for use as follows:
 
 """
@@ -3482,7 +3482,7 @@ SOFTWARE.
 
 ----------------
 
-** tslib@2.4.1 - https://www.npmjs.com/package/tslib/v/2.4.1 | 0BSD
+** tslib@2.5.0 - https://www.npmjs.com/package/tslib/v/2.5.0 | 0BSD
 Copyright (c) Microsoft Corporation.
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -3612,7 +3612,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** vm2@3.9.13 - https://www.npmjs.com/package/vm2/v/3.9.13 | MIT
+** vm2@3.9.14 - https://www.npmjs.com/package/vm2/v/3.9.14 | MIT
 
 ----------------
 

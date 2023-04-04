@@ -35,8 +35,7 @@
     "@types/jest": "^27.5.2",
     "@types/mime": "^2.0.3",
     "@types/mock-fs": "^4.13.1",
-    "@types/node": "^14.18.34",
-    "@types/yargs": "^15.0.14",
+    "@types/yargs": "^15.0.15",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "jest": "^27.5.1",
     "jszip": "^3.10.1",
@@ -47,7 +46,7 @@
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
     "archiver": "^5.3.1",
-    "aws-sdk": "^2.1211.0",
+    "aws-sdk": "^2.1329.0",
     "glob": "^7.2.3",
     "mime": "^2.6.0",
     "yargs": "^16.2.0"

@@ -154,3 +154,13 @@ removed:aws-cdk-lib.aws_ec2.InstanceClass.COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWI
 # added new required property StackOutputsMap
 strengthened:@aws-cdk/pipelines.ProduceActionOptions
 strengthened:aws-cdk-lib.pipelines.ProduceActionOptions
+
+# reverted a change that broke deployments for anyone using Triggers
+removed:aws-cdk-lib.triggers.InvocationType
+removed:aws-cdk-lib.triggers.TriggerProps.invocationType
+removed:aws-cdk-lib.triggers.TriggerProps.timeout
+
+# broken: it used to return a tuple type, that was incorrectly interpreted by jsii
+change-return-type:aws-cdk-lib.aws_ec2.SecurityGroup.determineRuleScope
+# broken only in non-JS/TS, where that was not previously usable
+strengthened:aws-cdk-lib.aws_s3_deployment.BucketDeploymentProps
