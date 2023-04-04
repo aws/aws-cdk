@@ -74,7 +74,13 @@ export async function main(): Promise<void> {
 
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
 
-    registerFact(region, 'DEFAULT_CR_NODE_VERSION', ['aws', 'aws-cn'].includes(partition) ? Runtime.NODEJS_16_X.toString() : Runtime.NODEJS_14_X.toString()); 
+    registerFact(
+      region,
+      'DEFAULT_CR_NODE_VERSION',
+      ['aws', 'aws-cn', 'aws-us-gov'].includes(partition)
+        ? Runtime.NODEJS_16_X.toString()
+        : Runtime.NODEJS_14_X.toString()
+    ); 
 
     const firehoseCidrBlock = FIREHOSE_CIDR_BLOCKS[region];
     if (firehoseCidrBlock) {
