@@ -2,9 +2,9 @@
 // python bundling changes the asset hash pretty frequently
 /// !cdk-integ pragma:disable-update-workflow
 import * as path from 'path';
-import { Runtime } from '@aws-cdk/aws-lambda';
-import { App, Stack, StackProps } from '@aws-cdk/core';
-import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 
@@ -35,6 +35,33 @@ class TestStack extends Stack {
       runtime: Runtime.PYTHON_3_7,
     });
     this.functionNames.push(pythonFunction37.functionName);
+
+    const pythonFunction39Excludes = new lambda.PythonFunction(this, 'my_handler_inline_excludes', {
+      entry: path.join(__dirname, 'lambda-handler-pipenv'),
+      runtime: Runtime.PYTHON_3_9,
+      bundling: {
+        assetExcludes: ['.ignorefile'],
+      },
+    });
+    this.functionNames.push(pythonFunction39Excludes.functionName);
+
+    const pythonFunction38Excludes = new lambda.PythonFunction(this, 'my_handler_python_38_excludes', {
+      entry: path.join(__dirname, 'lambda-handler-pipenv'),
+      runtime: Runtime.PYTHON_3_8,
+      bundling: {
+        assetExcludes: ['.ignorefile'],
+      },
+    });
+    this.functionNames.push(pythonFunction38Excludes.functionName);
+
+    const pythonFunction37Excludes = new lambda.PythonFunction(this, 'my_handler_python_37_excludes', {
+      entry: path.join(__dirname, 'lambda-handler-pipenv'),
+      runtime: Runtime.PYTHON_3_7,
+      bundling: {
+        assetExcludes: ['.ignorefile'],
+      },
+    });
+    this.functionNames.push(pythonFunction37Excludes.functionName);
   }
 }
 

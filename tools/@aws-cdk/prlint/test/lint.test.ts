@@ -142,8 +142,8 @@ describe('commit message format', () => {
   })
 });
 
-describe('ban breaking changes in stable modules', () => {
-  test('breaking change in stable module', async () => {
+describe.only('ban breaking changes in stable modules', () => {
+  test.only('breaking change in stable module', async () => {
     const issue = {
       number: 1,
       title: 'chore(s3): some title',
@@ -272,7 +272,9 @@ describe('integration tests required on features', () => {
     await expect(prLinter.validate()).rejects.toThrow(
       'The pull request linter fails with the following errors:' +
       '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
-      '\n\nPRs must pass status checks before we can provide a meaningful review.'
+      '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
+      'If you would like to request an exemption from the status checks or clarification on feedback,' +
+      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.'
       );
   });
 
@@ -305,7 +307,9 @@ describe('integration tests required on features', () => {
     await expect(prLinter.validate()).rejects.toThrow(
       'The pull request linter fails with the following errors:' +
       '\n\n\t❌ Features must contain a change to an integration test file and the resulting snapshot.' +
-      '\n\nPRs must pass status checks before we can provide a meaningful review.'
+      '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
+      'If you would like to request an exemption from the status checks or clarification on feedback,' +
+      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.'
       );
   });
 
@@ -338,7 +342,9 @@ describe('integration tests required on features', () => {
     await expect(prLinter.validate()).rejects.toThrow(
       'The pull request linter fails with the following errors:' +
       '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
-      '\n\nPRs must pass status checks before we can provide a meaningful review.'
+      '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
+      'If you would like to request an exemption from the status checks or clarification on feedback,' +
+      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.'
       );
   });
 
@@ -371,7 +377,9 @@ describe('integration tests required on features', () => {
     await expect(prLinter.validate()).rejects.toThrow(
       'The pull request linter fails with the following errors:' +
       '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
-      '\n\nPRs must pass status checks before we can provide a meaningful review.'
+      '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
+      'If you would like to request an exemption from the status checks or clarification on feedback,' +
+      ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.'
       );
   });
 

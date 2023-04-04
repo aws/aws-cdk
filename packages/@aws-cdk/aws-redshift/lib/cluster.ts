@@ -1,17 +1,18 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import * as kms from '@aws-cdk/aws-kms';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { Duration, IResource, RemovalPolicy, Resource, SecretValue, Token } from '@aws-cdk/core';
-import { AwsCustomResource, PhysicalResourceId, AwsCustomResourcePolicy } from '@aws-cdk/custom-resources';
+import * as path from 'path';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import { ArnFormat, CustomResource, Duration, IResource, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token } from 'aws-cdk-lib';
+import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DatabaseSecret } from './database-secret';
 import { Endpoint } from './endpoint';
 import { ClusterParameterGroup, IClusterParameterGroup } from './parameter-group';
-import { CfnCluster } from './redshift.generated';
+import { CfnCluster } from 'aws-cdk-lib/aws-redshift';
 import { ClusterSubnetGroup, IClusterSubnetGroup } from './subnet-group';
-
 /**
  * Possible Node Types to use in the cluster
  * used for defining `ClusterProps.nodeType`.
@@ -299,7 +300,7 @@ export interface ClusterProps {
 
   /**
    * A list of AWS Identity and Access Management (IAM) role that can be used by the cluster to access other AWS services.
-   * Specify a maximum of 10 roles.
+   * The maximum number of roles to attach to a cluster is subject to a quota.
    *
    * @default - No role is attached to the cluster.
    */
@@ -363,6 +364,12 @@ export interface ClusterProps {
    * @default - No Elastic IP
    */
   readonly elasticIp?: string
+
+  /**
+   * If this flag is set, the cluster will be rebooted when changes to the cluster's parameter group that require a restart to apply.
+   * @default false
+   */
+  readonly rebootForParameterChanges?: boolean
 
   /**
    * If this flag is set, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your virtual private cloud (VPC).
@@ -470,6 +477,13 @@ export class Cluster extends ClusterBase {
    */
   protected parameterGroup?: IClusterParameterGroup;
 
+  /**
+   * The ARNs of the roles that will be attached to the cluster.
+   *
+   * **NOTE** Please do not access this directly, use the `addIamRole` method instead.
+   */
+  private readonly roles: iam.IRole[];
+
   constructor(scope: Construct, id: string, props: ClusterProps) {
     super(scope, id);
 
@@ -478,6 +492,7 @@ export class Cluster extends ClusterBase {
       subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     };
     this.parameterGroup = props.parameterGroup;
+    this.roles = props?.roles ? [...props.roles] : [];
 
     const removalPolicy = props.removalPolicy ?? RemovalPolicy.RETAIN;
 
@@ -557,7 +572,7 @@ export class Cluster extends ClusterBase {
       nodeType: props.nodeType || NodeType.DC2_LARGE,
       numberOfNodes: nodeCount,
       loggingProperties,
-      iamRoles: props?.roles?.map(role => role.roleArn),
+      iamRoles: Lazy.list({ produce: () => this.roles.map(role => role.roleArn) }, { omitEmpty: true }),
       dbName: props.defaultDatabaseName || 'default_db',
       publiclyAccessible: props.publiclyAccessible || false,
       // Encryption
@@ -584,7 +599,9 @@ export class Cluster extends ClusterBase {
 
     const defaultPort = ec2.Port.tcp(this.clusterEndpoint.port);
     this.connections = new ec2.Connections({ securityGroups, defaultPort });
-
+    if (props.rebootForParameterChanges) {
+      this.enableRebootForParameterChanges();
+    }
     // Add default role if specified and also available in the roles list
     if (props.defaultRole) {
       if (props.roles?.some(x => x === props.defaultRole)) {
@@ -682,18 +699,83 @@ export class Cluster extends ClusterBase {
   }
 
   /**
+   * Enables automatic cluster rebooting when changes to the cluster's parameter group require a restart to apply.
+   */
+  public enableRebootForParameterChanges(): void {
+    if (this.node.tryFindChild('RedshiftClusterRebooterCustomResource')) {
+      return;
+    }
+    const rebootFunction = new lambda.SingletonFunction(this, 'RedshiftClusterRebooterFunction', {
+      uuid: '511e207f-13df-4b8b-b632-c32b30b65ac2',
+      runtime: lambda.Runtime.NODEJS_16_X,
+      code: lambda.Code.fromAsset(path.join(__dirname, 'cluster-parameter-change-reboot-handler')),
+      handler: 'index.handler',
+      timeout: Duration.seconds(900),
+    });
+    rebootFunction.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['redshift:DescribeClusters'],
+      resources: ['*'],
+    }));
+    rebootFunction.addToRolePolicy(new iam.PolicyStatement({
+      actions: ['redshift:RebootCluster'],
+      resources: [
+        Stack.of(this).formatArn({
+          service: 'redshift',
+          resource: 'cluster',
+          resourceName: this.clusterName,
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        }),
+      ],
+    }));
+    const provider = new Provider(this, 'ResourceProvider', {
+      onEventHandler: rebootFunction,
+    });
+    const customResource = new CustomResource(this, 'RedshiftClusterRebooterCustomResource', {
+      resourceType: 'Custom::RedshiftClusterRebooter',
+      serviceToken: provider.serviceToken,
+      properties: {
+        ClusterId: this.clusterName,
+        ParameterGroupName: Lazy.string({
+          produce: () => {
+            if (!this.parameterGroup) {
+              throw new Error('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.');
+            }
+            return this.parameterGroup.clusterParameterGroupName;
+          },
+        }),
+        ParametersString: Lazy.string({
+          produce: () => {
+            if (!(this.parameterGroup instanceof ClusterParameterGroup)) {
+              throw new Error('Cannot enable reboot for parameter changes when using an imported parameter group.');
+            }
+            return JSON.stringify(this.parameterGroup.parameters);
+          },
+        }),
+      },
+    });
+    Lazy.any({
+      produce: () => {
+        if (!this.parameterGroup) {
+          throw new Error('Cannot enable reboot for parameter changes when there is no associated ClusterParameterGroup.');
+        }
+        customResource.node.addDependency(this, this.parameterGroup);
+      },
+    });
+  }
+
+  /**
    * Adds default IAM role to cluster. The default IAM role must be already associated to the cluster to be added as the default role.
    *
    * @param defaultIamRole the IAM role to be set as the default role
    */
   public addDefaultIamRole(defaultIamRole: iam.IRole): void {
     // Get list of IAM roles attached to cluster
-    const clusterRoleList = this.cluster.iamRoles ?? [];
+    const clusterRoleList = this.roles ?? [];
 
     // Check to see if default role is included in list of cluster IAM roles
     var roleAlreadyOnCluster = false;
     for (var i = 0; i < clusterRoleList.length; i++) {
-      if (clusterRoleList[i] == defaultIamRole.roleArn) {
+      if (clusterRoleList[i] === defaultIamRole) {
         roleAlreadyOnCluster = true;
         break;
       }
@@ -729,8 +811,24 @@ export class Cluster extends ClusterBase {
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
+      installLatestAwsSdk: false,
     });
 
     defaultIamRole.grantPassRole(defaultRoleCustomResource.grantPrincipal);
+  }
+
+  /**
+   * Adds a role to the cluster
+   *
+   * @param role the role to add
+   */
+  public addIamRole(role: iam.IRole): void {
+    const clusterRoleList = this.roles;
+
+    if (clusterRoleList.includes(role)) {
+      throw new Error(`Role '${role.roleArn}' is already attached to the cluster`);
+    }
+
+    clusterRoleList.push(role);
   }
 }

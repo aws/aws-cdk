@@ -1,6 +1,7 @@
+/* eslint-disable import/order */
+import { MockSdk } from './mock-sdk';
 import { StackActivityMonitor, IActivityPrinter, StackActivity } from '../../lib/api/util/cloudformation/stack-activity-monitor';
 import { sleep } from '../util';
-import { MockSdk } from './mock-sdk';
 
 let sdk: MockSdk;
 let printer: FakePrinter;

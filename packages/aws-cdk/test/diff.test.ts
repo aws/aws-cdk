@@ -1,10 +1,11 @@
+/* eslint-disable import/order */
 import { Writable } from 'stream';
 import { StringDecoder } from 'string_decoder';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
+import { instanceMockFrom, MockCloudExecutable } from './util';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
-import { instanceMockFrom, MockCloudExecutable } from './util';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<CloudFormationDeployments>;

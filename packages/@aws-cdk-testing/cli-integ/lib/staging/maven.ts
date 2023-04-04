@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import * as path from 'path';
-import { writeFile } from '../files';
-import { shell } from '../shell';
 import { LoginInformation } from './codeartifact';
 import { parallelShell } from './parallel-shell';
 import { UsageDir } from './usage-dir';
+import { writeFile } from '../files';
+import { shell } from '../shell';
 
 // Do not try to JIT the Maven binary
 const NO_JIT = '-XX:+TieredCompilation -XX:TieredStopAtLevel=1';
@@ -51,6 +51,10 @@ export async function uploadJavaPackages(packages: string[], login: LoginInforma
     if (output.toString().includes('409 Conflict')) {
       console.log(`❌ ${pkg}: already exists. Skipped.`);
       return 'skip';
+    }
+    if (output.toString().includes('Too Many Requests')) {
+      console.log(`♻️ ${pkg}: Too many requests. Retrying.`);
+      return 'retry';
     }
     return 'fail';
   });

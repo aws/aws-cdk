@@ -1,9 +1,9 @@
-import { Match, Template } from '@aws-cdk/assertions';
-import { HttpApi } from '@aws-cdk/aws-apigatewayv2';
-import { Code, Function, Runtime } from '@aws-cdk/aws-lambda';
-import { Duration, Stack } from '@aws-cdk/core';
-import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import { HttpApi } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Duration, Stack } from 'aws-cdk-lib';
 import { DummyRouteIntegration } from './integration';
+import { HttpLambdaAuthorizer, HttpLambdaResponseType } from '../../lib';
 
 describe('HttpLambdaAuthorizer', () => {
 

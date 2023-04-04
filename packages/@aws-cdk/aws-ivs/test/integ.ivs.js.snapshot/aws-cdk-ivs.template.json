@@ -1,13 +1,25 @@
 {
  "Resources": {
-  "PlaybackKeyPairBE17315B": {
+  "DefaultPropertiesPlaybackKeyPairaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaB5D4BE27": {
    "Type": "AWS::IVS::PlaybackKeyPair",
    "Properties": {
-    "PublicKeyMaterial": "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEs6k8Xf6WyFq3yZXoup8G/gH6DntSATqD\nYfo83eX0GJCKxJ8fr09h9LP9HDGof8/bo66P+SGHeAARGF/O9WPAQVUgSlm/KMFX\nEPtPtOm1s0GR9k1ydU5hkI++f9CoZ5lM\n-----END PUBLIC KEY-----",
-    "Name": "IVSIntegrationTestPlaybackKeyPair"
+    "PublicKeyMaterial": "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEHBm/D9UFf1z4czcAFuM7w+tstxxzoLVo\nfa1OT0gQjRYsy/YTcrKI5FS7ur3NZIcmiwqerr7dP0wSZjfEMNe82W1zWdkxHJ6Y\n73g9gZDxwGdjowZjEOIvAeH2Of6NeDOo\n-----END PUBLIC KEY-----"
    }
   },
-  "Channel4048F119": {
+  "DefaultPropertiesChannelaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa201FBD46": {
+   "Type": "AWS::IVS::Channel",
+   "Properties": {
+    "Name": "aws-cdk-ivsDefaultPropertiesChannel-_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaEDEAEDA9"
+   }
+  },
+  "AllPropertiesPlaybackKeyPair96291E97": {
+   "Type": "AWS::IVS::PlaybackKeyPair",
+   "Properties": {
+    "Name": "IVSIntegrationTestPlaybackKeyPair",
+    "PublicKeyMaterial": "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEs6k8Xf6WyFq3yZXoup8G/gH6DntSATqD\nYfo83eX0GJCKxJ8fr09h9LP9HDGof8/bo66P+SGHeAARGF/O9WPAQVUgSlm/KMFX\nEPtPtOm1s0GR9k1ydU5hkI++f9CoZ5lM\n-----END PUBLIC KEY-----"
+   }
+  },
+  "AllPropertiesChannel737C871D": {
    "Type": "AWS::IVS::Channel",
    "Properties": {
     "Authorized": true,
@@ -16,12 +28,12 @@
     "Type": "BASIC"
    }
   },
-  "StreamKey9F296F4F": {
+  "AllPropertiesStreamKey2A169FFE": {
    "Type": "AWS::IVS::StreamKey",
    "Properties": {
     "ChannelArn": {
      "Fn::GetAtt": [
-      "Channel4048F119",
+      "AllPropertiesChannel737C871D",
       "Arn"
      ]
     }
@@ -29,26 +41,26 @@
   }
  },
  "Outputs": {
-  "PlaybackKeyPairArn": {
+  "AllPropertiesPlaybackKeyPairArn9C29D23B": {
    "Value": {
     "Fn::GetAtt": [
-     "PlaybackKeyPairBE17315B",
+     "AllPropertiesPlaybackKeyPair96291E97",
      "Arn"
     ]
    }
   },
-  "ChannelArn": {
+  "AllPropertiesChannelArn97A102C5": {
    "Value": {
     "Fn::GetAtt": [
-     "Channel4048F119",
+     "AllPropertiesChannel737C871D",
      "Arn"
     ]
    }
   },
-  "StreamKeyArn": {
+  "AllPropertiesStreamKeyArnB62C0761": {
    "Value": {
     "Fn::GetAtt": [
-     "StreamKey9F296F4F",
+     "AllPropertiesStreamKey2A169FFE",
      "Arn"
     ]
    }

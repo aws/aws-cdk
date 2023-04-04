@@ -4,133 +4,271 @@
     "id": "App",
     "path": "",
     "children": {
+      "aws-cdk-ivs": {
+        "id": "aws-cdk-ivs",
+        "path": "aws-cdk-ivs",
+        "children": {
+          "DefaultProperties": {
+            "id": "DefaultProperties",
+            "path": "aws-cdk-ivs/DefaultProperties",
+            "children": {
+              "PlaybackKeyPair-_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+                "id": "PlaybackKeyPair-_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "path": "aws-cdk-ivs/DefaultProperties/PlaybackKeyPair-_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-ivs/DefaultProperties/PlaybackKeyPair-_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IVS::PlaybackKeyPair",
+                      "aws:cdk:cloudformation:props": {
+                        "publicKeyMaterial": "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEHBm/D9UFf1z4czcAFuM7w+tstxxzoLVo\nfa1OT0gQjRYsy/YTcrKI5FS7ur3NZIcmiwqerr7dP0wSZjfEMNe82W1zWdkxHJ6Y\n73g9gZDxwGdjowZjEOIvAeH2Of6NeDOo\n-----END PUBLIC KEY-----"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ivs.CfnPlaybackKeyPair",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ivs.PlaybackKeyPair",
+                  "version": "0.0.0"
+                }
+              },
+              "Channel-_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa": {
+                "id": "Channel-_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "path": "aws-cdk-ivs/DefaultProperties/Channel-_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-ivs/DefaultProperties/Channel-_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IVS::Channel",
+                      "aws:cdk:cloudformation:props": {
+                        "name": "aws-cdk-ivsDefaultPropertiesChannel-_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaEDEAEDA9"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ivs.CfnChannel",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ivs.Channel",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          },
+          "AllProperties": {
+            "id": "AllProperties",
+            "path": "aws-cdk-ivs/AllProperties",
+            "children": {
+              "PlaybackKeyPair": {
+                "id": "PlaybackKeyPair",
+                "path": "aws-cdk-ivs/AllProperties/PlaybackKeyPair",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-ivs/AllProperties/PlaybackKeyPair/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IVS::PlaybackKeyPair",
+                      "aws:cdk:cloudformation:props": {
+                        "name": "IVSIntegrationTestPlaybackKeyPair",
+                        "publicKeyMaterial": "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEs6k8Xf6WyFq3yZXoup8G/gH6DntSATqD\nYfo83eX0GJCKxJ8fr09h9LP9HDGof8/bo66P+SGHeAARGF/O9WPAQVUgSlm/KMFX\nEPtPtOm1s0GR9k1ydU5hkI++f9CoZ5lM\n-----END PUBLIC KEY-----"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ivs.CfnPlaybackKeyPair",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ivs.PlaybackKeyPair",
+                  "version": "0.0.0"
+                }
+              },
+              "Channel": {
+                "id": "Channel",
+                "path": "aws-cdk-ivs/AllProperties/Channel",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-ivs/AllProperties/Channel/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IVS::Channel",
+                      "aws:cdk:cloudformation:props": {
+                        "authorized": true,
+                        "latencyMode": "NORMAL",
+                        "name": "IVSIntegrationTestChannel",
+                        "type": "BASIC"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ivs.CfnChannel",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ivs.Channel",
+                  "version": "0.0.0"
+                }
+              },
+              "StreamKey": {
+                "id": "StreamKey",
+                "path": "aws-cdk-ivs/AllProperties/StreamKey",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-ivs/AllProperties/StreamKey/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IVS::StreamKey",
+                      "aws:cdk:cloudformation:props": {
+                        "channelArn": {
+                          "Fn::GetAtt": [
+                            "AllPropertiesChannel737C871D",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-ivs.CfnStreamKey",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-ivs.StreamKey",
+                  "version": "0.0.0"
+                }
+              },
+              "PlaybackKeyPairArn": {
+                "id": "PlaybackKeyPairArn",
+                "path": "aws-cdk-ivs/AllProperties/PlaybackKeyPairArn",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "ChannelArn": {
+                "id": "ChannelArn",
+                "path": "aws-cdk-ivs/AllProperties/ChannelArn",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "StreamKeyArn": {
+                "id": "StreamKeyArn",
+                "path": "aws-cdk-ivs/AllProperties/StreamKeyArn",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-ivs/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-ivs/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ivs-test": {
+        "id": "ivs-test",
+        "path": "ivs-test",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ivs-test/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ivs-test/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ivs-test/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ivs-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ivs-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/core.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
-      "aws-cdk-ivs": {
-        "id": "aws-cdk-ivs",
-        "path": "aws-cdk-ivs",
-        "children": {
-          "PlaybackKeyPair": {
-            "id": "PlaybackKeyPair",
-            "path": "aws-cdk-ivs/PlaybackKeyPair",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-ivs/PlaybackKeyPair/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IVS::PlaybackKeyPair",
-                  "aws:cdk:cloudformation:props": {
-                    "publicKeyMaterial": "-----BEGIN PUBLIC KEY-----\nMHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEs6k8Xf6WyFq3yZXoup8G/gH6DntSATqD\nYfo83eX0GJCKxJ8fr09h9LP9HDGof8/bo66P+SGHeAARGF/O9WPAQVUgSlm/KMFX\nEPtPtOm1s0GR9k1ydU5hkI++f9CoZ5lM\n-----END PUBLIC KEY-----",
-                    "name": "IVSIntegrationTestPlaybackKeyPair"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ivs.CfnPlaybackKeyPair",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-ivs.PlaybackKeyPair",
-              "version": "0.0.0"
-            }
-          },
-          "Channel": {
-            "id": "Channel",
-            "path": "aws-cdk-ivs/Channel",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-ivs/Channel/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IVS::Channel",
-                  "aws:cdk:cloudformation:props": {
-                    "authorized": true,
-                    "latencyMode": "NORMAL",
-                    "name": "IVSIntegrationTestChannel",
-                    "type": "BASIC"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ivs.CfnChannel",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-ivs.Channel",
-              "version": "0.0.0"
-            }
-          },
-          "StreamKey": {
-            "id": "StreamKey",
-            "path": "aws-cdk-ivs/StreamKey",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-ivs/StreamKey/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IVS::StreamKey",
-                  "aws:cdk:cloudformation:props": {
-                    "channelArn": {
-                      "Fn::GetAtt": [
-                        "Channel4048F119",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ivs.CfnStreamKey",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-ivs.StreamKey",
-              "version": "0.0.0"
-            }
-          },
-          "PlaybackKeyPairArn": {
-            "id": "PlaybackKeyPairArn",
-            "path": "aws-cdk-ivs/PlaybackKeyPairArn",
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
-            }
-          },
-          "ChannelArn": {
-            "id": "ChannelArn",
-            "path": "aws-cdk-ivs/ChannelArn",
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
-            }
-          },
-          "StreamKeyArn": {
-            "id": "StreamKeyArn",
-            "path": "aws-cdk-ivs/StreamKeyArn",
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
-            }
-          }
-        },
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

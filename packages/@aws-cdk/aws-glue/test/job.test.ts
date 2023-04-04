@@ -1,10 +1,10 @@
-import { Template } from '@aws-cdk/assertions';
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as events from '@aws-cdk/aws-events';
-import * as iam from '@aws-cdk/aws-iam';
-import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
 import * as glue from '../lib';
 
 describe('WorkerType', () => {
@@ -13,6 +13,10 @@ describe('WorkerType', () => {
   test('.G_1X should set the name correctly', () => expect(glue.WorkerType.G_1X.name).toEqual('G.1X'));
 
   test('.G_2X should set the name correctly', () => expect(glue.WorkerType.G_2X.name).toEqual('G.2X'));
+
+  test('.G_025X should set the name correctly', () => expect(glue.WorkerType.G_025X.name).toEqual('G.025X'));
+
+  test('.Z_2X should set the name correctly', () => expect(glue.WorkerType.Z_2X.name).toEqual('Z.2X'));
 
   test('of(customType) should set name correctly', () => expect(glue.WorkerType.of('CustomType').name).toEqual('CustomType'));
 });
@@ -601,6 +605,33 @@ describe('Job', () => {
           }),
           sparkUI: { enabled: true },
         })).toThrow('Spark UI is not available for JobType.PYTHON_SHELL');
+      });
+    });
+
+    describe('ray job', () => {
+      test('with unsupported glue version should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonRay({
+            glueVersion: glue.GlueVersion.V3_0,
+            pythonVersion: glue.PythonVersion.THREE_NINE,
+            script,
+          }),
+          workerType: glue.WorkerType.Z_2X,
+          workerCount: 2,
+        })).toThrow('Specified GlueVersion 3.0 does not support Ray');
+      });
+
+      test('with unsupported Spark UI prop should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonRay({
+            glueVersion: glue.GlueVersion.V4_0,
+            pythonVersion: glue.PythonVersion.THREE_NINE,
+            script,
+          }),
+          workerType: glue.WorkerType.Z_2X,
+          workerCount: 2,
+          sparkUI: { enabled: true },
+        })).toThrow('Spark UI is not available for JobType.RAY');
       });
     });
 

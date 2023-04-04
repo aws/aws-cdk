@@ -1,0 +1,6 @@
+{
+  "version": "0.0.0",
+  "runtime": {
+    "libraries": ["should", "be", "a", "map"]
+  }
+}

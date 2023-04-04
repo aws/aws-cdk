@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Developer Preview](https://img.shields.io/badge/cdk--constructs-developer--preview-informational.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are in **developer preview** before they
@@ -42,7 +36,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
   environmentVariables: {
     stage: 'prod',
   },
@@ -126,7 +120,7 @@ const canary = new synthetics.Canary(stack, 'Canary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code'),
   }),
   enableAutoDeleteLambdas: true,
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 ```
 
@@ -152,7 +146,7 @@ new synthetics.Canary(this, 'Inline Canary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 
 // To supply the code from your local filesystem:
@@ -161,18 +155,18 @@ new synthetics.Canary(this, 'Asset Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 
 // To supply the code from a S3 bucket:
-import * as s3 from '@aws-cdk/aws-s3';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 const bucket = new s3.Bucket(this, 'Code Bucket');
 new synthetics.Canary(this, 'Bucket Canary', {
   test: synthetics.Test.custom({
     code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
 });
 ```
 
@@ -198,12 +192,12 @@ new synthetics.Canary(this, 'Bucket Canary', {
 
 ### Running a canary on a VPC
 
-You can specify what [VPC a canary executes in](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html). 
-This can allow for monitoring services that may be internal to a specific VPC. To place a canary within a VPC, you can specify the `vpc` property with the desired `VPC` to place then canary in. 
+You can specify what [VPC a canary executes in](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_VPC.html).
+This can allow for monitoring services that may be internal to a specific VPC. To place a canary within a VPC, you can specify the `vpc` property with the desired `VPC` to place then canary in.
 This will automatically attach the appropriate IAM permissions to attach to the VPC. This will also create a Security Group and attach to the default subnets for the VPC unless specified via `vpcSubnets` and `securityGroups`.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 declare const vpc: ec2.IVpc;
 new synthetics.Canary(this, 'Vpc Canary', {
@@ -211,7 +205,7 @@ new synthetics.Canary(this, 'Vpc Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
   vpc,
 });
 ```
@@ -233,7 +227,7 @@ You can configure a CloudWatch Alarm on a canary metric. Metrics are emitted by 
 Create an alarm that tracks the canary metric:
 
 ```ts
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 declare const canary: synthetics.Canary;
 new cloudwatch.Alarm(this, 'CanaryAlarm', {

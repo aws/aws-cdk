@@ -1,5 +1,5 @@
 {
-  "$version": "109.0.0",
+  "$version": "117.0.0",
   "PropertyTypes": {
     "AWS::AppConfig::Application.Tags": {
       "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appconfig-application-tags.html",
@@ -382,6 +382,12 @@
         "LatestVersionNumber": {
           "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-latestversionnumber",
           "PrimitiveType": "Double",
+          "Required": false,
+          "UpdateType": "Immutable"
+        },
+        "VersionLabel": {
+          "Documentation": "http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-appconfig-hostedconfigurationversion.html#cfn-appconfig-hostedconfigurationversion-versionlabel",
+          "PrimitiveType": "String",
           "Required": false,
           "UpdateType": "Immutable"
         }

@@ -4,6 +4,11 @@ import * as chalk from 'chalk';
 import { install as enableSourceMapSupport } from 'source-map-support';
 
 import type { Argv } from 'yargs';
+import { DeploymentMethod } from './api';
+import { HotswapMode } from './api/hotswap/common';
+import { ILock } from './api/util/rwlock';
+import { checkForPlatformWarnings } from './platform-warnings';
+import { enableTracing } from './util/tracing';
 import { SdkProvider } from '../lib/api/aws-auth';
 import { BootstrapSource, Bootstrapper } from '../lib/api/bootstrap';
 import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
@@ -23,10 +28,6 @@ import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
 import { displayNotices, refreshNotices } from '../lib/notices';
 import { Command, Configuration, Settings } from '../lib/settings';
 import * as version from '../lib/version';
-import { DeploymentMethod } from './api';
-import { ILock } from './api/util/rwlock';
-import { checkForPlatformWarnings } from './platform-warnings';
-import { enableTracing } from './util/tracing';
 
 // https://github.com/yargs/yargs/issues/1929
 // https://github.com/evanw/esbuild/issues/1492
@@ -76,8 +77,8 @@ async function parseCommandLineArguments(args: string[]) {
     .option('ca-bundle-path', { type: 'string', desc: 'Path to CA certificate to use when validating HTTPS requests. Will read from AWS_CA_BUNDLE environment variable if not specified', requiresArg: true })
     .option('ec2creds', { type: 'boolean', alias: 'i', default: undefined, desc: 'Force trying to fetch EC2 instance credentials. Default: guess EC2 instance status' })
     .option('version-reporting', { type: 'boolean', desc: 'Include the "AWS::CDK::Metadata" resource in synthesized templates (enabled by default)', default: undefined })
-    .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: true })
-    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: true })
+    .option('path-metadata', { type: 'boolean', desc: 'Include "aws:cdk:path" CloudFormation metadata for each resource (enabled by default)', default: undefined })
+    .option('asset-metadata', { type: 'boolean', desc: 'Include "aws:asset:*" CloudFormation metadata for resources that uses assets (enabled by default)', default: undefined })
     .option('role-arn', { type: 'string', alias: 'r', desc: 'ARN of Role to use when invoking CloudFormation', default: undefined, requiresArg: true })
     .option('staging', { type: 'boolean', desc: 'Copy assets to the output directory (use --no-staging to disable the copy of assets which allows local debugging via the SAM CLI to reference the original source files)', default: true })
     .option('output', { type: 'string', alias: 'o', desc: 'Emits the synthesized cloud assembly into a directory (default: cdk.out)', requiresArg: true })
@@ -141,6 +142,13 @@ async function parseCommandLineArguments(args: string[]) {
       // Hack to get '-R' as an alias for '--no-rollback', suggested by: https://github.com/yargs/yargs/issues/1729
       .option('R', { type: 'boolean', hidden: true }).middleware(yargsNegativeAlias('R', 'rollback'), true)
       .option('hotswap', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'but does not fall back to a full deployment if that is not possible. ' +
+          'Instead, changes to any non-hotswappable properties are ignored.' +
+          'Do not use this in production environments',
+      })
+      .option('hotswap-fallback', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
           'which skips CloudFormation and updates the resources directly, ' +
@@ -222,9 +230,15 @@ async function parseCommandLineArguments(args: string[]) {
       .option('hotswap', {
         type: 'boolean',
         desc: "Attempts to perform a 'hotswap' deployment, " +
-          'which skips CloudFormation and updates the resources directly, ' +
-          'and falls back to a full deployment if that is not possible. ' +
+          'but does not fall back to a full deployment if that is not possible. ' +
+          'Instead, changes to any non-hotswappable properties are ignored.' +
           "'true' by default, use --no-hotswap to turn off",
+      })
+      .option('hotswap-fallback', {
+        type: 'boolean',
+        desc: "Attempts to perform a 'hotswap' deployment, " +
+          'which skips CloudFormation and updates the resources directly, ' +
+          'and falls back to a full deployment if that is not possible.',
       })
       .options('logs', {
         type: 'boolean',
@@ -367,7 +381,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
     function tryResolve(plugin: string): string {
       try {
         return require.resolve(plugin);
-      } catch (e) {
+      } catch (e: any) {
         error(`Unable to resolve plugin ${chalk.green(plugin)}: ${e.stack}`);
         throw new Error(`Unable to resolve plug-in: ${plugin}`);
       }
@@ -456,7 +470,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
         return cli.list(args.STACKS, { long: args.long, json: argv.json });
 
       case 'diff':
-        const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL);
+        const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
         return cli.diff({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
@@ -548,7 +562,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
-          hotswap: args.hotswap,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback),
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
@@ -561,8 +575,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           selector,
           toolkitStackName,
           roleArn: args.roleArn,
-          execute: args.execute,
-          changeSetName: args.changeSetName,
+          deploymentMethod: {
+            method: 'change-set',
+            execute: args.execute,
+            changeSetName: args.changeSetName,
+          },
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
           recordResourceMapping: args['record-resource-mapping'],
@@ -582,11 +599,14 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           toolkitStackName,
           roleArn: args.roleArn,
           reuseAssets: args['build-exclude'],
-          changeSetName: args.changeSetName,
+          deploymentMethod: {
+            method: 'change-set',
+            changeSetName: args.changeSetName,
+          },
           force: args.force,
           progress: configuration.settings.get(['progress']),
           rollback: configuration.settings.get(['rollback']),
-          hotswap: args.hotswap,
+          hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback, true),
           traceLogs: args.logs,
           concurrency: args.concurrency,
         });
@@ -602,10 +622,11 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'synthesize':
       case 'synth':
+        const quiet = configuration.settings.get(['quiet']) ?? args.quiet;
         if (args.exclusively) {
-          return cli.synth(args.STACKS, args.exclusively, args.quiet, args.validation, argv.json);
+          return cli.synth(args.STACKS, args.exclusively, quiet, args.validation, argv.json);
         } else {
-          return cli.synth(args.STACKS, true, args.quiet, args.validation, argv.json);
+          return cli.synth(args.STACKS, true, quiet, args.validation, argv.json);
         }
 
       case 'notices':
@@ -703,6 +724,27 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
     }
     return argv;
   };
+}
+
+function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watch?: boolean): HotswapMode {
+  if (hotswap && hotswapFallback) {
+    throw new Error('Can not supply both --hotswap and --hotswap-fallback at the same time');
+  } else if (!hotswap && !hotswapFallback) {
+    if (hotswap === undefined && hotswapFallback === undefined) {
+      return watch ? HotswapMode.HOTSWAP_ONLY : HotswapMode.FULL_DEPLOYMENT;
+    } else if (hotswap === false || hotswapFallback === false) {
+      return HotswapMode.FULL_DEPLOYMENT;
+    }
+  }
+
+  let hotswapMode: HotswapMode;
+  if (hotswap) {
+    hotswapMode = HotswapMode.HOTSWAP_ONLY;
+  } else /*if (hotswapFallback)*/ {
+    hotswapMode = HotswapMode.FALL_BACK;
+  }
+
+  return hotswapMode;
 }
 
 export function cli(args: string[] = process.argv.slice(2)) {

@@ -1,5 +1,5 @@
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
 import * as glue from '../lib';
 
 describe('GlueVersion', () => {
@@ -30,6 +30,8 @@ describe('JobType', () => {
   test('.STREAMING should set the name correctly', () => expect(glue.JobType.STREAMING.name).toEqual('gluestreaming'));
 
   test('.PYTHON_SHELL should set the name correctly', () => expect(glue.JobType.PYTHON_SHELL.name).toEqual('pythonshell'));
+
+  test('.RAY should set the name correctly', () => expect(glue.JobType.RAY.name).toEqual('glueray'));
 
   test('of(customName) should set the name correctly', () => expect(glue.JobType.of('CustomName').name).toEqual('CustomName'));
 });
@@ -65,6 +67,15 @@ describe('JobExecutable', () => {
       })).toThrow(/Python shell requires the language to be set to Python/);
     });
 
+    test('with JobType.RAY and a language other than JobLanguage.PYTHON should throw', () => {
+      expect(() => glue.JobExecutable.of({
+        glueVersion: glue.GlueVersion.V4_0,
+        type: glue.JobType.RAY,
+        language: glue.JobLanguage.SCALA,
+        script,
+      })).toThrow(/Ray requires the language to be set to Python/);
+    });
+
     test('with a non JobLanguage.PYTHON and extraPythonFiles set should throw', () => {
       expect(() => glue.JobExecutable.of({
         glueVersion: glue.GlueVersion.V3_0,
@@ -76,7 +87,7 @@ describe('JobExecutable', () => {
       })).toThrow(/extraPythonFiles is not supported for languages other than JobLanguage.PYTHON/);
     });
 
-    [glue.GlueVersion.V0_9, glue.GlueVersion.V2_0, glue.GlueVersion.V3_0, glue.GlueVersion.V4_0].forEach((glueVersion) => {
+    [glue.GlueVersion.V0_9, glue.GlueVersion.V3_0, glue.GlueVersion.V4_0].forEach((glueVersion) => {
       test(`with JobType.PYTHON_SHELL and GlueVersion ${glueVersion} should throw`, () => {
         expect(() => glue.JobExecutable.of({
           type: glue.JobType.PYTHON_SHELL,
@@ -113,7 +124,7 @@ describe('JobExecutable', () => {
       });
     });
 
-    test('with PythonVersion set to PythonVersion.THREE_NINE and JobType not pythonshell should throw', () => {
+    test('with PythonVersion set to PythonVersion.THREE_NINE and JobType etl should throw', () => {
       expect(() => glue.JobExecutable.of({
         type: glue.JobType.ETL,
         language: glue.JobLanguage.PYTHON,
@@ -127,6 +138,16 @@ describe('JobExecutable', () => {
       expect(glue.JobExecutable.of({
         type: glue.JobType.PYTHON_SHELL,
         glueVersion: glue.GlueVersion.V1_0,
+        language: glue.JobLanguage.PYTHON,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
+        script,
+      })).toBeDefined();
+    });
+
+    test('with PythonVersion PythonVersion.THREE_NINE and JobType ray should succeed', () => {
+      expect(glue.JobExecutable.of({
+        type: glue.JobType.RAY,
+        glueVersion: glue.GlueVersion.V4_0,
         language: glue.JobLanguage.PYTHON,
         pythonVersion: glue.PythonVersion.THREE_NINE,
         script,
