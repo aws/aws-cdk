@@ -16,8 +16,6 @@
     "postinstall": "patch-package --error-on-fail"
   },
   "devDependencies": {
-    "@types/node": "18.11.19",
-    "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "cdk-generate-synthetic-examples": "^0.1.173",
     "conventional-changelog-cli": "^2.2.2",

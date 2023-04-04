@@ -42,7 +42,7 @@
     "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
-    "test": "cdk-test",
+    "test": "jest",
     "pkglint": "pkglint -f",
     "awslint": "cdk-awslint",
     "package": "cdk-package",
@@ -63,7 +63,6 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^27.5.2",
     "fs-extra": "^9.1.0"
   },
   "repository": {

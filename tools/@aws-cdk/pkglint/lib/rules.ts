@@ -1159,26 +1159,6 @@ export class MustHaveRosettaExtract extends ValidationRule {
 }
 
 /**
- * Must use 'cdk-test' command
- */
-export class MustUseCDKTest extends ValidationRule {
-  public readonly name = 'package-info/scripts/test';
-
-  public validate(pkg: PackageJson): void {
-    if (!shouldUseCDKBuildTools(pkg)) { return; }
-    if (!hasTestDirectory(pkg)) { return; }
-
-    expectJSON(this.name, pkg, 'scripts.test', 'cdk-test');
-
-    // 'cdk-test' will calculate coverage, so have the appropriate
-    // files in .gitignore.
-    fileShouldContain(this.name, pkg, '.gitignore', '.nyc_output');
-    fileShouldContain(this.name, pkg, '.gitignore', 'coverage');
-    fileShouldContain(this.name, pkg, '.gitignore', 'nyc.config.js');
-  }
-}
-
-/**
  * Must declare minimum node version
  */
 export class MustHaveNodeEnginesDeclaration extends ValidationRule {

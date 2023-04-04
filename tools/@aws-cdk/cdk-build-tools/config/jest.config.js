@@ -26,5 +26,8 @@ module.exports = {
 	reporters: [
         "default",
           [ "jest-junit", { suiteName: "jest tests", outputDirectory: "coverage" } ]
-    ]
+    ],
+    testTimeout: 600_000,
+    maxWorkers: '50%',
+    verbose: true
 };

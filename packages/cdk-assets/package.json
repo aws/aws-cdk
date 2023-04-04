@@ -15,7 +15,7 @@
     "package": "cdk-package",
     "awslint": "cdk-awslint",
     "pkglint": "pkglint -f",
-    "test": "cdk-test",
+    "test": "jest",
     "watch": "cdk-watch",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
@@ -32,12 +32,12 @@
   "devDependencies": {
     "@types/archiver": "^5.3.1",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^27.5.2",
+    "@types/jest": "^29.5.0",
     "@types/mime": "^2.0.3",
     "@types/mock-fs": "^4.13.1",
     "@types/yargs": "^15.0.15",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "jest": "^27.5.1",
+    "jest": "^29.5.0",
     "jszip": "^3.10.1",
     "mock-fs": "^4.14.0",
     "@aws-cdk/pkglint": "0.0.0"

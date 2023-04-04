@@ -17,7 +17,7 @@
     "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
-    "test": "cdk-test",
+    "test": "jest --passWithNoTests",
     "pkglint": "pkglint -f",
     "build+test+package": "yarn build+test",
     "build+test": "yarn build && yarn test",
@@ -42,9 +42,9 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^27.5.2",
+    "@types/jest": "^29.5.0",
     "@types/yargs": "^15.0.15",
-    "jest": "^27.5.1"
+    "jest": "^29.5.0"
   },
   "keywords": [
     "aws",
