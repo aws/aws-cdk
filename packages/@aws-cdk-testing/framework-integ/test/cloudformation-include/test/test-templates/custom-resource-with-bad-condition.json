@@ -1,0 +1,8 @@
+{
+  "Resources": {
+    "CustomResource": {
+      "Type": "AWS::MyService::Custom",
+      "Condition": "AlwaysFalseCond"
+    }
+  }
+}

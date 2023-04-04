@@ -4,12 +4,12 @@
  * but it's considered Names, and we want to migrate to Jest).
  */
 
-import { Match, Template } from '@aws-cdk/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import * as core from '@aws-cdk/core';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as core from 'aws-cdk-lib';
 
 // Always import the module you're testing qualified -
 // don't import individual classes from it!

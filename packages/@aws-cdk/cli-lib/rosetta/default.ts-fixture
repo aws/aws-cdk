@@ -1,6 +1,6 @@
 // Fixture with an AwsCdkCli set up
-import * as cdk from '@aws-cdk/core';
-import { AwsCdkCli } from '@aws-cdk/cli-lib';
+import * as cdk from 'aws-cdk-lib';
+import { AwsCdkCli } from '@aws-cdk/cli-lib-alpha';
 
 const cli = AwsCdkCli.fromCloudAssemblyDirectoryProducer({
     produce: async (context: Record<string, any>) => {
