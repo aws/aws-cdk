@@ -1,0 +1,8 @@
+
+.LAST_BUILD
+*.snk
+junit.xml
+!.eslintrc.js
+.nyc_output
+coverage
+nyc.config.js

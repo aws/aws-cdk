@@ -25,3 +25,5 @@ test/lambda-handler-*/requirements.txt
 
 !**/*.snapshot/**/asset.*/**
 !**/*.snapshot/**/asset.*/requirements.txt
+
+

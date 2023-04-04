@@ -1,12 +1,12 @@
-import * as ecr from '@aws-cdk/aws-ecr';
-import * as assets from '@aws-cdk/aws-ecr-assets';
-import * as iam from '@aws-cdk/aws-iam';
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as ssm from '@aws-cdk/aws-ssm';
-import * as cdk from '@aws-cdk/core';
-import { Lazy } from '@aws-cdk/core';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as assets from 'aws-cdk-lib/aws-ecr-assets';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as cdk from 'aws-cdk-lib';
+import { Lazy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnService } from './apprunner.generated';
+import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
 
 /**
@@ -576,6 +576,18 @@ export interface ServiceProps {
   readonly source: Source;
 
   /**
+   * Specifies whether to enable continuous integration from the source repository.
+   *
+   * If true, continuous integration from the source repository is enabled for the App Runner service.
+   * Each repository change (including any source code commit or new image version) starts a deployment.
+   * By default, App Runner sets to false for a source image that uses an ECR Public repository or an ECR repository that's in an AWS account other than the one that the service is in.
+   * App Runner sets to true in all other cases (which currently include a source code repository or a source image using a same-account ECR repository).
+   *
+   * @default - no value will be passed.
+   */
+  readonly autoDeploymentsEnabled?: boolean;
+
+  /**
    * The number of CPU units reserved for each instance of your App Runner service.
    *
    * @default Cpu.ONE_VCPU
@@ -1001,6 +1013,7 @@ export class Service extends cdk.Resource {
       },
       sourceConfiguration: {
         authenticationConfiguration: this.renderAuthenticationConfiguration(),
+        autoDeploymentsEnabled: this.props.autoDeploymentsEnabled,
         imageRepository: this.source.imageRepository ?
           this.renderImageRepository(this.source.imageRepository!) :
           undefined,
