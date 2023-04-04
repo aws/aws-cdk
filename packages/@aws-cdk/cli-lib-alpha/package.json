@@ -97,7 +97,7 @@
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
-    "directory": "packages/@aws-cdk/cli-lib"
+    "directory": "packages/@aws-cdk/cli-lib-alpha"
   },
   "keywords": [
     "aws",
