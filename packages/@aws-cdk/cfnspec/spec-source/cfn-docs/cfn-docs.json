@@ -5640,7 +5640,7 @@
         "DesiredCapacity": "The desired capacity is the initial capacity of the Auto Scaling group at the time of its creation and the capacity it attempts to maintain. It can scale beyond this capacity if you configure automatic scaling.\n\nThe number must be greater than or equal to the minimum size of the group and less than or equal to the maximum size of the group. If you do not specify a desired capacity when creating the stack, the default is the minimum size of the group.\n\nCloudFormation marks the Auto Scaling group as successful (by setting its status to CREATE_COMPLETE) when the desired capacity is reached. However, if a maximum Spot price is set in the launch template or launch configuration that you specified, then desired capacity is not used as a criteria for success. Whether your request is fulfilled depends on Spot Instance capacity and your maximum price.",
         "DesiredCapacityType": "The unit of measurement for the value specified for desired capacity. Amazon EC2 Auto Scaling supports `DesiredCapacityType` for attribute-based instance type selection only. For more information, see [Creating an Auto Scaling group using attribute-based instance type selection](https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-asg-instance-type-requirements.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nBy default, Amazon EC2 Auto Scaling specifies `units` , which translates into number of instances.\n\nValid values: `units` | `vcpu` | `memory-mib`",
         "HealthCheckGracePeriod": "The amount of time, in seconds, that Amazon EC2 Auto Scaling waits before checking the health status of an EC2 instance that has come into service and marking it unhealthy due to a failed health check. This is useful if your instances do not immediately pass their health checks after they enter the `InService` state. For more information, see [Set the health check grace period for an Auto Scaling group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/health-check-grace-period.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nDefault: `0` seconds",
-        "HealthCheckType": "A comma-separated list of one or more health check types.\n\nThe valid values are `EC2` , `ELB` , and `VPC_LATTICE` . `EC2` is the default health check and cannot be disabled. For more information, see [Health checks for Auto Scaling instances](https://docs.aws.amazon.com/autoscaling/ec2/userguide/healthcheck.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nOnly specify `EC2` if you must clear a value that was previously set.",
+        "HealthCheckType": "A comma-separated value string of one or more health check types.\n\nThe valid values are `EC2` , `ELB` , and `VPC_LATTICE` . `EC2` is the default health check and cannot be disabled. For more information, see [Health checks for Auto Scaling instances](https://docs.aws.amazon.com/autoscaling/ec2/userguide/healthcheck.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nOnly specify `EC2` if you must clear a value that was previously set.",
         "InstanceId": "The ID of the instance used to base the launch configuration on. For more information, see [Create an Auto Scaling group using an EC2 instance](https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-asg-from-instance.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nIf you specify `LaunchTemplate` , `MixedInstancesPolicy` , or `LaunchConfigurationName` , don't specify `InstanceId` .",
         "LaunchConfigurationName": "The name of the launch configuration to use to launch instances.\n\nRequired only if you don't specify `LaunchTemplate` , `MixedInstancesPolicy` , or `InstanceId` .",
         "LaunchTemplate": "Information used to specify the launch template and version to use to launch instances. You can alternatively associate a launch template to the Auto Scaling group by specifying a `MixedInstancesPolicy` . For more information about creating launch templates, see [Create a launch template for an Auto Scaling group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/create-launch-template.html) in the *Amazon EC2 Auto Scaling User Guide* .\n\nIf you omit this property, you must specify `MixedInstancesPolicy` , `LaunchConfigurationName` , or `InstanceId` .",
@@ -54985,14 +54985,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -55000,18 +55000,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "The tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -55020,7 +55020,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -55030,15 +55030,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -60604,7 +60604,7 @@
       },
       "description": "Accepts an offer to share the specified portfolio.",
       "properties": {
-        "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
+        "AcceptLanguage": "The language code.\n\n- `jp` - Japanese\n- `zh` - Chinese",
         "PortfolioId": "The portfolio identifier."
       }
     },
@@ -60617,7 +60617,7 @@
       },
       "description": "Specifies a product.",
       "properties": {
-        "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
+        "AcceptLanguage": "The language code.\n\n- `jp` - Japanese\n- `zh` - Chinese",
         "Description": "The description of the product.",
         "Distributor": "The distributor of the product.",
         "Name": "The name of the product.",
@@ -60678,7 +60678,7 @@
       },
       "description": "Provisions the specified product.\n\nA provisioned product is a resourced instance of a product. For example, provisioning a product based on a AWS CloudFormation template launches a AWS CloudFormation stack and its underlying resources. You can check the status of this request using [DescribeRecord](https://docs.aws.amazon.com/servicecatalog/latest/dg/API_DescribeRecord.html) .\n\nIf the request contains a tag key with an empty list of values, there is a tag conflict for that key. Do not include conflicted keys as tags, or this causes the error \"Parameter validation failed: Missing required parameter in Tags[ *N* ]: *Value* \".",
       "properties": {
-        "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
+        "AcceptLanguage": "The language code.\n\n- `jp` - Japanese\n- `zh` - Chinese",
         "NotificationArns": "Passed to AWS CloudFormation . The SNS topic ARNs to which to publish stack-related events.",
         "PathId": "The path identifier of the product. This value is optional if the product has a default path, and required if the product has more than one path. To list the paths for a product, use [ListLaunchPaths](https://docs.aws.amazon.com/servicecatalog/latest/dg/API_ListLaunchPaths.html) .\n\n> You must provide the name or ID, but not both.",
         "PathName": "The name of the path. This value is optional if the product has a default path, and required if the product has more than one path. To list the paths for a product, use [ListLaunchPaths](https://docs.aws.amazon.com/servicecatalog/latest/dg/API_ListLaunchPaths.html) .\n\n> You must provide the name or ID, but not both.",
@@ -60719,7 +60719,7 @@
       },
       "description": "Specifies a notification constraint.",
       "properties": {
-        "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
+        "AcceptLanguage": "The language code.\n\n- `jp` - Japanese\n- `zh` - Chinese",
         "Description": "The description of the constraint.",
         "NotificationArns": "The notification ARNs.",
         "PortfolioId": "The portfolio identifier.",
@@ -60732,7 +60732,7 @@
       },
       "description": "Specifies a launch constraint.",
       "properties": {
-        "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
+        "AcceptLanguage": "The language code.\n\n- `jp` - Japanese\n- `zh` - Chinese",
         "Description": "The description of the constraint.",
         "LocalRoleName": "You are required to specify either the `RoleArn` or the `LocalRoleName` but can't use both.\n\nIf you specify the `LocalRoleName` property, when an account uses the launch constraint, the IAM role with that name in the account will be used. This allows launch-role constraints to be account-agnostic so the administrator can create fewer resources per shared account.\n\nThe given role name must exist in the account used to create the launch constraint and the account of the user who launches a product with this launch constraint.",
         "PortfolioId": "The portfolio identifier.",
@@ -60746,7 +60746,7 @@
       },
       "description": "Specifies a template constraint.",
       "properties": {
-        "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
+        "AcceptLanguage": "The language code.\n\n- `jp` - Japanese\n- `zh` - Chinese",
         "Description": "The description of the constraint.",
         "PortfolioId": "The portfolio identifier.",
         "ProductId": "The product identifier.",
@@ -60760,7 +60760,7 @@
       },
       "description": "Specifies a portfolio.",
       "properties": {
-        "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
+        "AcceptLanguage": "The language code.\n\n- `jp` - Japanese\n- `zh` - Chinese",
         "Description": "The description of the portfolio.",
         "DisplayName": "The name to use for display purposes.",
         "ProviderName": "The name of the portfolio provider.",
@@ -60773,7 +60773,7 @@
       },
       "description": "Associates the specified principal ARN with the specified portfolio.",
       "properties": {
-        "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
+        "AcceptLanguage": "The language code.\n\n- `jp` - Japanese\n- `zh` - Chinese",
         "PortfolioId": "The portfolio identifier.",
         "PrincipalARN": "The ARN of the principal ( IAM user, role, or group).",
         "PrincipalType": "The principal type. The supported value is `IAM` .\n\n*Allowed Values* : `IAM`"
@@ -60785,7 +60785,7 @@
       },
       "description": "Associates the specified product with the specified portfolio.\n\nA delegated admin is authorized to invoke this command.",
       "properties": {
-        "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
+        "AcceptLanguage": "The language code.\n\n- `jp` - Japanese\n- `zh` - Chinese",
         "PortfolioId": "The portfolio identifier.",
         "ProductId": "The product identifier.",
         "SourcePortfolioId": "The identifier of the source portfolio."
@@ -60797,7 +60797,7 @@
       },
       "description": "Shares the specified portfolio with the specified account.",
       "properties": {
-        "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
+        "AcceptLanguage": "The language code.\n\n- `jp` - Japanese\n- `zh` - Chinese",
         "AccountId": "The AWS account ID. For example, `123456789012` .",
         "PortfolioId": "The portfolio identifier.",
         "ShareTagOptions": "Indicates whether TagOptions sharing is enabled or disabled for the portfolio share."
@@ -60809,7 +60809,7 @@
       },
       "description": "Specifies a `RESOURCE_UPDATE` constraint.",
       "properties": {
-        "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
+        "AcceptLanguage": "The language code.\n\n- `jp` - Japanese\n- `zh` - Chinese",
         "Description": "The description of the constraint.",
         "PortfolioId": "The portfolio identifier.",
         "ProductId": "The product identifier.",
@@ -60855,7 +60855,7 @@
       },
       "description": "Specifies a StackSet constraint.",
       "properties": {
-        "AcceptLanguage": "The language code.\n\n- `en` - English (default)\n- `jp` - Japanese\n- `zh` - Chinese",
+        "AcceptLanguage": "The language code.\n\n- `jp` - Japanese\n- `zh` - Chinese",
         "AccountList": "One or more AWS accounts that will have access to the provisioned product.",
         "AdminRole": "AdminRole ARN",
         "Description": "The description of the constraint.",
