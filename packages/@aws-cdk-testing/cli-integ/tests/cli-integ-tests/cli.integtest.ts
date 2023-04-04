@@ -20,7 +20,12 @@ describe('ci', () => {
       const execOptions = {
         captureStderr: true,
         onlyStderr: true,
-        modEnv: { CI: 'true' },
+        modEnv: {
+          CI: 'true',
+          JSII_SILENCE_WARNING_KNOWN_BROKEN_NODE_VERSION: 'true',
+          JSII_SILENCE_WARNING_UNTESTED_NODE_VERSION: 'true',
+          JSII_SILENCE_WARNING_DEPRECATED_NODE_VERSION: 'true',
+        },
       };
 
       const deployOutput = await fixture.cdkDeploy('test-2', execOptions);

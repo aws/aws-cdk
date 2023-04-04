@@ -1,9 +1,9 @@
 import * as path from 'path';
-import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2';
-import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
-import * as cognito from '@aws-cdk/aws-cognito';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { App, Stack } from '@aws-cdk/core';
+import { HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { App, Stack } from 'aws-cdk-lib';
 import { HttpUserPoolAuthorizer } from '../../lib';
 
 /*

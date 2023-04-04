@@ -1,7 +1,7 @@
-import * as core from '@aws-cdk/core';
-import { Lazy, Names } from '@aws-cdk/core';
+import * as core from 'aws-cdk-lib';
+import { Lazy, Names } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnChannel } from './ivs.generated';
+import { CfnChannel } from 'aws-cdk-lib/aws-ivs';
 import { StreamKey } from './stream-key';
 
 /**
