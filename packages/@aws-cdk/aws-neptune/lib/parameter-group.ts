@@ -1,6 +1,6 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './neptune.generated';
+import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from 'aws-cdk-lib/aws-neptune';
 
 /**
  * The DB parameter group family that a DB parameter group is compatible with

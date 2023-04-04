@@ -18,6 +18,7 @@ describe('createModuleDefinitionFromCfnNamespace', () => {
       javaArtifactId: 'ec2',
       pythonDistName: 'aws-cdk.aws-ec2',
       pythonModuleName: 'aws_cdk.aws_ec2',
+      submoduleName: 'aws_ec2',
     });
   });
 
@@ -36,6 +37,7 @@ describe('createModuleDefinitionFromCfnNamespace', () => {
       javaArtifactId: 'sam',
       pythonDistName: 'aws-cdk.aws-sam',
       pythonModuleName: 'aws_cdk.aws_sam',
+      submoduleName: 'aws_sam',
     });
   });
 
@@ -54,6 +56,7 @@ describe('createModuleDefinitionFromCfnNamespace', () => {
       javaArtifactId: 'alexa-ask',
       pythonDistName: 'aws-cdk.alexa-ask',
       pythonModuleName: 'aws_cdk.alexa_ask',
+      submoduleName: 'alexa_ask',
     });
   });
 });
