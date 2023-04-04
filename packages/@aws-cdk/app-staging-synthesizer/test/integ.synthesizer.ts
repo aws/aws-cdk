@@ -1,6 +1,6 @@
 import * as path from 'path';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { App, Stack } from '@aws-cdk/core';
+import { App, Stack } from 'aws-cdk-lib';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AppStagingSynthesizer } from '../lib';
 
 const app = new App();

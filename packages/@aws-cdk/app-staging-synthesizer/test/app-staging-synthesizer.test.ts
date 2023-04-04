@@ -1,12 +1,12 @@
 /* eslint-disable jest/no-commented-out-tests */
 import * as fs from 'fs';
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, FileAssetSource, DockerImageAssetSource } from '@aws-cdk/core';
-import { evaluateCFN } from '@aws-cdk/core/test/evaluate-cfn';
-import * as cxapi from '@aws-cdk/cx-api';
-import { AppStagingSynthesizer, BootstrapRole, FileAssetInfo, ImageAssetInfo, IStagingStack, StackPerEnvProps } from '../lib';
-import { Repository } from '@aws-cdk/aws-ecr';
-import { Bucket } from '@aws-cdk/aws-s3';
+import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy } from 'aws-cdk-lib';
+import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import { evaluateCFN } from 'aws-cdk-lib/core/test/evaluate-cfn';
+import * as cxapi from 'aws-cdk-lib/cx-api';
+import { AppStagingSynthesizer, BootstrapRole, StackPerEnvProps } from '../lib';
+// import { Repository } from 'aws-cdk-lib/aws-ecr';
+// import { Bucket } from 'aws-cdk-lib/aws-s3';
 
 const CFN_CONTEXT = {
   'AWS::Region': 'the_region',

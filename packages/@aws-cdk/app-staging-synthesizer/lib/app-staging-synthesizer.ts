@@ -12,8 +12,8 @@ import {
   Stack,
   StackSynthesizer,
   Token,
-} from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
+} from 'aws-cdk-lib';
+import * as cxapi from 'aws-cdk-lib/cx-api';
 import { BootstrapRoles, StagingRoles } from './bootstrap-roles';
 import { IStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
 
@@ -60,6 +60,14 @@ export interface StackPerEnvProps {
  * staging resources for the Stack.
  */
 export interface IStagingStackFactory {
+  /**
+   * Factory method to be called when binding stack to synthesizer.
+   * This method produces (either by creating or referencing an existing
+   * stack) the StagingStack that holds staging resources
+   * necessary for the bound stack.
+   *
+   * @param boundStack - stack to bind the synthesizer to
+   */
   stagingStackFactory(boundStack: Stack): IStagingStack;
 }
 

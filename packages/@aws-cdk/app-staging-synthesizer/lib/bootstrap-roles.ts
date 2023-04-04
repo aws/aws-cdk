@@ -17,7 +17,7 @@ export class BootstrapRole {
     return new BootstrapRole(arn);
   }
 
-  private constructor(public readonly roleArn: string | undefined) {}
+  private constructor(/** Bootstrap role arn */ public readonly roleArn: string | undefined) {}
 }
 
 /**
@@ -26,16 +26,22 @@ export class BootstrapRole {
 export interface BootstrapRoles {
   /**
    * CloudFormation Execution Role
+   *
+   * @default - use bootstrapped role
    */
   readonly cloudFormationExecutionRole?: BootstrapRole;
 
   /**
    * Deployment Action Role
+   *
+   * @default - use boostrapped role
    */
   readonly deploymentActionRole?: BootstrapRole;
 
   /**
    * Lookup Role
+   *
+   * @default - use bootstrapped role
    */
   readonly lookupRole?: BootstrapRole;
 }
@@ -47,11 +53,15 @@ export interface BootstrapRoles {
 export interface StagingRoles {
   /**
    * File Asset Publishing Role
+   *
+   * @default - staging stack creates a file asset publishing role
    */
   readonly fileAssetPublishingRole?: BootstrapRole;
 
   /**
    * Docker Asset Publishing Role
+   *
+   * @default - staging stack creates a docker asset publishing role
    */
   readonly dockerAssetPublishingRole?: BootstrapRole;
 }
