@@ -1,7 +1,7 @@
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests';
-import * as sfn from '../lib';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib/core';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 
 
 const CSV_KEY = 'my-key.csv';
