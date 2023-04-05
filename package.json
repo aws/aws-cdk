@@ -25,7 +25,7 @@
     "jsii-diff": "^1.74.0",
     "jsii-pacmak": "^1.74.0",
     "jsii-reflect": "^1.74.0",
-    "jsii-rosetta": "^1.74.0",
+    "jsii-rosetta": "^1.80.0",
     "lerna": "^4.0.0",
     "patch-package": "^6.5.1",
     "semver": "^6.3.0",
