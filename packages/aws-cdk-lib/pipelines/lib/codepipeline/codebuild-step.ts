@@ -108,6 +108,16 @@ export interface CodeBuildStepProps extends ShellStepProps {
    * @default Duration.hours(1)
    */
   readonly timeout?: Duration;
+
+  /**
+   * ProjectFileSystemLocation objects for CodeBuild build projects.
+   *
+   * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
+   * and type of a file system created using Amazon Elastic File System.
+   *
+   * @default - no file system locations
+   */
+  readonly fileSystemLocations?: codebuild.IFileSystemLocation[];
 }
 
 /**
@@ -197,6 +207,16 @@ export class CodeBuildStep extends ShellStep {
    */
   readonly timeout?: Duration;
 
+  /**
+   * ProjectFileSystemLocation objects for CodeBuild build projects.
+   *
+   * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
+   * and type of a file system created using Amazon Elastic File System.
+   *
+   * @default - no file system locations
+   */
+  readonly fileSystemLocations?: codebuild.IFileSystemLocation[];
+
   private _project?: codebuild.IProject;
   private _partialBuildSpec?: codebuild.BuildSpec;
   private readonly exportedVariables = new Set<string>();
@@ -216,6 +236,7 @@ export class CodeBuildStep extends ShellStep {
     this.rolePolicyStatements = props.rolePolicyStatements;
     this.securityGroups = props.securityGroups;
     this.timeout = props.timeout;
+    this.fileSystemLocations = props.fileSystemLocations;
   }
 
   /**

@@ -2,6 +2,7 @@ import { Template, Match } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
+import * as ec2 from '../../../aws-ec2';
 import { Duration, Stack } from '../../../core';
 import * as cdkp from '../../lib';
 import { StackOutputReference } from '../../lib';
@@ -123,6 +124,44 @@ test('timeout from defaults can be overridden', () => {
   // THEN
   Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
     TimeoutInMinutes: 888,
+  });
+});
+
+test('fileSystemLocations can be configured as part of defaults', () => {
+  // WHEN
+  new cdkp.CodePipeline(pipelineStack, 'Pipeline', {
+    synth: new cdkp.CodeBuildStep('Synth', {
+      commands: ['/bin/true'],
+      input: cdkp.CodePipelineSource.gitHub('test/test', 'main'),
+      additionalInputs: {
+        'some/deep/directory': cdkp.CodePipelineSource.gitHub('test2/test2', 'main'),
+      },
+    }),
+    codeBuildDefaults: {
+      fileSystemLocations: [codebuild.FileSystemLocation.efs({
+        identifier: 'myidentifier2',
+        location: 'myclodation.mydnsroot.com:/loc',
+        mountPoint: '/media',
+        mountOptions: 'opts',
+      })],
+      vpc: new ec2.Vpc(pipelineStack, 'MyVpc'),
+      buildEnvironment: {
+        privileged: true,
+      },
+    },
+  });
+
+  // THEN
+  Template.fromStack(pipelineStack).hasResourceProperties('AWS::CodeBuild::Project', {
+    FileSystemLocations: [
+      {
+        Identifier: 'myidentifier2',
+        MountPoint: '/media',
+        MountOptions: 'opts',
+        Location: 'myclodation.mydnsroot.com:/loc',
+        Type: 'EFS',
+      },
+    ],
   });
 });
 
