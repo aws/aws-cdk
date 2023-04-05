@@ -123,6 +123,16 @@ export interface CodeBuildStepProps extends ShellStepProps {
    * @default - Disable S3 logging setting
    */
   readonly s3logging?: S3LoggingOptions;
+
+  /**
+   * ProjectFileSystemLocation objects for CodeBuild build projects.
+   *
+   * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
+   * and type of a file system created using Amazon Elastic File System.
+   *
+   * @default - no file system locations
+   */
+  readonly fileSystemLocations?: codebuild.IFileSystemLocation[];
 }
 
 /**
@@ -226,6 +236,16 @@ export class CodeBuildStep extends ShellStep {
    */
   readonly s3logging?: S3LoggingOptions;
 
+  /**
+   * ProjectFileSystemLocation objects for CodeBuild build projects.
+   *
+   * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
+   * and type of a file system created using Amazon Elastic File System.
+   *
+   * @default - no file system locations
+   */
+  readonly fileSystemLocations?: codebuild.IFileSystemLocation[];
+
   private _project?: codebuild.IProject;
   private _partialBuildSpec?: codebuild.BuildSpec;
   private readonly exportedVariables = new Set<string>();
@@ -247,6 +267,7 @@ export class CodeBuildStep extends ShellStep {
     this.timeout = props.timeout;
     this.cloudWatchLogging = props.cloudWatchLogging;
     this.s3logging = props.s3logging;
+    this.fileSystemLocations = props.fileSystemLocations;
   }
 
   /**

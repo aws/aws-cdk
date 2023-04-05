@@ -165,6 +165,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
         timeout: step.timeout,
         cloudWatchLogging: step.cloudWatchLogging,
         s3logging: step.s3logging,
+        fileSystemLocations: step.fileSystemLocations,
       }),
     });
 
@@ -198,6 +199,11 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
 
   public produceAction(stage: codepipeline.IStage, options: ProduceActionOptions): CodePipelineActionFactoryResult {
     const projectOptions = mergeCodeBuildOptions(options.codeBuildDefaults, this.props.projectOptions);
+
+    if ((!projectOptions.buildEnvironment?.privileged || projectOptions.vpc === undefined) &&
+      (projectOptions.fileSystemLocations !== undefined && projectOptions.fileSystemLocations.length != 0)) {
+      throw new Error('Setting fileSystemLocations requires a vpc to be set and privileged to be set to true.');
+    }
 
     const inputs = this.props.inputs ?? [];
     const outputs = this.props.outputs ?? [];
@@ -306,6 +312,7 @@ export class CodeBuildFactory implements ICodePipelineActionFactory {
       role: this.props.role,
       timeout: projectOptions.timeout,
       logging: exportLoggingSettings(projectOptions),
+      fileSystemLocations: projectOptions.fileSystemLocations,
     });
 
     if (this.props.additionalDependable) {
@@ -436,6 +443,7 @@ export function mergeCodeBuildOptions(...opts: Array<CodeBuildOptions | undefine
       cache: b.cache ?? a.cache,
       cloudWatchLogging: b.cloudWatchLogging ?? a.cloudWatchLogging,
       s3logging: b.s3logging ?? a.s3logging,
+      fileSystemLocations: definedArray([...a.fileSystemLocations ?? [], ...b.fileSystemLocations ?? []]),
     };
   }
 }
