@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('MatchmakingRuleSetBody', () => {

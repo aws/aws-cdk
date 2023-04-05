@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Match, Template } from '@aws-cdk/assertions';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecr from '@aws-cdk/aws-ecr';
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import * as constructs from 'constructs';
 import * as sagemaker from '../lib';
 

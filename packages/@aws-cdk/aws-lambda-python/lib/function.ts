@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Function, FunctionOptions, Runtime, RuntimeFamily } from '@aws-cdk/aws-lambda';
-import { Stack } from '@aws-cdk/core';
+import { Function, FunctionOptions, Runtime, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
+import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';

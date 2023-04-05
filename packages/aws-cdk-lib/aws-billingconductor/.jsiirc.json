@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.BillingConductor"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.billingconductor"
+    },
+    "python": {
+      "module": "aws_cdk.aws_billingconductor"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "Parameters": {
+    "Stage": {
+      "Type": "String",
+      "AllowedValues": ["beta"],
+      "Default": "beta"
+    }
+  },
+  "Mappings": {
+    "beta": {
+      "region": {
+        "key1": "name"
+      }
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": {
+          "Fn::FindInMap": [
+            { "Ref": "Stage" },
+            "region",
+            "key1"
+          ]
+        }
+      }
+    }
+  }
+}

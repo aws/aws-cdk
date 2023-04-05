@@ -3,11 +3,11 @@ import {
   CfnCertificate,
   CfnCertificateAuthority,
   CfnCertificateAuthorityActivation,
-} from '@aws-cdk/aws-acmpca';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
-import { IntegTest, AssertionsProvider, ExpectedResult } from '@aws-cdk/integ-tests';
+} from 'aws-cdk-lib/aws-acmpca';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
+import { IntegTest, AssertionsProvider, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as msk from '../lib';
 
 const app = new cdk.App();

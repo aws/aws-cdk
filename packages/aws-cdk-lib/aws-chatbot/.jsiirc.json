@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Chatbot"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.chatbot"
+    },
+    "python": {
+      "module": "aws_cdk.aws_chatbot"
+    }
+  }
+}

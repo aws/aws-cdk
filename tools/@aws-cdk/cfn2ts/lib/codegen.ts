@@ -33,6 +33,7 @@ export interface CodeGeneratorOptions {
  */
 export default class CodeGenerator {
   public readonly outputFile: string;
+  public readonly resources: Record<string, string> = {};
 
   private code = new CodeMaker();
 
@@ -72,6 +73,7 @@ export default class CodeGenerator {
       const resourceName = genspec.CodeName.forCfnResource(cfnName, this.affix);
       this.code.line();
 
+      this.resources[resourceName.specName!.fqn] = resourceName.className;
       this.emitResourceType(resourceName, resourceType);
       this.emitPropertyTypes(name, resourceName);
     }

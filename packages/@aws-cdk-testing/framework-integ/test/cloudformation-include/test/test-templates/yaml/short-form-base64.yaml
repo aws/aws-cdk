@@ -1,0 +1,6 @@
+Resources:
+  Base64Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        !Base64 NonBase64BucketName

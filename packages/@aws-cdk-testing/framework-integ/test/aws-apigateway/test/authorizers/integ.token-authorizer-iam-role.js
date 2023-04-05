@@ -1,0 +1,48 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
+const iam = require("aws-cdk-lib/aws-iam");
+const lambda = require("aws-cdk-lib/aws-lambda");
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+const integ_tests_alpha_1 = require("@aws-cdk/integ-tests-alpha");
+const aws_apigateway_1 = require("aws-cdk-lib/aws-apigateway");
+/*
+ * Stack verification steps:
+ * * `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401
+ * * `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: deny' <url>` should return 403
+ * * `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: allow' <url>` should return 200
+ */
+const app = new aws_cdk_lib_1.App();
+const stack = new aws_cdk_lib_1.Stack(app, 'TokenAuthorizerIAMRoleInteg');
+const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
+    runtime: lambda.Runtime.NODEJS_14_X,
+    handler: 'index.handler',
+    code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
+});
+const role = new iam.Role(stack, 'authorizerRole', {
+    assumedBy: new iam.ServicePrincipal('apigateway.amazonaws.com'),
+});
+const authorizer = new aws_apigateway_1.TokenAuthorizer(stack, 'MyAuthorizer', {
+    handler: authorizerFn,
+    assumeRole: role,
+});
+const restapi = new aws_apigateway_1.RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
+restapi.root.addMethod('ANY', new aws_apigateway_1.MockIntegration({
+    integrationResponses: [
+        { statusCode: '200' },
+    ],
+    passthroughBehavior: aws_apigateway_1.PassthroughBehavior.NEVER,
+    requestTemplates: {
+        'application/json': '{ "statusCode": 200 }',
+    },
+}), {
+    methodResponses: [
+        { statusCode: '200' },
+    ],
+    authorizer,
+    authorizationType: aws_apigateway_1.AuthorizationType.CUSTOM,
+});
+new integ_tests_alpha_1.IntegTest(app, 'iam-token-authorizer', {
+    testCases: [stack],
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcudG9rZW4tYXV0aG9yaXplci1pYW0tcm9sZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImludGVnLnRva2VuLWF1dGhvcml6ZXItaWFtLXJvbGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSw2QkFBNkI7QUFDN0IsMkNBQTJDO0FBQzNDLGlEQUFpRDtBQUNqRCw2Q0FBeUM7QUFDekMsa0VBQXVEO0FBQ3ZELCtEQUErSDtBQUUvSDs7Ozs7R0FLRztBQUVILE1BQU0sR0FBRyxHQUFHLElBQUksaUJBQUcsRUFBRSxDQUFDO0FBQ3RCLE1BQU0sS0FBSyxHQUFHLElBQUksbUJBQUssQ0FBQyxHQUFHLEVBQUUsNkJBQTZCLENBQUMsQ0FBQztBQUU1RCxNQUFNLFlBQVksR0FBRyxJQUFJLE1BQU0sQ0FBQyxRQUFRLENBQUMsS0FBSyxFQUFFLHNCQUFzQixFQUFFO0lBQ3RFLE9BQU8sRUFBRSxNQUFNLENBQUMsT0FBTyxDQUFDLFdBQVc7SUFDbkMsT0FBTyxFQUFFLGVBQWU7SUFDeEIsSUFBSSxFQUFFLE1BQU0sQ0FBQyxTQUFTLENBQUMsU0FBUyxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsU0FBUyxFQUFFLGdDQUFnQyxDQUFDLENBQUM7Q0FDekYsQ0FBQyxDQUFDO0FBRUgsTUFBTSxJQUFJLEdBQUcsSUFBSSxHQUFHLENBQUMsSUFBSSxDQUFDLEtBQUssRUFBRSxnQkFBZ0IsRUFBRTtJQUNqRCxTQUFTLEVBQUUsSUFBSSxHQUFHLENBQUMsZ0JBQWdCLENBQUMsMEJBQTBCLENBQUM7Q0FDaEUsQ0FBQyxDQUFDO0FBRUgsTUFBTSxVQUFVLEdBQUcsSUFBSSxnQ0FBZSxDQUFDLEtBQUssRUFBRSxjQUFjLEVBQUU7SUFDNUQsT0FBTyxFQUFFLFlBQVk7SUFDckIsVUFBVSxFQUFFLElBQUk7Q0FDakIsQ0FBQyxDQUFDO0FBRUgsTUFBTSxPQUFPLEdBQUcsSUFBSSx3QkFBTyxDQUFDLEtBQUssRUFBRSxXQUFXLEVBQUUsRUFBRSxjQUFjLEVBQUUsSUFBSSxFQUFFLENBQUMsQ0FBQztBQUUxRSxPQUFPLENBQUMsSUFBSSxDQUFDLFNBQVMsQ0FBQyxLQUFLLEVBQUUsSUFBSSxnQ0FBZSxDQUFDO0lBQ2hELG9CQUFvQixFQUFFO1FBQ3BCLEVBQUUsVUFBVSxFQUFFLEtBQUssRUFBRTtLQUN0QjtJQUNELG1CQUFtQixFQUFFLG9DQUFtQixDQUFDLEtBQUs7SUFDOUMsZ0JBQWdCLEVBQUU7UUFDaEIsa0JBQWtCLEVBQUUsdUJBQXVCO0tBQzVDO0NBQ0YsQ0FBQyxFQUFFO0lBQ0YsZUFBZSxFQUFFO1FBQ2YsRUFBRSxVQUFVLEVBQUUsS0FBSyxFQUFFO0tBQ3RCO0lBQ0QsVUFBVTtJQUNWLGlCQUFpQixFQUFFLGtDQUFpQixDQUFDLE1BQU07Q0FDNUMsQ0FBQyxDQUFDO0FBRUgsSUFBSSw2QkFBUyxDQUFDLEdBQUcsRUFBRSxzQkFBc0IsRUFBRTtJQUN6QyxTQUFTLEVBQUUsQ0FBQyxLQUFLLENBQUM7Q0FDbkIsQ0FBQyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0ICogYXMgcGF0aCBmcm9tICdwYXRoJztcbmltcG9ydCAqIGFzIGlhbSBmcm9tICdhd3MtY2RrLWxpYi9hd3MtaWFtJztcbmltcG9ydCAqIGFzIGxhbWJkYSBmcm9tICdhd3MtY2RrLWxpYi9hd3MtbGFtYmRhJztcbmltcG9ydCB7IEFwcCwgU3RhY2sgfSBmcm9tICdhd3MtY2RrLWxpYic7XG5pbXBvcnQgeyBJbnRlZ1Rlc3QgfSBmcm9tICdAYXdzLWNkay9pbnRlZy10ZXN0cy1hbHBoYSc7XG5pbXBvcnQgeyBBdXRob3JpemF0aW9uVHlwZSwgTW9ja0ludGVncmF0aW9uLCBQYXNzdGhyb3VnaEJlaGF2aW9yLCBSZXN0QXBpLCBUb2tlbkF1dGhvcml6ZXIgfSBmcm9tICdhd3MtY2RrLWxpYi9hd3MtYXBpZ2F0ZXdheSc7XG5cbi8qXG4gKiBTdGFjayB2ZXJpZmljYXRpb24gc3RlcHM6XG4gKiAqIGBjdXJsIC1zIC1vIC9kZXYvbnVsbCAtdyBcIiV7aHR0cF9jb2RlfVwiIDx1cmw+YCBzaG91bGQgcmV0dXJuIDQwMVxuICogKiBgY3VybCAtcyAtbyAvZGV2L251bGwgLXcgXCIle2h0dHBfY29kZX1cIiAtSCAnQXV0aG9yaXphdGlvbjogZGVueScgPHVybD5gIHNob3VsZCByZXR1cm4gNDAzXG4gKiAqIGBjdXJsIC1zIC1vIC9kZXYvbnVsbCAtdyBcIiV7aHR0cF9jb2RlfVwiIC1IICdBdXRob3JpemF0aW9uOiBhbGxvdycgPHVybD5gIHNob3VsZCByZXR1cm4gMjAwXG4gKi9cblxuY29uc3QgYXBwID0gbmV3IEFwcCgpO1xuY29uc3Qgc3RhY2sgPSBuZXcgU3RhY2soYXBwLCAnVG9rZW5BdXRob3JpemVySUFNUm9sZUludGVnJyk7XG5cbmNvbnN0IGF1dGhvcml6ZXJGbiA9IG5ldyBsYW1iZGEuRnVuY3Rpb24oc3RhY2ssICdNeUF1dGhvcml6ZXJGdW5jdGlvbicsIHtcbiAgcnVudGltZTogbGFtYmRhLlJ1bnRpbWUuTk9ERUpTXzE0X1gsXG4gIGhhbmRsZXI6ICdpbmRleC5oYW5kbGVyJyxcbiAgY29kZTogbGFtYmRhLkFzc2V0Q29kZS5mcm9tQXNzZXQocGF0aC5qb2luKF9fZGlybmFtZSwgJ2ludGVnLnRva2VuLWF1dGhvcml6ZXIuaGFuZGxlcicpKSxcbn0pO1xuXG5jb25zdCByb2xlID0gbmV3IGlhbS5Sb2xlKHN0YWNrLCAnYXV0aG9yaXplclJvbGUnLCB7XG4gIGFzc3VtZWRCeTogbmV3IGlhbS5TZXJ2aWNlUHJpbmNpcGFsKCdhcGlnYXRld2F5LmFtYXpvbmF3cy5jb20nKSxcbn0pO1xuXG5jb25zdCBhdXRob3JpemVyID0gbmV3IFRva2VuQXV0aG9yaXplcihzdGFjaywgJ015QXV0aG9yaXplcicsIHtcbiAgaGFuZGxlcjogYXV0aG9yaXplckZuLFxuICBhc3N1bWVSb2xlOiByb2xlLFxufSk7XG5cbmNvbnN0IHJlc3RhcGkgPSBuZXcgUmVzdEFwaShzdGFjaywgJ015UmVzdEFwaScsIHsgY2xvdWRXYXRjaFJvbGU6IHRydWUgfSk7XG5cbnJlc3RhcGkucm9vdC5hZGRNZXRob2QoJ0FOWScsIG5ldyBNb2NrSW50ZWdyYXRpb24oe1xuICBpbnRlZ3JhdGlvblJlc3BvbnNlczogW1xuICAgIHsgc3RhdHVzQ29kZTogJzIwMCcgfSxcbiAgXSxcbiAgcGFzc3Rocm91Z2hCZWhhdmlvcjogUGFzc3Rocm91Z2hCZWhhdmlvci5ORVZFUixcbiAgcmVxdWVzdFRlbXBsYXRlczoge1xuICAgICdhcHBsaWNhdGlvbi9qc29uJzogJ3sgXCJzdGF0dXNDb2RlXCI6IDIwMCB9JyxcbiAgfSxcbn0pLCB7XG4gIG1ldGhvZFJlc3BvbnNlczogW1xuICAgIHsgc3RhdHVzQ29kZTogJzIwMCcgfSxcbiAgXSxcbiAgYXV0aG9yaXplcixcbiAgYXV0aG9yaXphdGlvblR5cGU6IEF1dGhvcml6YXRpb25UeXBlLkNVU1RPTSxcbn0pO1xuXG5uZXcgSW50ZWdUZXN0KGFwcCwgJ2lhbS10b2tlbi1hdXRob3JpemVyJywge1xuICB0ZXN0Q2FzZXM6IFtzdGFja10sXG59KTtcbiJdfQ==

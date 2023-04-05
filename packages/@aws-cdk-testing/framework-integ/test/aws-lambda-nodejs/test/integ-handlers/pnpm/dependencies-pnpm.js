@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.handler = void 0;
+// eslint-disable-next-line import/no-extraneous-dependencies
+const axios_1 = require("axios");
+async function handler() {
+    await axios_1.default.get('https://www.google.com');
+}
+exports.handler = handler;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZGVwZW5kZW5jaWVzLXBucG0uanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJkZXBlbmRlbmNpZXMtcG5wbS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7QUFBQSw2REFBNkQ7QUFDN0QsaUNBQTBCO0FBRW5CLEtBQUssVUFBVSxPQUFPO0lBQzNCLE1BQU0sZUFBSyxDQUFDLEdBQUcsQ0FBQyx3QkFBd0IsQ0FBQyxDQUFDO0FBQzVDLENBQUM7QUFGRCwwQkFFQyIsInNvdXJjZXNDb250ZW50IjpbIi8vIGVzbGludC1kaXNhYmxlLW5leHQtbGluZSBpbXBvcnQvbm8tZXh0cmFuZW91cy1kZXBlbmRlbmNpZXNcbmltcG9ydCBheGlvcyBmcm9tICdheGlvcyc7XG5cbmV4cG9ydCBhc3luYyBmdW5jdGlvbiBoYW5kbGVyKCkge1xuICBhd2FpdCBheGlvcy5nZXQoJ2h0dHBzOi8vd3d3Lmdvb2dsZS5jb20nKTtcbn1cbiJdfQ==

@@ -1,6 +1,6 @@
-import * as iot from '@aws-cdk/aws-iot';
-import * as sqs from '@aws-cdk/aws-sqs';
-import * as cdk from '@aws-cdk/core';
+import * as iot from '@aws-cdk/aws-iot-alpha';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
 const app = new cdk.App();

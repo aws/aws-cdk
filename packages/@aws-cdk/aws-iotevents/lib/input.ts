@@ -1,7 +1,7 @@
-import * as iam from '@aws-cdk/aws-iam';
-import { Resource, IResource, Aws } from '@aws-cdk/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { Resource, IResource, Aws } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnInput } from './iotevents.generated';
+import { CfnInput } from 'aws-cdk-lib/aws-iotevents';
 
 /**
  * Represents an AWS IoT Events input.

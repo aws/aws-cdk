@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as path from 'path';
 import { setTimeout as _setTimeout } from 'timers';
 import { promisify } from 'util';

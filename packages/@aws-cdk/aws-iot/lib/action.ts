@@ -1,4 +1,4 @@
-import { CfnTopicRule } from './iot.generated';
+import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
 import { ITopicRule } from './topic-rule';
 
 /**

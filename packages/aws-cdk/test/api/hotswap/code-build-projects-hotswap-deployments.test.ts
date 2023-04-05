@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { CodeBuild } from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
 import { HotswapMode } from '../../../lib/api/hotswap/common';

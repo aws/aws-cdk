@@ -1,5 +1,5 @@
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import { IResource } from '@aws-cdk/core';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import { IResource } from 'aws-cdk-lib';
 
 /**
  * Represents a API Gateway HTTP/WebSocket API

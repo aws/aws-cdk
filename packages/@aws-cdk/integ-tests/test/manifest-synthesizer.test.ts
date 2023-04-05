@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { Manifest } from '@aws-cdk/cloud-assembly-schema';
-import { App, Stack } from '@aws-cdk/core';
-import { CloudAssemblyBuilder } from '@aws-cdk/cx-api';
+import { Manifest } from 'aws-cdk-lib/cloud-assembly-schema';
+import { App, Stack } from 'aws-cdk-lib';
+import { CloudAssemblyBuilder } from 'aws-cdk-lib/cx-api';
 import { IntegTestCase, IntegTest, IntegTestCaseStack } from '../lib';
 import { IntegManifestSynthesizer } from '../lib/manifest-synthesizer';
 import { IntegManifestWriter } from '../lib/manifest-writer';

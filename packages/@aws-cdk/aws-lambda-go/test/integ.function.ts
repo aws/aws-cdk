@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { App, Stack, StackProps } from '@aws-cdk/core';
+import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 

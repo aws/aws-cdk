@@ -1,7 +1,7 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import { IResource, RemovalPolicy, Resource } from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { IResource, RemovalPolicy, Resource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnClusterSubnetGroup } from './redshift.generated';
+import { CfnClusterSubnetGroup } from 'aws-cdk-lib/aws-redshift';
 
 /**
  * Interface for a cluster subnet group.

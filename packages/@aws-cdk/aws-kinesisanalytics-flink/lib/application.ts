@@ -1,9 +1,9 @@
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import { CfnApplicationCloudWatchLoggingOptionV2, CfnApplicationV2 } from '@aws-cdk/aws-kinesisanalytics';
-import * as logs from '@aws-cdk/aws-logs';
-import * as core from '@aws-cdk/core';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { CfnApplicationCloudWatchLoggingOptionV2, CfnApplicationV2 } from 'aws-cdk-lib/aws-kinesisanalytics';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as core from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ApplicationCode } from './application-code';
 import { environmentProperties } from './private/environment-properties';

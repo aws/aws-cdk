@@ -1,14 +1,14 @@
 import {
   CfnIdentityPoolRoleAttachment,
-} from '@aws-cdk/aws-cognito';
+} from 'aws-cdk-lib/aws-cognito';
 import {
   IRole,
-} from '@aws-cdk/aws-iam';
+} from 'aws-cdk-lib/aws-iam';
 import {
   Resource,
   IResource,
   Token,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
 import {
   Construct,
 } from 'constructs';

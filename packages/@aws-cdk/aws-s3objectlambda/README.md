@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
@@ -24,10 +18,10 @@
 This construct library allows you to define S3 object lambda access points.
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda';
-import * as cdk from '@aws-cdk/core';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda-alpha';
+import * as cdk from 'aws-cdk-lib';
 
 const stack = new cdk.Stack();
 const bucket = new s3.Bucket(stack, 'MyBucket');
@@ -51,10 +45,10 @@ new s3objectlambda.AccessPoint(stack, 'MyObjectLambda', {
 Lambdas are currently limited to only transforming `GetObject` requests. However, they can additionally support `GetObject-Range` and `GetObject-PartNumber` requests, which needs to be specified in the access point configuration:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda';
-import * as cdk from '@aws-cdk/core';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda-alpha';
+import * as cdk from 'aws-cdk-lib';
 
 const stack = new cdk.Stack();
 const bucket = new s3.Bucket(stack, 'MyBucket');
@@ -77,10 +71,10 @@ new s3objectlambda.AccessPoint(stack, 'MyObjectLambda', {
 You can specify an additional object that provides supplemental data to the Lambda function used to transform objects. The data is delivered as a JSON payload to the Lambda:
 
 ```ts
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda';
-import * as cdk from '@aws-cdk/core';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as s3objectlambda from '@aws-cdk/aws-s3objectlambda-alpha';
+import * as cdk from 'aws-cdk-lib';
 
 const stack = new cdk.Stack();
 const bucket = new s3.Bucket(stack, 'MyBucket');

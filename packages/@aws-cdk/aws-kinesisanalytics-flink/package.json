@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/aws-kinesisanalytics-flink",
+  "name": "@aws-cdk/aws-kinesisanalytics-flink-alpha",
   "version": "0.0.0",
   "description": "A CDK Construct Library for Kinesis Analytics Flink applications",
   "main": "lib/index.js",
@@ -8,24 +8,28 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.kinesisanalytics.flink",
+        "package": "software.amazon.awscdk.services.kinesisanalytics.flink.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "kinesisanalytics-flink"
+          "artifactId": "kinesisanalytics-flink-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Kinesisanalytics.Flink",
-        "packageId": "Amazon.CDK.AWS.KinesisAnalyticsFlink",
+        "namespace": "Amazon.CDK.AWS.Kinesisanalytics.Flink.Alpha",
+        "packageId": "Amazon.CDK.AWS.KinesisAnalyticsFlink.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-kinesisanalytics-flink",
-        "module": "aws_cdk.aws_kinesisanalytics_flink",
+        "distName": "aws-cdk.aws-kinesisanalytics-flink-alpha",
+        "module": "aws_cdk.aws_kinesisanalytics_flink_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkkinesisanalyticsflinkalpha"
       }
     },
     "projectReferences": true,
@@ -73,41 +77,19 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
-    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "aws-cdk-lib": "0.0.0",
+    "constructs": "^10.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0"
   },
-  "dependencies": {
-    "@aws-cdk/assets": "0.0.0",
-    "@aws-cdk/aws-cloudwatch": "0.0.0",
-    "@aws-cdk/aws-ec2": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-kinesisanalytics": "0.0.0",
-    "@aws-cdk/aws-kms": "0.0.0",
-    "@aws-cdk/aws-logs": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/aws-s3-assets": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
-    "constructs": "^10.0.0"
-  },
+  "dependencies": {},
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/assets": "0.0.0",
-    "@aws-cdk/aws-cloudwatch": "0.0.0",
-    "@aws-cdk/aws-ec2": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-kinesisanalytics": "0.0.0",
-    "@aws-cdk/aws-kms": "0.0.0",
-    "@aws-cdk/aws-logs": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/aws-s3-assets": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -115,8 +97,7 @@
   },
   "awslint": {
     "exclude": [
-      "props-physical-name:@aws-cdk/aws-kinesisanalytics-flink.ApplicationProps",
-      "no-unused-type:@aws-cdk/aws-kinesisanalytics-flink.PropertyGroups"
+      "*:*"
     ]
   },
   "stability": "experimental",
@@ -130,7 +111,13 @@
     }
   },
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
   },
-  "private": true
+  "private": false,
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
+  }
 }

@@ -1,4 +1,4 @@
-import { Duration } from '@aws-cdk/core';
+import { Duration } from 'aws-cdk-lib';
 
 /**
  * Schedule for canary runs

@@ -1,0 +1,2 @@
+!test/verify/**/*.js
+!test/integ-assets/**/*.js

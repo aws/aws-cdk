@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { Template } from '@aws-cdk/assertions';
-import { Code, Runtime } from '@aws-cdk/aws-lambda';
-import { AssetHashType, DockerImage, Stack } from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import { Code, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { AssetHashType, DockerImage, Stack } from 'aws-cdk-lib';
 import { PythonFunction } from '../lib';
 import { Bundling, BundlingProps } from '../lib/bundling';
 

@@ -1,10 +1,10 @@
-import { Template } from '@aws-cdk/assertions';
-import * as acmpca from '@aws-cdk/aws-acmpca';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as kms from '@aws-cdk/aws-kms';
-import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as core from '@aws-cdk/core';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as acmpca from 'aws-cdk-lib/aws-acmpca';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as core from 'aws-cdk-lib';
 import * as msk from '../lib';
 
 /* eslint-disable quote-props */

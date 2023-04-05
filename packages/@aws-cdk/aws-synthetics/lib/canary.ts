@@ -1,15 +1,15 @@
 import * as crypto from 'crypto';
-import { Metric, MetricOptions, MetricProps } from '@aws-cdk/aws-cloudwatch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
+import { Metric, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Code } from './code';
 import { Runtime } from './runtime';
 import { Schedule } from './schedule';
-import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
-import { CfnCanary } from './synthetics.generated';
+import { CloudWatchSyntheticsMetrics } from 'aws-cdk-lib/aws-synthetics/lib/synthetics-canned-metrics.generated';
+import { CfnCanary } from 'aws-cdk-lib/aws-synthetics';
 
 /**
  * Specify a test that the canary should run

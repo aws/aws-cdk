@@ -1,4 +1,4 @@
-import { ArnFormat, CfnResource, CustomResource, Lazy, Stack, Aspects, CfnOutput } from '@aws-cdk/core';
+import { ArnFormat, CfnResource, CustomResource, Lazy, Stack, Aspects, CfnOutput } from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
 import { ApiCallBase, IApiCall } from './api-call-base';
 import { ExpectedResult } from './common';

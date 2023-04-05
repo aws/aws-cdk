@@ -1,6 +1,6 @@
 import * as path from 'path';
-import * as assets from '@aws-cdk/aws-ecr-assets';
-import * as cdk from '@aws-cdk/core';
+import * as assets from 'aws-cdk-lib/aws-ecr-assets';
+import * as cdk from 'aws-cdk-lib';
 import { Service, Source } from '../lib';
 
 

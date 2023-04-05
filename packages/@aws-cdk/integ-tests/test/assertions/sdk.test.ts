@@ -1,5 +1,5 @@
-import { Template, Match } from '@aws-cdk/assertions';
-import { App, CfnOutput, Duration } from '@aws-cdk/core';
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import { App, CfnOutput, Duration } from 'aws-cdk-lib';
 import { LogType, InvocationType, ExpectedResult } from '../../lib/assertions';
 import { DeployAssert } from '../../lib/assertions/private/deploy-assert';
 

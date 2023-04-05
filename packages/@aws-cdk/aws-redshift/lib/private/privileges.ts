@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { DatabaseQuery } from './database-query';
 import { HandlerName } from './database-query-provider/handler-name';

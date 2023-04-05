@@ -1,0 +1,36 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
+const aws_lambda_1 = require("aws-cdk-lib/aws-lambda");
+const cdk = require("aws-cdk-lib");
+const integ_tests_alpha_1 = require("@aws-cdk/integ-tests-alpha");
+const lambda = require("aws-cdk-lib/aws-lambda-nodejs");
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'TestStack');
+const handler = new lambda.NodejsFunction(stack, 'Function', {
+    entry: path.join(__dirname, 'integ-handlers/pnpm/dependencies-pnpm.ts'),
+    runtime: aws_lambda_1.Runtime.NODEJS_18_X,
+    bundling: {
+        minify: true,
+        // Will be installed, not bundled
+        // (axios is a package with sub-dependencies,
+        // will be used to ensure pnpm bundling works as expected)
+        nodeModules: ['axios'],
+        forceDockerBundling: true,
+    },
+    depsLockFilePath: path.join(__dirname, 'integ-handlers/pnpm/pnpm-lock.yaml'),
+});
+const integ = new integ_tests_alpha_1.IntegTest(app, 'PnpmTest', {
+    testCases: [stack],
+    stackUpdateWorkflow: false, // this will tell the runner to not check in assets.
+});
+const response = integ.assertions.invokeFunction({
+    functionName: handler.functionName,
+});
+response.expect(integ_tests_alpha_1.ExpectedResult.objectLike({
+    // expect invoking without error
+    StatusCode: 200,
+    ExecutedVersion: '$LATEST',
+    Payload: 'null',
+}));
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuZGVwZW5kZW5jaWVzLXBucG0uanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbnRlZy5kZXBlbmRlbmNpZXMtcG5wbS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLDZCQUE2QjtBQUM3Qix1REFBaUQ7QUFDakQsbUNBQW1DO0FBQ25DLGtFQUF1RTtBQUN2RSx3REFBd0Q7QUFFeEQsTUFBTSxHQUFHLEdBQUcsSUFBSSxHQUFHLENBQUMsR0FBRyxFQUFFLENBQUM7QUFFMUIsTUFBTSxLQUFLLEdBQUcsSUFBSSxHQUFHLENBQUMsS0FBSyxDQUFDLEdBQUcsRUFBRSxXQUFXLENBQUMsQ0FBQztBQUU5QyxNQUFNLE9BQU8sR0FBRyxJQUFJLE1BQU0sQ0FBQyxjQUFjLENBQUMsS0FBSyxFQUFFLFVBQVUsRUFBRTtJQUMzRCxLQUFLLEVBQUUsSUFBSSxDQUFDLElBQUksQ0FBQyxTQUFTLEVBQUUsMENBQTBDLENBQUM7SUFDdkUsT0FBTyxFQUFFLG9CQUFPLENBQUMsV0FBVztJQUM1QixRQUFRLEVBQUU7UUFDUixNQUFNLEVBQUUsSUFBSTtRQUNaLGlDQUFpQztRQUNqQyw2Q0FBNkM7UUFDN0MsMERBQTBEO1FBQzFELFdBQVcsRUFBRSxDQUFDLE9BQU8sQ0FBQztRQUN0QixtQkFBbUIsRUFBRSxJQUFJO0tBQzFCO0lBQ0QsZ0JBQWdCLEVBQUUsSUFBSSxDQUFDLElBQUksQ0FBQyxTQUFTLEVBQUUsb0NBQW9DLENBQUM7Q0FDN0UsQ0FBQyxDQUFDO0FBRUgsTUFBTSxLQUFLLEdBQUcsSUFBSSw2QkFBUyxDQUFDLEdBQUcsRUFBRSxVQUFVLEVBQUU7SUFDM0MsU0FBUyxFQUFFLENBQUMsS0FBSyxDQUFDO0lBQ2xCLG1CQUFtQixFQUFFLEtBQUssRUFBRSxvREFBb0Q7Q0FDakYsQ0FBQyxDQUFDO0FBR0gsTUFBTSxRQUFRLEdBQUcsS0FBSyxDQUFDLFVBQVUsQ0FBQyxjQUFjLENBQUM7SUFDL0MsWUFBWSxFQUFFLE9BQU8sQ0FBQyxZQUFZO0NBQ25DLENBQUMsQ0FBQztBQUNILFFBQVEsQ0FBQyxNQUFNLENBQUMsa0NBQWMsQ0FBQyxVQUFVLENBQUM7SUFDeEMsZ0NBQWdDO0lBQ2hDLFVBQVUsRUFBRSxHQUFHO0lBQ2YsZUFBZSxFQUFFLFNBQVM7SUFDMUIsT0FBTyxFQUFFLE1BQU07Q0FDaEIsQ0FBQyxDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBwYXRoIGZyb20gJ3BhdGgnO1xuaW1wb3J0IHsgUnVudGltZSB9IGZyb20gJ2F3cy1jZGstbGliL2F3cy1sYW1iZGEnO1xuaW1wb3J0ICogYXMgY2RrIGZyb20gJ2F3cy1jZGstbGliJztcbmltcG9ydCB7IEV4cGVjdGVkUmVzdWx0LCBJbnRlZ1Rlc3QgfSBmcm9tICdAYXdzLWNkay9pbnRlZy10ZXN0cy1hbHBoYSc7XG5pbXBvcnQgKiBhcyBsYW1iZGEgZnJvbSAnYXdzLWNkay1saWIvYXdzLWxhbWJkYS1ub2RlanMnO1xuXG5jb25zdCBhcHAgPSBuZXcgY2RrLkFwcCgpO1xuXG5jb25zdCBzdGFjayA9IG5ldyBjZGsuU3RhY2soYXBwLCAnVGVzdFN0YWNrJyk7XG5cbmNvbnN0IGhhbmRsZXIgPSBuZXcgbGFtYmRhLk5vZGVqc0Z1bmN0aW9uKHN0YWNrLCAnRnVuY3Rpb24nLCB7XG4gIGVudHJ5OiBwYXRoLmpvaW4oX19kaXJuYW1lLCAnaW50ZWctaGFuZGxlcnMvcG5wbS9kZXBlbmRlbmNpZXMtcG5wbS50cycpLFxuICBydW50aW1lOiBSdW50aW1lLk5PREVKU18xOF9YLFxuICBidW5kbGluZzoge1xuICAgIG1pbmlmeTogdHJ1ZSxcbiAgICAvLyBXaWxsIGJlIGluc3RhbGxlZCwgbm90IGJ1bmRsZWRcbiAgICAvLyAoYXhpb3MgaXMgYSBwYWNrYWdlIHdpdGggc3ViLWRlcGVuZGVuY2llcyxcbiAgICAvLyB3aWxsIGJlIHVzZWQgdG8gZW5zdXJlIHBucG0gYnVuZGxpbmcgd29ya3MgYXMgZXhwZWN0ZWQpXG4gICAgbm9kZU1vZHVsZXM6IFsnYXhpb3MnXSxcbiAgICBmb3JjZURvY2tlckJ1bmRsaW5nOiB0cnVlLFxuICB9LFxuICBkZXBzTG9ja0ZpbGVQYXRoOiBwYXRoLmpvaW4oX19kaXJuYW1lLCAnaW50ZWctaGFuZGxlcnMvcG5wbS9wbnBtLWxvY2sueWFtbCcpLFxufSk7XG5cbmNvbnN0IGludGVnID0gbmV3IEludGVnVGVzdChhcHAsICdQbnBtVGVzdCcsIHtcbiAgdGVzdENhc2VzOiBbc3RhY2tdLFxuICBzdGFja1VwZGF0ZVdvcmtmbG93OiBmYWxzZSwgLy8gdGhpcyB3aWxsIHRlbGwgdGhlIHJ1bm5lciB0byBub3QgY2hlY2sgaW4gYXNzZXRzLlxufSk7XG5cblxuY29uc3QgcmVzcG9uc2UgPSBpbnRlZy5hc3NlcnRpb25zLmludm9rZUZ1bmN0aW9uKHtcbiAgZnVuY3Rpb25OYW1lOiBoYW5kbGVyLmZ1bmN0aW9uTmFtZSxcbn0pO1xucmVzcG9uc2UuZXhwZWN0KEV4cGVjdGVkUmVzdWx0Lm9iamVjdExpa2Uoe1xuICAvLyBleHBlY3QgaW52b2tpbmcgd2l0aG91dCBlcnJvclxuICBTdGF0dXNDb2RlOiAyMDAsXG4gIEV4ZWN1dGVkVmVyc2lvbjogJyRMQVRFU1QnLFxuICBQYXlsb2FkOiAnbnVsbCcsXG59KSk7XG4iXX0=

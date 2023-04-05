@@ -1,8 +1,8 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import { Connections } from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { Connections } from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnVpcConnector } from './apprunner.generated';
+import { CfnVpcConnector } from 'aws-cdk-lib/aws-apprunner';
 
 /**
  * Properties of the AppRunner VPC Connector

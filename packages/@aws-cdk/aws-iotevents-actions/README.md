@@ -33,8 +33,8 @@ Currently supported are:
 The code snippet below creates an Action that creates the timer with duration in seconds.
 
 ```ts
-import * as iotevents from '@aws-cdk/aws-iotevents';
-import * as actions from '@aws-cdk/aws-iotevents-actions';
+import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
+import * as actions from '@aws-cdk/aws-iotevents-actions-alpha';
 
 declare const input: iotevents.IInput;
 
@@ -102,8 +102,8 @@ The code snippet below creates an Action that set variable to detector instance
 when it is triggered.
 
 ```ts
-import * as iotevents from '@aws-cdk/aws-iotevents';
-import * as actions from '@aws-cdk/aws-iotevents-actions';
+import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
+import * as actions from '@aws-cdk/aws-iotevents-actions-alpha';
 
 declare const input: iotevents.IInput;
 
@@ -128,9 +128,9 @@ The code snippet below creates an Action that invoke a Lambda function
 when it is triggered.
 
 ```ts
-import * as iotevents from '@aws-cdk/aws-iotevents';
-import * as actions from '@aws-cdk/aws-iotevents-actions';
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
+import * as actions from '@aws-cdk/aws-iotevents-actions-alpha';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 declare const input: iotevents.IInput;
 declare const func: lambda.IFunction;

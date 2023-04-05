@@ -1,0 +1,1 @@
+export * from './lakeformation.generated';

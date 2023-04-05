@@ -1,4 +1,4 @@
-import { Token } from '@aws-cdk/core';
+import { Token } from 'aws-cdk-lib';
 
 /**
  * Connection endpoint of a neptune cluster or instance

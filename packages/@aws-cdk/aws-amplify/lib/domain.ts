@@ -1,7 +1,7 @@
-import * as iam from '@aws-cdk/aws-iam';
-import { Lazy, Resource, IResolvable } from '@aws-cdk/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { Lazy, Resource, IResolvable } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnDomain } from './amplify.generated';
+import { CfnDomain } from 'aws-cdk-lib/aws-amplify';
 import { IApp } from './app';
 import { IBranch } from './branch';
 

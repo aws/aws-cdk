@@ -1,7 +1,7 @@
-import * as iam from '@aws-cdk/aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '@aws-cdk/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnPlaceIndex } from './location.generated';
+import { CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
 
 /**
  * A Place Index

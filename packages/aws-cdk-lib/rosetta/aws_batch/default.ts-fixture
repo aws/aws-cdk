@@ -1,0 +1,15 @@
+// Fixture with packages imported, but nothing else
+import { Construct } from 'constructs';
+import { Stack } from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as batch from 'aws-cdk-lib/aws-batch';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}

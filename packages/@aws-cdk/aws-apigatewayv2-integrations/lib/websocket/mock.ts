@@ -3,7 +3,7 @@ import {
   WebSocketIntegrationType,
   WebSocketRouteIntegrationConfig,
   WebSocketRouteIntegrationBindOptions,
-} from '@aws-cdk/aws-apigatewayv2';
+} from '@aws-cdk/aws-apigatewayv2-alpha';
 
 /**
  * Mock WebSocket Integration

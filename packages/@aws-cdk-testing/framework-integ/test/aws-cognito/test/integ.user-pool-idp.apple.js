@@ -1,0 +1,38 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+const aws_cognito_1 = require("aws-cdk-lib/aws-cognito");
+/*
+ * Stack verification steps
+ * * Visit the URL provided by stack output 'SignInLink' in a browser, and verify the 'Sign In With Apple' link shows up.
+ * * If you plug in valid 'Sign In With Apple' credentials, the federated log in should work.
+ */
+const app = new aws_cdk_lib_1.App();
+const stack = new aws_cdk_lib_1.Stack(app, 'integ-user-pool-idp-apple');
+const userpool = new aws_cognito_1.UserPool(stack, 'pool', {
+    removalPolicy: aws_cdk_lib_1.RemovalPolicy.DESTROY,
+});
+new aws_cognito_1.UserPoolIdentityProviderApple(stack, 'apple', {
+    userPool: userpool,
+    clientId: 'com.amzn.cdk',
+    teamId: 'CDKTEAMCDK',
+    keyId: 'CDKKEYCDK1',
+    privateKey: 'PRIV_KEY_CDK',
+    scopes: ['email', 'name'],
+    attributeMapping: {
+        familyName: aws_cognito_1.ProviderAttribute.APPLE_LAST_NAME,
+        givenName: aws_cognito_1.ProviderAttribute.APPLE_FIRST_NAME,
+    },
+});
+const client = userpool.addClient('client');
+const domain = userpool.addDomain('domain', {
+    cognitoDomain: {
+        domainPrefix: 'nija-test-pool',
+    },
+});
+new aws_cdk_lib_1.CfnOutput(stack, 'SignInLink', {
+    value: domain.signInUrl(client, {
+        redirectUri: 'https://example.com',
+    }),
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcudXNlci1wb29sLWlkcC5hcHBsZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImludGVnLnVzZXItcG9vbC1pZHAuYXBwbGUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSw2Q0FBbUU7QUFDbkUseURBQXFHO0FBRXJHOzs7O0dBSUc7QUFDSCxNQUFNLEdBQUcsR0FBRyxJQUFJLGlCQUFHLEVBQUUsQ0FBQztBQUN0QixNQUFNLEtBQUssR0FBRyxJQUFJLG1CQUFLLENBQUMsR0FBRyxFQUFFLDJCQUEyQixDQUFDLENBQUM7QUFFMUQsTUFBTSxRQUFRLEdBQUcsSUFBSSxzQkFBUSxDQUFDLEtBQUssRUFBRSxNQUFNLEVBQUU7SUFDM0MsYUFBYSxFQUFFLDJCQUFhLENBQUMsT0FBTztDQUNyQyxDQUFDLENBQUM7QUFFSCxJQUFJLDJDQUE2QixDQUFDLEtBQUssRUFBRSxPQUFPLEVBQUU7SUFDaEQsUUFBUSxFQUFFLFFBQVE7SUFDbEIsUUFBUSxFQUFFLGNBQWM7SUFDeEIsTUFBTSxFQUFFLFlBQVk7SUFDcEIsS0FBSyxFQUFFLFlBQVk7SUFDbkIsVUFBVSxFQUFFLGNBQWM7SUFDMUIsTUFBTSxFQUFFLENBQUMsT0FBTyxFQUFFLE1BQU0sQ0FBQztJQUN6QixnQkFBZ0IsRUFBRTtRQUNoQixVQUFVLEVBQUUsK0JBQWlCLENBQUMsZUFBZTtRQUM3QyxTQUFTLEVBQUUsK0JBQWlCLENBQUMsZ0JBQWdCO0tBQzlDO0NBQ0YsQ0FBQyxDQUFDO0FBRUgsTUFBTSxNQUFNLEdBQUcsUUFBUSxDQUFDLFNBQVMsQ0FBQyxRQUFRLENBQUMsQ0FBQztBQUU1QyxNQUFNLE1BQU0sR0FBRyxRQUFRLENBQUMsU0FBUyxDQUFDLFFBQVEsRUFBRTtJQUMxQyxhQUFhLEVBQUU7UUFDYixZQUFZLEVBQUUsZ0JBQWdCO0tBQy9CO0NBQ0YsQ0FBQyxDQUFDO0FBRUgsSUFBSSx1QkFBUyxDQUFDLEtBQUssRUFBRSxZQUFZLEVBQUU7SUFDakMsS0FBSyxFQUFFLE1BQU0sQ0FBQyxTQUFTLENBQUMsTUFBTSxFQUFFO1FBQzlCLFdBQVcsRUFBRSxxQkFBcUI7S0FDbkMsQ0FBQztDQUNILENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCB7IEFwcCwgQ2ZuT3V0cHV0LCBSZW1vdmFsUG9saWN5LCBTdGFjayB9IGZyb20gJ2F3cy1jZGstbGliJztcbmltcG9ydCB7IFByb3ZpZGVyQXR0cmlidXRlLCBVc2VyUG9vbCwgVXNlclBvb2xJZGVudGl0eVByb3ZpZGVyQXBwbGUgfSBmcm9tICdhd3MtY2RrLWxpYi9hd3MtY29nbml0byc7XG5cbi8qXG4gKiBTdGFjayB2ZXJpZmljYXRpb24gc3RlcHNcbiAqICogVmlzaXQgdGhlIFVSTCBwcm92aWRlZCBieSBzdGFjayBvdXRwdXQgJ1NpZ25JbkxpbmsnIGluIGEgYnJvd3NlciwgYW5kIHZlcmlmeSB0aGUgJ1NpZ24gSW4gV2l0aCBBcHBsZScgbGluayBzaG93cyB1cC5cbiAqICogSWYgeW91IHBsdWcgaW4gdmFsaWQgJ1NpZ24gSW4gV2l0aCBBcHBsZScgY3JlZGVudGlhbHMsIHRoZSBmZWRlcmF0ZWQgbG9nIGluIHNob3VsZCB3b3JrLlxuICovXG5jb25zdCBhcHAgPSBuZXcgQXBwKCk7XG5jb25zdCBzdGFjayA9IG5ldyBTdGFjayhhcHAsICdpbnRlZy11c2VyLXBvb2wtaWRwLWFwcGxlJyk7XG5cbmNvbnN0IHVzZXJwb29sID0gbmV3IFVzZXJQb29sKHN0YWNrLCAncG9vbCcsIHtcbiAgcmVtb3ZhbFBvbGljeTogUmVtb3ZhbFBvbGljeS5ERVNUUk9ZLFxufSk7XG5cbm5ldyBVc2VyUG9vbElkZW50aXR5UHJvdmlkZXJBcHBsZShzdGFjaywgJ2FwcGxlJywge1xuICB1c2VyUG9vbDogdXNlcnBvb2wsXG4gIGNsaWVudElkOiAnY29tLmFtem4uY2RrJyxcbiAgdGVhbUlkOiAnQ0RLVEVBTUNESycsXG4gIGtleUlkOiAnQ0RLS0VZQ0RLMScsXG4gIHByaXZhdGVLZXk6ICdQUklWX0tFWV9DREsnLFxuICBzY29wZXM6IFsnZW1haWwnLCAnbmFtZSddLFxuICBhdHRyaWJ1dGVNYXBwaW5nOiB7XG4gICAgZmFtaWx5TmFtZTogUHJvdmlkZXJBdHRyaWJ1dGUuQVBQTEVfTEFTVF9OQU1FLFxuICAgIGdpdmVuTmFtZTogUHJvdmlkZXJBdHRyaWJ1dGUuQVBQTEVfRklSU1RfTkFNRSxcbiAgfSxcbn0pO1xuXG5jb25zdCBjbGllbnQgPSB1c2VycG9vbC5hZGRDbGllbnQoJ2NsaWVudCcpO1xuXG5jb25zdCBkb21haW4gPSB1c2VycG9vbC5hZGREb21haW4oJ2RvbWFpbicsIHtcbiAgY29nbml0b0RvbWFpbjoge1xuICAgIGRvbWFpblByZWZpeDogJ25pamEtdGVzdC1wb29sJyxcbiAgfSxcbn0pO1xuXG5uZXcgQ2ZuT3V0cHV0KHN0YWNrLCAnU2lnbkluTGluaycsIHtcbiAgdmFsdWU6IGRvbWFpbi5zaWduSW5VcmwoY2xpZW50LCB7XG4gICAgcmVkaXJlY3RVcmk6ICdodHRwczovL2V4YW1wbGUuY29tJyxcbiAgfSksXG59KTsiXX0=

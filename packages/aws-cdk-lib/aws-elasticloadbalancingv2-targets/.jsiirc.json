@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.elasticloadbalancingv2.targets"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ElasticLoadBalancingV2.Targets"
+    },
+    "python": {
+      "module": "aws_cdk.aws_elasticloadbalancingv2_targets"
+    }
+  }
+}

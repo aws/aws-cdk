@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IApplication } from './application';
 import { CheckedStageStackAssociator } from './aspects/stack-associator';

@@ -1,0 +1,20 @@
+{
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": { 
+          "Fn::Sub": [ 
+            "${AnotherBucket}", 
+            { 
+              "AnotherBucket": { "Ref" : "AnotherBucket" }
+            } 
+          ]
+        }
+      }
+    },
+    "AnotherBucket": {
+      "Type": "AWS::S3::Bucket"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import { Construct, IDependable } from 'constructs';
-import { CfnDeliveryStream } from './kinesisfirehose.generated';
+import { CfnDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 
 /**
  * A Kinesis Data Firehose delivery stream destination configuration.

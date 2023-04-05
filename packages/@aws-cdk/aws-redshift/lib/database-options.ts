@@ -1,4 +1,4 @@
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { ICluster } from './cluster';
 
 /**

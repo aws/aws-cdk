@@ -1,8 +1,8 @@
-import { Template, Match } from '@aws-cdk/assertions';
-import * as iam from '@aws-cdk/aws-iam';
-import * as iot from '@aws-cdk/aws-iot';
-import * as firehose from '@aws-cdk/aws-kinesisfirehose';
-import * as cdk from '@aws-cdk/core';
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as iot from '@aws-cdk/aws-iot-alpha';
+import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
 test('Default firehose stream action', () => {

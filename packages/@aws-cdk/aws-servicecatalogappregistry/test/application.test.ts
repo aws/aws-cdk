@@ -1,6 +1,6 @@
-import { Annotations, Template } from '@aws-cdk/assertions';
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import { Annotations, Template } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as appreg from '../lib';
 

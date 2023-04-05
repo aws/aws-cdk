@@ -1,5 +1,5 @@
-import { WebSocketApi, WebSocketStage } from '@aws-cdk/aws-apigatewayv2';
-import { App, CfnOutput, Stack } from '@aws-cdk/core';
+import { WebSocketApi, WebSocketStage } from '@aws-cdk/aws-apigatewayv2-alpha';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { WebSocketMockIntegration } from '../../lib';
 
 /*

@@ -1,6 +1,6 @@
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as cdk from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as cdk from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as apprunner from '../lib';
 
 const app = new cdk.App();

@@ -1,8 +1,8 @@
-import * as kms from '@aws-cdk/aws-kms';
-import * as cdk from '@aws-cdk/core';
-import { Lazy, Names } from '@aws-cdk/core';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as cdk from 'aws-cdk-lib';
+import { Lazy, Names } from 'aws-cdk-lib';
 import * as constructs from 'constructs';
-import { CfnSecurityConfiguration } from './glue.generated';
+import { CfnSecurityConfiguration } from 'aws-cdk-lib/aws-glue';
 
 /**
  * Interface representing a created or an imported `SecurityConfiguration`.

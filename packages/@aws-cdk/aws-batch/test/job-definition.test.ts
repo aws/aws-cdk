@@ -1,12 +1,12 @@
 import { throws } from 'assert';
-import { Match, Template } from '@aws-cdk/assertions';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecr from '@aws-cdk/aws-ecr';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as iam from '@aws-cdk/aws-iam';
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as ssm from '@aws-cdk/aws-ssm';
-import * as cdk from '@aws-cdk/core';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as cdk from 'aws-cdk-lib';
 import * as batch from '../lib';
 import { PlatformCapabilities } from '../lib';
 

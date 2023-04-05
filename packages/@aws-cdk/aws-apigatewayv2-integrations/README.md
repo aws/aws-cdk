@@ -41,7 +41,7 @@ proxy integrations](https://docs.aws.amazon.com/apigateway/latest/developerguide
 The following code configures a route `GET /books` with a Lambda proxy integration.
 
 ```ts
-import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 declare const booksDefaultFn: lambda.Function;
 const booksIntegration = new HttpLambdaIntegration('BooksIntegration', booksDefaultFn);
@@ -66,7 +66,7 @@ The following code configures a route `GET /books` with an HTTP proxy integratio
 `get-books-proxy.example.com`.
 
 ```ts
-import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 const booksIntegration = new HttpUrlIntegration('BooksIntegration', 'https://get-books-proxy.example.com');
 
@@ -92,7 +92,7 @@ The following integrations are supported for private resources in a VPC.
 The following code is a basic application load balancer private integration of HTTP API:
 
 ```ts
-import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 const vpc = new ec2.Vpc(this, 'VPC');
 const lb = new elbv2.ApplicationLoadBalancer(this, 'lb', { vpc });
@@ -113,7 +113,7 @@ When an imported load balancer is used, the `vpc` option must be specified for `
 The following code is a basic network load balancer private integration of HTTP API:
 
 ```ts
-import { HttpNlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpNlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 const vpc = new ec2.Vpc(this, 'VPC');
 const lb = new elbv2.NetworkLoadBalancer(this, 'lb', { vpc });
@@ -134,8 +134,8 @@ When an imported load balancer is used, the `vpc` option must be specified for `
 The following code is a basic discovery service private integration of HTTP API:
 
 ```ts
-import * as servicediscovery from '@aws-cdk/aws-servicediscovery';
-import { HttpServiceDiscoveryIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import * as servicediscovery from 'aws-cdk-lib/aws-servicediscovery';
+import { HttpServiceDiscoveryIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 const vpc = new ec2.Vpc(this, 'VPC');
 const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
@@ -161,7 +161,7 @@ responses](https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api
 The following example creates a new header - `header2` - as a copy of `header1` and removes `header1`.
 
 ```ts
-import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 declare const lb: elbv2.ApplicationLoadBalancer;
 const listener = lb.addListener('listener', { port: 80 });
@@ -181,7 +181,7 @@ const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
 To add mapping keys and values not yet supported by the CDK, use the `custom()` method:
 
 ```ts
-import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpAlbIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 declare const lb: elbv2.ApplicationLoadBalancer;
 const listener = lb.addListener('listener', { port: 80 });
@@ -211,7 +211,7 @@ The API Gateway service will invoke the lambda function with an event payload of
 The following code configures a `sendmessage` route with a Lambda integration
 
 ```ts
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
 new apigwv2.WebSocketStage(this, 'mystage', {

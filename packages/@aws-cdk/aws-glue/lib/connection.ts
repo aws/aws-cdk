@@ -1,7 +1,7 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as cdk from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as cdk from 'aws-cdk-lib';
 import * as constructs from 'constructs';
-import { CfnConnection } from './glue.generated';
+import { CfnConnection } from 'aws-cdk-lib/aws-glue';
 
 /**
  * The type of the glue connection
