@@ -138,6 +138,7 @@ export class VpcNetworkContextProviderPlugin implements ContextProviderPlugin {
     return {
       vpcId,
       vpcCidrBlock: vpc.CidrBlock!,
+      ownerAccountId: vpc.OwnerId,
       availabilityZones: grouped.azs,
       isolatedSubnetIds: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.subnets.map(s => s.subnetId))),
       isolatedSubnetNames: collapse(flatMap(findGroups(SubnetType.Isolated, grouped), group => group.name ? [group.name] : [])),

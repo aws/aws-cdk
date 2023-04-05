@@ -68,4 +68,11 @@ export interface VpcLookupOptions {
    * @default true
    */
   readonly returnVpnGateways?: boolean;
+
+  /**
+   * The ID of the AWS account that owns the VPC
+   *
+   * @default the account id of the parent stack
+   */
+  readonly ownerAccountId?: string;
 }

@@ -168,4 +168,11 @@ export interface VpcContextResponse {
    * @default - Region of the parent stack
    */
   readonly region?: string;
+
+  /**
+   * The ID of the AWS account that owns the VPC.
+   *
+   * @default the account id of the parent stack
+   */
+  readonly ownerAccountId?: string;
 }
