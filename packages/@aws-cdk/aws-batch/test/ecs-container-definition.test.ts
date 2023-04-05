@@ -1,5 +1,6 @@
 
 import { Template } from 'aws-cdk-lib/assertions';
+import * as path from 'path';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as efs from 'aws-cdk-lib/aws-efs';
@@ -645,6 +646,30 @@ describe('EC2 containers', () => {
             Value: '12',
           },
         ],
+      },
+    });
+  });
+
+  test('can use an assset as a container', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsEc2ContainerDefinition(stack, 'EcsEc2Container', {
+        ...defaultContainerProps,
+        image: ecs.ContainerImage.fromAsset(
+          path.join(__dirname, 'batchjob-image'),
+        ),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Image: {
+          'Fn::Sub': '${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:8b518243ecbfcfd08b4734069e7e74ff97b7889dfde0a60d16e7bdc96e6c593b',
+        },
+        ExecutionRoleArn: { 'Fn::GetAtt': ['EcsEc2ContainerExecutionRole90E18680', 'Arn'] },
       },
     });
   });
