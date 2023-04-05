@@ -100,7 +100,7 @@ time, you can execute the following to build it and it's dependencies.
 
 ```console
 $ cd packages/aws-cdk-lib
-$ ../../../scripts/buildup
+$ ../../scripts/buildup
 ```
 
 Note: The `buildup` command is resumable. If your build fails, you can fix the issue and run `buildup --resume` to
@@ -143,7 +143,7 @@ To package a specific module, say the `aws-cdk-lib` module:
 $ cd <root-of-cdk-repo>
 $ docker run --rm --net=host -it -v $PWD:$PWD -w $PWD jsii/superchain:1-buster-slim
 docker$ cd packages/aws-cdk-lib
-docker$ ../../../scripts/foreach.sh --up yarn run package
+docker$ ../../scripts/foreach.sh --up yarn run package
 docker$ exit
 ```
 
