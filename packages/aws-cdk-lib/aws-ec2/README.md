@@ -1060,7 +1060,7 @@ new ec2.Instance(this, 'Instance4', {
   vpc,
   instanceType,
   machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2022,
+    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
   }),
 });
 
