@@ -415,7 +415,7 @@ abstract class ServerlessClusterNew extends ServerlessClusterBase {
     const clusterParameterGroupConfig = clusterParameterGroup?.bindToCluster({});
 
 
-    const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER)
+    const clusterIdentifier = FeatureFlags.of(this).isEnabled(cxapi.RDS_LOWERCASE_DB_IDENTIFIER) && !Token.isUnresolved(props.clusterIdentifier)
       ? props.clusterIdentifier?.toLowerCase()
       : props.clusterIdentifier;
 
