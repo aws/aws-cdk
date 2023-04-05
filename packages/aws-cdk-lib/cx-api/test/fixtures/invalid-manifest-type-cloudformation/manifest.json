@@ -1,0 +1,11 @@
+{
+  "version": "0.0.0",
+  "artifacts": {
+    "MyStackName": {
+      "type": "aws:cloudformation:stack",
+      "properties": {
+        "templateFile": "template.json"
+      }
+    }
+  }
+}

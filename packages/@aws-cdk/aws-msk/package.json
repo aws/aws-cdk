@@ -1,7 +1,7 @@
 {
-  "name": "@aws-cdk/aws-msk",
+  "name": "@aws-cdk/aws-msk-alpha",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "description": "The CDK Construct Library for AWS::MSK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,24 +9,28 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.MSK",
-        "packageId": "Amazon.CDK.AWS.MSK",
+        "namespace": "Amazon.CDK.AWS.MSK.Alpha",
+        "packageId": "Amazon.CDK.AWS.MSK.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.msk",
+        "package": "software.amazon.awscdk.services.msk.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "msk"
+          "artifactId": "msk-alpha"
         }
       },
       "python": {
-        "distName": "aws-cdk.aws-msk",
-        "module": "aws_cdk.aws_msk",
+        "distName": "aws-cdk.aws-msk-alpha",
+        "module": "aws_cdk.aws_msk_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkmskalpha"
       }
     },
     "projectReferences": true,
@@ -53,17 +57,14 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "watch": "cdk-watch",
-    "cfn2ts": "cfn2ts",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat",
-    "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::MSK",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
@@ -82,39 +83,19 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
-    "@aws-cdk/integ-tests": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "aws-cdk-lib": "0.0.0",
+    "constructs": "^10.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0"
   },
-  "dependencies": {
-    "@aws-cdk/aws-acmpca": "0.0.0",
-    "@aws-cdk/aws-ec2": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-kms": "0.0.0",
-    "@aws-cdk/aws-logs": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/aws-secretsmanager": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
-    "constructs": "^10.0.0"
-  },
+  "dependencies": {},
   "peerDependencies": {
-    "@aws-cdk/aws-acmpca": "0.0.0",
-    "@aws-cdk/aws-ec2": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-kms": "0.0.0",
-    "@aws-cdk/aws-logs": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/aws-secretsmanager": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/cx-api": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -126,6 +107,17 @@
     "announce": false
   },
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
+  },
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
   }
 }

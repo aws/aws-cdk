@@ -1,0 +1,43 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const ec2 = require("aws-cdk-lib/aws-ec2");
+const cdk = require("aws-cdk-lib");
+const aws_route53_1 = require("aws-cdk-lib/aws-route53");
+/**
+ * A load balancer that can host a VPC Endpoint Service.
+ *
+ * Why do this instead of using the NetworkLoadBalancer construct? aws-route53
+ * cannot depend on aws-elasticloadbalancingv2 because aws-elasticloadbalancingv2
+ * already takes a dependency on aws-route53.
+ */
+class DummyEndpointLoadBalancer {
+    constructor(scope, id, vpc) {
+        const lb = new cdk.CfnResource(scope, id, {
+            type: 'AWS::ElasticLoadBalancingV2::LoadBalancer',
+            properties: {
+                Type: 'network',
+                Name: 'mylb',
+                Scheme: 'internal',
+                Subnets: [vpc.privateSubnets[0].subnetId],
+            },
+        });
+        this.loadBalancerArn = lb.ref;
+    }
+}
+const app = new cdk.App();
+const stack = new cdk.Stack(app, 'aws-cdk-vpc-endpoint-dns-integ');
+const vpc = new ec2.Vpc(stack, 'VPC');
+const nlb = new DummyEndpointLoadBalancer(stack, 'mylb', vpc);
+const vpces = new ec2.VpcEndpointService(stack, 'VPCES', {
+    vpcEndpointServiceLoadBalancers: [nlb],
+});
+const zone = new aws_route53_1.PublicHostedZone(stack, 'PHZ', {
+    zoneName: 'aws-cdk.dev',
+});
+new aws_route53_1.VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
+    endpointService: vpces,
+    domainName: 'my-stuff.aws-cdk.dev',
+    publicHostedZone: zone,
+});
+app.synth();
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcudnBjLWVuZHBvaW50LXNlcnZpY2UtZG9tYWluLW5hbWUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbnRlZy52cGMtZW5kcG9pbnQtc2VydmljZS1kb21haW4tbmFtZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLDJDQUEyQztBQUMzQyxtQ0FBbUM7QUFFbkMseURBQXlGO0FBRXpGOzs7Ozs7R0FNRztBQUNILE1BQU0seUJBQXlCO0lBSzdCLFlBQVksS0FBZ0IsRUFBRSxFQUFVLEVBQUUsR0FBWTtRQUNwRCxNQUFNLEVBQUUsR0FBRyxJQUFJLEdBQUcsQ0FBQyxXQUFXLENBQUMsS0FBSyxFQUFFLEVBQUUsRUFBRTtZQUN4QyxJQUFJLEVBQUUsMkNBQTJDO1lBQ2pELFVBQVUsRUFBRTtnQkFDVixJQUFJLEVBQUUsU0FBUztnQkFDZixJQUFJLEVBQUUsTUFBTTtnQkFDWixNQUFNLEVBQUUsVUFBVTtnQkFDbEIsT0FBTyxFQUFFLENBQUMsR0FBRyxDQUFDLGNBQWMsQ0FBQyxDQUFDLENBQUMsQ0FBQyxRQUFRLENBQUM7YUFDMUM7U0FDRixDQUFDLENBQUM7UUFDSCxJQUFJLENBQUMsZUFBZSxHQUFHLEVBQUUsQ0FBQyxHQUFHLENBQUM7SUFDaEMsQ0FBQztDQUNGO0FBRUQsTUFBTSxHQUFHLEdBQUcsSUFBSSxHQUFHLENBQUMsR0FBRyxFQUFFLENBQUM7QUFDMUIsTUFBTSxLQUFLLEdBQUcsSUFBSSxHQUFHLENBQUMsS0FBSyxDQUFDLEdBQUcsRUFBRSxnQ0FBZ0MsQ0FBQyxDQUFDO0FBQ25FLE1BQU0sR0FBRyxHQUFHLElBQUksR0FBRyxDQUFDLEdBQUcsQ0FBQyxLQUFLLEVBQUUsS0FBSyxDQUFDLENBQUM7QUFDdEMsTUFBTSxHQUFHLEdBQUcsSUFBSSx5QkFBeUIsQ0FBQyxLQUFLLEVBQUUsTUFBTSxFQUFFLEdBQUcsQ0FBQyxDQUFDO0FBQzlELE1BQU0sS0FBSyxHQUFHLElBQUksR0FBRyxDQUFDLGtCQUFrQixDQUFDLEtBQUssRUFBRSxPQUFPLEVBQUU7SUFDdkQsK0JBQStCLEVBQUUsQ0FBQyxHQUFHLENBQUM7Q0FDdkMsQ0FBQyxDQUFDO0FBQ0gsTUFBTSxJQUFJLEdBQUcsSUFBSSw4QkFBZ0IsQ0FBQyxLQUFLLEVBQUUsS0FBSyxFQUFFO0lBQzlDLFFBQVEsRUFBRSxhQUFhO0NBQ3hCLENBQUMsQ0FBQztBQUNILElBQUksMENBQTRCLENBQUMsS0FBSyxFQUFFLGdCQUFnQixFQUFFO0lBQ3hELGVBQWUsRUFBRSxLQUFLO0lBQ3RCLFVBQVUsRUFBRSxzQkFBc0I7SUFDbEMsZ0JBQWdCLEVBQUUsSUFBSTtDQUN2QixDQUFDLENBQUM7QUFFSCxHQUFHLENBQUMsS0FBSyxFQUFFLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBlYzIgZnJvbSAnYXdzLWNkay1saWIvYXdzLWVjMic7XG5pbXBvcnQgKiBhcyBjZGsgZnJvbSAnYXdzLWNkay1saWInO1xuaW1wb3J0IHsgQ29uc3RydWN0IH0gZnJvbSAnY29uc3RydWN0cyc7XG5pbXBvcnQgeyBQdWJsaWNIb3N0ZWRab25lLCBWcGNFbmRwb2ludFNlcnZpY2VEb21haW5OYW1lIH0gZnJvbSAnYXdzLWNkay1saWIvYXdzLXJvdXRlNTMnO1xuXG4vKipcbiAqIEEgbG9hZCBiYWxhbmNlciB0aGF0IGNhbiBob3N0IGEgVlBDIEVuZHBvaW50IFNlcnZpY2UuXG4gKlxuICogV2h5IGRvIHRoaXMgaW5zdGVhZCBvZiB1c2luZyB0aGUgTmV0d29ya0xvYWRCYWxhbmNlciBjb25zdHJ1Y3Q/IGF3cy1yb3V0ZTUzXG4gKiBjYW5ub3QgZGVwZW5kIG9uIGF3cy1lbGFzdGljbG9hZGJhbGFuY2luZ3YyIGJlY2F1c2UgYXdzLWVsYXN0aWNsb2FkYmFsYW5jaW5ndjJcbiAqIGFscmVhZHkgdGFrZXMgYSBkZXBlbmRlbmN5IG9uIGF3cy1yb3V0ZTUzLlxuICovXG5jbGFzcyBEdW1teUVuZHBvaW50TG9hZEJhbGFuY2VyIGltcGxlbWVudHMgZWMyLklWcGNFbmRwb2ludFNlcnZpY2VMb2FkQmFsYW5jZXIge1xuICAvKipcbiAgICogVGhlIEFSTiBvZiB0aGUgbG9hZCBiYWxhbmNlciB0aGF0IGhvc3RzIHRoZSBWUEMgRW5kcG9pbnQgU2VydmljZVxuICAgKi9cbiAgcHVibGljIHJlYWRvbmx5IGxvYWRCYWxhbmNlckFybjogc3RyaW5nO1xuICBjb25zdHJ1Y3RvcihzY29wZTogQ29uc3RydWN0LCBpZDogc3RyaW5nLCB2cGM6IGVjMi5WcGMpIHtcbiAgICBjb25zdCBsYiA9IG5ldyBjZGsuQ2ZuUmVzb3VyY2Uoc2NvcGUsIGlkLCB7XG4gICAgICB0eXBlOiAnQVdTOjpFbGFzdGljTG9hZEJhbGFuY2luZ1YyOjpMb2FkQmFsYW5jZXInLFxuICAgICAgcHJvcGVydGllczoge1xuICAgICAgICBUeXBlOiAnbmV0d29yaycsXG4gICAgICAgIE5hbWU6ICdteWxiJyxcbiAgICAgICAgU2NoZW1lOiAnaW50ZXJuYWwnLFxuICAgICAgICBTdWJuZXRzOiBbdnBjLnByaXZhdGVTdWJuZXRzWzBdLnN1Ym5ldElkXSxcbiAgICAgIH0sXG4gICAgfSk7XG4gICAgdGhpcy5sb2FkQmFsYW5jZXJBcm4gPSBsYi5yZWY7XG4gIH1cbn1cblxuY29uc3QgYXBwID0gbmV3IGNkay5BcHAoKTtcbmNvbnN0IHN0YWNrID0gbmV3IGNkay5TdGFjayhhcHAsICdhd3MtY2RrLXZwYy1lbmRwb2ludC1kbnMtaW50ZWcnKTtcbmNvbnN0IHZwYyA9IG5ldyBlYzIuVnBjKHN0YWNrLCAnVlBDJyk7XG5jb25zdCBubGIgPSBuZXcgRHVtbXlFbmRwb2ludExvYWRCYWxhbmNlcihzdGFjaywgJ215bGInLCB2cGMpO1xuY29uc3QgdnBjZXMgPSBuZXcgZWMyLlZwY0VuZHBvaW50U2VydmljZShzdGFjaywgJ1ZQQ0VTJywge1xuICB2cGNFbmRwb2ludFNlcnZpY2VMb2FkQmFsYW5jZXJzOiBbbmxiXSxcbn0pO1xuY29uc3Qgem9uZSA9IG5ldyBQdWJsaWNIb3N0ZWRab25lKHN0YWNrLCAnUEhaJywge1xuICB6b25lTmFtZTogJ2F3cy1jZGsuZGV2Jyxcbn0pO1xubmV3IFZwY0VuZHBvaW50U2VydmljZURvbWFpbk5hbWUoc3RhY2ssICdFbmRwb2ludERvbWFpbicsIHtcbiAgZW5kcG9pbnRTZXJ2aWNlOiB2cGNlcyxcbiAgZG9tYWluTmFtZTogJ215LXN0dWZmLmF3cy1jZGsuZGV2JyxcbiAgcHVibGljSG9zdGVkWm9uZTogem9uZSxcbn0pO1xuXG5hcHAuc3ludGgoKTtcbiJdfQ==

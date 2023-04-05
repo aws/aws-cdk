@@ -1,6 +1,6 @@
 import * as path from 'path';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { Stack } from '@aws-cdk/core';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
