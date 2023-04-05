@@ -1,15 +1,3 @@
-<<<<<<< HEAD:packages/@aws-cdk/aws-ecs/lib/cluster.ts
-import * as autoscaling from '@aws-cdk/aws-autoscaling';
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as iam from '@aws-cdk/aws-iam';
-import * as kms from '@aws-cdk/aws-kms';
-import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, FeatureFlags } from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
-=======
 import * as autoscaling from '../../aws-autoscaling';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
@@ -18,8 +6,8 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect } from '../../core';
->>>>>>> main:packages/aws-cdk-lib/aws-ecs/lib/cluster.ts
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, FeatureFlags } from '../../core';
+import * as cxapi from '@aws-cdk/cx-api';
 import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
