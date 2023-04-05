@@ -13,25 +13,21 @@ import { singletonActionRole } from './private/role';
 export enum LocationTimestampUnit {
   /**
    * SECONDS
-   *
    */
   SECONDS='SECONDS',
 
   /**
    * MILLISECONDS
-   *
    */
   MILLISECONDS='MILLISECONDS',
 
   /**
    * MICROSECONDS
-   *
    */
   MICROSECONDS='MICROSECONDS',
 
   /**
    * NANOSECONDS
-   *
    */
   NANOSECONDS='NANOSECONDS',
 }
@@ -43,19 +39,19 @@ export enum LocationTimestampUnit {
  */
 export interface LocationTimestamp {
   /**
-     * The precision of the timestamp value that results from the expression described in `value`.
-     * @see https://docs.aws.amazon.com/iot/latest/apireference/API_LocationTimestamp.html
-     *
-     * @default MILLISECONDS
-     */
+   * The precision of the timestamp value that results from the expression described in `value`.
+   * @see https://docs.aws.amazon.com/iot/latest/apireference/API_LocationTimestamp.html
+   *
+   * @default MILLISECONDS
+   */
   readonly unit?: LocationTimestampUnit
 
   /**
-     * An expression that returns a long epoch time value
-     * @see https://docs.aws.amazon.com/iot/latest/developerguide/iot-substitution-templates.html
-     *
-     * @default '${timestamp()}'
-     */
+   * An expression that returns a long epoch time value
+   * @see https://docs.aws.amazon.com/iot/latest/developerguide/iot-substitution-templates.html
+   *
+   * @default '${timestamp()}'
+   */
   readonly value?: string
 }
 
@@ -66,24 +62,18 @@ export interface LocationActionProps extends CommonActionProps {
   /**
    * The deviceId providing the location data.
    * @see https://docs.aws.amazon.com/iot/latest/apireference/API_LocationAction.html
-   *
-   * @default None
    */
   readonly deviceId: string;
 
   /**
    * A string that evaluates to a double value that represents the latitude of the device's location
    * @see https://docs.aws.amazon.com/iot/latest/apireference/API_LocationAction.html
-   *
-   * @default None
    */
   readonly latitude: string;
 
   /**
    * A string that evaluates to a double value that represents the longitude of the device's location.
    * @see https://docs.aws.amazon.com/iot/latest/apireference/API_LocationAction.html
-   *
-   * @default None
    */
   readonly longitude: string;
 
@@ -139,10 +129,7 @@ export class LocationAction implements iot.IAction {
         RoleArn: role.roleArn,
         Timestamp: this.timestamp
           ? { Value: this.timestamp.value, Unit: this.timestamp.unit }
-          : {
-            Value: '${timestamp()}',
-            Unit: LocationTimestampUnit.MILLISECONDS,
-          },
+          : {},
         TrackerName: this.tracker.trackerName,
       },
     });
