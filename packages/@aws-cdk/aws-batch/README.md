@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
@@ -82,7 +76,7 @@ connections on other CDK resources to manipulate the security groups and allow a
 For example, allowing a Compute Environment to access an EFS filesystem:
 
 ```ts
-import * as efs from '@aws-cdk/aws-efs';
+import * as efs from 'aws-cdk-lib/aws-efs';
 
 declare const fileSystem: efs.FileSystem;
 declare const computeEnvironment: batch.ComputeEnvironment;
@@ -324,7 +318,7 @@ const jobQueue = batch.JobQueue.fromJobQueueArn(this, 'imported-job-queue', 'arn
 A Batch Job definition helps AWS Batch understand important details about how to run your application in the scope of a Batch Job. This involves key information like resource requirements, what containers to run, how the compute environment should be prepared, and more. Below is a simple example of how to create a job definition:
 
 ```ts
-import * as ecr from '@aws-cdk/aws-ecr';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
 
 const repo = ecr.Repository.fromRepositoryName(this, 'batch-job-repo', 'todo-list');
 
@@ -353,7 +347,7 @@ new batch.JobDefinition(this, 'batch-job-def-from-local', {
 You can provide custom log driver and its configuration for the container.
 
 ```ts
-import * as ssm from '@aws-cdk/aws-ssm';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 
 new batch.JobDefinition(this, 'job-def', {
   container: {

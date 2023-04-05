@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
@@ -41,7 +35,7 @@ In the event that a single container is sufficient for your inference use-case, 
 single-container model:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 import * as path from 'path';
 
 const image = sagemaker.ContainerImage.fromAsset(path.join('path', 'to', 'Dockerfile', 'directory'));
@@ -66,7 +60,7 @@ more about SageMaker inference pipelines. To define an inference pipeline, you c
 additional containers for your model:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
 declare const image1: sagemaker.ContainerImage;
 declare const modelData1: sagemaker.ModelData;
@@ -95,7 +89,7 @@ abstract base class.
 Reference a local directory containing a Dockerfile:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 import * as path from 'path';
 
 const image = sagemaker.ContainerImage.fromAsset(path.join('path', 'to', 'Dockerfile', 'directory'));
@@ -106,8 +100,8 @@ const image = sagemaker.ContainerImage.fromAsset(path.join('path', 'to', 'Docker
 Reference an image available within ECR:
 
 ```typescript
-import * as ecr from '@aws-cdk/aws-ecr';
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
 const repository = ecr.Repository.fromRepositoryName(this, 'Repository', 'repo');
 const image = sagemaker.ContainerImage.fromEcrRepository(repository, 'tag');
@@ -125,7 +119,7 @@ base class. The default is to have no model artifacts associated with a model.
 Reference local model data:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 import * as path from 'path';
 
 const modelData = sagemaker.ModelData.fromAsset(path.join('path', 'to', 'artifact', 'file.tar.gz'));
@@ -136,8 +130,8 @@ const modelData = sagemaker.ModelData.fromAsset(path.join('path', 'to', 'artifac
 Reference an S3 bucket and object key as the artifacts for a model:
 
 ```typescript
-import * as s3 from '@aws-cdk/aws-s3';
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
 const bucket = new s3.Bucket(this, 'MyBucket');
 const modelData = sagemaker.ModelData.fromBucket(bucket, 'path/to/artifact/file.tar.gz');
@@ -161,7 +155,7 @@ for model B. Amazon SageMaker distributes two-thirds of the traffic to Model A, 
 model B:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
 declare const modelA: sagemaker.Model;
 declare const modelB: sagemaker.Model;
@@ -192,7 +186,7 @@ more information about the API, see the
 API. Defining an endpoint requires at minimum the associated endpoint configuration:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
 declare const endpointConfig: sagemaker.EndpointConfig;
 
@@ -204,7 +198,7 @@ const endpoint = new sagemaker.Endpoint(this, 'Endpoint', { endpointConfig });
 To enable autoscaling on the production variant, use the `autoScaleInstanceCount` method:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
 declare const model: sagemaker.Model;
 
@@ -237,7 +231,7 @@ To monitor CloudWatch metrics for a production variant, use one or more of the m
 methods:
 
 ```typescript
-import * as sagemaker from '@aws-cdk/aws-sagemaker';
+import * as sagemaker from '@aws-cdk/aws-sagemaker-alpha';
 
 declare const endpointConfig: sagemaker.EndpointConfig;
 
