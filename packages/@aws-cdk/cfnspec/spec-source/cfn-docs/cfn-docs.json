@@ -1807,7 +1807,8 @@
     },
     "AWS::ApiGatewayV2::Route": {
       "attributes": {
-        "Ref": "`Ref` returns the Route resource ID, such as `abcd123` ."
+        "Ref": "`Ref` returns the Route resource ID, such as `abcd123` .",
+        "RouteId": ""
       },
       "description": "The `AWS::ApiGatewayV2::Route` resource creates a route for an API.",
       "properties": {
@@ -1823,13 +1824,6 @@
         "RouteKey": "The route key for the route. For HTTP APIs, the route key can be either `$default` , or a combination of an HTTP method and resource path, for example, `GET /pets` .",
         "RouteResponseSelectionExpression": "The route response selection expression for the route. Supported only for WebSocket APIs.",
         "Target": "The target for the route."
-      }
-    },
-    "AWS::ApiGatewayV2::Route.ParameterConstraints": {
-      "attributes": {},
-      "description": "Specifies whether the parameter is required.",
-      "properties": {
-        "Required": "Specifies whether the parameter is required."
       }
     },
     "AWS::ApiGatewayV2::RouteResponse": {
@@ -5622,12 +5616,7 @@
     },
     "AWS::AutoScaling::AutoScalingGroup": {
       "attributes": {
-        "LaunchConfigurationName": "",
-        "LaunchTemplateSpecification": "",
-        "MixedInstancesPolicy": "",
-        "PlacementGroup": "",
-        "Ref": "When the logical ID of this resource is provided to the `Ref` intrinsic function, `Ref` returns the resource name. For example: `mystack-myasgroup-NT5EUXTNTXXD` .\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) .",
-        "VPCZoneIdentifier": ""
+        "Ref": "When the logical ID of this resource is provided to the `Ref` intrinsic function, `Ref` returns the resource name. For example: `mystack-myasgroup-NT5EUXTNTXXD` .\n\nFor more information about using the `Ref` function, see [Ref](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
       "description": "The `AWS::AutoScaling::AutoScalingGroup` resource defines an Amazon EC2 Auto Scaling group, which is a collection of Amazon EC2 instances that are treated as a logical grouping for the purposes of automatic scaling and management.\n\nFor more information about Amazon EC2 Auto Scaling, see the [Amazon EC2 Auto Scaling User Guide](https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html) .\n\n> Amazon EC2 Auto Scaling configures instances launched as part of an Auto Scaling group using either a [launch template](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html) or a launch configuration. We strongly recommend that you do not use launch configurations. They do not provide full functionality for Amazon EC2 Auto Scaling or Amazon EC2. For more information, see [Launch configurations](https://docs.aws.amazon.com/autoscaling/ec2/userguide/launch-configurations.html) in the *Amazon EC2 Auto Scaling User Guide* .",
       "properties": {
@@ -6560,6 +6549,7 @@
       "properties": {
         "Command": "The command that's passed to the container. This parameter maps to `Cmd` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/#create-a-container) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/) and the `COMMAND` parameter to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/) . For more information, see [https://docs.docker.com/engine/reference/builder/#cmd](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/builder/#cmd) .",
         "Environment": "The environment variables to pass to a container. This parameter maps to `Env` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/#create-a-container) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/) and the `--env` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/) .\n\n> We don't recommend using plaintext environment variables for sensitive information, such as credential data. > Environment variables cannot start with \" `AWS_BATCH` \". This naming convention is reserved for variables that AWS Batch sets.",
+        "EphemeralStorage": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate .",
         "ExecutionRoleArn": "The Amazon Resource Name (ARN) of the execution role that AWS Batch can assume. For jobs that run on Fargate resources, you must provide an execution role. For more information, see [AWS Batch execution IAM role](https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html) in the *AWS Batch User Guide* .",
         "FargatePlatformConfiguration": "The platform configuration for jobs that are running on Fargate resources. Jobs that are running on EC2 resources must not specify this parameter.",
         "Image": "The image used to start a container. This string is passed directly to the Docker daemon. Images in the Docker Hub registry are available by default. Other repositories are specified with `*repository-url* / *image* : *tag*` . It can be 255 characters long. It can contain uppercase and lowercase letters, numbers, hyphens (-), underscores (_), colons (:), periods (.), forward slashes (/), and number signs (#). This parameter maps to `Image` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/#create-a-container) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/) and the `IMAGE` parameter of [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/) .\n\n> Docker image architecture must match the processor architecture of the compute resources that they're scheduled on. For example, ARM-based Docker images can only run on ARM-based compute resources. \n\n- Images in Amazon ECR Public repositories use the full `registry/repository[:tag]` or `registry/repository[@digest]` naming conventions. For example, `public.ecr.aws/ *registry_alias* / *my-web-app* : *latest*` .\n- Images in Amazon ECR repositories use the full registry and repository URI (for example, `123456789012.dkr.ecr.<region-name>.amazonaws.com/<repository-name>` ).\n- Images in official repositories on Docker Hub use a single name (for example, `ubuntu` or `mongo` ).\n- Images in other repositories on Docker Hub are qualified with an organization name (for example, `amazon/amazon-ecs-agent` ).\n- Images in other online repositories are qualified further by a domain name (for example, `quay.io/assemblyline/ubuntu` ).",
@@ -6623,6 +6613,25 @@
         "Value": "The value of the environment variable."
       }
     },
+    "AWS::Batch::JobDefinition.EksContainerResourceRequirements": {
+      "attributes": {},
+      "description": "The type and amount of resources to assign to a container. The supported resources include `memory` , `cpu` , and `nvidia.com/gpu` . For more information, see [Resource management for pods and containers](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) in the *Kubernetes documentation* .",
+      "properties": {
+        "Limits": "The type and quantity of the resources to reserve for the container. The values vary based on the `name` that's specified. Resources can be requested using either the `limits` or the `requests` objects.\n\n- **memory** - The memory hard limit (in MiB) for the container, using whole integers, with a \"Mi\" suffix. If your container attempts to exceed the memory specified, the container is terminated. You must specify at least 4 MiB of memory for a job. `memory` can be specified in `limits` , `requests` , or both. If `memory` is specified in both places, then the value that's specified in `limits` must be equal to the value that's specified in `requests` .\n\n> To maximize your resource utilization, provide your jobs with as much memory as possible for the specific instance type that you are using. To learn how, see [Memory management](https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html) in the *AWS Batch User Guide* .\n- **cpu** - The number of CPUs that's reserved for the container. Values must be an even multiple of `0.25` . `cpu` can be specified in `limits` , `requests` , or both. If `cpu` is specified in both places, then the value that's specified in `limits` must be at least as large as the value that's specified in `requests` .\n- **nvidia.com/gpu** - The number of GPUs that's reserved for the container. Values must be a whole integer. `memory` can be specified in `limits` , `requests` , or both. If `memory` is specified in both places, then the value that's specified in `limits` must be equal to the value that's specified in `requests` .",
+        "Requests": "The type and quantity of the resources to request for the container. The values vary based on the `name` that's specified. Resources can be requested by using either the `limits` or the `requests` objects.\n\n- **memory** - The memory hard limit (in MiB) for the container, using whole integers, with a \"Mi\" suffix. If your container attempts to exceed the memory specified, the container is terminated. You must specify at least 4 MiB of memory for a job. `memory` can be specified in `limits` , `requests` , or both. If `memory` is specified in both, then the value that's specified in `limits` must be equal to the value that's specified in `requests` .\n\n> If you're trying to maximize your resource utilization by providing your jobs as much memory as possible for a particular instance type, see [Memory management](https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html) in the *AWS Batch User Guide* .\n- **cpu** - The number of CPUs that are reserved for the container. Values must be an even multiple of `0.25` . `cpu` can be specified in `limits` , `requests` , or both. If `cpu` is specified in both, then the value that's specified in `limits` must be at least as large as the value that's specified in `requests` .\n- **nvidia.com/gpu** - The number of GPUs that are reserved for the container. Values must be a whole integer. `nvidia.com/gpu` can be specified in `limits` , `requests` , or both. If `nvidia.com/gpu` is specified in both, then the value that's specified in `limits` must be equal to the value that's specified in `requests` ."
+      }
+    },
+    "AWS::Batch::JobDefinition.EksContainerSecurityContext": {
+      "attributes": {},
+      "description": "The security context for a job. For more information, see [Configure a security context for a pod or container](https://docs.aws.amazon.com/https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) in the *Kubernetes documentation* .",
+      "properties": {
+        "Privileged": "When this parameter is `true` , the container is given elevated permissions on the host container instance. The level of permissions are similar to the `root` user permissions. The default value is `false` . This parameter maps to `privileged` policy in the [Privileged pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#privileged) in the *Kubernetes documentation* .",
+        "ReadOnlyRootFilesystem": "When this parameter is `true` , the container is given read-only access to its root file system. The default value is `false` . This parameter maps to `ReadOnlyRootFilesystem` policy in the [Volumes and file systems pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems) in the *Kubernetes documentation* .",
+        "RunAsGroup": "When this parameter is specified, the container is run as the specified group ID ( `gid` ). If this parameter isn't specified, the default is the group that's specified in the image metadata. This parameter maps to `RunAsGroup` and `MustRunAs` policy in the [Users and groups pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups) in the *Kubernetes documentation* .",
+        "RunAsNonRoot": "When this parameter is specified, the container is run as a user with a `uid` other than 0. If this parameter isn't specified, so such rule is enforced. This parameter maps to `RunAsUser` and `MustRunAsNonRoot` policy in the [Users and groups pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups) in the *Kubernetes documentation* .",
+        "RunAsUser": "When this parameter is specified, the container is run as the specified user ID ( `uid` ). If this parameter isn't specified, the default is the user that's specified in the image metadata. This parameter maps to `RunAsUser` and `MustRanAs` policy in the [Users and groups pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups) in the *Kubernetes documentation* ."
+      }
+    },
     "AWS::Batch::JobDefinition.EksContainerVolumeMount": {
       "attributes": {},
       "description": "The volume mounts for a container for an Amazon EKS job. For more information about volumes and volume mounts in Kubernetes, see [Volumes](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/storage/volumes/) in the *Kubernetes documentation* .",
@@ -6632,11 +6641,34 @@
         "ReadOnly": "If this value is `true` , the container has read-only access to the volume. Otherwise, the container can write to the volume. The default value is `false` ."
       }
     },
+    "AWS::Batch::JobDefinition.EksEmptyDir": {
+      "attributes": {},
+      "description": "Specifies the configuration of a Kubernetes `emptyDir` volume. An `emptyDir` volume is first created when a pod is assigned to a node. It exists as long as that pod is running on that node. The `emptyDir` volume is initially empty. All containers in the pod can read and write the files in the `emptyDir` volume. However, the `emptyDir` volume can be mounted at the same or different paths in each container. When a pod is removed from a node for any reason, the data in the `emptyDir` is deleted permanently. For more information, see [emptyDir](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/storage/volumes/#emptydir) in the *Kubernetes documentation* .",
+      "properties": {
+        "Medium": "The medium to store the volume. The default value is an empty string, which uses the storage of the node.\n\n- **\"\"** - *(Default)* Use the disk storage of the node.\n- **\"Memory\"** - Use the `tmpfs` volume that's backed by the RAM of the node. Contents of the volume are lost when the node reboots, and any storage on the volume counts against the container's memory limit.",
+        "SizeLimit": "The maximum size of the volume. By default, there's no maximum size defined."
+      }
+    },
+    "AWS::Batch::JobDefinition.EksHostPath": {
+      "attributes": {},
+      "description": "Specifies the configuration of a Kubernetes `hostPath` volume. A `hostPath` volume mounts an existing file or directory from the host node's filesystem into your pod. For more information, see [hostPath](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/storage/volumes/#hostpath) in the *Kubernetes documentation* .",
+      "properties": {
+        "Path": "The path of the file or directory on the host to mount into containers on the pod."
+      }
+    },
     "AWS::Batch::JobDefinition.EksProperties": {
       "attributes": {},
       "description": "An object that contains the properties for the Kubernetes resources of a job.",
       "properties": {
         "PodProperties": "The properties for the Kubernetes pod resources of a job."
+      }
+    },
+    "AWS::Batch::JobDefinition.EksSecret": {
+      "attributes": {},
+      "description": "Specifies the configuration of a Kubernetes `secret` volume. For more information, see [secret](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/storage/volumes/#secret) in the *Kubernetes documentation* .",
+      "properties": {
+        "Optional": "Specifies whether the secret or the secret's keys must be defined.",
+        "SecretName": "The name of the secret. The name must be allowed as a DNS subdomain name. For more information, see [DNS subdomain names](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names) in the *Kubernetes documentation* ."
       }
     },
     "AWS::Batch::JobDefinition.EksVolume": {
@@ -6649,20 +6681,19 @@
         "Secret": "Specifies the configuration of a Kubernetes `secret` volume. For more information, see [secret](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/storage/volumes/#secret) in the *Kubernetes documentation* ."
       }
     },
-    "AWS::Batch::JobDefinition.EmptyDir": {
-      "attributes": {},
-      "description": "Specifies the configuration of a Kubernetes `emptyDir` volume. An `emptyDir` volume is first created when a pod is assigned to a node. It exists as long as that pod is running on that node. The `emptyDir` volume is initially empty. All containers in the pod can read and write the files in the `emptyDir` volume. However, the `emptyDir` volume can be mounted at the same or different paths in each container. When a pod is removed from a node for any reason, the data in the `emptyDir` is deleted permanently. For more information, see [emptyDir](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/storage/volumes/#emptydir) in the *Kubernetes documentation* .",
-      "properties": {
-        "Medium": "The medium to store the volume. The default value is an empty string, which uses the storage of the node.\n\n- **\"\"** - *(Default)* Use the disk storage of the node.\n- **\"Memory\"** - Use the `tmpfs` volume that's backed by the RAM of the node. Contents of the volume are lost when the node reboots, and any storage on the volume counts against the container's memory limit.",
-        "SizeLimit": "The maximum size of the volume. By default, there's no maximum size defined."
-      }
-    },
     "AWS::Batch::JobDefinition.Environment": {
       "attributes": {},
       "description": "The Environment property type specifies environment variables to use in a job definition.",
       "properties": {
         "Name": "The name of the environment variable.",
         "Value": "The value of the environment variable."
+      }
+    },
+    "AWS::Batch::JobDefinition.EphemeralStorage": {
+      "attributes": {},
+      "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate .",
+      "properties": {
+        "SizeInGiB": "The total amount, in GiB, of ephemeral storage to set for the task. The minimum supported value is `21` GiB and the maximum supported value is `200` GiB."
       }
     },
     "AWS::Batch::JobDefinition.EvaluateOnExit": {
@@ -6680,13 +6711,6 @@
       "description": "The platform configuration for jobs that are running on Fargate resources. Jobs that run on EC2 resources must not specify this parameter.",
       "properties": {
         "PlatformVersion": "The AWS Fargate platform version where the jobs are running. A platform version is specified only for jobs that are running on Fargate resources. If one isn't specified, the `LATEST` platform version is used by default. This uses a recent, approved version of the AWS Fargate platform for compute resources. For more information, see [AWS Fargate platform versions](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/platform_versions.html) in the *Amazon Elastic Container Service Developer Guide* ."
-      }
-    },
-    "AWS::Batch::JobDefinition.HostPath": {
-      "attributes": {},
-      "description": "Specifies the configuration of a Kubernetes `hostPath` volume. A `hostPath` volume mounts an existing file or directory from the host node's filesystem into your pod. For more information, see [hostPath](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/storage/volumes/#hostpath) in the *Kubernetes documentation* .",
-      "properties": {
-        "Path": "The path of the file or directory on the host to mount into containers on the pod."
       }
     },
     "AWS::Batch::JobDefinition.LinuxParameters": {
@@ -6708,6 +6732,13 @@
         "LogDriver": "The log driver to use for the container. The valid values that are listed for this parameter are log drivers that the Amazon ECS container agent can communicate with by default.\n\nThe supported log drivers are `awslogs` , `fluentd` , `gelf` , `json-file` , `journald` , `logentries` , `syslog` , and `splunk` .\n\n> Jobs that are running on Fargate resources are restricted to the `awslogs` and `splunk` log drivers. \n\n- **awslogs** - Specifies the Amazon CloudWatch Logs logging driver. For more information, see [Using the awslogs log driver](https://docs.aws.amazon.com/batch/latest/userguide/using_awslogs.html) in the *AWS Batch User Guide* and [Amazon CloudWatch Logs logging driver](https://docs.aws.amazon.com/https://docs.docker.com/config/containers/logging/awslogs/) in the Docker documentation.\n- **fluentd** - Specifies the Fluentd logging driver. For more information including usage and options, see [Fluentd logging driver](https://docs.aws.amazon.com/https://docs.docker.com/config/containers/logging/fluentd/) in the *Docker documentation* .\n- **gelf** - Specifies the Graylog Extended Format (GELF) logging driver. For more information including usage and options, see [Graylog Extended Format logging driver](https://docs.aws.amazon.com/https://docs.docker.com/config/containers/logging/gelf/) in the *Docker documentation* .\n- **journald** - Specifies the journald logging driver. For more information including usage and options, see [Journald logging driver](https://docs.aws.amazon.com/https://docs.docker.com/config/containers/logging/journald/) in the *Docker documentation* .\n- **json-file** - Specifies the JSON file logging driver. For more information including usage and options, see [JSON File logging driver](https://docs.aws.amazon.com/https://docs.docker.com/config/containers/logging/json-file/) in the *Docker documentation* .\n- **splunk** - Specifies the Splunk logging driver. For more information including usage and options, see [Splunk logging driver](https://docs.aws.amazon.com/https://docs.docker.com/config/containers/logging/splunk/) in the *Docker documentation* .\n- **syslog** - Specifies the syslog logging driver. For more information including usage and options, see [Syslog logging driver](https://docs.aws.amazon.com/https://docs.docker.com/config/containers/logging/syslog/) in the *Docker documentation* .\n\n> If you have a custom driver that's not listed earlier that you want to work with the Amazon ECS container agent, you can fork the Amazon ECS container agent project that's [available on GitHub](https://docs.aws.amazon.com/https://github.com/aws/amazon-ecs-agent) and customize it to work with that driver. We encourage you to submit pull requests for changes that you want to have included. However, Amazon Web Services doesn't currently support running modified copies of this software. \n\nThis parameter requires version 1.18 of the Docker Remote API or greater on your container instance. To check the Docker Remote API version on your container instance, log in to your container instance and run the following command: `sudo docker version | grep \"Server API version\"`",
         "Options": "The configuration options to send to the log driver. This parameter requires version 1.19 of the Docker Remote API or greater on your container instance. To check the Docker Remote API version on your container instance, log in to your container instance and run the following command: `sudo docker version | grep \"Server API version\"`",
         "SecretOptions": "The secrets to pass to the log configuration. For more information, see [Specifying sensitive data](https://docs.aws.amazon.com/batch/latest/userguide/specifying-sensitive-data.html) in the *AWS Batch User Guide* ."
+      }
+    },
+    "AWS::Batch::JobDefinition.Metadata": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Labels": ""
       }
     },
     "AWS::Batch::JobDefinition.MountPoints": {
@@ -6750,6 +6781,7 @@
         "Containers": "The properties of the container that's used on the Amazon EKS pod.",
         "DnsPolicy": "The DNS policy for the pod. The default value is `ClusterFirst` . If the `hostNetwork` parameter is not specified, the default is `ClusterFirstWithHostNet` . `ClusterFirst` indicates that any DNS query that does not match the configured cluster domain suffix is forwarded to the upstream nameserver inherited from the node. If no value was specified for `dnsPolicy` in the [RegisterJobDefinition](https://docs.aws.amazon.com/batch/latest/APIReference/API_RegisterJobDefinition.html) API operation, then no value will be returned for `dnsPolicy` by either of [DescribeJobDefinitions](https://docs.aws.amazon.com/batch/latest/APIReference/API_DescribeJobDefinitions.html) or [DescribeJobs](https://docs.aws.amazon.com/batch/latest/APIReference/API_DescribeJobs.html) API operations. The pod spec setting will contain either `ClusterFirst` or `ClusterFirstWithHostNet` , depending on the value of the `hostNetwork` parameter. For more information, see [Pod's DNS policy](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy) in the *Kubernetes documentation* .\n\nValid values: `Default` | `ClusterFirst` | `ClusterFirstWithHostNet`",
         "HostNetwork": "Indicates if the pod uses the hosts' network IP address. The default value is `true` . Setting this to `false` enables the Kubernetes pod networking model. Most AWS Batch workloads are egress-only and don't require the overhead of IP allocation for each pod for incoming connections. For more information, see [Host namespaces](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#host-namespaces) and [Pod networking](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/workloads/pods/#pod-networking) in the *Kubernetes documentation* .",
+        "Metadata": "",
         "ServiceAccountName": "The name of the service account that's used to run the pod. For more information, see [Kubernetes service accounts](https://docs.aws.amazon.com/eks/latest/userguide/service-accounts.html) and [Configure a Kubernetes service account to assume an IAM role](https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html) in the *Amazon EKS User Guide* and [Configure service accounts for pods](https://docs.aws.amazon.com/https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/) in the *Kubernetes documentation* .",
         "Volumes": "Specifies the volumes for a job definition that uses Amazon EKS resources."
       }
@@ -6760,14 +6792,6 @@
       "properties": {
         "Type": "The type of resource to assign to a container. The supported resources include `GPU` , `MEMORY` , and `VCPU` .",
         "Value": "The quantity of the specified resource to reserve for the container. The values vary based on the `type` specified.\n\n- **type=\"GPU\"** - The number of physical GPUs to reserve for the container. Make sure that the number of GPUs reserved for all containers in a job doesn't exceed the number of available GPUs on the compute resource that the job is launched on.\n\n> GPUs aren't available for jobs that are running on Fargate resources.\n- **type=\"MEMORY\"** - The memory hard limit (in MiB) present to the container. This parameter is supported for jobs that are running on EC2 resources. If your container attempts to exceed the memory specified, the container is terminated. This parameter maps to `Memory` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/#create-a-container) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/) and the `--memory` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/) . You must specify at least 4 MiB of memory for a job. This is required but can be specified in several places for multi-node parallel (MNP) jobs. It must be specified for each node at least once. This parameter maps to `Memory` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/#create-a-container) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/) and the `--memory` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/) .\n\n> If you're trying to maximize your resource utilization by providing your jobs as much memory as possible for a particular instance type, see [Memory management](https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html) in the *AWS Batch User Guide* . \n\nFor jobs that are running on Fargate resources, then `value` is the hard limit (in MiB), and must match one of the supported values and the `VCPU` values must be one of the values supported for that memory value.\n\n- **value = 512** - `VCPU` = 0.25\n- **value = 1024** - `VCPU` = 0.25 or 0.5\n- **value = 2048** - `VCPU` = 0.25, 0.5, or 1\n- **value = 3072** - `VCPU` = 0.5, or 1\n- **value = 4096** - `VCPU` = 0.5, 1, or 2\n- **value = 5120, 6144, or 7168** - `VCPU` = 1 or 2\n- **value = 8192** - `VCPU` = 1, 2, or 4\n- **value = 9216, 10240, 11264, 12288, 13312, 14336, or 15360** - `VCPU` = 2 or 4\n- **value = 16384** - `VCPU` = 2, 4, or 8\n- **value = 17408, 18432, 19456, 21504, 22528, 23552, 25600, 26624, 27648, 29696, or 30720** - `VCPU` = 4\n- **value = 20480, 24576, or 28672** - `VCPU` = 4 or 8\n- **value = 36864, 45056, 53248, or 61440** - `VCPU` = 8\n- **value = 32768, 40960, 49152, or 57344** - `VCPU` = 8 or 16\n- **value = 65536, 73728, 81920, 90112, 98304, 106496, 114688, or 122880** - `VCPU` = 16\n- **type=\"VCPU\"** - The number of vCPUs reserved for the container. This parameter maps to `CpuShares` in the [Create a container](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/#create-a-container) section of the [Docker Remote API](https://docs.aws.amazon.com/https://docs.docker.com/engine/api/v1.23/) and the `--cpu-shares` option to [docker run](https://docs.aws.amazon.com/https://docs.docker.com/engine/reference/run/) . Each vCPU is equivalent to 1,024 CPU shares. For EC2 resources, you must specify at least one vCPU. This is required but can be specified in several places; it must be specified for each node at least once.\n\nThe default for the Fargate On-Demand vCPU resource count quota is 6 vCPUs. For more information about Fargate quotas, see [AWS Fargate quotas](https://docs.aws.amazon.com/general/latest/gr/ecs-service.html#service-quotas-fargate) in the *AWS General Reference* .\n\nFor jobs that are running on Fargate resources, then `value` must match one of the supported values and the `MEMORY` values must be one of the values supported for that `VCPU` value. The supported values are 0.25, 0.5, 1, 2, 4, 8, and 16\n\n- **value = 0.25** - `MEMORY` = 512, 1024, or 2048\n- **value = 0.5** - `MEMORY` = 1024, 2048, 3072, or 4096\n- **value = 1** - `MEMORY` = 2048, 3072, 4096, 5120, 6144, 7168, or 8192\n- **value = 2** - `MEMORY` = 4096, 5120, 6144, 7168, 8192, 9216, 10240, 11264, 12288, 13312, 14336, 15360, or 16384\n- **value = 4** - `MEMORY` = 8192, 9216, 10240, 11264, 12288, 13312, 14336, 15360, 16384, 17408, 18432, 19456, 20480, 21504, 22528, 23552, 24576, 25600, 26624, 27648, 28672, 29696, or 30720\n- **value = 8** - `MEMORY` = 16384, 20480, 24576, 28672, 32768, 36864, 40960, 45056, 49152, 53248, 57344, or 61440\n- **value = 16** - `MEMORY` = 32768, 40960, 49152, 57344, 65536, 73728, 81920, 90112, 98304, 106496, 114688, or 122880"
-      }
-    },
-    "AWS::Batch::JobDefinition.Resources": {
-      "attributes": {},
-      "description": "The type and quantity of the resources to request for the container. The values vary based on the `name` that's specified. Resources can be requested by using either the `limits` or the `requests` objects.\n\n- **memory** - The memory hard limit (in MiB) for the container, using whole integers, with a \"Mi\" suffix. If your container attempts to exceed the memory specified, the container is terminated. You must specify at least 4 MiB of memory for a job. `memory` can be specified in `limits` , `requests` , or both. If `memory` is specified in both, then the value that's specified in `limits` must be equal to the value that's specified in `requests` .\n\n> If you're trying to maximize your resource utilization by providing your jobs as much memory as possible for a particular instance type, see [Memory management](https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html) in the *AWS Batch User Guide* .\n- **cpu** - The number of CPUs that are reserved for the container. Values must be an even multiple of `0.25` . `cpu` can be specified in `limits` , `requests` , or both. If `cpu` is specified in both, then the value that's specified in `limits` must be at least as large as the value that's specified in `requests` .\n- **nvidia.com/gpu** - The number of GPUs that are reserved for the container. Values must be a whole integer. `nvidia.com/gpu` can be specified in `limits` , `requests` , or both. If `nvidia.com/gpu` is specified in both, then the value that's specified in `limits` must be equal to the value that's specified in `requests` .",
-      "properties": {
-        "Limits": "The type and quantity of the resources to reserve for the container. The values vary based on the `name` that's specified. Resources can be requested using either the `limits` or the `requests` objects.\n\n- **memory** - The memory hard limit (in MiB) for the container, using whole integers, with a \"Mi\" suffix. If your container attempts to exceed the memory specified, the container is terminated. You must specify at least 4 MiB of memory for a job. `memory` can be specified in `limits` , `requests` , or both. If `memory` is specified in both places, then the value that's specified in `limits` must be equal to the value that's specified in `requests` .\n\n> To maximize your resource utilization, provide your jobs with as much memory as possible for the specific instance type that you are using. To learn how, see [Memory management](https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html) in the *AWS Batch User Guide* .\n- **cpu** - The number of CPUs that's reserved for the container. Values must be an even multiple of `0.25` . `cpu` can be specified in `limits` , `requests` , or both. If `cpu` is specified in both places, then the value that's specified in `limits` must be at least as large as the value that's specified in `requests` .\n- **nvidia.com/gpu** - The number of GPUs that's reserved for the container. Values must be a whole integer. `memory` can be specified in `limits` , `requests` , or both. If `memory` is specified in both places, then the value that's specified in `limits` must be equal to the value that's specified in `requests` .",
-        "Requests": "The type and quantity of the resources to request for the container. The values vary based on the `name` that's specified. Resources can be requested by using either the `limits` or the `requests` objects.\n\n- **memory** - The memory hard limit (in MiB) for the container, using whole integers, with a \"Mi\" suffix. If your container attempts to exceed the memory specified, the container is terminated. You must specify at least 4 MiB of memory for a job. `memory` can be specified in `limits` , `requests` , or both. If `memory` is specified in both, then the value that's specified in `limits` must be equal to the value that's specified in `requests` .\n\n> If you're trying to maximize your resource utilization by providing your jobs as much memory as possible for a particular instance type, see [Memory management](https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html) in the *AWS Batch User Guide* .\n- **cpu** - The number of CPUs that are reserved for the container. Values must be an even multiple of `0.25` . `cpu` can be specified in `limits` , `requests` , or both. If `cpu` is specified in both, then the value that's specified in `limits` must be at least as large as the value that's specified in `requests` .\n- **nvidia.com/gpu** - The number of GPUs that are reserved for the container. Values must be a whole integer. `nvidia.com/gpu` can be specified in `limits` , `requests` , or both. If `nvidia.com/gpu` is specified in both, then the value that's specified in `limits` must be equal to the value that's specified in `requests` ."
       }
     },
     "AWS::Batch::JobDefinition.RetryStrategy": {
@@ -6784,17 +6808,6 @@
       "properties": {
         "Name": "The name of the secret.",
         "ValueFrom": "The secret to expose to the container. The supported values are either the full Amazon Resource Name (ARN) of the AWS Secrets Manager secret or the full ARN of the parameter in the AWS Systems Manager Parameter Store.\n\n> If the AWS Systems Manager Parameter Store parameter exists in the same Region as the job you're launching, then you can use either the full Amazon Resource Name (ARN) or name of the parameter. If the parameter exists in a different Region, then the full ARN must be specified."
-      }
-    },
-    "AWS::Batch::JobDefinition.SecurityContext": {
-      "attributes": {},
-      "description": "The security context for a job. For more information, see [Configure a security context for a pod or container](https://docs.aws.amazon.com/https://kubernetes.io/docs/tasks/configure-pod-container/security-context/) in the *Kubernetes documentation* .",
-      "properties": {
-        "Privileged": "When this parameter is `true` , the container is given elevated permissions on the host container instance. The level of permissions are similar to the `root` user permissions. The default value is `false` . This parameter maps to `privileged` policy in the [Privileged pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#privileged) in the *Kubernetes documentation* .",
-        "ReadOnlyRootFilesystem": "When this parameter is `true` , the container is given read-only access to its root file system. The default value is `false` . This parameter maps to `ReadOnlyRootFilesystem` policy in the [Volumes and file systems pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems) in the *Kubernetes documentation* .",
-        "RunAsGroup": "When this parameter is specified, the container is run as the specified group ID ( `gid` ). If this parameter isn't specified, the default is the group that's specified in the image metadata. This parameter maps to `RunAsGroup` and `MustRunAs` policy in the [Users and groups pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups) in the *Kubernetes documentation* .",
-        "RunAsNonRoot": "When this parameter is specified, the container is run as a user with a `uid` other than 0. If this parameter isn't specified, so such rule is enforced. This parameter maps to `RunAsUser` and `MustRunAsNonRoot` policy in the [Users and groups pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups) in the *Kubernetes documentation* .",
-        "RunAsUser": "When this parameter is specified, the container is run as the specified user ID ( `uid` ). If this parameter isn't specified, the default is the user that's specified in the image metadata. This parameter maps to `RunAsUser` and `MustRanAs` policy in the [Users and groups pod security policies](https://docs.aws.amazon.com/https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups) in the *Kubernetes documentation* ."
       }
     },
     "AWS::Batch::JobDefinition.Timeout": {
@@ -13307,6 +13320,14 @@
         "MemberId": "The AWS account identifier of the invited account",
         "Message": "Customized text to include in the invitation email message."
       }
+    },
+    "AWS::DevOpsGuru::LogAnomalyDetectionIntegration": {
+      "attributes": {
+        "AccountId": "",
+        "Ref": ""
+      },
+      "description": "",
+      "properties": {}
     },
     "AWS::DevOpsGuru::NotificationChannel": {
       "attributes": {
@@ -32795,8 +32816,6 @@
         "Description": "An optional description for the tracker resource.",
         "KmsKeyId": "A key identifier for an [AWS KMS customer managed key](https://docs.aws.amazon.com/kms/latest/developerguide/create-keys.html) . Enter a key ID, key ARN, alias name, or alias ARN.",
         "PositionFiltering": "Specifies the position filtering for the tracker resource.\n\nValid values:\n\n- `TimeBased` - Location updates are evaluated against linked geofence collections, but not every location update is stored. If your update frequency is more often than 30 seconds, only one update per 30 seconds is stored for each unique device ID.\n- `DistanceBased` - If the device has moved less than 30 m (98.4 ft), location updates are ignored. Location updates within this area are neither evaluated against linked geofence collections, nor stored. This helps control costs by reducing the number of geofence evaluations and historical device positions to paginate through. Distance-based filtering can also reduce the effects of GPS noise when displaying device trajectories on a map.\n- `AccuracyBased` - If the device has moved less than the measured accuracy, location updates are ignored. For example, if two consecutive updates from a device have a horizontal accuracy of 5 m and 10 m, the second update is ignored if the device has moved less than 15 m. Ignored location updates are neither evaluated against linked geofence collections, nor stored. This can reduce the effects of GPS noise when displaying device trajectories on a map, and can help control your costs by reducing the number of geofence evaluations.\n\nThis field is optional. If not specified, the default value is `TimeBased` .",
-        "PricingPlan": "No longer used. If included, the only allowed value is `RequestBasedUsage` .",
-        "PricingPlanDataSource": "This parameter is no longer used.",
         "TrackerName": "The name for the tracker resource.\n\nRequirements:\n\n- Contain only alphanumeric characters (A-Z, a-z, 0-9) , hyphens (-), periods (.), and underscores (_).\n- Must be a unique tracker resource name.\n- No spaces allowed. For example, `ExampleTracker` ."
       }
     },
@@ -57102,7 +57121,7 @@
         "FifoTopic": "Set to true to create a FIFO topic.",
         "KmsMasterKeyId": "The ID of an AWS managed customer master key (CMK) for Amazon SNS or a custom CMK. For more information, see [Key terms](https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html#sse-key-terms) . For more examples, see `[KeyId](https://docs.aws.amazon.com/kms/latest/APIReference/API_DescribeKey.html#API_DescribeKey_RequestParameters)` in the *AWS Key Management Service API Reference* .\n\nThis property applies only to [server-side-encryption](https://docs.aws.amazon.com/sns/latest/dg/sns-server-side-encryption.html) .",
         "SignatureVersion": "The signature version corresponds to the hashing algorithm used while creating the signature of the notifications, subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS. By default, `SignatureVersion` is set to `1` .",
-        "Subscription": "The Amazon SNS subscriptions (endpoints) for this topic.",
+        "Subscription": "The Amazon SNS subscriptions (endpoints) for this topic.\n\n> If you specify the `Subscription` property in the `AWS::SNS::Topic` resource and it creates an associated subscription resource, the associated subscription is not deleted when the `AWS::SNS::Topic` resource is deleted.",
         "Tags": "The list of tags to add to a new topic.\n\n> To be able to tag a topic on creation, you must have the `sns:CreateTopic` and `sns:TagResource` permissions.",
         "TopicName": "The name of the topic you want to create. Topic names must include only uppercase and lowercase ASCII letters, numbers, underscores, and hyphens, and must be between 1 and 256 characters long. FIFO topic names must end with `.fifo` .\n\nIf you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the topic name. For more information, see [Name type](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-name.html) .\n\n> If you specify a name, you can't perform updates that require replacement of this resource. You can perform updates that require no or some interruption. If you must replace the resource, specify a new name.",
         "TracingConfig": "Tracing mode of an Amazon SNS topic. By default `TracingConfig` is set to `PassThrough` , and the topic passes through the tracing header it receives from an SNS publisher to its subscriptions. If set to `Active` , SNS will vend X-Ray segment data to topic owner account if the sampled flag in the tracing header is true. Only supported on standard topics."
@@ -58573,18 +58592,18 @@
       },
       "description": "Creates an inference experiment using the configurations specified in the request.\n\nUse this API to setup and schedule an experiment to compare model variants on a Amazon SageMaker inference endpoint. For more information about inference experiments, see [Shadow tests](https://docs.aws.amazon.com/sagemaker/latest/dg/shadow-tests.html) .\n\nAmazon SageMaker begins your experiment at the scheduled time and routes traffic to your endpoint's model variants based on your specified configuration.\n\nWhile the experiment is in progress or after it has concluded, you can view metrics that compare your model variants. For more information, see [View, monitor, and edit shadow tests](https://docs.aws.amazon.com/sagemaker/latest/dg/shadow-tests-view-monitor-edit.html) .",
       "properties": {
-        "DataStorageConfig": "",
+        "DataStorageConfig": "The Amazon S3 location and configuration for storing inference request and response data.",
         "Description": "The description of the inference experiment.",
-        "DesiredState": "",
-        "EndpointName": "",
+        "DesiredState": "The desired state of the experiment after stopping. The possible states are the following:\n\n- `Completed` : The experiment completed successfully\n- `Cancelled` : The experiment was canceled",
+        "EndpointName": "The name of the endpoint.",
         "KmsKey": "The AWS Key Management Service key that Amazon SageMaker uses to encrypt captured data at rest using Amazon S3 server-side encryption.",
-        "ModelVariants": "",
+        "ModelVariants": "An array of `ModelVariantConfigSummary` objects. There is one for each variant in the inference experiment. Each `ModelVariantConfigSummary` object in the array describes the infrastructure configuration for deploying the corresponding variant.",
         "Name": "The name of the inference experiment.",
         "RoleArn": "The ARN of the IAM role that Amazon SageMaker can assume to access model artifacts and container images, and manage Amazon SageMaker Inference endpoints for model deployment.",
         "Schedule": "The duration for which the inference experiment ran or will run.\n\nThe maximum duration that you can set for an inference experiment is 30 days.",
-        "ShadowModeConfig": "",
+        "ShadowModeConfig": "The configuration of `ShadowMode` inference experiment type, which shows the production variant that takes all the inference requests, and the shadow variant to which Amazon SageMaker replicates a percentage of the inference requests. For the shadow variant it also shows the percentage of requests that Amazon SageMaker replicates.",
         "StatusReason": "The error message for the inference experiment status result.",
-        "Tags": "",
+        "Tags": "An array of key-value pairs to apply to this resource.\n\nFor more information, see [Tag](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-resource-tags.html) .",
         "Type": "The type of the inference experiment."
       }
     },
@@ -58598,11 +58617,11 @@
     },
     "AWS::SageMaker::InferenceExperiment.DataStorageConfig": {
       "attributes": {},
-      "description": "",
+      "description": "The Amazon S3 location and configuration for storing inference request and response data.\n\nThis is an optional parameter that you can use for data capture. For more information, see [Capture data](https://docs.aws.amazon.com/sagemaker/latest/dg/model-monitor-data-capture.html) .",
       "properties": {
-        "ContentType": "",
-        "Destination": "",
-        "KmsKey": ""
+        "ContentType": "Configuration specifying how to treat different headers. If no headers are specified SageMaker will by default base64 encode when capturing the data.",
+        "Destination": "The Amazon S3 bucket where the inference request and response data is stored.",
+        "KmsKey": "The AWS Key Management Service key that Amazon SageMaker uses to encrypt captured data at rest using Amazon S3 server-side encryption."
       }
     },
     "AWS::SageMaker::InferenceExperiment.EndpointMetadata": {
@@ -58611,7 +58630,7 @@
       "properties": {
         "EndpointConfigName": "The name of the endpoint configuration.",
         "EndpointName": "The name of the endpoint.",
-        "EndpointStatus": "The status of the endpoint. For possible values of the status of an endpoint, see `EndpointSummary$EndpointStatus` ."
+        "EndpointStatus": "The status of the endpoint. For possible values of the status of an endpoint, see [](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-inferenceexperiment-endpointmetadata.html#cfn-sagemaker-inferenceexperiment-endpointmetadata-endpointstatus) ."
       }
     },
     "AWS::SageMaker::InferenceExperiment.InferenceExperimentSchedule": {
@@ -62106,6 +62125,7 @@
         "AuthType": "The type of IAM policy.\n\n- `NONE` : The resource does not use an IAM policy. This is the default.\n- `AWS_IAM` : The resource uses an IAM policy. When this type is used, auth is enabled and an auth policy is required.",
         "CertificateArn": "The Amazon Resource Name (ARN) of the certificate.",
         "CustomDomainName": "The custom domain name of the service.",
+        "DnsEntry": "",
         "Name": "The name of the service. The name must be unique within the account. The valid characters are a-z, 0-9, and hyphens (-). You can't use a hyphen as the first or last character, or immediately after another hyphen.\n\nIf you don't specify a name, CloudFormation generates one. However, if you specify a name, and later want to replace the resource, you must specify a new name.",
         "Tags": "The tags for the service."
       }
@@ -62151,6 +62171,7 @@
       },
       "description": "Associates a service with a service network.\n\nYou can't use this operation if the service and service network are already associated or if there is a disassociation or deletion in progress. If the association fails, you can retry the operation by deleting the association and recreating it.\n\nYou cannot associate a service and service network that are shared with a caller. The caller must own either the service or the service network.\n\nAs a result of this operation, the association is created in the service network account and the association owner account.",
       "properties": {
+        "DnsEntry": "",
         "ServiceIdentifier": "The ID or Amazon Resource Name (ARN) of the service.",
         "ServiceNetworkIdentifier": "The ID or Amazon Resource Name (ARN) of the service network. You must use the ARN if the resources specified in the operation are in different accounts.",
         "Tags": "The tags for the association."
