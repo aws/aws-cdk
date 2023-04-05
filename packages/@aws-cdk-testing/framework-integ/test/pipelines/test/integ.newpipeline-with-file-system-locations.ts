@@ -4,7 +4,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { App, Stack, StackProps, Stage, StageProps, Aws, RemovalPolicy, DefaultStackSynthesizer } from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 
@@ -65,7 +65,7 @@ const app = new App({
 
 const stack = new TestStack(app, 'PipelinesFileSystemLocations');
 
-new IntegTest(app, 'cdk-integ-codepipeline-with-file-system-locations', {
+new integ.IntegTest(app, 'cdk-integ-codepipeline-with-file-system-locations', {
   testCases: [stack],
 });
 
