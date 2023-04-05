@@ -2,8 +2,8 @@ import { GitHubTrigger } from 'aws-cdk-lib/aws-codepipeline-actions/lib';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib/core';
 import { Stack } from 'aws-cdk-lib/core';
-import * as integ from '@aws-cdk/integ-tests';
-import { ExpectedResult } from '@aws-cdk/integ-tests';
+import * as integ from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 
 /*
