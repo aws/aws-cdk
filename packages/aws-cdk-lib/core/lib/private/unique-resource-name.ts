@@ -25,6 +25,13 @@ interface MakeUniqueResourceNameOptions {
    * @default - none
    */
   readonly allowedSpecialCharacters?: string;
+
+  /**
+   * Prefix to be added into the stack name
+   *
+   * @default - none
+   */
+  readonly prefix?: string;
 }
 
 /**
@@ -46,9 +53,10 @@ const MAX_LEN = 256;
 
 const HASH_LEN = 8;
 
-export function makeUniqueResourceName(components: string[], options: MakeUniqueResourceNameOptions, prefix: string='') {
+export function makeUniqueResourceName(components: string[], options: MakeUniqueResourceNameOptions) {
   const maxLength = options.maxLength ?? 256;
   const separator = options.separator ?? '';
+  const prefix = options.prefix ?? '';
   components = components.filter(x => x !== HIDDEN_ID);
 
   if (components.length === 0) {

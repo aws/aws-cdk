@@ -1651,7 +1651,7 @@ function makeStackName(components: string[], prefix: string='') {
       return stack_name;
     }
   }
-  return makeUniqueResourceName(components, { maxLength: 128 }, prefix);
+  return makeUniqueResourceName(components, { maxLength: 128, prefix: prefix });
 }
 
 function getCreateExportsScope(stack: Stack) {
