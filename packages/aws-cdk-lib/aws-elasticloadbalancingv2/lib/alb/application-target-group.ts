@@ -18,9 +18,11 @@ import { determineProtocolAndPort, parseLoadBalancerFullName, parseTargetGroupFu
  */
 export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   /**
-   * The protocol to use
+   * The protocol used for communication with the target.
    *
-   * @default - Determined from port if known, optional for Lambda targets.
+   * This is not applicable for Lambda targets.
+   *
+   * @default - Determined from port if known
    */
   readonly protocol?: ApplicationProtocol;
 
@@ -32,9 +34,11 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   readonly protocolVersion?: ApplicationProtocolVersion;
 
   /**
-   * The port on which the listener listens for requests.
+   * The port on which the target receives traffic.
    *
-   * @default - Determined from protocol if known, optional for Lambda targets.
+   * This is not applicable for Lambda targets.
+   *
+   * @default - Determined from protocol if known
    */
   readonly port?: number;
 
