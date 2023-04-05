@@ -1,10 +1,9 @@
-import * as batch from '@aws-cdk/aws-batch';
-import { ContainerImage } from '@aws-cdk/aws-ecs';
-import * as events from '@aws-cdk/aws-events';
-import * as sqs from '@aws-cdk/aws-sqs';
-import * as cdk from '@aws-cdk/core';
-import { Size } from '@aws-cdk/core';
-import * as targets from '../../lib';
+import * as batch from '@aws-cdk/aws-batch-alpha';
+import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as cdk from 'aws-cdk-lib';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
 
 const app = new cdk.App();
 
@@ -22,7 +21,7 @@ const job = new batch.EcsJobDefinition(stack, 'MyJob', {
   container: new batch.EcsEc2ContainerDefinition(stack, 'container', {
     image: ContainerImage.fromRegistry('test-repo'),
     cpu: 256,
-    memory: Size.mebibytes(2048),
+    memory: cdk.Size.mebibytes(2048),
   }),
 });
 

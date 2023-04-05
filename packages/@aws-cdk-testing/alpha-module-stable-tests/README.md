@@ -1,4 +1,4 @@
-# CDK CLI integration test
+# CDK Alpha-Stable Integration Module Unit Tests
 <!--BEGIN STABILITY BANNER-->
 
 ---

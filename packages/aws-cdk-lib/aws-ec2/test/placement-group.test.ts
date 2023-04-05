@@ -1,5 +1,5 @@
-import { Template } from '@aws-cdk/assertions';
-import { Stack } from '@aws-cdk/core';
+import { Template } from '../../assertions';
+import { Stack } from '../../core';
 import { PlacementGroup, PlacementGroupSpreadLevel, PlacementGroupStrategy } from '../lib';
 
 

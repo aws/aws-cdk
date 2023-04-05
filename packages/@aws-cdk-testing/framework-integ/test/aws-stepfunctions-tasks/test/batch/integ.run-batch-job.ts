@@ -1,10 +1,10 @@
 import * as path from 'path';
-import * as batch from '@aws-cdk/aws-batch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as ecs from '@aws-cdk/aws-ecs';
-import * as sfn from '@aws-cdk/aws-stepfunctions';
-import * as cdk from '@aws-cdk/core';
-import * as tasks from '../../lib';
+import * as batch from '@aws-cdk/aws-batch-alpha';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
+import * as cdk from 'aws-cdk-lib';
+import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
 /*
  * Stack verification steps:

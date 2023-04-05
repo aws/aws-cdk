@@ -2,7 +2,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import { IFileSystem } from 'aws-cdk-lib/aws-efs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import { Lazy, PhysicalName, Size } from 'aws-cdk-lib';
+import { DefaultTokenResolver, Lazy, PhysicalName, Size, StringConcat, Tokenization } from 'aws-cdk-lib';
 import { Construct, IConstruct } from 'constructs';
 import { CfnJobDefinition } from 'aws-cdk-lib/aws-batch';
 import { LinuxParameters } from './linux-parameters';
@@ -480,9 +480,8 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
   public readonly user?: string;
   public readonly volumes: EcsVolume[];
 
-  public abstract readonly executionRole?: iam.IRole;
-
   private readonly imageConfig: ecs.ContainerImageConfig;
+  private _executionRole?: iam.IRole;
 
   constructor(scope: Construct, id: string, props: EcsContainerDefinitionProps) {
     super(scope, id);
@@ -495,20 +494,18 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.linuxParameters = props.linuxParameters;
     this.memory = props.memory;
 
-    // Lazy so this.executionRole can be filled by subclasses
     this.logDriverConfig = Lazy.any({
       produce: () => {
-        if (props.logging) {
-          return props.logging.bind(this, {
-            ...this as any,
-            // TS!
-            taskDefinition: {
-              obtainExecutionRole: () => this.executionRole,
-            },
-          });
+        if (!props.logging) {
+          return undefined;
         }
-
-        return undefined;
+        return props.logging.bind(this, {
+          ...this as any,
+          // TS!
+          taskDefinition: {
+            obtainExecutionRole: this.obtainExecutionRole,
+          },
+        });
       },
     }) as any;
 
@@ -517,12 +514,42 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     this.user = props.user;
     this.volumes = props.volumes ?? [];
 
-    this.imageConfig = props.image.bind(this, {
-      ...this as any,
-      taskDefinition: {
-        obtainExecutionRole: () => this.executionRole,
-      },
-    });
+    // Lazy, because otherwise `obtainExecutionRole()` fails because the scope it passes to `new Role()` (the scope is `this`)
+    // is undefined, since the constructor hasn't exited yet
+    this.imageConfig = Lazy.any({
+      produce: () => props.image.bind(this, {
+        ...this as any,
+        taskDefinition: {
+          obtainExecutionRole: this.obtainExecutionRole,
+        },
+      }),
+    }) as any;
+  }
+
+  /**
+   * Creates the task execution IAM role if it doesn't already exist.
+   */
+  public obtainExecutionRole(): iam.IRole {
+    if (!this._executionRole) {
+      this._executionRole = new iam.Role(this, 'ExecutionRole', {
+        assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        // needed for cross-account access with TagParameterContainerImage
+        roleName: PhysicalName.GENERATE_IF_NEEDED,
+      });
+    }
+    return this._executionRole;
+  }
+
+  /**
+   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
+   *
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
+   *
+   * @default - a Role will be created if logging is specified for Ec2 containers.
+   * It will always be created for Fargate containers.
+   */
+  public get executionRole(): iam.IRole | undefined {
+    return this._executionRole;
   }
 
   /**
@@ -530,14 +557,20 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
    */
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
     return {
-      image: this.imageConfig.imageName,
+      image: Tokenization.resolve(this.imageConfig, {
+        scope: this,
+        resolver: new DefaultTokenResolver(new StringConcat()),
+      }).imageName,
       command: this.command,
       environment: Object.keys(this.environment ?? {}).map((envKey) => ({
         name: envKey,
         value: (this.environment ?? {})[envKey],
       })),
       jobRoleArn: this.jobRole?.roleArn,
-      executionRoleArn: this.executionRole?.roleArn,
+      executionRoleArn: Tokenization.resolve(this.executionRole, {
+        scope: this,
+        resolver: new DefaultTokenResolver(new StringConcat()),
+      })?.roleArn,
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
       logConfiguration: this.logDriverConfig,
       readonlyRootFilesystem: this.readonlyRootFilesystem,
@@ -753,15 +786,6 @@ export interface IEcsEc2ContainerDefinition extends IEcsContainerDefinition {
   readonly gpu?: number;
 
   /**
-   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
-   *
-   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
-   *
-   * @default - a Role will be created if logging is specified, no role otherwise
-   */
-  readonly executionRole?: iam.IRole;
-
-  /**
    * Add a ulimit to this container
    */
   addUlimit(ulimit: Ulimit): void;
@@ -812,21 +836,11 @@ export class EcsEc2ContainerDefinition extends EcsContainerDefinitionBase implem
   public readonly ulimits: Ulimit[];
   public readonly gpu?: number;
 
-  /**
-   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
-   *
-   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
-   *
-   * @default - a Role will be created if logging is specified, no role otherwise
-   */
-  public readonly executionRole?: iam.IRole;
-
   constructor(scope: Construct, id: string, props: EcsEc2ContainerDefinitionProps) {
     super(scope, id, props);
     this.privileged = props.privileged;
     this.ulimits = props.ulimits ?? [];
     this.gpu = props.gpu;
-    this.executionRole = props.executionRole ?? (this.logDriverConfig ? createExecutionRole(this, 'ExecutionRole') : undefined);
   }
 
   /**
@@ -897,15 +911,6 @@ export interface IEcsFargateContainerDefinition extends IEcsContainerDefinition 
    * @default LATEST
    */
   readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
-
-  /**
-   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
-   *
-   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
-   *
-   * @default - a Role will be created
-   */
-  readonly executionRole: iam.IRole;
 }
 
 /**
@@ -947,20 +952,10 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
   public readonly fargatePlatformVersion?: ecs.FargatePlatformVersion;
   public readonly assignPublicIp?: boolean;
 
-  /**
-   * The role used by Amazon ECS container and AWS Fargate agents to make AWS API calls on your behalf.
-   *
-   * @see https://docs.aws.amazon.com/batch/latest/userguide/execution-IAM-role.html
-   *
-   * @default - a Role will be created
-   */
-  public readonly executionRole: iam.IRole;
-
   constructor(scope: Construct, id: string, props: EcsFargateContainerDefinitionProps) {
     super(scope, id, props);
     this.assignPublicIp = props.assignPublicIp;
     this.fargatePlatformVersion = props.fargatePlatformVersion;
-    this.executionRole = props.executionRole ?? createExecutionRole(this, 'ExecutionRole');
   }
 
   /**
@@ -977,12 +972,4 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
       },
     };
   };
-}
-
-function createExecutionRole(scope: Construct, id: string): iam.IRole {
-  return new iam.Role(scope, id, {
-    assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
-    // needed for cross-account access with TagParameterContainerImage
-    roleName: PhysicalName.GENERATE_IF_NEEDED,
-  });
 }
