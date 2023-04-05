@@ -307,6 +307,17 @@ export interface CodeBuildOptions {
    * @default Duration.hours(1)
    */
   readonly timeout?: Duration;
+
+  /**
+   * ProjectFileSystemLocation objects for CodeBuild build projects.
+   *
+   * A ProjectFileSystemLocation object specifies the identifier, location, mountOptions, mountPoint,
+   * and type of a file system created using Amazon Elastic File System.
+   * Requires a vpc to be set and privileged to be set to true.
+   *
+   * @default - no file system locations
+   */
+  readonly fileSystemLocations?: cb.IFileSystemLocation[];
 }
 
 
@@ -802,7 +813,10 @@ export class CodePipeline extends PipelineBase {
       ],
       input: this._cloudAssemblyFileSet,
       buildEnvironment: {
-        privileged: assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE),
+        privileged: (
+          assets.some(asset => asset.assetType === AssetType.DOCKER_IMAGE) ||
+          this.props.codeBuildDefaults?.buildEnvironment?.privileged
+        ),
       },
       role,
     });
