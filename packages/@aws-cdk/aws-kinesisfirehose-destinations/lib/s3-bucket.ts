@@ -1,6 +1,6 @@
-import * as iam from '@aws-cdk/aws-iam';
-import * as firehose from '@aws-cdk/aws-kinesisfirehose';
-import * as s3 from '@aws-cdk/aws-s3';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { BackupMode, CommonDestinationProps, CommonDestinationS3Props } from './common';
 import { createBackupConfig, createBufferingHints, createEncryptionConfig, createLoggingOptions, createProcessingConfig } from './private/helpers';

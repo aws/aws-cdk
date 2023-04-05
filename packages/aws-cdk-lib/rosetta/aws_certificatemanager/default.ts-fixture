@@ -1,0 +1,15 @@
+// Fixture with packages imported, but nothing else
+import { Construct } from 'constructs';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import * as route53 from 'aws-cdk-lib/aws-route53';
+import { PublicHostedZone } from 'aws-cdk-lib/aws-route53';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { Stack, Names } from 'aws-cdk-lib';
+import { AwsCustomResource, PhysicalResourceId, AwsCustomResourcePolicy } from 'aws-cdk-lib/custom-resources';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// here
+  }
+}

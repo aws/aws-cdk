@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.SimSpaceWeaver"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.simspaceweaver"
+    },
+    "python": {
+      "module": "aws_cdk.aws_simspaceweaver"
+    }
+  }
+}

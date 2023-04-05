@@ -1,6 +1,6 @@
-import * as kms from '@aws-cdk/aws-kms';
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import { SecretValue } from '@aws-cdk/core';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import { SecretValue } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 
 /**
