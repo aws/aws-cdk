@@ -12,6 +12,10 @@ export interface UserHandlerProps {
   readonly passwordSecretArn: string;
 }
 
+export interface UserGroupHandlerProps {
+  readonly groupName: string;
+}
+
 export interface TableHandlerProps {
   readonly tableName: {
     readonly prefix: string;
