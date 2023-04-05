@@ -1,4 +1,4 @@
-import { HttpIntegrationType, HttpRouteIntegration, HttpRouteIntegrationBindOptions, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2';
+import { HttpIntegrationType, HttpRouteIntegration, HttpRouteIntegrationBindOptions, PayloadFormatVersion } from '@aws-cdk/aws-apigatewayv2-alpha';
 
 export class DummyRouteIntegration extends HttpRouteIntegration {
   constructor() {

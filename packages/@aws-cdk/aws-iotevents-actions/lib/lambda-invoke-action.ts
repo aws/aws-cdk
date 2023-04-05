@@ -1,5 +1,5 @@
-import * as iotevents from '@aws-cdk/aws-iotevents';
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
 /**

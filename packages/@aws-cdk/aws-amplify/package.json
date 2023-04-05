@@ -1,7 +1,7 @@
 {
-  "name": "@aws-cdk/aws-amplify",
+  "name": "@aws-cdk/aws-amplify-alpha",
   "version": "0.0.0",
-  "private": true,
+  "private": false,
   "description": "The CDK Construct Library for AWS::Amplify",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -9,24 +9,28 @@
     "outdir": "dist",
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Amplify",
-        "packageId": "Amazon.CDK.AWS.Amplify",
+        "namespace": "Amazon.CDK.AWS.Amplify.Alpha",
+        "packageId": "Amazon.CDK.AWS.Amplify.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.amplify",
+        "package": "software.amazon.awscdk.services.amplify.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "amplify"
+          "artifactId": "amplify-alpha"
         }
       },
       "python": {
-        "distName": "aws-cdk.aws-amplify",
-        "module": "aws_cdk.aws_amplify",
+        "distName": "aws-cdk.aws-amplify-alpha",
+        "module": "aws_cdk.aws_amplify_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkamplifyalpha"
       }
     },
     "projectReferences": true,
@@ -53,17 +57,14 @@
     "pkglint": "pkglint -f",
     "test": "cdk-test",
     "watch": "cdk-watch",
-    "cfn2ts": "cfn2ts",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat",
-    "gen": "cfn2ts",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
   "cdk-build": {
-    "cloudformation": "AWS::Amplify",
     "env": {
       "AWSLINT_BASE_CONSTRUCT": true
     }
@@ -82,38 +83,18 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "aws-sdk": "^2.1329.0"
-  },
-  "dependencies": {
-    "@aws-cdk/aws-codebuild": "0.0.0",
-    "@aws-cdk/aws-codecommit": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-kms": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-lambda-nodejs": "0.0.0",
-    "@aws-cdk/aws-s3-assets": "0.0.0",
-    "@aws-cdk/aws-secretsmanager": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
+    "aws-sdk": "^2.1329.0",
+    "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0"
   },
+  "dependencies": {},
   "peerDependencies": {
-    "@aws-cdk/aws-codebuild": "0.0.0",
-    "@aws-cdk/aws-codecommit": "0.0.0",
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-kms": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-lambda-nodejs": "0.0.0",
-    "@aws-cdk/aws-s3-assets": "0.0.0",
-    "@aws-cdk/aws-secretsmanager": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "@aws-cdk/custom-resources": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -123,7 +104,7 @@
   "maturity": "experimental",
   "awslint": {
     "exclude": [
-      "construct-ctor-props-optional:@aws-cdk/aws-amplify.App"
+      "*:*"
     ]
   },
   "awscdkio": {
@@ -131,5 +112,11 @@
   },
   "publishConfig": {
     "tag": "latest"
+  },
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
   }
 }

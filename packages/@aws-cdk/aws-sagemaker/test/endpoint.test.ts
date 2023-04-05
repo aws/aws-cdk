@@ -1,4 +1,4 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import * as sagemaker from '../lib';
 
 describe('When searching an Endpoint for a production variant', () => {
