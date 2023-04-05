@@ -8,7 +8,7 @@ import * as iam from '../../../aws-iam';
 import { LogGroup } from '../../../aws-logs';
 import { IBucket } from '../../../aws-s3';
 import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '../../../core';
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxapi from '../../../cx-api';
 import { Construct } from 'constructs';
 import { ArtifactMap } from './artifact-map';
 import { CodeBuildStep } from './codebuild-step';
@@ -148,7 +148,7 @@ export interface CodePipelineProps {
   /**
    * Customize the CodeBuild projects created for this pipeline
    *
-   * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_5_0
+   * @default - All projects run non-privileged build, SMALL instance, LinuxBuildImage.STANDARD_6_0
    */
   readonly codeBuildDefaults?: CodeBuildOptions;
 
@@ -993,7 +993,7 @@ export class CodePipeline extends PipelineBase {
   private codeBuildDefaultsFor(nodeType: CodeBuildProjectType): CodeBuildOptions | undefined {
     const defaultOptions: CodeBuildOptions = {
       buildEnvironment: {
-        buildImage: cb.LinuxBuildImage.STANDARD_5_0,
+        buildImage: CDKP_DEFAULT_CODEBUILD_IMAGE,
         computeType: cb.ComputeType.SMALL,
       },
     };

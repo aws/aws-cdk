@@ -1,5 +1,5 @@
 import * as codebuild from '../../../aws-codebuild';
-import * as ec2 from '../../..//aws-ec2';
+import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import { Duration } from '../../../core';
 import { CloudWatchLoggingOption, S3LoggingOptions } from './codepipeline';
