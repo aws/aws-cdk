@@ -15,14 +15,9 @@ import {
   Stack,
   ArnFormat,
   FeatureFlags,
-<<<<<<< HEAD:packages/@aws-cdk/aws-ecs/lib/base/base-service.ts
   Names,
-} from '@aws-cdk/core';
-import * as cxapi from '@aws-cdk/cx-api';
-=======
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
->>>>>>> main:packages/aws-cdk-lib/aws-ecs/lib/base/base-service.ts
 
 import { Construct } from 'constructs';
 import { ScalableTaskCount } from './scalable-task-count';

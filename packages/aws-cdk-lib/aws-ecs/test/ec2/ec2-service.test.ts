@@ -1,17 +1,6 @@
-<<<<<<< HEAD:packages/@aws-cdk/aws-ecs/test/ec2/ec2-service.test.ts
-import { Annotations, Match, Template } from '@aws-cdk/assertions';
-import * as autoscaling from '@aws-cdk/aws-autoscaling';
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import * as elb from '@aws-cdk/aws-elasticloadbalancing';
-import * as elbv2 from '@aws-cdk/aws-elasticloadbalancingv2';
-import * as kms from '@aws-cdk/aws-kms';
-import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cloudmap from '@aws-cdk/aws-servicediscovery';
-=======
 import { Annotations, Match, Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as elb from '../../../aws-elasticloadbalancing';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
@@ -19,7 +8,6 @@ import * as kms from '../../../aws-kms';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
 import * as cloudmap from '../../../aws-servicediscovery';
->>>>>>> main:packages/aws-cdk-lib/aws-ecs/test/ec2/ec2-service.test.ts
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from '../../../core';
 import { App } from '../../../core';
