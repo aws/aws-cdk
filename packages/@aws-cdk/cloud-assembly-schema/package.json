@@ -38,9 +38,9 @@
     }
   },
   "scripts": {
-    "build": "cdk-build",
+    "build": "cdk-build --skip-lint",
+    "gen": "cdk-copy cloud-assembly-schema",
     "watch": "cdk-watch",
-    "lint": "cdk-lint",
     "test": "cdk-test",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
@@ -65,6 +65,7 @@
     "@types/jest": "^27.5.2",
     "@types/mock-fs": "^4.13.1",
     "@types/semver": "^7.3.13",
+    "aws-cdk-lib": "0.0.0",
     "jest": "^27.5.1",
     "mock-fs": "^4.14.0",
     "typescript-json-schema": "^0.55.0"
