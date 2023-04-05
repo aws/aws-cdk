@@ -1,8 +1,8 @@
 import * as path from 'path';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AppStagingSynthesizer, BootstrapRole } from '../lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
 

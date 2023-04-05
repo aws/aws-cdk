@@ -1,29 +1,31 @@
 {
-  "version": "30.1.0",
+  "version": "31.0.0",
   "files": {
-    "abcdef": {
+    "47bef23db368c64788bca777543a7c0374db287baed4c18c990b4af1444d8d53": {
       "source": {
-        "path": "/Users/conroyka/Desktop/aws-cdk-kaizen/kaizen-aws-ACTUAL/aws-cdk/packages/@aws-cdk/core-synthesizer/test/integ.synthesizer.js",
-        "packaging": "file"
+        "path": "asset.47bef23db368c64788bca777543a7c0374db287baed4c18c990b4af1444d8d53",
+        "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region": {
-          "bucketName": "default-bucket",
-          "objectKey": "abcdef.js",
-          "assumeRoleArn": "arn:${Token[AWS.Partition.9]}:iam:${Token[AWS.Region.10]}:${Token[AWS.AccountId.6]}:role:cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        "489318732371-us-east-2": {
+          "bucketName": "cdk-489318732371-us-east-2-app-id",
+          "objectKey": "47bef23db368c64788bca777543a7c0374db287baed4c18c990b4af1444d8d53.zip",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-file-publishing-role-us-east-2-app-id"
         }
       }
     },
-    "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a": {
+    "041f053398069413175306d7e2e5dd7fe62b1f288bf8efb64288eefbdcb23d8a": {
       "source": {
         "path": "app-scoped-staging-test.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
-          "bucketName": "default-bucket",
-          "objectKey": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a.json",
-          "assumeRoleArn": "arn:${Token[AWS.Partition.9]}:iam:${Token[AWS.Region.10]}:${Token[AWS.AccountId.6]}:role:cdk-${Qualifier}-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        "489318732371-us-east-2": {
+          "bucketName": "cdk-489318732371-us-east-2-app-id",
+          "objectKey": "041f053398069413175306d7e2e5dd7fe62b1f288bf8efb64288eefbdcb23d8a.json",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-file-publishing-role-us-east-2-app-id"
         }
       }
     }
