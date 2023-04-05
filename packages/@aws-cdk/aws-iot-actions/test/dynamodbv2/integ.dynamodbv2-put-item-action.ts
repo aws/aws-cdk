@@ -1,7 +1,7 @@
-import * as dynamodb from '@aws-cdk/aws-dynamodb';
-import * as iot from '@aws-cdk/aws-iot';
-import * as cdk from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as iot from '@aws-cdk/aws-iot-alpha';
+import * as cdk from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as actions from '../../lib';
 
 const app = new cdk.App();

@@ -3,15 +3,15 @@ import {
   UserPoolIdentityProviderGoogle,
   UserPoolIdentityProviderAmazon,
   ProviderAttribute,
-} from '@aws-cdk/aws-cognito';
+} from 'aws-cdk-lib/aws-cognito';
 import {
   Effect,
   PolicyStatement,
-} from '@aws-cdk/aws-iam';
+} from 'aws-cdk-lib/aws-iam';
 import {
   App,
   Stack,
-} from '@aws-cdk/core';
+} from 'aws-cdk-lib';
 import {
   IdentityPool,
   IdentityPoolProviderUrl,

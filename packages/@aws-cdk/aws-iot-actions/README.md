@@ -131,7 +131,7 @@ The code snippet below creates an AWS IoT Rule that puts logs to CloudWatch Logs
 when it is triggered.
 
 ```ts
-import * as logs from '@aws-cdk/aws-logs';
+import * as logs from 'aws-cdk-lib/aws-logs';
 
 const logGroup = new logs.LogGroup(this, 'MyLogGroup');
 
@@ -168,7 +168,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
 The code snippet below creates an AWS IoT Rule that changes the state of an Amazon CloudWatch alarm when it is triggered:
 
 ```ts
-import * as cloudwatch from '@aws-cdk/aws-cloudwatch';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 const metric = new cloudwatch.Metric({
   namespace: 'MyNamespace',
@@ -199,7 +199,7 @@ The code snippet below creates an AWS IoT Rule that puts records to Kinesis Data
 stream when it is triggered.
 
 ```ts
-import * as kinesis from '@aws-cdk/aws-kinesis';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 
 const stream = new kinesis.Stream(this, 'MyStream');
 
@@ -219,8 +219,8 @@ The code snippet below creates an AWS IoT Rule that puts records to Put records
 to Kinesis Data Firehose stream when it is triggered.
 
 ```ts
-import * as firehose from '@aws-cdk/aws-kinesisfirehose';
-import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations';
+import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
+import * as destinations from '@aws-cdk/aws-kinesisfirehose-destinations-alpha';
 
 const bucket = new s3.Bucket(this, 'MyBucket');
 const stream = new firehose.DeliveryStream(this, 'MyStream', {
@@ -244,7 +244,7 @@ The code snippet below creates an AWS IoT Rule that send messages
 to an SQS queue when it is triggered:
 
 ```ts
-import * as sqs from '@aws-cdk/aws-sqs';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 const queue = new sqs.Queue(this, 'MyQueue');
 
@@ -265,7 +265,7 @@ const topicRule = new iot.TopicRule(this, 'TopicRule', {
 The code snippet below creates and AWS IoT Rule that publishes messages to an SNS topic when it is triggered:
 
 ```ts
-import * as sns from '@aws-cdk/aws-sns';
+import * as sns from 'aws-cdk-lib/aws-sns';
 
 const topic = new sns.Topic(this, 'MyTopic');
 
@@ -287,7 +287,7 @@ The code snippet below creates an AWS IoT rule that writes all or part of an
 MQTT message to DynamoDB using the DynamoDBv2 action.
 
 ```ts
-import * as dynamodb from '@aws-cdk/aws-dynamodb';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 
 declare const table: dynamodb.Table;
 
@@ -307,8 +307,8 @@ The code snippet below creates an AWS IoT Rule that puts messages
 to an IoT Events input when it is triggered:
 
 ```ts
-import * as iotevents from '@aws-cdk/aws-iotevents';
-import * as iam from '@aws-cdk/aws-iam';
+import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
 declare const role: iam.IRole;
 

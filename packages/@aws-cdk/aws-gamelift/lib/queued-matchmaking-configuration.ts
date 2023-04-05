@@ -1,9 +1,9 @@
-import * as iam from '@aws-cdk/aws-iam';
-import * as sns from '@aws-cdk/aws-sns';
-import * as cdk from '@aws-cdk/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IGameSessionQueue } from './game-session-queue';
-import * as gamelift from './gamelift.generated';
+import * as gamelift from 'aws-cdk-lib/aws-gamelift';
 import { MatchmakingConfigurationProps, GameProperty, MatchmakingConfigurationBase, IMatchmakingConfiguration } from './matchmaking-configuration';
 
 /**

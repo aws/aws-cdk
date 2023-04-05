@@ -1,5 +1,5 @@
 {
-  "name": "@aws-cdk/aws-kinesisfirehose-destinations",
+  "name": "@aws-cdk/aws-kinesisfirehose-destinations-alpha",
   "version": "0.0.0",
   "description": "CDK Destinations Constructs for AWS Kinesis Firehose",
   "main": "lib/index.js",
@@ -8,24 +8,28 @@
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.kinesisfirehose.destinations",
+        "package": "software.amazon.awscdk.services.kinesisfirehose.destinations.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "kinesisfirehose-destinations"
+          "artifactId": "kinesisfirehose-destinations-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.KinesisFirehose.Destinations",
-        "packageId": "Amazon.CDK.AWS.KinesisFirehose.Destinations",
+        "namespace": "Amazon.CDK.AWS.KinesisFirehose.Destinations.Alpha",
+        "packageId": "Amazon.CDK.AWS.KinesisFirehose.Destinations.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-kinesisfirehose-destinations",
-        "module": "aws_cdk.aws_kinesisfirehose_destinations",
+        "distName": "aws-cdk.aws-kinesisfirehose-destinations-alpha",
+        "module": "aws_cdk.aws_kinesisfirehose_destinations_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
         ]
+      },
+      "go": {
+        "moduleName": "github.com/aws/aws-cdk-go",
+        "packageName": "awscdkkinesisfirehosedestinationsalpha"
       }
     },
     "projectReferences": true,
@@ -71,33 +75,21 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@aws-cdk/assertions": "0.0.0",
-    "@aws-cdk/aws-lambda": "0.0.0",
-    "@aws-cdk/aws-lambda-nodejs": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
-    "jest": "^27.5.1"
+    "jest": "^27.5.1",
+    "aws-cdk-lib": "0.0.0",
+    "constructs": "^10.0.0",
+    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0"
   },
-  "dependencies": {
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-kinesisfirehose": "0.0.0",
-    "@aws-cdk/aws-kms": "0.0.0",
-    "@aws-cdk/aws-logs": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
-    "constructs": "^10.0.0"
-  },
+  "dependencies": {},
   "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
-    "@aws-cdk/aws-iam": "0.0.0",
-    "@aws-cdk/aws-kinesisfirehose": "0.0.0",
-    "@aws-cdk/aws-kms": "0.0.0",
-    "@aws-cdk/aws-logs": "0.0.0",
-    "@aws-cdk/aws-s3": "0.0.0",
-    "@aws-cdk/core": "0.0.0",
+    "@aws-cdk/aws-kinesisfirehose-alpha": "0.0.0",
+    "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
@@ -106,7 +98,9 @@
   "stability": "experimental",
   "maturity": "experimental",
   "awslint": {
-    "exclude": []
+    "exclude": [
+      "*:*"
+    ]
   },
   "awscdkio": {
     "announce": false
@@ -117,7 +111,13 @@
     }
   },
   "publishConfig": {
-    "tag": "next"
+    "tag": "latest"
   },
-  "private": true
+  "private": false,
+  "pkglint": {
+    "exclude": [
+      "naming/package-matches-directory",
+      "assert/assert-dependency"
+    ]
+  }
 }

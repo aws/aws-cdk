@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { Runtime } from '@aws-cdk/aws-lambda';
-import { App, Stack, StackProps } from '@aws-cdk/core';
-import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as lambda from '../lib';
 

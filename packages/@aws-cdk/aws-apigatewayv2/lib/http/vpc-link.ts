@@ -1,7 +1,7 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import { IResource, Lazy, Names, Resource } from '@aws-cdk/core';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { IResource, Lazy, Names, Resource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnVpcLink } from '../apigatewayv2.generated';
+import { CfnVpcLink } from 'aws-cdk-lib/aws-apigatewayv2';
 
 /**
  * Represents an API Gateway VpcLink

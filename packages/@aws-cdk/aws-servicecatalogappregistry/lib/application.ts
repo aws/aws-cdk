@@ -1,12 +1,12 @@
-import { CfnResourceShare } from '@aws-cdk/aws-ram';
-import * as cdk from '@aws-cdk/core';
+import { CfnResourceShare } from 'aws-cdk-lib/aws-ram';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { StageStackAssociator } from './aspects/stack-associator';
 import { AttributeGroup, IAttributeGroup } from './attribute-group';
 import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
 import { isAccountUnresolved } from './private/utils';
 import { InputValidator } from './private/validation';
-import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from './servicecatalogappregistry.generated';
+import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } from 'aws-cdk-lib/aws-servicecatalogappregistry';
 
 const APPLICATION_READ_ONLY_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationReadOnly';
 const APPLICATION_ALLOW_ACCESS_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryApplicationAllowAssociation';

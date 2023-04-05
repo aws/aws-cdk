@@ -1,6 +1,6 @@
-import * as ec2 from '@aws-cdk/aws-ec2';
-import { Stack, App, StackProps, CfnOutput } from '@aws-cdk/core';
-import * as integ from '@aws-cdk/integ-tests';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { Stack, App, StackProps, CfnOutput } from 'aws-cdk-lib';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as cloud9 from '../lib';
 import { ImageId } from '../lib';

@@ -1,0 +1,55 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
+const lambda = require("aws-cdk-lib/aws-lambda");
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+const aws_apigateway_1 = require("aws-cdk-lib/aws-apigateway");
+// Against the RestApi endpoint from the stack output, run
+// `curl -s -o /dev/null -w "%{http_code}" <url>` should return 401
+// `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: deny' <url>?allow=yes` should return 403
+// `curl -s -o /dev/null -w "%{http_code}" -H 'Authorization: allow' <url>?allow=yes` should return 200
+const app = new aws_cdk_lib_1.App();
+const stack = new aws_cdk_lib_1.Stack(app, 'RequestAuthorizerInteg');
+const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
+    runtime: lambda.Runtime.NODEJS_14_X,
+    handler: 'index.handler',
+    code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.request-authorizer.handler')),
+});
+const restapi = new aws_apigateway_1.RestApi(stack, 'MyRestApi', { cloudWatchRole: true });
+const authorizer = new aws_apigateway_1.RequestAuthorizer(stack, 'MyAuthorizer', {
+    handler: authorizerFn,
+    identitySources: [aws_apigateway_1.IdentitySource.header('Authorization'), aws_apigateway_1.IdentitySource.queryString('allow')],
+});
+const secondAuthorizer = new aws_apigateway_1.RequestAuthorizer(stack, 'MySecondAuthorizer', {
+    handler: authorizerFn,
+    identitySources: [aws_apigateway_1.IdentitySource.header('Authorization'), aws_apigateway_1.IdentitySource.queryString('allow')],
+});
+restapi.root.addMethod('ANY', new aws_apigateway_1.MockIntegration({
+    integrationResponses: [
+        { statusCode: '200' },
+    ],
+    passthroughBehavior: aws_apigateway_1.PassthroughBehavior.NEVER,
+    requestTemplates: {
+        'application/json': '{ "statusCode": 200 }',
+    },
+}), {
+    methodResponses: [
+        { statusCode: '200' },
+    ],
+    authorizer,
+});
+restapi.root.resourceForPath('auth').addMethod('ANY', new aws_apigateway_1.MockIntegration({
+    integrationResponses: [
+        { statusCode: '200' },
+    ],
+    passthroughBehavior: aws_apigateway_1.PassthroughBehavior.NEVER,
+    requestTemplates: {
+        'application/json': '{ "statusCode": 200 }',
+    },
+}), {
+    methodResponses: [
+        { statusCode: '200' },
+    ],
+    authorizer: secondAuthorizer,
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcucmVxdWVzdC1hdXRob3JpemVyLmxpdC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImludGVnLnJlcXVlc3QtYXV0aG9yaXplci5saXQudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFBQSw2QkFBNkI7QUFDN0IsaURBQWlEO0FBQ2pELDZDQUF5QztBQUN6QywrREFBOEg7QUFFOUgsMERBQTBEO0FBQzFELG1FQUFtRTtBQUNuRSxzR0FBc0c7QUFDdEcsdUdBQXVHO0FBRXZHLE1BQU0sR0FBRyxHQUFHLElBQUksaUJBQUcsRUFBRSxDQUFDO0FBQ3RCLE1BQU0sS0FBSyxHQUFHLElBQUksbUJBQUssQ0FBQyxHQUFHLEVBQUUsd0JBQXdCLENBQUMsQ0FBQztBQUV2RCxNQUFNLFlBQVksR0FBRyxJQUFJLE1BQU0sQ0FBQyxRQUFRLENBQUMsS0FBSyxFQUFFLHNCQUFzQixFQUFFO0lBQ3RFLE9BQU8sRUFBRSxNQUFNLENBQUMsT0FBTyxDQUFDLFdBQVc7SUFDbkMsT0FBTyxFQUFFLGVBQWU7SUFDeEIsSUFBSSxFQUFFLE1BQU0sQ0FBQyxTQUFTLENBQUMsU0FBUyxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsU0FBUyxFQUFFLGtDQUFrQyxDQUFDLENBQUM7Q0FDM0YsQ0FBQyxDQUFDO0FBRUgsTUFBTSxPQUFPLEdBQUcsSUFBSSx3QkFBTyxDQUFDLEtBQUssRUFBRSxXQUFXLEVBQUUsRUFBRSxjQUFjLEVBQUUsSUFBSSxFQUFFLENBQUMsQ0FBQztBQUUxRSxNQUFNLFVBQVUsR0FBRyxJQUFJLGtDQUFpQixDQUFDLEtBQUssRUFBRSxjQUFjLEVBQUU7SUFDOUQsT0FBTyxFQUFFLFlBQVk7SUFDckIsZUFBZSxFQUFFLENBQUMsK0JBQWMsQ0FBQyxNQUFNLENBQUMsZUFBZSxDQUFDLEVBQUUsK0JBQWMsQ0FBQyxXQUFXLENBQUMsT0FBTyxDQUFDLENBQUM7Q0FDL0YsQ0FBQyxDQUFDO0FBRUgsTUFBTSxnQkFBZ0IsR0FBRyxJQUFJLGtDQUFpQixDQUFDLEtBQUssRUFBRSxvQkFBb0IsRUFBRTtJQUMxRSxPQUFPLEVBQUUsWUFBWTtJQUNyQixlQUFlLEVBQUUsQ0FBQywrQkFBYyxDQUFDLE1BQU0sQ0FBQyxlQUFlLENBQUMsRUFBRSwrQkFBYyxDQUFDLFdBQVcsQ0FBQyxPQUFPLENBQUMsQ0FBQztDQUMvRixDQUFDLENBQUM7QUFFSCxPQUFPLENBQUMsSUFBSSxDQUFDLFNBQVMsQ0FBQyxLQUFLLEVBQUUsSUFBSSxnQ0FBZSxDQUFDO0lBQ2hELG9CQUFvQixFQUFFO1FBQ3BCLEVBQUUsVUFBVSxFQUFFLEtBQUssRUFBRTtLQUN0QjtJQUNELG1CQUFtQixFQUFFLG9DQUFtQixDQUFDLEtBQUs7SUFDOUMsZ0JBQWdCLEVBQUU7UUFDaEIsa0JBQWtCLEVBQUUsdUJBQXVCO0tBQzVDO0NBQ0YsQ0FBQyxFQUFFO0lBQ0YsZUFBZSxFQUFFO1FBQ2YsRUFBRSxVQUFVLEVBQUUsS0FBSyxFQUFFO0tBQ3RCO0lBQ0QsVUFBVTtDQUNYLENBQUMsQ0FBQztBQUVILE9BQU8sQ0FBQyxJQUFJLENBQUMsZUFBZSxDQUFDLE1BQU0sQ0FBQyxDQUFDLFNBQVMsQ0FBQyxLQUFLLEVBQUUsSUFBSSxnQ0FBZSxDQUFDO0lBQ3hFLG9CQUFvQixFQUFFO1FBQ3BCLEVBQUUsVUFBVSxFQUFFLEtBQUssRUFBRTtLQUN0QjtJQUNELG1CQUFtQixFQUFFLG9DQUFtQixDQUFDLEtBQUs7SUFDOUMsZ0JBQWdCLEVBQUU7UUFDaEIsa0JBQWtCLEVBQUUsdUJBQXVCO0tBQzVDO0NBQ0YsQ0FBQyxFQUFFO0lBQ0YsZUFBZSxFQUFFO1FBQ2YsRUFBRSxVQUFVLEVBQUUsS0FBSyxFQUFFO0tBQ3RCO0lBQ0QsVUFBVSxFQUFFLGdCQUFnQjtDQUM3QixDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBwYXRoIGZyb20gJ3BhdGgnO1xuaW1wb3J0ICogYXMgbGFtYmRhIGZyb20gJ2F3cy1jZGstbGliL2F3cy1sYW1iZGEnO1xuaW1wb3J0IHsgQXBwLCBTdGFjayB9IGZyb20gJ2F3cy1jZGstbGliJztcbmltcG9ydCB7IE1vY2tJbnRlZ3JhdGlvbiwgUGFzc3Rocm91Z2hCZWhhdmlvciwgUmVzdEFwaSwgUmVxdWVzdEF1dGhvcml6ZXIsIElkZW50aXR5U291cmNlIH0gZnJvbSAnYXdzLWNkay1saWIvYXdzLWFwaWdhdGV3YXknO1xuXG4vLyBBZ2FpbnN0IHRoZSBSZXN0QXBpIGVuZHBvaW50IGZyb20gdGhlIHN0YWNrIG91dHB1dCwgcnVuXG4vLyBgY3VybCAtcyAtbyAvZGV2L251bGwgLXcgXCIle2h0dHBfY29kZX1cIiA8dXJsPmAgc2hvdWxkIHJldHVybiA0MDFcbi8vIGBjdXJsIC1zIC1vIC9kZXYvbnVsbCAtdyBcIiV7aHR0cF9jb2RlfVwiIC1IICdBdXRob3JpemF0aW9uOiBkZW55JyA8dXJsPj9hbGxvdz15ZXNgIHNob3VsZCByZXR1cm4gNDAzXG4vLyBgY3VybCAtcyAtbyAvZGV2L251bGwgLXcgXCIle2h0dHBfY29kZX1cIiAtSCAnQXV0aG9yaXphdGlvbjogYWxsb3cnIDx1cmw+P2FsbG93PXllc2Agc2hvdWxkIHJldHVybiAyMDBcblxuY29uc3QgYXBwID0gbmV3IEFwcCgpO1xuY29uc3Qgc3RhY2sgPSBuZXcgU3RhY2soYXBwLCAnUmVxdWVzdEF1dGhvcml6ZXJJbnRlZycpO1xuXG5jb25zdCBhdXRob3JpemVyRm4gPSBuZXcgbGFtYmRhLkZ1bmN0aW9uKHN0YWNrLCAnTXlBdXRob3JpemVyRnVuY3Rpb24nLCB7XG4gIHJ1bnRpbWU6IGxhbWJkYS5SdW50aW1lLk5PREVKU18xNF9YLFxuICBoYW5kbGVyOiAnaW5kZXguaGFuZGxlcicsXG4gIGNvZGU6IGxhbWJkYS5Bc3NldENvZGUuZnJvbUFzc2V0KHBhdGguam9pbihfX2Rpcm5hbWUsICdpbnRlZy5yZXF1ZXN0LWF1dGhvcml6ZXIuaGFuZGxlcicpKSxcbn0pO1xuXG5jb25zdCByZXN0YXBpID0gbmV3IFJlc3RBcGkoc3RhY2ssICdNeVJlc3RBcGknLCB7IGNsb3VkV2F0Y2hSb2xlOiB0cnVlIH0pO1xuXG5jb25zdCBhdXRob3JpemVyID0gbmV3IFJlcXVlc3RBdXRob3JpemVyKHN0YWNrLCAnTXlBdXRob3JpemVyJywge1xuICBoYW5kbGVyOiBhdXRob3JpemVyRm4sXG4gIGlkZW50aXR5U291cmNlczogW0lkZW50aXR5U291cmNlLmhlYWRlcignQXV0aG9yaXphdGlvbicpLCBJZGVudGl0eVNvdXJjZS5xdWVyeVN0cmluZygnYWxsb3cnKV0sXG59KTtcblxuY29uc3Qgc2Vjb25kQXV0aG9yaXplciA9IG5ldyBSZXF1ZXN0QXV0aG9yaXplcihzdGFjaywgJ015U2Vjb25kQXV0aG9yaXplcicsIHtcbiAgaGFuZGxlcjogYXV0aG9yaXplckZuLFxuICBpZGVudGl0eVNvdXJjZXM6IFtJZGVudGl0eVNvdXJjZS5oZWFkZXIoJ0F1dGhvcml6YXRpb24nKSwgSWRlbnRpdHlTb3VyY2UucXVlcnlTdHJpbmcoJ2FsbG93JyldLFxufSk7XG5cbnJlc3RhcGkucm9vdC5hZGRNZXRob2QoJ0FOWScsIG5ldyBNb2NrSW50ZWdyYXRpb24oe1xuICBpbnRlZ3JhdGlvblJlc3BvbnNlczogW1xuICAgIHsgc3RhdHVzQ29kZTogJzIwMCcgfSxcbiAgXSxcbiAgcGFzc3Rocm91Z2hCZWhhdmlvcjogUGFzc3Rocm91Z2hCZWhhdmlvci5ORVZFUixcbiAgcmVxdWVzdFRlbXBsYXRlczoge1xuICAgICdhcHBsaWNhdGlvbi9qc29uJzogJ3sgXCJzdGF0dXNDb2RlXCI6IDIwMCB9JyxcbiAgfSxcbn0pLCB7XG4gIG1ldGhvZFJlc3BvbnNlczogW1xuICAgIHsgc3RhdHVzQ29kZTogJzIwMCcgfSxcbiAgXSxcbiAgYXV0aG9yaXplcixcbn0pO1xuXG5yZXN0YXBpLnJvb3QucmVzb3VyY2VGb3JQYXRoKCdhdXRoJykuYWRkTWV0aG9kKCdBTlknLCBuZXcgTW9ja0ludGVncmF0aW9uKHtcbiAgaW50ZWdyYXRpb25SZXNwb25zZXM6IFtcbiAgICB7IHN0YXR1c0NvZGU6ICcyMDAnIH0sXG4gIF0sXG4gIHBhc3N0aHJvdWdoQmVoYXZpb3I6IFBhc3N0aHJvdWdoQmVoYXZpb3IuTkVWRVIsXG4gIHJlcXVlc3RUZW1wbGF0ZXM6IHtcbiAgICAnYXBwbGljYXRpb24vanNvbic6ICd7IFwic3RhdHVzQ29kZVwiOiAyMDAgfScsXG4gIH0sXG59KSwge1xuICBtZXRob2RSZXNwb25zZXM6IFtcbiAgICB7IHN0YXR1c0NvZGU6ICcyMDAnIH0sXG4gIF0sXG4gIGF1dGhvcml6ZXI6IHNlY29uZEF1dGhvcml6ZXIsXG59KTtcbiJdfQ==

@@ -1,7 +1,7 @@
-import { Template, Match } from '@aws-cdk/assertions';
-import * as iam from '@aws-cdk/aws-iam';
-import * as iot from '@aws-cdk/aws-iot';
-import * as cdk from '@aws-cdk/core';
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as iot from '@aws-cdk/aws-iot-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
 test('Default cloudwatch metric action', () => {

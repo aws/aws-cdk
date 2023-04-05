@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import * as path from 'path';
-import * as firehose from '@aws-cdk/aws-kinesisfirehose';
-import * as kms from '@aws-cdk/aws-kms';
-import * as lambdanodejs from '@aws-cdk/aws-lambda-nodejs';
-import * as logs from '@aws-cdk/aws-logs';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
+import * as firehose from '@aws-cdk/aws-kinesisfirehose-alpha';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as lambdanodejs from 'aws-cdk-lib/aws-lambda-nodejs';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
 import * as destinations from '../lib';
 
 const app = new cdk.App();

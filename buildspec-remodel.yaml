@@ -1,0 +1,41 @@
+version: 0.2
+
+env:
+  secrets-manager:
+    TOKEN: $TOKEN_SECRET_ARN
+  variables:
+    NODE_OPTIONS: --max_old_space_size=8192
+
+phases:
+  install:
+    commands:
+      # CodeBuild always runs as root, allow npm to operate as such
+      - npm config set unsafe-perm true
+      - mkdir ${HOME}/aws-cdk && cd ${HOME}/aws-cdk
+      # Configure git and git credentials
+      - git config --global user.email "${COMMIT_EMAIL}"
+      - git config --global user.name "${COMMIT_USERNAME}"
+      - echo "Retrieving gh token from secretsmanager"
+      - git clone https://$TOKEN@github.com/aws/aws-cdk -b feat/repo-restructure .
+      - git checkout ${CODEBUILD_RESOLVED_SOURCE_VERSION}
+      # Install yarn if it wasn't already present in the image
+      - yarn --version || npm -g install yarn
+      - yarn install --frozen-lockfile
+      - /sbin/sysctl -w vm.max_map_count=2251954
+  build:
+    commands:
+      - cd ${HOME}/aws-cdk
+      - npx lerna run build --scope @aws-cdk/remodel --include-dependencies
+      - npx remodel ${PWD} --tmp-dir ${HOME}/remodel --no-clean --dry-run
+  post_build:
+    commands:
+      - cd ${HOME}/remodel
+      - git add -A
+      - git commit -m "Execute remodel"
+      - git remote add aws-cdk https://$TOKEN@github.com/aws/aws-cdk
+      - git fetch aws-cdk
+      - git push aws-cdk +feat/repo-restructure:feat/remodel
+artifacts:
+  files:
+    - "**/*"
+  base-directory: ${HOME}/remodel

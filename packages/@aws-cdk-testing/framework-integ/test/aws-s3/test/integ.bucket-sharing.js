@@ -1,0 +1,34 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const iam = require("aws-cdk-lib/aws-iam");
+const cdk = require("aws-cdk-lib");
+const integ_tests_alpha_1 = require("@aws-cdk/integ-tests-alpha");
+const s3 = require("aws-cdk-lib/aws-s3");
+const app = new cdk.App();
+/**
+ * Stack that defines the bucket
+ */
+class Producer extends cdk.Stack {
+    constructor(scope, id, props) {
+        super(scope, id, props);
+        const bucket = new s3.Bucket(this, 'MyBucket', {
+            removalPolicy: cdk.RemovalPolicy.DESTROY,
+        });
+        this.myBucket = bucket;
+    }
+}
+/**
+ * Stack that consumes the bucket
+ */
+class Consumer extends cdk.Stack {
+    constructor(scope, id, props) {
+        super(scope, id, props);
+        const user = new iam.User(this, 'MyUser');
+        props.userBucket.grantReadWrite(user);
+    }
+}
+const producer = new Producer(app, 'ProducerStack');
+new integ_tests_alpha_1.IntegTest(app, 'cdk-integ-bucket-sharing', {
+    testCases: [new Consumer(app, 'ConsumerStack', { userBucket: producer.myBucket })],
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcuYnVja2V0LXNoYXJpbmcuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbnRlZy5idWNrZXQtc2hhcmluZy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLDJDQUEyQztBQUMzQyxtQ0FBbUM7QUFDbkMsa0VBQXVEO0FBQ3ZELHlDQUF5QztBQUV6QyxNQUFNLEdBQUcsR0FBRyxJQUFJLEdBQUcsQ0FBQyxHQUFHLEVBQUUsQ0FBQztBQUUxQjs7R0FFRztBQUNILE1BQU0sUUFBUyxTQUFRLEdBQUcsQ0FBQyxLQUFLO0lBRzlCLFlBQVksS0FBYyxFQUFFLEVBQVUsRUFBRSxLQUFzQjtRQUM1RCxLQUFLLENBQUMsS0FBSyxFQUFFLEVBQUUsRUFBRSxLQUFLLENBQUMsQ0FBQztRQUV4QixNQUFNLE1BQU0sR0FBRyxJQUFJLEVBQUUsQ0FBQyxNQUFNLENBQUMsSUFBSSxFQUFFLFVBQVUsRUFBRTtZQUM3QyxhQUFhLEVBQUUsR0FBRyxDQUFDLGFBQWEsQ0FBQyxPQUFPO1NBQ3pDLENBQUMsQ0FBQztRQUNILElBQUksQ0FBQyxRQUFRLEdBQUcsTUFBTSxDQUFDO0lBQ3pCLENBQUM7Q0FDRjtBQU1EOztHQUVHO0FBQ0gsTUFBTSxRQUFTLFNBQVEsR0FBRyxDQUFDLEtBQUs7SUFDOUIsWUFBWSxLQUFjLEVBQUUsRUFBVSxFQUFFLEtBQW9CO1FBQzFELEtBQUssQ0FBQyxLQUFLLEVBQUUsRUFBRSxFQUFFLEtBQUssQ0FBQyxDQUFDO1FBRXhCLE1BQU0sSUFBSSxHQUFHLElBQUksR0FBRyxDQUFDLElBQUksQ0FBQyxJQUFJLEVBQUUsUUFBUSxDQUFDLENBQUM7UUFDMUMsS0FBSyxDQUFDLFVBQVUsQ0FBQyxjQUFjLENBQUMsSUFBSSxDQUFDLENBQUM7SUFDeEMsQ0FBQztDQUNGO0FBRUQsTUFBTSxRQUFRLEdBQUcsSUFBSSxRQUFRLENBQUMsR0FBRyxFQUFFLGVBQWUsQ0FBQyxDQUFDO0FBRXBELElBQUksNkJBQVMsQ0FBQyxHQUFHLEVBQUUsMEJBQTBCLEVBQUU7SUFDN0MsU0FBUyxFQUFFLENBQUMsSUFBSSxRQUFRLENBQUMsR0FBRyxFQUFFLGVBQWUsRUFBRSxFQUFFLFVBQVUsRUFBRSxRQUFRLENBQUMsUUFBUSxFQUFFLENBQUMsQ0FBQztDQUNuRixDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgKiBhcyBpYW0gZnJvbSAnYXdzLWNkay1saWIvYXdzLWlhbSc7XG5pbXBvcnQgKiBhcyBjZGsgZnJvbSAnYXdzLWNkay1saWInO1xuaW1wb3J0IHsgSW50ZWdUZXN0IH0gZnJvbSAnQGF3cy1jZGsvaW50ZWctdGVzdHMtYWxwaGEnO1xuaW1wb3J0ICogYXMgczMgZnJvbSAnYXdzLWNkay1saWIvYXdzLXMzJztcblxuY29uc3QgYXBwID0gbmV3IGNkay5BcHAoKTtcblxuLyoqXG4gKiBTdGFjayB0aGF0IGRlZmluZXMgdGhlIGJ1Y2tldFxuICovXG5jbGFzcyBQcm9kdWNlciBleHRlbmRzIGNkay5TdGFjayB7XG4gIHB1YmxpYyByZWFkb25seSBteUJ1Y2tldDogczMuQnVja2V0O1xuXG4gIGNvbnN0cnVjdG9yKHNjb3BlOiBjZGsuQXBwLCBpZDogc3RyaW5nLCBwcm9wcz86IGNkay5TdGFja1Byb3BzKSB7XG4gICAgc3VwZXIoc2NvcGUsIGlkLCBwcm9wcyk7XG5cbiAgICBjb25zdCBidWNrZXQgPSBuZXcgczMuQnVja2V0KHRoaXMsICdNeUJ1Y2tldCcsIHtcbiAgICAgIHJlbW92YWxQb2xpY3k6IGNkay5SZW1vdmFsUG9saWN5LkRFU1RST1ksXG4gICAgfSk7XG4gICAgdGhpcy5teUJ1Y2tldCA9IGJ1Y2tldDtcbiAgfVxufVxuXG5pbnRlcmZhY2UgQ29uc3VtZXJQcm9wcyBleHRlbmRzIGNkay5TdGFja1Byb3BzIHtcbiAgdXNlckJ1Y2tldDogczMuSUJ1Y2tldDtcbn1cblxuLyoqXG4gKiBTdGFjayB0aGF0IGNvbnN1bWVzIHRoZSBidWNrZXRcbiAqL1xuY2xhc3MgQ29uc3VtZXIgZXh0ZW5kcyBjZGsuU3RhY2sge1xuICBjb25zdHJ1Y3RvcihzY29wZTogY2RrLkFwcCwgaWQ6IHN0cmluZywgcHJvcHM6IENvbnN1bWVyUHJvcHMpIHtcbiAgICBzdXBlcihzY29wZSwgaWQsIHByb3BzKTtcblxuICAgIGNvbnN0IHVzZXIgPSBuZXcgaWFtLlVzZXIodGhpcywgJ015VXNlcicpO1xuICAgIHByb3BzLnVzZXJCdWNrZXQuZ3JhbnRSZWFkV3JpdGUodXNlcik7XG4gIH1cbn1cblxuY29uc3QgcHJvZHVjZXIgPSBuZXcgUHJvZHVjZXIoYXBwLCAnUHJvZHVjZXJTdGFjaycpO1xuXG5uZXcgSW50ZWdUZXN0KGFwcCwgJ2Nkay1pbnRlZy1idWNrZXQtc2hhcmluZycsIHtcbiAgdGVzdENhc2VzOiBbbmV3IENvbnN1bWVyKGFwcCwgJ0NvbnN1bWVyU3RhY2snLCB7IHVzZXJCdWNrZXQ6IHByb2R1Y2VyLm15QnVja2V0IH0pXSxcbn0pOyJdfQ==

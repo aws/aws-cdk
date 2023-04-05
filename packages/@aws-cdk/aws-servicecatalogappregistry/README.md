@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
@@ -39,7 +33,7 @@ enables organizations to create and manage repositories of applications and asso
 The `@aws-cdk/aws-servicecatalogappregistry` package contains resources that enable users to automate governance and management of their AWS resources at scale.
 
 ```ts nofixture
-import * as appreg from '@aws-cdk/aws-servicecatalogappregistry';
+import * as appreg from '@aws-cdk/aws-servicecatalogappregistry-alpha';
 ```
 
 ## Application
@@ -66,6 +60,11 @@ const importedApplication = appreg.Application.fromApplicationArn(
 ```
 
 ## Application-Associator
+
+`ApplicationAssociator` defines an AppRegistry application to contain all the stacks in deployed through your cdk package. This helps to manage all the 
+cdk deployed resources.
+
+### Create a new application to associate all the stacks in the cdk.App scope
 
 If you want to create an Application named `MyAssociatedApplication` in account `123456789012` and region `us-east-1`
 and want to associate all stacks in the `App` scope to `MyAssociatedApplication`, then use as shown in the example below:
@@ -106,6 +105,8 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 ```
 
+### Import existing application to associate all the stacks in the cdk.App scope
+
 If you want to re-use an existing Application with ARN: `arn:aws:servicecatalog:us-east-1:123456789012:/applications/applicationId`
 and want to associate all stacks in the `App` scope to your imported application, then use as shown in the example below:
 
@@ -119,10 +120,12 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 ```
 
+### Associate attribute group to the application used by `ApplicationAssociator`
+
 If you want to associate an Attribute Group with application created by `ApplicationAssociator`, then use as shown in the example below:
 
 ```ts
-import * as cdk from "@aws-cdk/core";
+import * as cdk from "aws-cdk-lib";
 
 const app = new App();
 
@@ -146,14 +149,16 @@ associatedApp.appRegistryApplication.addAttributeGroup('MyAttributeGroup' , {
 
 ```
 
+### Associate stacks deployed by CDK pipelines
+
 If you are using CDK Pipelines to deploy your application, the application stacks will be inside Stages, and
 ApplicationAssociator will not be able to find them. Call `associateStage` on each Stage object before adding it to the
 Pipeline, as shown in the example below:
 
 ```ts
-import * as cdk from "@aws-cdk/core";
-import * as codepipeline from "@aws-cdk/pipelines";
-import * as codecommit from "@aws-cdk/aws-codecommit";
+import * as cdk from "aws-cdk-lib";
+import * as codepipeline from "aws-cdk-lib/pipelines";
+import * as codecommit from "aws-cdk-lib/aws-codecommit";
 declare const repo: codecommit.Repository;
 declare const pipeline: codepipeline.CodePipeline;
 declare const beta: cdk.Stage;
@@ -186,6 +191,8 @@ const cdkPipeline = new ApplicationPipelineStack(app, 'CDKApplicationPipelineSta
 });
 ```
 
+### Associate cross-account stack
+
 By default, ApplicationAssociator will not perform cross-account stack associations with the target Application,
 to avoid deployment failures for accounts which have not been setup for cross-account associations.
 To enable cross-account stack associations, make sure all accounts are in the same organization as the
@@ -204,10 +211,15 @@ const associatedApp = new appreg.ApplicationAssociator(app, 'AssociatedApplicati
 });
 ```
 
+### Associate cross-region stack
+
+Currently, cross-region stack association is not supported.
+
 ## Attribute Group
 
 An AppRegistry attribute group acts as a container for user-defined attributes for an application.
 Metadata is attached in a machine-readable format to integrate with automated workflows and tools.
+The attribute group name must be unique at the account level and it's immutable.
 
 ```ts
 const attributeGroup = new appreg.AttributeGroup(this, 'MyFirstAttributeGroup', {
@@ -246,14 +258,18 @@ A Cloudformation stack can only be associated with one appregistry application.
 If a stack is associated with multiple applications in your app or is already associated with one,
 CDK will fail at deploy time.
 
-### Associating application with an attribute group
+### Associating application with a new attribute group
 
-You can associate an attribute group with an application with the `associateAttributeGroup()` API:
+You can create and associate an attribute group to an application with the `addAttributeGroup()` API:
 
 ```ts
 declare const application: appreg.Application;
 declare const attributeGroup: appreg.AttributeGroup;
-application.associateAttributeGroup(attributeGroup);
+application.addAttributeGroup('MyAttributeGroupId' , {
+    attributeGroupName: 'MyAttributeGroupName',
+    description: 'Test attribute group',
+    attributes: {},
+});
 ```
 
 ### Associating an attribute group with application
@@ -268,14 +284,14 @@ attributeGroup.associateWith(application);
 
 ### Associating application with a Stack
 
-You can associate a stack with an application with the `associateStack()` API:
+You can associate a stack with an application with the `associateApplicationWithStack()` API:
 
 ```ts
 const app = new App();
 const myStack = new Stack(app, 'MyStack');
 
 declare const application: appreg.Application;
-application.associateStack(myStack);
+application.associateApplicationWithStack(myStack);
 ```
 
 ## Sharing
@@ -285,7 +301,7 @@ You can share your AppRegistry applications and attribute groups with AWS Organi
 ### Sharing an application
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const application: appreg.Application;
 declare const myRole: iam.IRole;
 declare const myUser: iam.IUser;
@@ -301,7 +317,7 @@ application.shareApplication('MyShareId', {
 E.g., sharing an application with multiple accounts and allowing the accounts to associate resources to the application.
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const application: appreg.Application;
 application.shareApplication('MyShareId', {
   name: 'MyShare',
@@ -313,7 +329,7 @@ application.shareApplication('MyShareId', {
 ### Sharing an attribute group
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const attributeGroup: appreg.AttributeGroup;
 declare const myRole: iam.IRole;
 declare const myUser: iam.IUser;
@@ -329,7 +345,7 @@ attributeGroup.shareAttributeGroup('MyShareId', {
 E.g., sharing an application with multiple accounts and allowing the accounts to associate applications to the attribute group.
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const attributeGroup: appreg.AttributeGroup;
 attributeGroup.shareAttributeGroup('MyShareId', {
   name: 'MyShare',

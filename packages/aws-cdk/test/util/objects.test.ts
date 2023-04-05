@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as fc from 'fast-check';
 import { deepClone, deepGet, deepMerge, deepSet, splitBySize } from '../../lib/util';
 

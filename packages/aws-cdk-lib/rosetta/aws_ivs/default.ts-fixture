@@ -1,0 +1,19 @@
+// Fixture with packages imported, but nothing else
+import { Duration, Stack } from 'aws-cdk-lib';
+import { Construct } from 'constructs';
+import * as ivs from 'aws-cdk-lib/aws-ivs';
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    const myChannelArn = 'arn:aws:ivs:us-west-2:123456789012:channel/abcdABCDefgh';
+    const myPublicKeyPemString = `-----BEGIN PUBLIC KEY-----
+MHYwEAYHKoZIzj0CAQYFK4EEACIDYgAEmL8CBtm6KLUegSd5IJexniN8LItJiDwg
+zlYiti/ZTP/JPoUMb0fjqBDKZRhGbA6gSHdcm5YkdbGzIsQRnIqfhYy52kO13miR
+d2/EL+sn3x1/ziRhvZ2elvpaZAN68QiM
+-----END PUBLIC KEY-----`;
+
+    /// here
+  }
+}

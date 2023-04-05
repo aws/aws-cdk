@@ -1,8 +1,8 @@
 /// !cdk-integ canary-one
 
 import * as path from 'path';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as cdk from '@aws-cdk/core';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as cdk from 'aws-cdk-lib';
 import * as synthetics from '../lib';
 
 /*

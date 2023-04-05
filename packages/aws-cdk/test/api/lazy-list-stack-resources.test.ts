@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as AWS from 'aws-sdk';
 import { LazyListStackResources } from '../../lib/api/evaluate-cloudformation-template';
 import { MockSdk } from '../util/mock-sdk';

@@ -28,19 +28,7 @@
     ],
     "references": [
         {
-            "path": "../@aws-cdk/cloud-assembly-schema"
-        },
-        {
             "path": "../@aws-cdk/cloudformation-diff"
-        },
-        {
-            "path": "../@aws-cdk/core"
-        },
-        {
-            "path": "../@aws-cdk/cx-api"
-        },
-        {
-            "path": "../@aws-cdk/region-info"
         },
         {
             "path": "../cdk-assets"

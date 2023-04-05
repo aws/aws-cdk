@@ -1,4 +1,4 @@
-import { IResource } from '@aws-cdk/core';
+import { IResource } from 'aws-cdk-lib';
 
 /**
  * Represents a route.

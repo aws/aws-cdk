@@ -1,5 +1,5 @@
-import * as s3 from '@aws-cdk/aws-s3';
-import * as assets from '@aws-cdk/aws-s3-assets';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as assets from 'aws-cdk-lib/aws-s3-assets';
 import { Construct } from 'constructs';
 import { IModel } from './model';
 import { hashcode } from './private/util';

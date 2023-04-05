@@ -1,9 +1,9 @@
-import * as iam from '@aws-cdk/aws-iam';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as s3 from '@aws-cdk/aws-s3';
-import * as core from '@aws-cdk/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as core from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnAccessPoint } from './s3objectlambda.generated';
+import { CfnAccessPoint } from 'aws-cdk-lib/aws-s3objectlambda';
 
 /**
  * The interface that represents the AccessPoint resource.

@@ -3,7 +3,7 @@ import {
   WebSocketRouteAuthorizerBindOptions,
   WebSocketRouteAuthorizerConfig,
   IWebSocketRouteAuthorizer,
-} from '@aws-cdk/aws-apigatewayv2';
+} from '@aws-cdk/aws-apigatewayv2-alpha';
 
 /**
  * Authorize WebSocket API Routes with IAM

@@ -1,4 +1,4 @@
-import { CustomResource } from '@aws-cdk/core';
+import { CustomResource } from 'aws-cdk-lib';
 import { IApiCall } from './api-call-base';
 
 /**

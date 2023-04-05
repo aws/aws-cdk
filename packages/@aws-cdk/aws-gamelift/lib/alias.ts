@@ -1,8 +1,8 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IFleet } from './fleet-base';
 import { IGameSessionQueueDestination } from './game-session-queue';
-import { CfnAlias } from './gamelift.generated';
+import { CfnAlias } from 'aws-cdk-lib/aws-gamelift';
 
 /**
  * Represents a Gamelift Alias for a Gamelift fleet destination.

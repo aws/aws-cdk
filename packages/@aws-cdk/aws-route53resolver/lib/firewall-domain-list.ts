@@ -1,9 +1,9 @@
 import * as path from 'path';
-import { IBucket } from '@aws-cdk/aws-s3';
-import { Asset } from '@aws-cdk/aws-s3-assets';
-import { IResource, Resource, Token } from '@aws-cdk/core';
+import { IBucket } from 'aws-cdk-lib/aws-s3';
+import { Asset } from 'aws-cdk-lib/aws-s3-assets';
+import { IResource, Resource, Token } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnFirewallDomainList } from './route53resolver.generated';
+import { CfnFirewallDomainList } from 'aws-cdk-lib/aws-route53resolver';
 
 /**
  * A Firewall Domain List

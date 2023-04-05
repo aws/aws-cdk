@@ -1,7 +1,7 @@
-import * as iam from '@aws-cdk/aws-iam';
-import { Resource, IResource } from '@aws-cdk/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { Resource, IResource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnDetectorModel } from './iotevents.generated';
+import { CfnDetectorModel } from 'aws-cdk-lib/aws-iotevents';
 import { State } from './state';
 
 /**

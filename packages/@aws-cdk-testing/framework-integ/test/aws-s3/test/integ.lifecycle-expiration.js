@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const aws_cdk_lib_1 = require("aws-cdk-lib");
+const integ_tests_alpha_1 = require("@aws-cdk/integ-tests-alpha");
+const aws_s3_1 = require("aws-cdk-lib/aws-s3");
+const app = new aws_cdk_lib_1.App();
+const stack = new aws_cdk_lib_1.Stack(app, 'aws-cdk-s3');
+new aws_s3_1.Bucket(stack, 'MyBucket', {
+    lifecycleRules: [{
+            noncurrentVersionExpiration: aws_cdk_lib_1.Duration.days(30),
+            noncurrentVersionsToRetain: 123,
+        }],
+});
+new integ_tests_alpha_1.IntegTest(app, 'cdk-integ-lifecycle-expiration', {
+    testCases: [stack],
+});
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW50ZWcubGlmZWN5Y2xlLWV4cGlyYXRpb24uanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyJpbnRlZy5saWZlY3ljbGUtZXhwaXJhdGlvbi50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOztBQUFBLDZDQUFtRDtBQUNuRCxrRUFBdUQ7QUFDdkQsK0NBQTRDO0FBRTVDLE1BQU0sR0FBRyxHQUFHLElBQUksaUJBQUcsRUFBRSxDQUFDO0FBRXRCLE1BQU0sS0FBSyxHQUFHLElBQUksbUJBQUssQ0FBQyxHQUFHLEVBQUUsWUFBWSxDQUFDLENBQUM7QUFFM0MsSUFBSSxlQUFNLENBQUMsS0FBSyxFQUFFLFVBQVUsRUFBRTtJQUM1QixjQUFjLEVBQUUsQ0FBQztZQUNmLDJCQUEyQixFQUFFLHNCQUFRLENBQUMsSUFBSSxDQUFDLEVBQUUsQ0FBQztZQUM5QywwQkFBMEIsRUFBRSxHQUFHO1NBQ2hDLENBQUM7Q0FDSCxDQUFDLENBQUM7QUFFSCxJQUFJLDZCQUFTLENBQUMsR0FBRyxFQUFFLGdDQUFnQyxFQUFFO0lBQ25ELFNBQVMsRUFBRSxDQUFDLEtBQUssQ0FBQztDQUNuQixDQUFDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgeyBBcHAsIER1cmF0aW9uLCBTdGFjayB9IGZyb20gJ2F3cy1jZGstbGliJztcbmltcG9ydCB7IEludGVnVGVzdCB9IGZyb20gJ0Bhd3MtY2RrL2ludGVnLXRlc3RzLWFscGhhJztcbmltcG9ydCB7IEJ1Y2tldCB9IGZyb20gJ2F3cy1jZGstbGliL2F3cy1zMyc7XG5cbmNvbnN0IGFwcCA9IG5ldyBBcHAoKTtcblxuY29uc3Qgc3RhY2sgPSBuZXcgU3RhY2soYXBwLCAnYXdzLWNkay1zMycpO1xuXG5uZXcgQnVja2V0KHN0YWNrLCAnTXlCdWNrZXQnLCB7XG4gIGxpZmVjeWNsZVJ1bGVzOiBbe1xuICAgIG5vbmN1cnJlbnRWZXJzaW9uRXhwaXJhdGlvbjogRHVyYXRpb24uZGF5cygzMCksXG4gICAgbm9uY3VycmVudFZlcnNpb25zVG9SZXRhaW46IDEyMyxcbiAgfV0sXG59KTtcblxubmV3IEludGVnVGVzdChhcHAsICdjZGstaW50ZWctbGlmZWN5Y2xlLWV4cGlyYXRpb24nLCB7XG4gIHRlc3RDYXNlczogW3N0YWNrXSxcbn0pOyJdfQ==

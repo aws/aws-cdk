@@ -5,16 +5,8 @@
 
 Features                                   | Stability
 -------------------------------------------|--------------------------------------------------------
-CFN Resources                              | ![Stable](https://img.shields.io/badge/stable-success.svg?style=for-the-badge)
 Higher level constructs for HTTP APIs      | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
 Higher level constructs for Websocket APIs | ![Experimental](https://img.shields.io/badge/experimental-important.svg?style=for-the-badge)
-
-> **CFN Resources:** All classes with the `Cfn` prefix in this module ([CFN Resources]) are always
-> stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
-<!-- -->
 
 > **Experimental:** Higher level constructs in this module that are marked as experimental are
 > under active development. They are subject to non-backward compatible changes or removal in any
@@ -77,7 +69,7 @@ As an early example, the following code snippet configures a route `GET /books` 
 configures all other HTTP method calls to `/books` to a lambda proxy.
 
 ```ts
-import { HttpUrlIntegration, HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpUrlIntegration, HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 const getBooksIntegration = new HttpUrlIntegration('GetBooksIntegration', 'https://get-books-proxy.example.com');
 
@@ -110,7 +102,7 @@ The `defaultIntegration` option while defining HTTP APIs lets you create a defau
 matched when a client reaches a route that is not explicitly defined.
 
 ```ts
-import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpUrlIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 new apigwv2.HttpApi(this, 'HttpProxyApi', {
   defaultIntegration: new HttpUrlIntegration('DefaultIntegration', 'https://example.com'),
@@ -177,8 +169,8 @@ The code snippet below creates a custom domain and configures a default domain m
 custom domain to the `$default` stage of the API.
 
 ```ts
-import * as acm from '@aws-cdk/aws-certificatemanager';
-import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 const domainName = 'example.com';
@@ -223,7 +215,7 @@ api.addStage('beta', {
 The same domain name can be associated with stages across different `HttpApi` as so -
 
 ```ts
-import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { HttpLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 declare const handler: lambda.Function;
 declare const dn: apigwv2.DomainName;
@@ -260,8 +252,8 @@ const demoDomainUrl = apiDemo.defaultStage?.domainUrl; // returns "https://examp
 Mutual TLS can be configured to limit access to your API based by using client certificates instead of (or as an extension of) using authorization headers.
 
 ```ts
-import * as s3 from '@aws-cdk/aws-s3';
-import * as acm from '@aws-cdk/aws-certificatemanager';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 
 const certArn = 'arn:aws:acm:us-east-1:111111111111:certificate';
 const domainName = 'example.com';
@@ -317,7 +309,7 @@ Load Balancers, Network Load Balancers or a Cloud Map service. The `VpcLink` con
 The following code creates a `VpcLink` to a private VPC.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 const vpc = new ec2.Vpc(this, 'VPC');
 const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
@@ -326,7 +318,7 @@ const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
 Any existing `VpcLink` resource can be imported into the CDK app via the `VpcLink.fromVpcLinkAttributes()`.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 declare const vpc: ec2.Vpc;
 const awesomeLink = apigwv2.VpcLink.fromVpcLinkAttributes(this, 'awesome-vpc-link', {
@@ -362,7 +354,7 @@ Integrations are available in the `aws-apigatewayv2-integrations` module and mor
 To add the default WebSocket routes supported by API Gateway (`$connect`, `$disconnect` and `$default`), configure them as part of api props:
 
 ```ts
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 declare const connectHandler: lambda.Function;
 declare const disconnectHandler: lambda.Function;
@@ -395,7 +387,7 @@ const callbackURL = webSocketStage.callbackUrl;
 To add any other route:
 
 ```ts
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 declare const messageHandler: lambda.Function;
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
@@ -407,7 +399,7 @@ webSocketApi.addRoute('sendmessage', {
 To add a route that can return a result:
 
 ```ts
-import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations';
+import { WebSocketLambdaIntegration } from '@aws-cdk/aws-apigatewayv2-integrations-alpha';
 
 declare const messageHandler: lambda.Function;
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');

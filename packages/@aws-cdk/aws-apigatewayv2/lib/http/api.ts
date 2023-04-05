@@ -1,12 +1,12 @@
-import { Metric, MetricOptions } from '@aws-cdk/aws-cloudwatch';
-import { Duration } from '@aws-cdk/core';
+import { Metric, MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
+import { Duration } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IHttpRouteAuthorizer } from './authorizer';
 import { HttpRouteIntegration } from './integration';
 import { BatchHttpRouteOptions, HttpMethod, HttpRoute, HttpRouteKey } from './route';
 import { IHttpStage, HttpStage, HttpStageOptions } from './stage';
 import { VpcLink, VpcLinkProps } from './vpc-link';
-import { CfnApi, CfnApiProps } from '../apigatewayv2.generated';
+import { CfnApi, CfnApiProps } from 'aws-cdk-lib/aws-apigatewayv2';
 import { IApi } from '../common/api';
 import { ApiBase } from '../common/base';
 import { DomainMappingOptions } from '../common/stage';

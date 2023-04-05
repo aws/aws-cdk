@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 jest.mock('../../lib/api/deploy-stack');
 jest.mock('../../lib/util/asset-publishing');
 

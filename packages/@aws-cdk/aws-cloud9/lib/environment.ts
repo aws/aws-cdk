@@ -1,9 +1,9 @@
-import * as codecommit from '@aws-cdk/aws-codecommit';
-import * as ec2 from '@aws-cdk/aws-ec2';
-import { IUser } from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import * as codecommit from 'aws-cdk-lib/aws-codecommit';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { IUser } from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnEnvironmentEC2 } from '../lib/cloud9.generated';
+import { CfnEnvironmentEC2 } from 'aws-cdk-lib/aws-cloud9';
 
 /**
  * A Cloud9 Environment

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ResourceGroups"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.resourcegroups"
+    },
+    "python": {
+      "module": "aws_cdk.aws_resourcegroups"
+    }
+  }
+}

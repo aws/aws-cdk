@@ -3,12 +3,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
@@ -24,7 +18,7 @@
 This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts nofixture
-import * as apprunner from '@aws-cdk/aws-apprunner';
+import * as apprunner from '@aws-cdk/aws-apprunner-alpha';
 ```
 
 ## Introduction
@@ -59,7 +53,7 @@ new apprunner.Service(this, 'Service', {
 To create a `Service` from an existing ECR repository:
 
 ```ts
-import * as ecr from '@aws-cdk/aws-ecr';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
 
 new apprunner.Service(this, 'Service', {
   source: apprunner.Source.fromEcr({
@@ -75,7 +69,7 @@ To create a `Service` from local docker image asset directory built and pushed t
 You can specify whether to enable continuous integration from the source repository with the `autoDeploymentsEnabled` flag.
 
 ```ts
-import * as assets from '@aws-cdk/aws-ecr-assets';
+import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 
 const imageAsset = new assets.DockerImageAsset(this, 'ImageAssets', {
   directory: path.join(__dirname, './docker.assets'),
@@ -143,7 +137,7 @@ See [App Runner IAM Roles](https://docs.aws.amazon.com/apprunner/latest/dg/secur
 To associate an App Runner service with a custom VPC, define `vpcConnector` for the service.
 
 ```ts
-import * as ec2 from '@aws-cdk/aws-ec2';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 const vpc = new ec2.Vpc(this, 'Vpc', {
   ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16')
@@ -171,8 +165,8 @@ You can use the `addSecret` method from the App Runner `Service` class to includ
 service definition.
 
 ```ts
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as ssm from '@aws-cdk/aws-ssm';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
 
 declare const stack: Stack;
 

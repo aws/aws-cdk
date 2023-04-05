@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.FMS"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.fms"
+    },
+    "python": {
+      "module": "aws_cdk.aws_fms"
+    }
+  }
+}

@@ -1,9 +1,9 @@
-import { IResource, Resource } from '@aws-cdk/core';
+import { IResource, Resource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IApi } from './api';
 import { IDomainName } from './domain-name';
 import { IStage } from './stage';
-import { CfnApiMapping, CfnApiMappingProps } from '../apigatewayv2.generated';
+import { CfnApiMapping, CfnApiMappingProps } from 'aws-cdk-lib/aws-apigatewayv2';
 
 /**
  * Represents an ApiGatewayV2 ApiMapping resource
