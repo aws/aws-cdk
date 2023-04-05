@@ -1,9 +1,9 @@
-import * as iam from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IBuild } from './build';
 import { FleetBase, FleetProps, IFleet } from './fleet-base';
-import { CfnFleet } from './gamelift.generated';
+import { CfnFleet } from 'aws-cdk-lib/aws-gamelift';
 import { Port, IPeer, IngressRule } from './ingress-rule';
 
 /**

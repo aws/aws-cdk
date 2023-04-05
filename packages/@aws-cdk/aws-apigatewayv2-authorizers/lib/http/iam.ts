@@ -3,7 +3,7 @@ import {
   HttpRouteAuthorizerBindOptions,
   HttpRouteAuthorizerConfig,
   IHttpRouteAuthorizer,
-} from '@aws-cdk/aws-apigatewayv2';
+} from '@aws-cdk/aws-apigatewayv2-alpha';
 
 /**
  * Authorize HTTP API Routes with IAM

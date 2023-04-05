@@ -1,12 +1,12 @@
-import * as ecr from '@aws-cdk/aws-ecr';
-import * as assets from '@aws-cdk/aws-ecr-assets';
-import * as iam from '@aws-cdk/aws-iam';
-import * as secretsmanager from '@aws-cdk/aws-secretsmanager';
-import * as ssm from '@aws-cdk/aws-ssm';
-import * as cdk from '@aws-cdk/core';
-import { Lazy } from '@aws-cdk/core';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as assets from 'aws-cdk-lib/aws-ecr-assets';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+import * as ssm from 'aws-cdk-lib/aws-ssm';
+import * as cdk from 'aws-cdk-lib';
+import { Lazy } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CfnService } from './apprunner.generated';
+import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
 
 /**

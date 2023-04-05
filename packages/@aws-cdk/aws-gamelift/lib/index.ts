@@ -14,4 +14,3 @@ export * from './matchmaking-ruleset';
 export * from './matchmaking-ruleset-body';
 
 // AWS::GameLift CloudFormation Resources:
-export * from './gamelift.generated';

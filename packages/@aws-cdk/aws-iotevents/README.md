@@ -4,12 +4,6 @@
 
 ---
 
-![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
-
-> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
->
-> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
-
 ![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
 
 > The APIs of higher level constructs in this module are experimental and under active development.
@@ -36,9 +30,9 @@ You can define built-in actions to use a timer or set a variable, or send data t
 See also [@aws-cdk/aws-iotevents-actions](https://docs.aws.amazon.com/cdk/api/v1/docs/aws-iotevents-actions-readme.html) for other actions.
 
 ```ts
-import * as iotevents from '@aws-cdk/aws-iotevents';
-import * as actions from '@aws-cdk/aws-iotevents-actions';
-import * as lambda from '@aws-cdk/aws-lambda';
+import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
+import * as actions from '@aws-cdk/aws-iotevents-actions-alpha';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 declare const func: lambda.IFunction;
 
@@ -97,8 +91,8 @@ To grant permissions to put messages in the input,
 you can use the `grantWrite()` method:
 
 ```ts
-import * as iam from '@aws-cdk/aws-iam';
-import * as iotevents from '@aws-cdk/aws-iotevents';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as iotevents from '@aws-cdk/aws-iotevents-alpha';
 
 declare const grantable: iam.IGrantable;
 const input = iotevents.Input.fromInputName(this, 'MyInput', 'my_input');
