@@ -1,0 +1,242 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-ec2-al2023": {
+        "id": "aws-cdk-ec2-al2023",
+        "path": "aws-cdk-ec2-al2023",
+        "children": {
+          "LT": {
+            "id": "LT",
+            "path": "aws-cdk-ec2-al2023/LT",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ec2-al2023/LT/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                  "aws:cdk:cloudformation:props": {
+                    "launchTemplateData": {
+                      "tagSpecifications": [
+                        {
+                          "resourceType": "instance",
+                          "tags": [
+                            {
+                              "key": "Name",
+                              "value": "aws-cdk-ec2-al2023/LT"
+                            }
+                          ]
+                        },
+                        {
+                          "resourceType": "volume",
+                          "tags": [
+                            {
+                              "key": "Name",
+                              "value": "aws-cdk-ec2-al2023/LT"
+                            }
+                          ]
+                        }
+                      ],
+                      "metadataOptions": {
+                        "httpEndpoint": "enabled",
+                        "httpProtocolIpv6": "enabled",
+                        "httpPutResponseHopLimit": 2,
+                        "httpTokens": "required",
+                        "instanceMetadataTags": "enabled"
+                      }
+                    },
+                    "tagSpecifications": [
+                      {
+                        "resourceType": "launch-template",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-ec2-al2023/LT"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+              "version": "0.0.0"
+            }
+          },
+          "LTWithMachineImageAL2023": {
+            "id": "LTWithMachineImageAL2023",
+            "path": "aws-cdk-ec2-al2023/LTWithMachineImageAL2023",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ec2-al2023/LTWithMachineImageAL2023/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                  "aws:cdk:cloudformation:props": {
+                    "launchTemplateData": {
+                      "imageId": {
+                        "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+                      },
+                      "tagSpecifications": [
+                        {
+                          "resourceType": "instance",
+                          "tags": [
+                            {
+                              "key": "Name",
+                              "value": "aws-cdk-ec2-al2023/LTWithMachineImageAL2023"
+                            }
+                          ]
+                        },
+                        {
+                          "resourceType": "volume",
+                          "tags": [
+                            {
+                              "key": "Name",
+                              "value": "aws-cdk-ec2-al2023/LTWithMachineImageAL2023"
+                            }
+                          ]
+                        }
+                      ],
+                      "userData": {
+                        "Fn::Base64": "#!/bin/bash"
+                      }
+                    },
+                    "tagSpecifications": [
+                      {
+                        "resourceType": "launch-template",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-ec2-al2023/LTWithMachineImageAL2023"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+              "version": "0.0.0"
+            }
+          },
+          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "aws-cdk-ec2-al2023/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "aws-cdk-ec2-al2023/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-ec2-al2023/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-ec2-al2023/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "LambdaTest": {
+        "id": "LambdaTest",
+        "path": "LambdaTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "LambdaTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "LambdaTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "LambdaTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "LambdaTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "LambdaTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
