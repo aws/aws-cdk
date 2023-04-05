@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "PipelineLoggingTest/DefaultTest": {
+      "stacks": [
+        "LoggingPipelineStack"
+      ],
+      "assertionStack": "PipelineLoggingTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PipelineLoggingTestDefaultTestDeployAssert13FCCE41"
+    }
+  }
+}
