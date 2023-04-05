@@ -22,13 +22,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-logs.LogGroup",
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
               "version": "0.0.0"
             }
           },
@@ -68,7 +68,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3.CfnBucket",
+                          "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
                           "version": "0.0.0"
                         }
                       },
@@ -127,19 +127,19 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-s3.CfnBucketPolicy",
+                              "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-s3.BucketPolicy",
+                          "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-s3.Bucket",
+                      "fqn": "aws-cdk-lib.aws_s3.Bucket",
                       "version": "0.0.0"
                     }
                   },
@@ -151,7 +151,7 @@
                         "id": "ImportRole",
                         "path": "LoggingPipelineStack/Pipeline/Pipeline/Role/ImportRole",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
+                          "fqn": "aws-cdk-lib.Resource",
                           "version": "0.0.0"
                         }
                       },
@@ -176,7 +176,7 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnRole",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                           "version": "0.0.0"
                         }
                       },
@@ -251,19 +251,19 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Policy",
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Role",
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
                       "version": "0.0.0"
                     }
                   },
@@ -332,7 +332,7 @@
                                   "ProjectName": {
                                     "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
                                   },
-                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"00ebacfb32b1bde8d3638577308e7b7144dfa3b0a58a83bc6ff38a3b1f26951c\"}]"
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"09deb76d97fe89f2ccd364ad1eedc7ebc7c010be6bf79da68c34f358446cd134\"}]"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {
@@ -364,7 +364,7 @@
                                   "ProjectName": {
                                     "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
                                   },
-                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"603e15edc6ebf967876f6d9f657d4874914c3150061f4f9d87f4b92f13082e29\"}]"
+                                  "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"ce51e1ab714754e2ab37829a20a38519516c34704aa0e357ce6938dabff698d2\"}]"
                                 },
                                 "runOrder": 1,
                                 "roleArn": {
@@ -387,7 +387,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-codepipeline.CfnPipeline",
+                      "fqn": "aws-cdk-lib.aws_codepipeline.CfnPipeline",
                       "version": "0.0.0"
                     }
                   },
@@ -400,13 +400,13 @@
                         "path": "LoggingPipelineStack/Pipeline/Pipeline/Source/yo-ga_cdk-playground",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.216"
+                          "version": "10.1.270"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.216"
+                      "version": "10.1.270"
                     }
                   },
                   "Build": {
@@ -429,7 +429,7 @@
                                     "id": "ImportRole",
                                     "path": "LoggingPipelineStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/ImportRole",
                                     "constructInfo": {
-                                      "fqn": "@aws-cdk/core.Resource",
+                                      "fqn": "aws-cdk-lib.Resource",
                                       "version": "0.0.0"
                                     }
                                   },
@@ -454,7 +454,7 @@
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                                       "version": "0.0.0"
                                     }
                                   },
@@ -623,19 +623,19 @@
                                           }
                                         },
                                         "constructInfo": {
-                                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                           "version": "0.0.0"
                                         }
                                       }
                                     },
                                     "constructInfo": {
-                                      "fqn": "@aws-cdk/aws-iam.Policy",
+                                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                                       "version": "0.0.0"
                                     }
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.Role",
+                                  "fqn": "aws-cdk-lib.aws_iam.Role",
                                   "version": "0.0.0"
                                 }
                               },
@@ -650,7 +650,7 @@
                                     },
                                     "environment": {
                                       "type": "LINUX_CONTAINER",
-                                      "image": "aws/codebuild/standard:5.0",
+                                      "image": "aws/codebuild/standard:6.0",
                                       "imagePullCredentialsType": "CODEBUILD",
                                       "privilegedMode": false,
                                       "computeType": "BUILD_GENERAL1_SMALL"
@@ -682,26 +682,26 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-codebuild.CfnProject",
+                                  "fqn": "aws-cdk-lib.aws_codebuild.CfnProject",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-codebuild.PipelineProject",
+                              "fqn": "aws-cdk-lib.aws_codebuild.PipelineProject",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.216"
+                          "version": "10.1.270"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.216"
+                      "version": "10.1.270"
                     }
                   },
                   "UpdatePipeline": {
@@ -713,18 +713,18 @@
                         "path": "LoggingPipelineStack/Pipeline/Pipeline/UpdatePipeline/SelfMutate",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.1.216"
+                          "version": "10.1.270"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.216"
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-codepipeline.Pipeline",
+                  "fqn": "aws-cdk-lib.aws_codepipeline.Pipeline",
                   "version": "0.0.0"
                 }
               },
@@ -736,7 +736,7 @@
                     "id": "ImportCodeBuildActionRole",
                     "path": "LoggingPipelineStack/Pipeline/CodeBuildActionRole/ImportCodeBuildActionRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
+                      "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
                     }
                   },
@@ -781,7 +781,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -831,19 +831,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -863,7 +863,7 @@
                             "id": "ImportRole",
                             "path": "LoggingPipelineStack/Pipeline/UpdatePipeline/SelfMutation/Role/ImportRole",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.Resource",
+                              "fqn": "aws-cdk-lib.Resource",
                               "version": "0.0.0"
                             }
                           },
@@ -888,7 +888,7 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.CfnRole",
+                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                               "version": "0.0.0"
                             }
                           },
@@ -1070,19 +1070,19 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                                   "version": "0.0.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "@aws-cdk/aws-iam.Policy",
+                              "fqn": "aws-cdk-lib.aws_iam.Policy",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.Role",
+                          "fqn": "aws-cdk-lib.aws_iam.Role",
                           "version": "0.0.0"
                         }
                       },
@@ -1097,7 +1097,7 @@
                             },
                             "environment": {
                               "type": "LINUX_CONTAINER",
-                              "image": "aws/codebuild/standard:5.0",
+                              "image": "aws/codebuild/standard:6.0",
                               "imagePullCredentialsType": "CODEBUILD",
                               "privilegedMode": false,
                               "computeType": "BUILD_GENERAL1_SMALL"
@@ -1110,7 +1110,7 @@
                             },
                             "source": {
                               "type": "CODEPIPELINE",
-                              "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk@1\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy LoggingPipelineStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}"
+                              "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy LoggingPipelineStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}"
                             },
                             "cache": {
                               "type": "NO_CACHE"
@@ -1120,25 +1120,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-codebuild.CfnProject",
+                          "fqn": "aws-cdk-lib.aws_codebuild.CfnProject",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-codebuild.PipelineProject",
+                      "fqn": "aws-cdk-lib.aws_codebuild.PipelineProject",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.216"
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/pipelines.CodePipeline",
+              "fqn": "aws-cdk-lib.pipelines.CodePipeline",
               "version": "0.0.0"
             }
           },
@@ -1150,21 +1150,21 @@
                 "id": "Output{\"Ref\":\"PipelineBuildSynthCdkBuildProject6BEFA8E6\"}",
                 "path": "LoggingPipelineStack/Exports/Output{\"Ref\":\"PipelineBuildSynthCdkBuildProject6BEFA8E6\"}",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.CfnOutput",
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.1.216"
+              "version": "10.1.270"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "LoggingPipelineStack/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
+              "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
@@ -1172,13 +1172,13 @@
             "id": "CheckBootstrapVersion",
             "path": "LoggingPipelineStack/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -1195,7 +1195,7 @@
                 "path": "PipelineLoggingTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.216"
+                  "version": "10.1.270"
                 }
               },
               "DeployAssert": {
@@ -1215,12 +1215,12 @@
                             "path": "PipelineLoggingTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.1.216"
+                              "version": "10.1.270"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/integ-tests.AssertionsProvider",
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
                           "version": "0.0.0"
                         }
                       },
@@ -1232,13 +1232,13 @@
                             "id": "Default",
                             "path": "PipelineLoggingTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects/Default/Default",
                             "constructInfo": {
-                              "fqn": "@aws-cdk/core.CfnResource",
+                              "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CustomResource",
+                          "fqn": "aws-cdk-lib.CustomResource",
                           "version": "0.0.0"
                         }
                       },
@@ -1246,13 +1246,13 @@
                         "id": "AssertionResults",
                         "path": "PipelineLoggingTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects/AssertionResults",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnOutput",
+                          "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/integ-tests.AwsApiCall",
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
                       "version": "0.0.0"
                     }
                   },
@@ -1264,7 +1264,7 @@
                         "id": "Staging",
                         "path": "PipelineLoggingTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
+                          "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
                         }
                       },
@@ -1272,7 +1272,7 @@
                         "id": "Role",
                         "path": "PipelineLoggingTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       },
@@ -1280,21 +1280,21 @@
                         "id": "Handler",
                         "path": "PipelineLoggingTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.CfnResource",
+                          "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.1.216"
+                      "version": "10.1.270"
                     }
                   },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "PipelineLoggingTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnParameter",
+                      "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
                     }
                   },
@@ -1302,25 +1302,25 @@
                     "id": "CheckBootstrapVersion",
                     "path": "PipelineLoggingTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.CfnRule",
+                      "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/core.Stack",
+                  "fqn": "aws-cdk-lib.Stack",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests.IntegTestCase",
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests.IntegTest",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -1329,12 +1329,12 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.216"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
+      "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
     }
   }

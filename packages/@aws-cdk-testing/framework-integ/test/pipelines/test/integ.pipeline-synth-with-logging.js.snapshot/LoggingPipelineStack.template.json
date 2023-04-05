@@ -207,7 +207,7 @@
          "ProjectName": {
           "Ref": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
          },
-         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"00ebacfb32b1bde8d3638577308e7b7144dfa3b0a58a83bc6ff38a3b1f26951c\"}]"
+         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"09deb76d97fe89f2ccd364ad1eedc7ebc7c010be6bf79da68c34f358446cd134\"}]"
         },
         "InputArtifacts": [
          {
@@ -244,7 +244,7 @@
          "ProjectName": {
           "Ref": "PipelineUpdatePipelineSelfMutationDAA41400"
          },
-         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"603e15edc6ebf967876f6d9f657d4874914c3150061f4f9d87f4b92f13082e29\"}]"
+         "EnvironmentVariables": "[{\"name\":\"_PROJECT_CONFIG_HASH\",\"type\":\"PLAINTEXT\",\"value\":\"ce51e1ab714754e2ab37829a20a38519516c34704aa0e357ce6938dabff698d2\"}]"
         },
         "InputArtifacts": [
          {
@@ -459,7 +459,7 @@
     },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:5.0",
+     "Image": "aws/codebuild/standard:6.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -760,7 +760,7 @@
     },
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:5.0",
+     "Image": "aws/codebuild/standard:6.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
@@ -772,7 +772,7 @@
      ]
     },
     "Source": {
-     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk@1\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy LoggingPipelineStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}",
+     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g aws-cdk@2\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk -a . deploy LoggingPipelineStack --require-approval=never --verbose\"\n      ]\n    }\n  }\n}",
      "Type": "CODEPIPELINE"
     },
     "Cache": {

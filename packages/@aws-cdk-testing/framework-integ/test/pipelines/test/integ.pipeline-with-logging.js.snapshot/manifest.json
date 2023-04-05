@@ -1,5 +1,5 @@
 {
-  "version": "29.0.0",
+  "version": "31.0.0",
   "artifacts": {
     "LoggingPipelineStack.assets": {
       "type": "cdk:asset-manifest",
@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d99681b07ca842e41d76f0e1de1c36e98184be62476be52ea702af467851166d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a35016ef98a88e56544daa6522d8130aa3d67e5a192b48740c3ad131e63903a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -134,42 +134,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "MyLogsBucket57652DD1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLogsBucket57652DD1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineMyWavePostStepRole440B3F64": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWavePostStepRole440B3F64",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineMyWavePostStepRoleDefaultPolicyF4712C0D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWavePostStepRoleDefaultPolicyF4712C0D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "PipelineMyWavePostStepF4CC34B8": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PipelineMyWavePostStepF4CC34B8",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "LoggingPipelineStack"
@@ -190,7 +154,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/09f29f7ebe8b7593140814d393b86b9778dbd156558bd366262767e00c1a712e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6f53cbd31cd9a3668892ac45658c0a89a94af7ab7db1c6b5b74e44d8cfde6b2b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
