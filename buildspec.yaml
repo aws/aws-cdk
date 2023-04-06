@@ -19,8 +19,11 @@ phases:
       # Packing aws-cdk-lib can cause memory errors. Increasing this value
       # allows our build to more consistently succeed
       - /sbin/sysctl -w vm.max_map_count=2251954
+
   pre_build:
     commands:
+      # Print our ulimits to find out if we might run into a resource limit
+      - ulimit -a
       - /bin/bash ./scripts/cache-load.sh
   build:
     commands:
