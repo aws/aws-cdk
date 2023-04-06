@@ -1,15 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`esbuild bundling with esbuild options 1`] = `
-"\\"use strict\\";
+""use strict";
 (() => {
   // aws-lambda-nodejs/test/integ-handlers/define.ts
   function handler() {
     return [
-      \\"VALUE\\",
+      "VALUE",
       true,
       7777,
-      'this is a \\"test\\"'
+      'this is a "test"'
     ];
   }
 })();

@@ -274,40 +274,40 @@ describe('precreatedRole report created', () => {
     const jsonfile = fs.readFileSync(filePath+'.json', { encoding: 'utf-8' });
     expect(jsonfile).toMatchInlineSnapshot(`
 "{
-  \\"roles\\": [
+  "roles": [
     {
-      \\"roleConstructPath\\": \\"OtherStack/MyRole\\",
-      \\"roleName\\": \\"other-role-name\\",
-      \\"missing\\": false,
-      \\"assumeRolePolicy\\": [
+      "roleConstructPath": "OtherStack/MyRole",
+      "roleName": "other-role-name",
+      "missing": false,
+      "assumeRolePolicy": [
         {
-          \\"Action\\": \\"sts:AssumeRole\\",
-          \\"Effect\\": \\"Allow\\",
-          \\"Principal\\": {
-            \\"Service\\": \\"sns.amazonaws.com\\"
+          "Action": "sts:AssumeRole",
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "sns.amazonaws.com"
           }
         }
       ],
-      \\"managedPolicyArns\\": [
-        \\"arn:(PARTITION):iam::aws:policy/ReadOnlyAccess\\",
-        \\"arn:(PARTITION):iam::(ACCOUNT):policy/CustomReadOnlyAccess\\"
+      "managedPolicyArns": [
+        "arn:(PARTITION):iam::aws:policy/ReadOnlyAccess",
+        "arn:(PARTITION):iam::(ACCOUNT):policy/CustomReadOnlyAccess"
       ],
-      \\"managedPolicyStatements\\": [
+      "managedPolicyStatements": [
         {
-          \\"Action\\": \\"s3:PutObject\\",
-          \\"Effect\\": \\"Allow\\",
-          \\"Resource\\": \\"(MyStack/SomeResource.Arn)\\"
+          "Action": "s3:PutObject",
+          "Effect": "Allow",
+          "Resource": "(MyStack/SomeResource.Arn)"
         },
         {
-          \\"Action\\": [
-            \\"sns:Publish\\",
-            \\"s3:GetObject\\"
+          "Action": [
+            "sns:Publish",
+            "s3:GetObject"
           ],
-          \\"Effect\\": \\"Allow\\",
-          \\"Resource\\": \\"(MyStack/SomeResource.Ref)\\"
+          "Effect": "Allow",
+          "Resource": "(MyStack/SomeResource.Ref)"
         }
       ],
-      \\"identityPolicyStatements\\": []
+      "identityPolicyStatements": []
     }
   ]
 }"
@@ -318,34 +318,34 @@ describe('precreatedRole report created', () => {
 AssumeRole Policy:
 [
   {
-    \\"Action\\": \\"sts:AssumeRole\\",
-    \\"Effect\\": \\"Allow\\",
-    \\"Principal\\": {
-      \\"Service\\": \\"sns.amazonaws.com\\"
+    "Action": "sts:AssumeRole",
+    "Effect": "Allow",
+    "Principal": {
+      "Service": "sns.amazonaws.com"
     }
   }
 ]
 
 Managed Policy ARNs:
 [
-  \\"arn:(PARTITION):iam::aws:policy/ReadOnlyAccess\\",
-  \\"arn:(PARTITION):iam::(ACCOUNT):policy/CustomReadOnlyAccess\\"
+  "arn:(PARTITION):iam::aws:policy/ReadOnlyAccess",
+  "arn:(PARTITION):iam::(ACCOUNT):policy/CustomReadOnlyAccess"
 ]
 
 Managed Policies Statements:
 [
   {
-    \\"Action\\": \\"s3:PutObject\\",
-    \\"Effect\\": \\"Allow\\",
-    \\"Resource\\": \\"(MyStack/SomeResource.Arn)\\"
+    "Action": "s3:PutObject",
+    "Effect": "Allow",
+    "Resource": "(MyStack/SomeResource.Arn)"
   },
   {
-    \\"Action\\": [
-      \\"sns:Publish\\",
-      \\"s3:GetObject\\"
+    "Action": [
+      "sns:Publish",
+      "s3:GetObject"
     ],
-    \\"Effect\\": \\"Allow\\",
-    \\"Resource\\": \\"(MyStack/SomeResource.Ref)\\"
+    "Effect": "Allow",
+    "Resource": "(MyStack/SomeResource.Ref)"
   }
 ]
 
