@@ -268,7 +268,7 @@ The most important properties to set while creating an Alarms are:
 - `threshold`: the value to compare the metric against.
 - `comparisonOperator`: the comparison operation to use, defaults to `metric >= threshold`.
 - `evaluationPeriods`: how many consecutive periods the metric has to be
-  breaching the the threshold for the alarm to trigger.
+  breaching the threshold for the alarm to trigger.
 
 To create a cross-account alarm, make sure you have enabled [cross-account functionality](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Cross-Account-Cross-Region.html) in CloudWatch. Then, set the `account` property in the `Metric` object either manually or via the `metric.attachTo()` method.
 
