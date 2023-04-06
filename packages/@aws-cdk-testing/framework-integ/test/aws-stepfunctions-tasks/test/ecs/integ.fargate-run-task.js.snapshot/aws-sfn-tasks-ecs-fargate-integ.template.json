@@ -576,6 +576,22 @@
     }
    }
   },
+  "FargeateTaskWithPropagatedTagSecurityGroup94A6AE70": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-sfn-tasks-ecs-fargate-integ/FargeateTaskWithPropagatedTag/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "FargateClusterVpc377E8024"
+    }
+   }
+  },
   "StateMachineRoleB840431D": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -817,7 +833,7 @@
          "GroupId"
         ]
        },
-       "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargeateTaskSetRevisionNumber\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargeateTaskSetRevisionNumber\":{\"Next\":\"FargeateTaskWithPropagatedTag\",\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -843,7 +859,33 @@
          "GroupId"
         ]
        },
-       "\"]}},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}}}}"
+       "\"]}},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargeateTaskWithPropagatedTag\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::ecs:runTask\",\"Parameters\":{\"Cluster\":\"",
+       {
+        "Fn::GetAtt": [
+         "FargateCluster7CCD5F93",
+         "Arn"
+        ]
+       },
+       "\",\"TaskDefinition\":\"awssfntasksecsfargateintegTaskDefD0F4AD10\",\"NetworkConfiguration\":{\"AwsvpcConfiguration\":{\"Subnets\":[\"",
+       {
+        "Ref": "FargateClusterVpcPrivateSubnet1Subnet9127625F"
+       },
+       "\",\"",
+       {
+        "Ref": "FargateClusterVpcPrivateSubnet2Subnet307CEE57"
+       },
+       "\"],\"SecurityGroups\":[\"",
+       {
+        "Fn::GetAtt": [
+         "FargeateTaskWithPropagatedTagSecurityGroup94A6AE70",
+         "GroupId"
+        ]
+       },
+       "\"]}},\"PropagateTags\":\"TASK_DEFINITION\",\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}}}}"
       ]
      ]
     }

@@ -64,6 +64,15 @@ const definition = new sfn.Pass(stack, 'Start', {
       platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
     }),
   }),
+).next(
+  new tasks.EcsRunTask(stack, 'FargeateTaskWithPropagatedTag', {
+    cluster,
+    taskDefinition,
+    launchTarget: new tasks.EcsFargateLaunchTarget({
+      platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    }),
+    propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
+  }),
 );
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
