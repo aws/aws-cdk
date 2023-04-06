@@ -30,7 +30,6 @@ test('Default location action', () => {
             RoleArn: {
               'Fn::GetAtt': ['MyTopicRuleTopicRuleActionRoleCE2D05DA', 'Arn'],
             },
-            Timestamp: {},
           },
         },
       ],
