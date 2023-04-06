@@ -37,8 +37,8 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
    *
    * The properties which require a replacement of the Compute Environment are:
    *
-   * @see: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment
-   * @see: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html
    */
   readonly replaceComputeEnvironment?: boolean;
 
@@ -57,7 +57,7 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
    * when an infrastructure update is triggered, any running jobs
    * will be allowed to run until `updateTimeout` has expired.
    *
-   * @see - https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html
    * @default 30 minutes
    */
   readonly updateTimeout?: Duration;
@@ -126,8 +126,8 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
   * The properties which require a replacement of the Compute Environment are:
   *
   * `allocationStrategy`, `spotBidPercentage`, // TODO
-  * @see: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment
-  * @see: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html
+  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment
+  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html
   *
   * @default false
   */
@@ -148,7 +148,7 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    * when an infrastructure update is triggered, any running jobs
    * will be allowed to run until `updateTimeout` has expired.
    *
-   * @see - https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html
    *
    * @default 30 minutes
    */
@@ -332,7 +332,7 @@ export interface IManagedEc2EcsComputeEnvironment extends IManagedComputeEnviron
    * This keeps your multi-node parallel job on a logical grouping of instances
    * within a single Availability Zone with high network flow potential.
    *
-   * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
    *
    * @default - no placement group
    */
@@ -565,7 +565,7 @@ export interface ManagedEc2EcsComputeEnvironmentProps extends ManagedComputeEnvi
    * This keeps your multi-node parallel job on a logical grouping of instances
    * within a single Availability Zone with high network flow potential.
    *
-   * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
    *
    * @default - no placement group
    */
@@ -802,7 +802,7 @@ interface IManagedEc2EksComputeEnvironment extends IManagedComputeEnvironment {
    * This keeps your multi-node parallel job on a logical grouping of instances
    * within a single Availability Zone with high network flow potential.
    *
-   * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
    *
    * @default - no placement group
    */
@@ -938,7 +938,7 @@ export interface ManagedEc2EksComputeEnvironmentProps extends ManagedComputeEnvi
    * This keeps your multi-node parallel job on a logical grouping of instances
    * within a single Availability Zone with high network flow potential.
    *
-   * @see: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
    *
    * @default - no placement group
    */

@@ -11,7 +11,7 @@ interface IMultiNodeJobDefinition extends IJobDefinition {
   /**
    * The containers that this multinode job will run.
    *
-   * @see: https://aws.amazon.com/blogs/compute/building-a-tightly-coupled-molecular-dynamics-workflow-with-multi-node-parallel-jobs-in-aws-batch/
+   * @see https://aws.amazon.com/blogs/compute/building-a-tightly-coupled-molecular-dynamics-workflow-with-multi-node-parallel-jobs-in-aws-batch/
    */
   readonly containers: MultiNodeContainer[];
 
@@ -79,7 +79,7 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
   /**
    * The containers that this multinode job will run.
    *
-   * @see: https://aws.amazon.com/blogs/compute/building-a-tightly-coupled-molecular-dynamics-workflow-with-multi-node-parallel-jobs-in-aws-batch/
+   * @see https://aws.amazon.com/blogs/compute/building-a-tightly-coupled-molecular-dynamics-workflow-with-multi-node-parallel-jobs-in-aws-batch/
    *
    * @default none
    */

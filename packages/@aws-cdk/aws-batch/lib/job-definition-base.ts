@@ -26,7 +26,7 @@ export interface IJobDefinition extends IResource {
    * These parameters can be referenced in the `command` that
    * you give to the container
    *
-   * @see: https://docs.aws.amazon.com/batch/latest/userguide/job_definition_parameters.html#parameters
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/job_definition_parameters.html#parameters
    *
    * @default none
    */
@@ -88,7 +88,7 @@ export interface JobDefinitionProps {
    * These parameters can be referenced in the `command` that
    * you give to the container
    *
-   * @see: https://docs.aws.amazon.com/batch/latest/userguide/job_definition_parameters.html#parameters
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/job_definition_parameters.html#parameters
    *
    * @default none
    */

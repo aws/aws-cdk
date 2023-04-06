@@ -27,8 +27,8 @@ export interface IEksContainerDefinition extends IConstruct {
    * the command string will remain "$(NAME1)." $$ is replaced with $, and the resulting string isn't expanded.
    * or example, $$(VAR_NAME) is passed as $(VAR_NAME) whether or not the VAR_NAME environment variable exists.
    *
-   * @see: https://docs.docker.com/engine/reference/builder/#cmd
-   * @see: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
+   * @see https://docs.docker.com/engine/reference/builder/#cmd
+   * @see https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
    */
   readonly args?: string[];
 
@@ -43,9 +43,9 @@ export interface IEksContainerDefinition extends IConstruct {
 
    * The entrypoint can't be updated. // ?????? TODO
    *
-   * @see: https://docs.docker.com/engine/reference/builder/#entrypoint
-   * @see: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
-   * @see: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#entrypoint
+   * @see https://docs.docker.com/engine/reference/builder/#entrypoint
+   * @see https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
+   * @see https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#entrypoint
    */
   readonly command?: string[];
 
@@ -60,7 +60,7 @@ export interface IEksContainerDefinition extends IConstruct {
   /**
    * The image pull policy for this container
    *
-   * @see: https://kubernetes.io/docs/concepts/containers/images/#updating-images
+   * @see https://kubernetes.io/docs/concepts/containers/images/#updating-images
    *
    * @default - `ALWAYS` if the `:latest` tag is specified, `IF_NOT_PRESENT` otherwise
    */
@@ -84,8 +84,8 @@ export interface IEksContainerDefinition extends IConstruct {
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
    *
-   * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-   * @see: https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
+   * @see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
    *
    * @default - No memory limit
    */
@@ -109,8 +109,8 @@ export interface IEksContainerDefinition extends IConstruct {
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
    *
-   * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-   * @see: https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
+   * @see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
    *
    * @default - No memory reserved
    */
@@ -125,7 +125,7 @@ export interface IEksContainerDefinition extends IConstruct {
    * At least one of `cpuReservation` and `cpuLimit` is required.
    * If both are specified, then `cpuLimit` must be at least as large as `cpuReservation`.
    *
-   * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+   * @see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No CPU limit
    */
@@ -140,7 +140,7 @@ export interface IEksContainerDefinition extends IConstruct {
    * At least one of `cpuReservation` and `cpuLimit` is required.
    * If both are specified, then `cpuLimit` must be at least as large as `cpuReservation`.
    *
-   * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+   * @see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No CPUs reserved
    */
@@ -153,7 +153,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * If both `gpuReservation` and `gpuLimit` are specified, then `gpuLimit` must be equal to `gpuReservation`.
    *
-   * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+   * @see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No GPU limit
    */
@@ -167,7 +167,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * If both `gpuReservation` and `gpuLimit` are specified, then `gpuLimit` must be equal to `gpuReservation`.
    *
-   * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+   * @see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No GPUs reserved
    */
@@ -181,7 +181,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
    *
-   * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
+   * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
    *
    * @default false
    */
@@ -194,7 +194,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
    *
-   * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
+   * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
    *
    * @default false
    */
@@ -207,7 +207,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
    *
-   * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
+   * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
    *
    * @default none
    */
@@ -219,7 +219,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
    *
-   * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
+   * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
    *
    * @default - the container is *not* required to run as a non-root user
    */
@@ -231,7 +231,7 @@ export interface IEksContainerDefinition extends IConstruct {
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
    *
-   * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
+   * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
    *
    * @default - the user that is specified in the image metadata.
    */
@@ -241,7 +241,7 @@ export interface IEksContainerDefinition extends IConstruct {
    * The Volumes to mount to this container.
    * Automatically added to the Pod.
    *
-   * @see: https://kubernetes.io/docs/concepts/storage/volumes/
+   * @see https://kubernetes.io/docs/concepts/storage/volumes/
    */
   readonly volumes: EksVolume[];
 
@@ -262,7 +262,7 @@ export enum ImagePullPolicy {
    * the kubelet uses its cached image; otherwise, the kubelet pulls the image with the resolved digest,
    * and uses that image to launch the container.
    *
-   * @see: https://docs.docker.com/engine/reference/commandline/pull/#pull-an-image-by-digest-immutable-identifier
+   * @see https://docs.docker.com/engine/reference/commandline/pull/#pull-an-image-by-digest-immutable-identifier
    */
   ALWAYS = 'Always',
 
@@ -277,7 +277,7 @@ export enum ImagePullPolicy {
    * the kubelet attempts to start the container; otherwise, startup fails.
    * See pre-pulled images for more details.
    *
-   * @see: https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
+   * @see https://kubernetes.io/docs/concepts/containers/images/#pre-pulled-images
    */
   NEVER = 'Never',
 }
@@ -301,8 +301,8 @@ export interface EksContainerDefinitionProps {
    * the command string will remain "$(NAME1)." $$ is replaced with $, and the resulting string isn't expanded.
    * or example, $$(VAR_NAME) is passed as $(VAR_NAME) whether or not the VAR_NAME environment variable exists.
    *
-   * @see: https://docs.docker.com/engine/reference/builder/#cmd
-   * @see: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
+   * @see https://docs.docker.com/engine/reference/builder/#cmd
+   * @see https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
    *
    * @default - no args
    */
@@ -319,9 +319,9 @@ export interface EksContainerDefinitionProps {
 
    * The entrypoint can't be updated. // ?????? TODO
    *
-   * @see: https://docs.docker.com/engine/reference/builder/#entrypoint
-   * @see: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
-   * @see: https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#entrypoint
+   * @see https://docs.docker.com/engine/reference/builder/#entrypoint
+   * @see https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
+   * @see https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#entrypoint
    *
    * @default - no command
    */
@@ -340,7 +340,7 @@ export interface EksContainerDefinitionProps {
   /**
    * The image pull policy for this container
    *
-   * @see: https://kubernetes.io/docs/concepts/containers/images/#updating-images
+   * @see https://kubernetes.io/docs/concepts/containers/images/#updating-images
    *
    * @default - `ALWAYS` if the `:latest` tag is specified, `IF_NOT_PRESENT` otherwise
    */
@@ -364,8 +364,8 @@ export interface EksContainerDefinitionProps {
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
    *
-   * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-   * @see: https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
+   * @see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
    *
    * @default - No memory limit
    */
@@ -389,8 +389,8 @@ export interface EksContainerDefinitionProps {
    * *Note*: To maximize your resource utilization, provide your jobs with as much memory as possible
    * for the specific instance type that you are using.
    *
-   * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
-   * @see: https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
+   * @see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/memory-management.html
    *
    * @default - No memory reserved
    */
@@ -405,7 +405,7 @@ export interface EksContainerDefinitionProps {
    * At least one of `cpuReservation` and `cpuLimit` is required.
    * If both are specified, then `cpuLimit` must be at least as large as `cpuReservation`.
    *
-   * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+   * @see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No CPU limit
    */
@@ -420,7 +420,7 @@ export interface EksContainerDefinitionProps {
    * At least one of `cpuReservation` and `cpuLimit` is required.
    * If both are specified, then `cpuLimit` must be at least as large as `cpuReservation`.
    *
-   * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+   * @see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No CPUs reserved
    */
@@ -433,7 +433,7 @@ export interface EksContainerDefinitionProps {
    *
    * If both `gpuReservation` and `gpuLimit` are specified, then `gpuLimit` must be equal to `gpuReservation`.
    *
-   * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+   * @see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No GPU limit
    */
@@ -447,7 +447,7 @@ export interface EksContainerDefinitionProps {
    *
    * If both `gpuReservation` and `gpuLimit` are specified, then `gpuLimit` must be equal to `gpuReservation`.
    *
-   * @see: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+   * @see https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
    *
    * @default - No GPUs reserved
    */
@@ -461,7 +461,7 @@ export interface EksContainerDefinitionProps {
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
    *
-   * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
+   * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
    *
    * @default false
    */
@@ -474,7 +474,7 @@ export interface EksContainerDefinitionProps {
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
    *
-   * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
+   * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#volumes-and-file-systems
    *
    * @default false
    */
@@ -487,7 +487,7 @@ export interface EksContainerDefinitionProps {
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
    *
-   * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
+   * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
    *
    * @default none
    */
@@ -499,7 +499,7 @@ export interface EksContainerDefinitionProps {
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
    *
-   * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
+   * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
    *
    * @default - the container is *not* required to run as a non-root user
    */
@@ -511,7 +511,7 @@ export interface EksContainerDefinitionProps {
    *
    * *Note*: this is only compatible with Kubernetes < v1.25
    *
-   * @see: https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
+   * @see https://kubernetes.io/docs/concepts/security/pod-security-policy/#users-and-groups
    *
    * @default - the user that is specified in the image metadata.
    */
@@ -521,7 +521,7 @@ export interface EksContainerDefinitionProps {
    * The Volumes to mount to this container.
    * Automatically added to the Pod.
    *
-   * @see: https://kubernetes.io/docs/concepts/storage/volumes/
+   * @see https://kubernetes.io/docs/concepts/storage/volumes/
    *
    * @default - no volumes
    */
@@ -643,7 +643,7 @@ export interface EksVolumeOptions {
    * The name of this volume.
    * The name must be a valid DNS subdomain name.
    *
-   * @see: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
+   * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
    */
   readonly name: string;
 
@@ -670,7 +670,7 @@ export abstract class EksVolume {
   /**
    * Creates a Kubernetes EmptyDir volume
    *
-   * @see: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
+   * @see https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
    */
   static emptyDir(options: EmptyDirVolumeOptions) {
     return new EmptyDirVolume(options);
@@ -678,7 +678,7 @@ export abstract class EksVolume {
   /**
    * Creates a Kubernetes HostPath volume
    *
-   * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+   * @see https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
    */
   static hostPath(options: HostPathVolumeOptions) {
     return new HostPathVolume(options);
@@ -686,7 +686,7 @@ export abstract class EksVolume {
   /**
    * Creates a Kubernetes Secret volume
    *
-   * @see: https://kubernetes.io/docs/concepts/storage/volumes/#secret
+   * @see https://kubernetes.io/docs/concepts/storage/volumes/#secret
    */
   static secret(options: SecretPathVolumeOptions) {
     return new SecretPathVolume(options);
@@ -696,7 +696,7 @@ export abstract class EksVolume {
    * The name of this volume.
    * The name must be a valid DNS subdomain name.
    *
-   * @see: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
+   * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
    */
   readonly name: string;
 
@@ -725,7 +725,7 @@ export abstract class EksVolume {
 /**
  * Options for a Kubernetes EmptyDir volume
  *
- * @see: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
+ * @see https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
  */
 export interface EmptyDirVolumeOptions extends EksVolumeOptions {
   /**
@@ -763,7 +763,7 @@ export enum EmptyDirMediumType {
 /**
  * A Kubernetes EmptyDir volume
  *
- * @see: https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
+ * @see https://kubernetes.io/docs/concepts/storage/volumes/#emptydir
  */
 export class EmptyDirVolume extends EksVolume {
   /**
@@ -803,7 +803,7 @@ Object.defineProperty(EmptyDirVolume.prototype, EMPTY_DIR_VOLUME_SYMBOL, {
 /**
  * Options for a kubernetes HostPath volume
  *
- * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+ * @see https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
  */
 export interface HostPathVolumeOptions extends EksVolumeOptions {
   /**
@@ -811,7 +811,7 @@ export interface HostPathVolumeOptions extends EksVolumeOptions {
    *
    * *Note*: HothPath Volumes present many security risks, and should be avoided when possible.
    *
-   * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+   * @see https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
    */
   readonly hostPath: string;
 }
@@ -819,7 +819,7 @@ export interface HostPathVolumeOptions extends EksVolumeOptions {
 /**
  * A Kubernetes HostPath volume
  *
- * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+ * @see https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
  */
 export class HostPathVolume extends EksVolume {
   /**
@@ -834,7 +834,7 @@ export class HostPathVolume extends EksVolume {
    *
    * *Note*: HothPath Volumes present many security risks, and should be avoided when possible.
    *
-   * @see: https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
+   * @see https://kubernetes.io/docs/concepts/storage/volumes/#hostpath
    */
   public readonly path: string;
 
@@ -853,14 +853,14 @@ Object.defineProperty(HostPathVolume.prototype, HOST_PATH_VOLUME_SYMBOL, {
 /**
  * Options for a Kubernetes SecretPath Volume
  *
- * @see: https://kubernetes.io/docs/concepts/storage/volumes/#secret
+ * @see https://kubernetes.io/docs/concepts/storage/volumes/#secret
  */
 export interface SecretPathVolumeOptions extends EksVolumeOptions {
   /**
    * The name of the secret.
    * Must be a valid DNS subdomain name.
    *
-   * @see: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
+   * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
    */
   readonly secretName: string;
 
@@ -875,7 +875,7 @@ export interface SecretPathVolumeOptions extends EksVolumeOptions {
 /**
  * Specifies the configuration of a Kubernetes secret volume
  *
- * @see: https://kubernetes.io/docs/concepts/storage/volumes/#secret
+ * @see https://kubernetes.io/docs/concepts/storage/volumes/#secret
  */
 export class SecretPathVolume extends EksVolume {
   /**
@@ -889,7 +889,7 @@ export class SecretPathVolume extends EksVolume {
    * The name of the secret.
    * Must be a valid DNS subdomain name.
    *
-   * @see: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
+   * @see https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#dns-subdomain-names
    */
   readonly secretName: string;
 
