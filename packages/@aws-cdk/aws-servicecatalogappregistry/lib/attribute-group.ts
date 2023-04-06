@@ -32,6 +32,12 @@ export interface IAttributeGroup extends cdk.IResource {
    * @param shareOptions The options for the share.
    */
   shareAttributeGroup(id: string, shareOptions: ShareOptions): void;
+
+  /**
+   * Associate an application with attribute group
+   * If the attribute group is already associated, it will ignore duplicate request.
+   */
+  associateWith(application: IApplication): void;
 }
 
 /**
@@ -61,10 +67,6 @@ abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGrou
   public abstract readonly attributeGroupId: string;
   private readonly associatedApplications: Set<string> = new Set();
 
-  /**
-   * Associate an application with attribute group
-   * If the attribute group is already associated, it will ignore duplicate request.
-   */
   public associateWith(application: IApplication): void {
     if (!this.associatedApplications.has(application.node.addr)) {
       const hashId = this.generateUniqueHash(application.node.addr);
