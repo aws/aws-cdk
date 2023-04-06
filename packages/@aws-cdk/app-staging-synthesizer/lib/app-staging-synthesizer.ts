@@ -19,6 +19,11 @@ import { BootstrapRoles, StagingRoles } from './bootstrap-roles';
 import { IStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
 
 /**
+ * @internal
+ */
+export const EPHEMERAL_PREFIX = 'eph-';
+
+/**
  * Properties for stackPerEnv static method
  */
 export interface StackPerEnvProps {
@@ -48,6 +53,8 @@ export interface StackPerEnvProps {
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DEFAULT_QUALIFIER`
    */
   readonly qualifier?: string;
+
+  readonly retainEphemeralFileAssets?: boolean;
 }
 
 /**
@@ -182,6 +189,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
             stackName,
             fileAssetPublishingRole: props.stagingRoles?.fileAssetPublishingRole,
             imageAssetPublishingRole: props.stagingRoles?.dockerAssetPublishingRole,
+            retainEphemeralFileAssets: props.retainEphemeralFileAssets,
           });
           boundStack.addDependency(stagingStack.dependencyStack, 'stack depends on the staging stack for staging resources');
 
@@ -337,7 +345,7 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const { bucketName, assumeRoleArn } = this.stagingStack.addFile(asset);
     const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
       bucketName: bucketName,
-      // bucketPrefix: bucketPrefix,
+      bucketPrefix: asset.ephemeral ? EPHEMERAL_PREFIX : undefined,
       role: {
         assumeRoleArn,
       },

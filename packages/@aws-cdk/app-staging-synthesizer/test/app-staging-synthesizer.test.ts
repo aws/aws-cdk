@@ -5,6 +5,7 @@ import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { evaluateCFN } from 'aws-cdk-lib/core/test/evaluate-cfn';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { AppStagingSynthesizer, BootstrapRole, StackPerEnvProps } from '../lib';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 // import { Repository } from 'aws-cdk-lib/aws-ecr';
 // import { Bucket } from 'aws-cdk-lib/aws-s3';
 
@@ -161,6 +162,76 @@ describe(AppStagingSynthesizer, () => {
 
     // THEN - assets have the same location
     expect(evalCFN(location1.bucketName)).toEqual(evalCFN(location2.bucketName));
+  });
+
+  describe('ephemeral assets', () => {
+    test('ephemeral assets have the \'eph\' prefix', () => {
+      // WHEN
+      const location = stack.synthesizer.addFileAsset({
+        fileName: __filename,
+        packaging: FileAssetPackaging.FILE,
+        sourceHash: 'abcdef',
+        ephemeral: true,
+      });
+
+      // THEN - asset has bucket prefix
+      expect(evalCFN(location.objectKey)).toEqual('eph-abcdef.js');
+    });
+
+    test('s3 bucket has lifecycle rule on ephemeral assets by default', () => {
+      // GIVEN
+      new CfnResource(stack, 'Resource', {
+        type: 'Some::Resource',
+      });
+
+      // WHEN
+      const asm = app.synth();
+
+      // THEN
+      const stagingStackArtifact = asm.getStackArtifact('StagingStack000000000000us-east-1');
+
+      Template.fromJSON(stagingStackArtifact.template).hasResourceProperties('AWS::S3::Bucket', {
+        LifecycleConfiguration: {
+          Rules: [{
+            ExpirationInDays: 10,
+            Prefix: 'eph-',
+            Status: 'Enabled',
+          }],
+        },
+      });
+    });
+
+    test('lifecycle rule on ephemeral assets can be customized', () => {
+
+    });
+
+    test('lifecycle rule on ephemeral assets can be turned off', () => {
+      // GIVEN
+      const app2 = new App({
+        defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
+          retainEphemeralFileAssets: true,
+        }),
+      });
+      const stack2 = new Stack(app2, 'Stack', {
+        env: {
+          account: '000000000000',
+          region: 'us-west-2',
+        },
+      });
+      new CfnResource(stack2, 'Resource', {
+        type: 'Some::Resource',
+      });
+
+      // WHEN
+      const asm = app2.synth();
+
+      // THEN
+      const stagingStackArtifact = asm.getStackArtifact('StagingStack000000000000us-west-2');
+
+      Template.fromJSON(stagingStackArtifact.template).hasResourceProperties('AWS::S3::Bucket', {
+        LifecycleConfiguration: Match.absent(),
+      });
+    });
   });
 
   // test('add docker image asset', () => {

@@ -3,6 +3,7 @@ import {
   ArnFormat,
   BootstraplessSynthesizer,
   DockerImageAssetSource,
+  Duration,
   FileAssetSource,
   RemovalPolicy,
   Stack,
@@ -13,6 +14,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { IConstruct } from 'constructs';
+import { EPHEMERAL_PREFIX } from './app-staging-synthesizer';
 import { BootstrapRole } from './bootstrap-roles';
 
 /**
@@ -107,6 +109,23 @@ export interface DefaultStagingStackProps extends StackProps {
   readonly imageAssetPublishingRole?: BootstrapRole;
 
   /**
+   * Specify a custom lifecycle rule for ephemeral file assets. If you
+   * specify this property, you must set `prefix: 'eph-'` as part of the rule.
+   * This is the only way to identify ephemeral assets.
+   *
+   * @default - ephemeral assets will be deleted after 10 days
+   */
+  readonly ephemeralFileAssetLifecycleRule?: s3.LifecycleRule;
+
+  /**
+   * Retain all assets in the s3 bucket, even the ones that have been
+   * marked ephemeral.
+   *
+   * @default false
+   */
+  readonly retainEphemeralFileAssets?: boolean;
+
+  /**
    * Repository lifecycle rules (not fully implemented)
    */
   // readonly repositoryLifecycleRules?: StagingRepoLifecycleRule[];
@@ -156,6 +175,8 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   private readonly fileAssetPublishingRoleId = 'CdkFilePublishingRole';
   private readonly imageAssetPublishingRoleArn?: string;
   private readonly imageAssetPublishingRoleId = 'CdkImagePublishingRole';
+  private readonly ephemeralFileAssetLifecycleRule?: s3.LifecycleRule;
+  private readonly retainEphemeralFileAssets?: boolean;
   // private readonly repositoryLifecycleRules: Record<string, ecr.LifecycleRule[]>;
 
   constructor(scope: App, id: string, props: DefaultStagingStackProps) {
@@ -167,6 +188,8 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     this.appId = props.appId;
     this.dependencyStack = this;
 
+    this.ephemeralFileAssetLifecycleRule = this.validateEphemeralAssetLifecycleRule(props.ephemeralFileAssetLifecycleRule);
+    this.retainEphemeralFileAssets = props.retainEphemeralFileAssets;
     this.stagingBucketName = props.stagingBucketName;
     this.fileAssetPublishingRoleArn = props.fileAssetPublishingRole ? this.validateStagingRole(props.fileAssetPublishingRole).roleArn : undefined;
     this.imageAssetPublishingRoleArn = props.imageAssetPublishingRole ?
@@ -180,6 +203,14 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       throw new Error('fileAssetPublishingRole and dockerAssetPublishingRole cannot be specified as cliCredentials(). Please supply an arn to reference an existing IAM role.');
     }
     return stagingRole;
+  }
+
+  private validateEphemeralAssetLifecycleRule(rule?: s3.LifecycleRule) {
+    if (!rule) { return rule; }
+    if (rule.prefix !== EPHEMERAL_PREFIX) {
+      throw new Error(`ephemeralAssetLifecycleRule must contain "prefix: '${EPHEMERAL_PREFIX}'" but got 'prefix: ${rule.prefix}. This prefix is the only way to identify ephemeral assets.`);
+    }
+    return rule;
   }
 
   // private processLifecycleRules(rules: StagingRepoLifecycleRule[]) {
@@ -279,6 +310,14 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       encryptionKey: key,
     });
     bucket.grantReadWrite(role);
+
+    if (this.retainEphemeralFileAssets !== true) {
+      const rule = this.ephemeralFileAssetLifecycleRule ?? {
+        prefix: EPHEMERAL_PREFIX,
+        expiration: Duration.days(10),
+      };
+      bucket.addLifecycleRule(rule);
+    }
     // bucket.grantReadWrite(iam.Role.fromRoleArn(this, 'blah', 'arn:aws:iam::489318732371:role/cdk-hnb659fds-cfn-exec-role-489318732371-us-east-2'));
 
     return stagingBucketName;
