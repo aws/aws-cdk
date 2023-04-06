@@ -38,6 +38,9 @@ done
 export PATH=$(npm bin):$PATH
 export NODE_OPTIONS="--max-old-space-size=8196 --experimental-worker ${NODE_OPTIONS:-}"
 
+# Temporary log memory for long builds (this may mess with tests that check stderr)
+# export NODE_OPTIONS="-r $PWD/scripts/log-memory.js ${NODE_OPTIONS:-}"
+
 if ! [ -x "$(command -v yarn)" ]; then
   echo "yarn is not installed. Install it from here- https://yarnpkg.com/en/docs/install."
   exit 1
