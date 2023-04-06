@@ -1,4 +1,4 @@
-import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture } from '../../aws-ec2';
+import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
 import { IRole, ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
 import { IResource, Resource, Annotations, withResolved } from '../../core';
 import { Construct, Node } from 'constructs';
@@ -499,13 +499,11 @@ const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU];
  * @param instanceType The EC2 instance type
  */
 function isGpuInstanceType(instanceType: InstanceType): boolean {
-  // capture the family, generation, capabilities, and size portions of the instance type id
-  const instanceTypeComponents = instanceType.toString().match(/^([a-z]+)(\d{1,2})([a-z]*)\.([a-z0-9]+)$/);
-  if (instanceTypeComponents == null) {
-    throw new Error('Malformed instance type identifier');
-  }
-  const family = instanceTypeComponents[1];
-  return ['p', 'g', 'inf'].includes(family);
+  //compare instanceType to known GPU InstanceTypes
+  const knownGpuInstanceTypes = [InstanceClass.P2, InstanceClass.P3, InstanceClass.P3DN, InstanceClass.P4DE, InstanceClass.P4D,
+    InstanceClass.G3S, InstanceClass.G3, InstanceClass.G4DN, InstanceClass.G4AD, InstanceClass.G5, InstanceClass.G5G,
+    InstanceClass.INF1];
+  return knownGpuInstanceTypes.some((c) => instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE)));
 }
 
 /**
@@ -514,13 +512,12 @@ function isGpuInstanceType(instanceType: InstanceType): boolean {
  * @param instanceType The EC2 instance type
  */
 function isWindowsSupportedInstanceType(instanceType: InstanceType): boolean {
-  // capture the family, generation, capabilities, and size portions of the instance type id
-  const instanceTypeFormat = instanceType.toString().match(/^[a-z]+\d{1,2}[a-z]*\.[a-z0-9]+$/);
-  if (instanceTypeFormat == null) {
-    throw new Error('Malformed instance type identifier');
-  }
-  const forbiddenInstanceTypes:RegExp = /^(?:c3|c4|d2|i2|m4|m6a|r3)\.[a-z0-9]+$/;
-  return instanceType.toString() === 'm4.16xlarge' || !instanceType.toString().match(forbiddenInstanceTypes);
+  //compare instanceType to forbidden InstanceTypes for Windows. Add exception for m6a.16xlarge.
+  //NOTE: i2 instance class is not present in the InstanceClass enum.
+  const forbiddenInstanceClasses: InstanceClass[] = [InstanceClass.C3, InstanceClass.C4, InstanceClass.D2, InstanceClass.M4,
+    InstanceClass.M6A, InstanceClass.R3];
+  return instanceType.toString() === InstanceType.of(InstanceClass.M4, InstanceSize.XLARGE16).toString() ||
+    forbiddenInstanceClasses.every((c) => !instanceType.sameInstanceClassAs(InstanceType.of(c, InstanceSize.LARGE)) && !instanceType.toString().match(/^i2/));
 }
 
 type AmiArchitecture = InstanceArchitecture | 'GPU';
