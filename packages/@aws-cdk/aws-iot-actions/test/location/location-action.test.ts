@@ -132,10 +132,6 @@ test('can set role', () => {
             Latitude: '47.6038',
             Longitude: '-122.3301',
             RoleArn: 'arn:aws:iam::123456789012:role/ForTest',
-            Timestamp: {
-              Value: '${timestamp()}',
-              Unit: actions.LocationTimestampUnit.MILLISECONDS,
-            },
           },
         }),
       ],
