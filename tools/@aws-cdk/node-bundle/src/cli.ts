@@ -24,7 +24,7 @@ async function buildCommands() {
     .command('pack', 'Write the bundle and create the tarball')
     .help()
     .version(versionNumber())
-    .argv;
+    .parseSync();
 
   const command = argv._[0];
 
@@ -72,7 +72,7 @@ async function buildCommands() {
 
   switch (command) {
     case 'validate':
-      validate(bundle, { fix: argv.fix });
+      validate(bundle, { fix: argv.fix as boolean | undefined });
       break;
     case 'write':
       write(bundle);

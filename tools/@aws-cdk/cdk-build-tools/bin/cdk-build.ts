@@ -1,4 +1,4 @@
-import * as yargs from 'yargs';
+import yargs from 'yargs';
 import { compileCurrentPackage } from '../lib/compile';
 import { lintCurrentPackage } from '../lib/lint';
 import { shell } from '../lib/os';
@@ -39,7 +39,7 @@ async function main() {
       desc: 'Skip eslint during build',
       default: false,
     })
-    .argv;
+    .parse();
 
   const options = cdkBuildOptions();
   const env = options.env;

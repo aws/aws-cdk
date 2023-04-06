@@ -22,7 +22,7 @@ async function main() {
       default: require.resolve('jsii-pacmak/bin/jsii-pacmak'),
       defaultDescription: 'jsii-pacmak provided by node dependencies',
     })
-    .argv;
+    .parse();
 
   const options = cdkPackageOptions();
 
@@ -46,7 +46,7 @@ async function main() {
   if (isJsii()) {
     const command = [args['jsii-pacmak'],
       args.verbose ? '-vvv' : '-v',
-      ...args.targets ? flatMap(args.targets, (target: string) => ['-t', target]) : [],
+      ...args.targets ? flatMap(args.targets as string[], (target: string) => ['-t', target]) : [],
       '-o', outdir];
     await shell(command, { timers });
   } else {

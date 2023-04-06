@@ -54,7 +54,7 @@
     "lint": "cdk-lint",
     "package": "cdk-package",
     "pkglint": "pkglint -f",
-    "test": "cdk-test",
+    "test": "jest && yarn integ",
     "watch": "cdk-watch",
     "awslint": "cdk-awslint",
     "build+test+package": "yarn build+test && yarn package",

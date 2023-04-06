@@ -15,7 +15,7 @@ async function main() {
       desc: 'Fix the found issues',
       default: false,
     })
-    .argv;
+    .parse();
 
   const options = cdkBuildOptions();
 

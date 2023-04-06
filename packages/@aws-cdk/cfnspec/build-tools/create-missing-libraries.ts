@@ -136,7 +136,7 @@ async function main() {
         build: 'cdk-build',
         watch: 'cdk-watch',
         lint: 'cdk-lint',
-        test: 'cdk-test',
+        test: 'jest && yarn integ',
         integ: 'cdk-integ',
         pkglint: 'pkglint -f',
         package: 'cdk-package',

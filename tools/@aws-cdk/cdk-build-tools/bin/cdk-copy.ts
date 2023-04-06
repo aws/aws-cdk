@@ -1,10 +1,7 @@
 import * as path from 'path';
-import { promisify } from 'util';
 import * as fs from 'fs-extra';
-import * as _glob from 'glob';
-import * as yargs from 'yargs';
-
-const glob = promisify(_glob);
+import { glob } from 'glob';
+import yargs from 'yargs';
 
 async function main() {
   const args = yargs(process.argv.slice(2))
@@ -25,17 +22,18 @@ async function main() {
           type: 'array',
           description: 'Ignore patterns when copying source files',
         })
-        .required('MODULE_NAME'),
-    ).argv;
+        .demandOption('MODULE_NAME'),
+    ).parse();
+
 
   const { MODULE_NAME, 'out-dir': outDir, ignore = [] } = args;
   const sourcePackageDir = path.resolve(__dirname, '..', '..', '..', '..', 'packages', 'aws-cdk-lib');
 
   await duplicateModule({
-    moduleName: MODULE_NAME,
-    outDir,
+    moduleName: MODULE_NAME as string,
+    outDir: outDir as string,
     sourcePackageDir,
-    ignore,
+    ignore: ignore as Array<string>,
   });
 }
 

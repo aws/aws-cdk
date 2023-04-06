@@ -53,7 +53,7 @@
     "build": "cdk-build",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
-    "test": "cdk-test",
+    "test": "jest && yarn integ",
     "integ": "integ-runner",
     "pkglint": "pkglint -f",
     "package": "cdk-package",

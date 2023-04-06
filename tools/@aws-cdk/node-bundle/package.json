@@ -45,6 +45,7 @@
     "typescript": "^4.5.5"
   },
   "dependencies": {
+    "@types/yargs": "^17.0.24",
     "cdk-generate-synthetic-examples": "^0.1.173",
     "esbuild": "^0.17.11",
     "fs-extra": "^10.1.0",

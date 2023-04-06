@@ -13,7 +13,7 @@
     "package": "cdk-package",
     "awslint": "cdk-awslint",
     "pkglint": "pkglint -f",
-    "test": "cdk-test",
+    "test": "jest && yarn integ",
     "integ": "integ-runner",
     "watch": "cdk-watch",
     "build+test": "yarn build && yarn test",

@@ -63,7 +63,7 @@ describe('bundling', () => {
 
     const image = DockerImage.fromBuild('docker-path', {
       buildArgs: {
-        TEST_ARG: 'cdk-test',
+        TEST_ARG: 'jest',
       },
     });
     image.run();
@@ -71,14 +71,14 @@ describe('bundling', () => {
     const tagHash = crypto.createHash('sha256').update(JSON.stringify({
       path: 'docker-path',
       buildArgs: {
-        TEST_ARG: 'cdk-test',
+        TEST_ARG: 'jest',
       },
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
     expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
-      '--build-arg', 'TEST_ARG=cdk-test',
+      '--build-arg', 'TEST_ARG=jest',
       'docker-path',
     ])).toEqual(true);
 

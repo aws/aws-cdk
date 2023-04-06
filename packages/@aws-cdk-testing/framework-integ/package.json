@@ -8,7 +8,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
-    "test": "cdk-test",
+    "test": "jest",
     "package": "cdk-package",
     "build+test": "yarn build && yarn test",
     "build+extract": "yarn build",
