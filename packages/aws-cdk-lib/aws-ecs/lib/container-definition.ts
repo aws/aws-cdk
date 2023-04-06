@@ -358,6 +358,11 @@ export interface ContainerDefinitionOptions {
    * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#container_definition_pseudoterminal
    */
   readonly pseudoTerminal?: boolean;
+
+  /**
+   * An array of ulimits to set in the container.
+   */
+  readonly ulimits?: Ulimit[];
 }
 
 /**
@@ -537,6 +542,10 @@ export class ContainerDefinition extends Construct {
     }
 
     this.pseudoTerminal = props.pseudoTerminal;
+
+    if (props.ulimits) {
+      this.addUlimits(...props.ulimits);
+    }
   }
 
   /**
