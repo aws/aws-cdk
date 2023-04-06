@@ -11,5 +11,5 @@ setInterval(() => {
     const now = new Date();
     const HH = `0${now.getHours()}`.slice(-2);
     const MM = `0${now.getMinutes()}`.slice(-2);
-    console.log(`[${HH}:${MM}] [node:${process.pid}] rss=${(memoryUsage.rss() / MB).toFixed(1)}`);
+    console.error(`[${HH}:${MM}] [node:${process.pid}] rss=${(memoryUsage.rss() / MB).toFixed(1)}`);
 }, 60000).unref();
