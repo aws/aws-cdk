@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/82d95f02f48b1a318e263f9ed8a8bffdeb427088f26115168bac269d7c1d92fb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee34dc126a9e014c1025313996c90032154c8618c30bf022f8a24eb1d802b58e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -57,6 +57,18 @@
             "data": "MySecondRoleB9F57405"
           }
         ],
+        "/integ-servicecatalogappregistry-attribute-group/TestApplication/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplication2FBC585F"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/ImportedAttributeGroup/ApplicationAttributeGroupAssociationd925bfffb4d4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ImportedAttributeGroupApplicationAttributeGroupAssociationd925bfffb4d4EDC9DE5C"
+          }
+        ],
         "/integ-servicecatalogappregistry-attribute-group/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -67,15 +79,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "TestAttributeGroupRAMSharec67f7d80e5baA10EFB4E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestAttributeGroupRAMSharec67f7d80e5baA10EFB4E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

@@ -114,6 +114,50 @@
      "Version": "2012-10-17"
     }
    }
+  },
+  "TestApplication2FBC585F": {
+   "Type": "AWS::ServiceCatalogAppRegistry::Application",
+   "Properties": {
+    "Name": "TestApplication",
+    "Description": "My application description"
+   }
+  },
+  "ImportedAttributeGroupApplicationAttributeGroupAssociationd925bfffb4d4EDC9DE5C": {
+   "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
+   "Properties": {
+    "Application": {
+     "Fn::GetAtt": [
+      "TestApplication2FBC585F",
+      "Id"
+     ]
+    },
+    "AttributeGroup": {
+     "Fn::Select": [
+      2,
+      {
+       "Fn::Split": [
+        "/",
+        {
+         "Fn::Select": [
+          5,
+          {
+           "Fn::Split": [
+            ":",
+            {
+             "Fn::GetAtt": [
+              "TestAttributeGroupB1CB284F",
+              "Arn"
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   }
   }
  },
  "Parameters": {

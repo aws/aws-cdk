@@ -32,4 +32,12 @@ attributeGroup.shareAttributeGroup('MyShareId', {
   roles: [myRole, mySecondRole],
 });
 
+const application = new appreg.Application(stack, 'TestApplication', {
+  applicationName: 'TestApplication',
+  description: 'My application description',
+});
+
+const importedAttributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(stack, 'ImportedAttributeGroup', attributeGroup.attributeGroupArn);
+importedAttributeGroup.associateWith(application);
+
 app.synth();
