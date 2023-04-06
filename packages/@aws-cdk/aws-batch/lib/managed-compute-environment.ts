@@ -125,7 +125,6 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
   *
   * The properties which require a replacement of the Compute Environment are:
   *
-  * `allocationStrategy`, `spotBidPercentage`, // TODO
   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment
   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html
   *

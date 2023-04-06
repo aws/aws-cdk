@@ -41,7 +41,7 @@ export interface IEksContainerDefinition extends IConstruct {
    * the command string will remain `"$(NAME1)."` `$$` is replaced with `$` and the resulting string isn't expanded.
    * For example, `$$(VAR_NAME)` will be passed as `$(VAR_NAME)` whether or not the `VAR_NAME` environment variable exists.
 
-   * The entrypoint can't be updated. // ?????? TODO
+   * The entrypoint can't be updated.
    *
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
    * @see https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
@@ -317,7 +317,7 @@ export interface EksContainerDefinitionProps {
    * the command string will remain `"$(NAME1)."` `$$` is replaced with `$` and the resulting string isn't expanded.
    * For example, `$$(VAR_NAME)` will be passed as `$(VAR_NAME)` whether or not the `VAR_NAME` environment variable exists.
 
-   * The entrypoint can't be updated. // ?????? TODO
+   * The entrypoint can't be updated.
    *
    * @see https://docs.docker.com/engine/reference/builder/#entrypoint
    * @see https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/
