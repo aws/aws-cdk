@@ -741,8 +741,15 @@ new pipelines.CodeBuildStep('Synth', {
   // Control the build environment
   buildEnvironment: {
     computeType: codebuild.ComputeType.LARGE,
+    privileged: true,
   },
   timeout: Duration.minutes(90),
+  fileSystemLocations: [codebuild.FileSystemLocation.efs({
+      identifier: "myidentifier2",
+      location: "myclodation.mydnsroot.com:/loc",
+      mountPoint: "/media",
+      mountOptions: "opts",
+    })],
 
   // Control Elastic Network Interface creation
   vpc: vpc,
@@ -1290,6 +1297,15 @@ We therefore expect you to mind the following:
 - Use dependency locking to prevent accidental upgrades! The default `CdkSynths` that
   come with CDK Pipelines will expect `package-lock.json` and `yarn.lock` to
   ensure your dependencies are the ones you expect.
+
+- CDK Pipelines runs on resources created in your own account, and the configuration
+  of those resources is controlled by developers submitting code through the pipeline.
+  Therefore, CDK Pipelines by itself cannot protect against malicious
+  developers trying to bypass compliance checks. If your threat model includes
+  developers writing CDK code, you should have external compliance mechanisms in place like
+  [AWS CloudFormation Hooks](https://aws.amazon.com/blogs/mt/proactively-keep-resources-secure-and-compliant-with-aws-cloudformation-hooks/)
+  (preventive) or [AWS Config](https://aws.amazon.com/config/) (reactive) that
+  the CloudFormation Execution Role does not have permissions to disable.
 
 - Credentials to production environments should be short-lived. After
   bootstrapping and the initial pipeline provisioning, there is no more need for

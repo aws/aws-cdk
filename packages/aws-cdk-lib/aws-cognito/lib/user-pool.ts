@@ -550,7 +550,7 @@ export interface UserPoolProps {
   readonly smsRole?: IRole;
 
   /**
-   * The 'ExternalId' that Cognito service must using when assuming the `smsRole`, if the role is restricted with an 'sts:ExternalId' conditional.
+   * The 'ExternalId' that Cognito service must be using when assuming the `smsRole`, if the role is restricted with an 'sts:ExternalId' conditional.
    * Learn more about ExternalId here - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-user_externalid.html
    *
    * This property will be ignored if `smsRole` is not specified.
