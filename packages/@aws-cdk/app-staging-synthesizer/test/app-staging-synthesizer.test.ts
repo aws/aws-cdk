@@ -375,6 +375,30 @@ describe('Boostrap Roles', () => {
 
     expect(() => new Stack(app, 'Stack')).toThrowError('fileAssetPublishingRole and dockerAssetPublishingRole cannot be specified as cliCredentials(). Please supply an arn to reference an existing IAM role.');
   });
+
+  test('qualifier is resolved in the synthesizer', () => {
+    const app = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.stackPerEnv({
+        qualifier: 'abcdef',
+        appId: APP_ID,
+      }),
+    });
+    new Stack(app, 'Stack', {
+      env: {
+        account: '000000000000',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    const asm = app.synth();
+
+    // THEN
+    const stackArtifact = asm.getStackArtifact('Stack');
+
+    // Bootstrapped role's asset manifest tokens are resolved, where possible
+    expect(stackArtifact.cloudFormationExecutionRoleArn).toEqual('arn:${AWS::Partition}:iam::000000000000:role/cdk-abcdef-cfn-exec-role-000000000000-us-east-1');
+  });
 });
 
 function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifact {

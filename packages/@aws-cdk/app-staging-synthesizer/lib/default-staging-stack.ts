@@ -231,11 +231,11 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       throw new Error('Cannot call getImagePublishingRoleArn before createImagePublishingRole');
     }
     return Stack.of(this).formatArn({
-      partition: '${AWS::{artition}',
+      partition: '${AWS::Partition}',
       region: '', // iam is global
       service: 'iam',
       resource: 'role',
-      resourceName: this.DEFAULT_FILE_ASSET_PUBLISHING_ROLE_NAME,
+      resourceName: this.DEFAULT_IMAGE_ASSET_PUBISHING_ROLE_NAME,
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
   }
@@ -279,6 +279,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       encryptionKey: key,
     });
     bucket.grantReadWrite(role);
+    // bucket.grantReadWrite(iam.Role.fromRoleArn(this, 'blah', 'arn:aws:iam::489318732371:role/cdk-hnb659fds-cfn-exec-role-489318732371-us-east-2'));
 
     return stagingBucketName;
   }

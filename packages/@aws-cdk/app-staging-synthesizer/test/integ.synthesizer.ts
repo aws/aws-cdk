@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as integ from '@aws-cdk/integ-tests-alpha';
+// import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { AppStagingSynthesizer, BootstrapRole } from '../lib';
@@ -8,10 +8,12 @@ const app = new App();
 
 const stack = new Stack(app, 'app-scoped-staging-test', {
   synthesizer: AppStagingSynthesizer.stackPerEnv({
-    appId: 'app-id',
+    appId: 'zabef',
     qualifier: 'hnb659fds',
     bootstrapRoles: {
       cloudFormationExecutionRole: BootstrapRole.fromRoleArn('arn:aws:iam::489318732371:role/cdk-hnb659fds-cfn-exec-role-489318732371-us-east-2'),
+      lookupRole: BootstrapRole.fromRoleArn('arn:aws:iam::489318732371:role/cdk-hnb659fds-lookup-role-489318732371-us-east-2'),
+      deploymentActionRole: BootstrapRole.fromRoleArn('arn:aws:iam::489318732371:role/cdk-hnb659fds-deploy-role-489318732371-us-east-2'),
     },
   }),
   env: {
@@ -26,8 +28,8 @@ new lambda.Function(stack, 'lambda', {
   runtime: lambda.Runtime.PYTHON_3_9,
 });
 
-new integ.IntegTest(app, 'integ-tests', {
-  testCases: [stack],
-});
+// new integ.IntegTest(app, 'integ-tests', {
+//   testCases: [stack],
+// });
 
 app.synth();

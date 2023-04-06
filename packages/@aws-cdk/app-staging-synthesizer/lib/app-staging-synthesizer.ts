@@ -13,6 +13,7 @@ import {
   StackSynthesizer,
   Token,
 } from 'aws-cdk-lib';
+import { StringSpecializer } from 'aws-cdk-lib/core/lib/stack-synthesizers/_shared';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { BootstrapRoles, StagingRoles } from './bootstrap-roles';
 import { IStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
@@ -43,9 +44,6 @@ export interface StackPerEnvProps {
 
   /**
    * Qualifier to disambiguate multiple environments in the same account
-   *
-   * You can use this and leave the other naming properties empty if you have deployed
-   * the bootstrap environment with standard names but only different qualifiers.
    *
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DEFAULT_QUALIFIER`
    */
@@ -104,9 +102,6 @@ interface AppStagingSynthesizerProps {
   /**
    * Qualifier to disambiguate multiple environments in the same account
    *
-   * You can use this and leave the other naming properties empty if you have deployed
-   * the bootstrap environment with standard names but only different qualifiers.
-   *
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DEFAULT_QUALIFIER`
    */
   readonly qualifier?: string;
@@ -140,6 +135,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
     }
 
     return new AppStagingSynthesizer({
+      qualifier: props.qualifier,
       bootstrapRoles: props.bootstrapRoles,
       stagingStackFactory: {
         stagingStackFactory(boundStack: Stack) {
@@ -292,15 +288,20 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     super.bind(stack);
 
     this.qualifier = props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? BoundAppStagingSynthesizer.DEFAULT_QUALIFIER;
+    const spec = new StringSpecializer(stack, this.qualifier);
+    const specialize = (arn?: string) => {
+      if (!arn) { return undefined; }
+      return spec.specialize(arn);
+    };
 
     // Roles are implemented this way because roleArn could be undefined, signifying that we are
     // to use cli credentials instead.
-    this.lookupRoleArn = props.bootstrapRoles?.lookupRole ?
-      props.bootstrapRoles.lookupRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN;
-    this.cloudFormationExecutionRoleArn = props.bootstrapRoles?.cloudFormationExecutionRole ?
-      props.bootstrapRoles.cloudFormationExecutionRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN;
-    this.deploymentActionRoleArn = props.bootstrapRoles?.deploymentActionRole ?
-      props.bootstrapRoles.deploymentActionRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN;
+    this.lookupRoleArn = specialize(props.bootstrapRoles?.lookupRole ?
+      props.bootstrapRoles.lookupRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
+    this.cloudFormationExecutionRoleArn = specialize(props.bootstrapRoles?.cloudFormationExecutionRole ?
+      props.bootstrapRoles.cloudFormationExecutionRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
+    this.deploymentActionRoleArn = specialize(props.bootstrapRoles?.deploymentActionRole ?
+      props.bootstrapRoles.deploymentActionRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
 
     this.stagingStack = props.stagingStackFactory.stagingStackFactory(stack);
   }
