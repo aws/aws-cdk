@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c1a6178175d7f406a37679b24690f8a51e7d09b8dce389aef65a73f4ed39fb94.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de5111445787493cd3b1c26d2c29037318b0e6a52ebffbf616d04c6590ae9b5f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -192,10 +192,7 @@
         "/aws-stepfunctions-integ/ComputeEnv/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ComputeEnv2C40ACC2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ComputeEnv2C40ACC2"
           }
         ],
         "/aws-stepfunctions-integ/JobQueue/JobQueue": [
@@ -262,51 +259,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ComputeEnvResourceSecurityGroupB84CF86B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ComputeEnvResourceSecurityGroupB84CF86B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ComputeEnvEcsInstanceRoleCFB290F9": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ComputeEnvEcsInstanceRoleCFB290F9",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ComputeEnvInstanceProfile81AFCCF2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ComputeEnvInstanceProfile81AFCCF2",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ComputeEnvResourceServiceInstanceRoleCF89E9E1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ComputeEnvResourceServiceInstanceRoleCF89E9E1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "JobQueueEE3AD499": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "JobQueueEE3AD499",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

@@ -432,6 +432,7 @@
      "Type": "FARGATE",
      "UpdateToLatestImageVersion": true
     },
+    "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
     "UpdatePolicy": {}
    }
@@ -572,6 +573,7 @@
      "Type": "EC2",
      "UpdateToLatestImageVersion": true
     },
+    "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
     "UpdatePolicy": {}
    }
@@ -834,6 +836,7 @@
      "Type": "SPOT",
      "UpdateToLatestImageVersion": true
     },
+    "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
     "UpdatePolicy": {}
    }

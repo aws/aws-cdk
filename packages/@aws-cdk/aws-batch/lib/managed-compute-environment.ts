@@ -37,7 +37,6 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
    *
    * The properties which require a replacement of the Compute Environment are:
    *
-   * `allocationStrategy`, `spotBidPercentage`, // TODO
    * @see: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment
    * @see: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html
    */
@@ -130,7 +129,7 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
   * @see: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment
   * @see: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-continueupdaterollback.html
   *
-  * @default true
+  * @default false
   */
   readonly replaceComputeEnvironment?: boolean;
 
@@ -215,7 +214,7 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
     super(scope, id, props);
 
     this.maxvCpus = props.maxvCpus ?? DEFAULT_MAX_VCPUS;
-    this.replaceComputeEnvironment = props.replaceComputeEnvironment;
+    this.replaceComputeEnvironment = props.replaceComputeEnvironment ?? false;
     this.spot = props.spot;
     this.updateTimeout = props.updateTimeout;
     this.terminateOnUpdate = props.terminateOnUpdate;

@@ -722,14 +722,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "InstanceProfile": {
@@ -746,8 +746,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.CfnInstanceProfile",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Resource": {
@@ -789,18 +789,19 @@
                       ],
                       "allocationStrategy": "BEST_FIT_PROGRESSIVE"
                     },
+                    "replaceComputeEnvironment": false,
                     "state": "ENABLED",
                     "updatePolicy": {}
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-batch.CfnComputeEnvironment",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.ManagedEc2EcsComputeEnvironment",
+              "fqn": "@aws-cdk/aws-batch-alpha.ManagedEc2EcsComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -830,13 +831,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-batch.CfnJobQueue",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.JobQueue",
+              "fqn": "@aws-cdk/aws-batch-alpha.JobQueue",
               "version": "0.0.0"
             }
           },
@@ -877,8 +878,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "DefaultPolicy": {
@@ -941,20 +942,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "AssetImage": {
@@ -973,20 +974,20 @@
                     "id": "Repository",
                     "path": "aws-stepfunctions-integ/Container/AssetImage/Repository",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecr-assets.DockerImageAsset",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.270"
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
+              "version": "0.0.0"
             }
           },
           "JobDefinition": {
@@ -1031,13 +1032,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-batch.CfnJobDefinition",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.EcsJobDefinition",
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -1045,16 +1046,16 @@
             "id": "Submit Job",
             "path": "aws-stepfunctions-integ/Submit Job",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions-tasks.BatchSubmitJob",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "Start": {
             "id": "Start",
             "path": "aws-stepfunctions-integ/Start",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "StateMachine": {
@@ -1094,8 +1095,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "DefaultPolicy": {
@@ -1182,20 +1183,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Resource": {
@@ -1236,14 +1237,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "JobQueueArn": {

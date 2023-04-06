@@ -39,6 +39,7 @@ const defaultExpectedEcsProps: CfnComputeEnvironmentProps = {
     spotIamFleetRole: undefined,
     updateToLatestImageVersion: true,
   },
+  replaceComputeEnvironment: false,
 };
 
 const defaultExpectedEksProps: CfnComputeEnvironmentProps = {
@@ -428,7 +429,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     new ComputeEnvironment(stack, 'MyCE', {
       ...defaultProps,
       vpc,
-      replaceComputeEnvironment: false,
+      replaceComputeEnvironment: true,
     });
 
     // THEN
@@ -437,7 +438,7 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
       ComputeResources: {
         ...defaultComputeResources,
       },
-      ReplaceComputeEnvironment: false,
+      ReplaceComputeEnvironment: true,
     });
   });
 

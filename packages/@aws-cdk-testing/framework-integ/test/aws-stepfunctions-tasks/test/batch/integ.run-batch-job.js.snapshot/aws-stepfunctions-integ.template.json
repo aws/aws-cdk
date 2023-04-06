@@ -470,6 +470,7 @@
      "Type": "EC2",
      "UpdateToLatestImageVersion": true
     },
+    "ReplaceComputeEnvironment": false,
     "State": "ENABLED",
     "UpdatePolicy": {}
    }

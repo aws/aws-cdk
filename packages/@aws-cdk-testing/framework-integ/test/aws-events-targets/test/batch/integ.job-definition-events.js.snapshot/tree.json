@@ -59,14 +59,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Resource": {
@@ -86,13 +86,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-batch.CfnComputeEnvironment",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.UnmanagedComputeEnvironment",
+              "fqn": "@aws-cdk/aws-batch-alpha.UnmanagedComputeEnvironment",
               "version": "0.0.0"
             }
           },
@@ -122,13 +122,13 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-batch.CfnJobQueue",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.JobQueue",
+              "fqn": "@aws-cdk/aws-batch-alpha.JobQueue",
               "version": "0.0.0"
             }
           },
@@ -169,19 +169,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.EcsEc2ContainerDefinition",
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsEc2ContainerDefinition",
               "version": "0.0.0"
             }
           },
@@ -225,8 +225,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-batch.CfnJobDefinition",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "EventsRole": {
@@ -262,8 +262,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   },
                   "DefaultPolicy": {
@@ -305,25 +305,25 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.1.270"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-batch.EcsJobDefinition",
+              "fqn": "@aws-cdk/aws-batch-alpha.EcsJobDefinition",
               "version": "0.0.0"
             }
           },
@@ -365,14 +365,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-events.CfnRule",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-events.Rule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "Timer2": {
@@ -425,14 +425,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-events.CfnRule",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-events.Rule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "Queue": {
@@ -447,8 +447,8 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sqs.CfnQueue",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               },
               "Policy": {
@@ -498,20 +498,20 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-sqs.CfnQueuePolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.1.270"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-sqs.QueuePolicy",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.270"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-sqs.Queue",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           },
           "BootstrapVersion": {

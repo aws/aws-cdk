@@ -42,10 +42,7 @@
         "/batch-events/ComputeEnvironment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ComputeEnvironmentC570994D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ComputeEnvironmentC570994D"
           }
         ],
         "/batch-events/MyQueue/MyQueue": [
@@ -112,24 +109,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ComputeEnvironmentResourceServiceInstanceRoleDC6D4445",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyQueueE6CA6235": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyQueueE6CA6235",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
