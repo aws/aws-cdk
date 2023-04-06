@@ -469,6 +469,7 @@ const runTask = new tasks.EcsRunTask(this, 'Run', {
       ecs.PlacementConstraint.memberOf('blieptuut'),
     ],
   }),
+  propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
 });
 ```
 
@@ -516,6 +517,7 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
     environment: [{ name: 'SOME_KEY', value: sfn.JsonPath.stringAt('$.SomeKey') }],
   }],
   launchTarget: new tasks.EcsFargateLaunchTarget(),
+  propagatedTagSource: ecs.PropagatedTagSource.TASK_DEFINITION,
 });
 ```
 
