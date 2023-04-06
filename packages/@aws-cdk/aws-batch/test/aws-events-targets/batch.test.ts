@@ -1,4 +1,4 @@
-import * as batch from '@aws-cdk/aws-batch-alpha';
+import * as batch from '../../lib';
 import { Duration, Size, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';

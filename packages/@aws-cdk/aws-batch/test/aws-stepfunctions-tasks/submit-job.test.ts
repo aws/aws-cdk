@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as batch from '@aws-cdk/aws-batch-alpha';
+import * as batch from '../../lib';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
@@ -17,7 +17,7 @@ beforeEach(() => {
   batchJobDefinition = new batch.EcsJobDefinition(stack, 'JobDefinition', {
     container: new batch.EcsEc2ContainerDefinition(stack, 'Container', {
       image: ecs.ContainerImage.fromAsset(
-        path.join(__dirname, 'batchjob-image'),
+        path.join(__dirname, '../batchjob-image'),
       ),
       cpu: 256,
       memory: cdk.Size.mebibytes(2048),
