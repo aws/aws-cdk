@@ -8,6 +8,31 @@
         "id": "integ-servicecatalogappregistry-attribute-group",
         "path": "integ-servicecatalogappregistry-attribute-group",
         "children": {
+          "TestApplication": {
+            "id": "TestApplication",
+            "path": "integ-servicecatalogappregistry-attribute-group/TestApplication",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-servicecatalogappregistry-attribute-group/TestApplication/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "TestApplication",
+                    "description": "My application description"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_servicecatalogappregistry.CfnApplication",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicecatalogappregistry-alpha.Application",
+              "version": "0.0.0"
+            }
+          },
           "TestAttributeGroup": {
             "id": "TestAttributeGroup",
             "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup",
@@ -36,6 +61,31 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_servicecatalogappregistry.CfnAttributeGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "ApplicationAttributeGroupAssociation73d834483ae3": {
+                "id": "ApplicationAttributeGroupAssociation73d834483ae3",
+                "path": "integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/ApplicationAttributeGroupAssociation73d834483ae3",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "application": {
+                      "Fn::GetAtt": [
+                        "TestApplication2FBC585F",
+                        "Id"
+                      ]
+                    },
+                    "attributeGroup": {
+                      "Fn::GetAtt": [
+                        "TestAttributeGroupB1CB284F",
+                        "Id"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_servicecatalogappregistry.CfnAttributeGroupAssociation",
                   "version": "0.0.0"
                 }
               },
@@ -198,86 +248,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "0.0.0"
-            }
-          },
-          "TestApplication": {
-            "id": "TestApplication",
-            "path": "integ-servicecatalogappregistry-attribute-group/TestApplication",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "integ-servicecatalogappregistry-attribute-group/TestApplication/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::Application",
-                  "aws:cdk:cloudformation:props": {
-                    "name": "TestApplication",
-                    "description": "My application description"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_servicecatalogappregistry.CfnApplication",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-servicecatalogappregistry-alpha.Application",
-              "version": "0.0.0"
-            }
-          },
-          "ImportedAttributeGroup": {
-            "id": "ImportedAttributeGroup",
-            "path": "integ-servicecatalogappregistry-attribute-group/ImportedAttributeGroup",
-            "children": {
-              "ApplicationAttributeGroupAssociationd925bfffb4d4": {
-                "id": "ApplicationAttributeGroupAssociationd925bfffb4d4",
-                "path": "integ-servicecatalogappregistry-attribute-group/ImportedAttributeGroup/ApplicationAttributeGroupAssociationd925bfffb4d4",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
-                  "aws:cdk:cloudformation:props": {
-                    "application": {
-                      "Fn::GetAtt": [
-                        "TestApplication2FBC585F",
-                        "Id"
-                      ]
-                    },
-                    "attributeGroup": {
-                      "Fn::Select": [
-                        2,
-                        {
-                          "Fn::Split": [
-                            "/",
-                            {
-                              "Fn::Select": [
-                                5,
-                                {
-                                  "Fn::Split": [
-                                    ":",
-                                    {
-                                      "Fn::GetAtt": [
-                                        "TestAttributeGroupB1CB284F",
-                                        "Arn"
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_servicecatalogappregistry.CfnAttributeGroupAssociation",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },

@@ -5,6 +5,11 @@ import * as appreg from '../lib';
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-servicecatalogappregistry-attribute-group');
 
+const application = new appreg.Application(stack, 'TestApplication', {
+  applicationName: 'TestApplication',
+  description: 'My application description',
+});
+
 const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
   attributeGroupName: 'myFirstAttributeGroup',
   description: 'test attribute group description',
@@ -21,6 +26,9 @@ const attributeGroup = new appreg.AttributeGroup(stack, 'TestAttributeGroup', {
     },
   },
 });
+
+attributeGroup.associateWith(application);
+
 const myRole = new iam.Role(stack, 'MyRole', {
   assumedBy: new iam.AccountPrincipal(stack.account),
 });
@@ -31,13 +39,5 @@ attributeGroup.shareAttributeGroup('MyShareId', {
   name: 'MyShare',
   roles: [myRole, mySecondRole],
 });
-
-const application = new appreg.Application(stack, 'TestApplication', {
-  applicationName: 'TestApplication',
-  description: 'My application description',
-});
-
-const importedAttributeGroup = appreg.AttributeGroup.fromAttributeGroupArn(stack, 'ImportedAttributeGroup', attributeGroup.attributeGroupArn);
-importedAttributeGroup.associateWith(application);
 
 app.synth();

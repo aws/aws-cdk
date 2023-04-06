@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ee34dc126a9e014c1025313996c90032154c8618c30bf022f8a24eb1d802b58e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9dae111f7879c2c97f5b16fbc40629d676f0cf7d329d77da3a5bb25ece0faabd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,10 +33,22 @@
         "integ-servicecatalogappregistry-attribute-group.assets"
       ],
       "metadata": {
+        "/integ-servicecatalogappregistry-attribute-group/TestApplication/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestApplication2FBC585F"
+          }
+        ],
         "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestAttributeGroupB1CB284F"
+          }
+        ],
+        "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/ApplicationAttributeGroupAssociation73d834483ae3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAttributeGroupApplicationAttributeGroupAssociation73d834483ae31BB2BA9A"
           }
         ],
         "/integ-servicecatalogappregistry-attribute-group/TestAttributeGroup/MyShareId": [
@@ -55,18 +67,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MySecondRoleB9F57405"
-          }
-        ],
-        "/integ-servicecatalogappregistry-attribute-group/TestApplication/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestApplication2FBC585F"
-          }
-        ],
-        "/integ-servicecatalogappregistry-attribute-group/ImportedAttributeGroup/ApplicationAttributeGroupAssociationd925bfffb4d4": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedAttributeGroupApplicationAttributeGroupAssociationd925bfffb4d4EDC9DE5C"
           }
         ],
         "/integ-servicecatalogappregistry-attribute-group/BootstrapVersion": [
