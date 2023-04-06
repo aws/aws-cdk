@@ -308,7 +308,7 @@ but after a whole minute the scheduler pretends they don't exist for fairness ca
 The following code specifies a `shareDecay` of 5 minutes:
 
 ```ts
-import * as cdk from '@aws-cdk/core'
+import * as cdk from 'aws-cdk-lib'
 const fairsharePolicy = new batch.FairshareSchedulingPolicy(this, 'myFairsharePolicy', {
    shareDecay: cdk.Duration.minutes(5),
 });
@@ -387,7 +387,7 @@ To specify common `exitCode`s, `reason`s, or `statusReason`s, use the correspond
 the `Reason` class. This example shows some common failure reasons:
 
 ```ts
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 
 const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
    container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
@@ -429,8 +429,8 @@ Batch can jobs on ECS or EKS. ECS jobs can defined as single container or multin
 This examples creates a `JobDefinition` that runs a single container with ECS:
 
 ```ts
-import * as cdk from '@aws-cdk/core';
-import * as efs from '@aws-cdk/aws-efs';
+import * as cdk from 'aws-cdk-lib';
+import * as efs from 'aws-cdk-lib/aws-efs';
 
 declare const myFileSystem: efs.IFileSystem;
 
@@ -469,7 +469,7 @@ jobDefn.container.addVolume(batch.EcsVolume.efs({
 Batch also supports running workflows on EKS. The following example creates a `JobDefinition` that runs on EKS:
 
 ```ts
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 const jobDefn = new batch.EksJobDefinition(this, 'eksf2', {
   container: new batch.EksContainerDefinition(this, 'container', {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
@@ -520,7 +520,7 @@ see this [blog post](https://aws.amazon.com/blogs/compute/building-a-tightly-cou
 In particular, the environment variable that tells the containers which one is the main node can be configured on your `MultiNodeJobDefinition` as follows:
 
 ```ts
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 const multiNodeJob = new batch.MultiNodeJobDefinition(this, 'JobDefinition', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R4, ec2.InstanceSize.LARGE),
   containers: [{
@@ -559,7 +559,7 @@ const multiNodeJob = new batch.MultiNodeJobDefinition(this, 'JobDefinition', {
 Batch allows you define parameters in your `JobDefinition`, which can be referenced in the container command. For example:
 
 ```ts
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
 new batch.EcsJobDefinition(this, 'JobDefn', {
   parameters: { echoParam: 'foobar' },
   container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
