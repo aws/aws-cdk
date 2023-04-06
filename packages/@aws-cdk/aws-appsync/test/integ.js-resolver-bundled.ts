@@ -1,10 +1,10 @@
 import * as path from 'path';
-import * as dynamodb from '@aws-cdk/aws-dynamodb';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as logs from '@aws-cdk/aws-logs';
-import * as cdk from '@aws-cdk/core';
-import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests';
-import * as appsync from '../lib';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as cdk from 'aws-cdk-lib/core';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
+import * as appsync from 'aws-cdk-lib/aws-appsync';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'AppSyncJsResolverTestStack');
