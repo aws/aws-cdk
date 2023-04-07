@@ -1,5 +1,6 @@
 import * as cxapi from '../../../cx-api';
-import { assertBound, StringSpecializer } from './_shared';
+import { StringSpecializer } from '../helpers-internal';
+import { assertBound } from './_shared';
 import { AssetManifestBuilder } from './asset-manifest-builder';
 import { StackSynthesizer } from './stack-synthesizer';
 import { ISynthesisSession, IReusableStackSynthesizer, IBoundStackSynthesizer } from './types';

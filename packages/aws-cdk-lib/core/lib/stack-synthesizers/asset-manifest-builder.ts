@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { resolvedOr } from './_shared';
+import { resolvedOr } from '../helpers-internal/string-specializer';
 import { ISynthesisSession } from './types';
 import { FileAssetSource, FileAssetPackaging, DockerImageAssetSource } from '../assets';
 import { Stack } from '../stack';
