@@ -1,6 +1,6 @@
+import { Construct } from 'constructs';
 import { Match, Template, Annotations } from '../../assertions';
 import { Duration, Stack } from '../../core';
-import { Construct } from 'constructs';
 import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric, Stats } from '../lib';
 
 const testMetric = new Metric({
@@ -358,6 +358,29 @@ describe('Alarm', () => {
     // THEN
     const template = Annotations.fromStack(stack);
     template.hasWarning('/MyStack/MyAlarm', Match.stringLikeRegexp("Math expression 'oops' references unknown identifiers"));
+  });
+
+  test('check alarm for p100 statistic', () => {
+    const stack = new Stack(undefined, 'MyStack');
+    new Alarm(stack, 'MyAlarm', {
+      metric: new Metric({
+        dimensionsMap: {
+          Boop: 'boop',
+        },
+        metricName: 'MyMetric',
+        namespace: 'MyNamespace',
+        period: Duration.minutes(1),
+        statistic: Stats.p(100),
+      }),
+      evaluationPeriods: 1,
+      threshold: 1,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      ExtendedStatistic: 'p100',
+    });
   });
 });
 

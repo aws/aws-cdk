@@ -422,10 +422,19 @@ function renderIfExtendedStatistic(statistic?: string): string | undefined {
   if (statistic === undefined) { return undefined; }
 
   const parsed = parseStatistic(statistic);
+  if (parsed.type === 'simple') {
+    // This statistic will have been rendered by renderIfSimpleStatistic
+    return undefined;
+  }
+
   if (parsed.type === 'single' || parsed.type === 'pair') {
     return normalizeStatistic(parsed);
   }
-  return undefined;
+
+  // We can't not render anything here. Just put whatever we got as input into
+  // the ExtendedStatistic and hope it's correct. Either that, or we throw
+  // an error.
+  return parsed.statistic;
 }
 
 function mathExprHasSubmetrics(expr: MetricExpressionConfig) {
