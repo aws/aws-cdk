@@ -1,5 +1,5 @@
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
-import * as cloudwatch from '../../../aws-cloudwatch';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
