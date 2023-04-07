@@ -15,9 +15,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -70,9 +67,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -92,9 +86,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -157,9 +148,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             ShardCount: 2,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -213,9 +201,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
             RetentionPeriodHours: 168,
             StreamEncryption: {
               'Fn::If': [
@@ -287,9 +272,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
             RetentionPeriodHours: 24,
             StreamEncryption: {
               EncryptionType: 'KMS',
@@ -326,9 +308,6 @@ describe('Kinesis data streams', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::Stream', {
       ShardCount: 1,
-      StreamModeDetails: {
-        StreamMode: StreamMode.PROVISIONED,
-      },
       RetentionPeriodHours: 24,
       StreamEncryption: {
         EncryptionType: 'KMS',
@@ -373,9 +352,6 @@ describe('Kinesis data streams', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::Stream', {
       ShardCount: 1,
-      StreamModeDetails: {
-        StreamMode: StreamMode.PROVISIONED,
-      },
       RetentionPeriodHours: 24,
       StreamEncryption: {
         EncryptionType: 'KMS',
@@ -397,9 +373,57 @@ describe('Kinesis data streams', () => {
           Properties: {
             RetentionPeriodHours: 24,
             ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
+            StreamEncryption: {
+              'Fn::If': [
+                'AwsCdkKinesisEncryptedStreamsUnsupportedRegions',
+                {
+                  Ref: 'AWS::NoValue',
+                },
+                {
+                  EncryptionType: 'KMS',
+                  KeyId: 'alias/aws/kinesis',
+                },
+              ],
             },
+          },
+        },
+      },
+      Conditions: {
+        AwsCdkKinesisEncryptedStreamsUnsupportedRegions: {
+          'Fn::Or': [
+            {
+              'Fn::Equals': [
+                {
+                  Ref: 'AWS::Region',
+                },
+                'cn-north-1',
+              ],
+            },
+            {
+              'Fn::Equals': [
+                {
+                  Ref: 'AWS::Region',
+                },
+                'cn-northwest-1',
+              ],
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('removes StreamModeDetails in template when not specified', () => {
+    const stack = new Stack();
+    new Stream(stack, 'MyStream');
+
+    Template.fromStack(stack).templateMatches({
+      Resources: {
+        MyStream5C050E93: {
+          Type: 'AWS::Kinesis::Stream',
+          Properties: {
+            RetentionPeriodHours: 24,
+            ShardCount: 1,
             StreamEncryption: {
               'Fn::If': [
                 'AwsCdkKinesisEncryptedStreamsUnsupportedRegions',
@@ -452,9 +476,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             RetentionPeriodHours: 24,
-            StreamModeDetails: {
-              StreamMode: StreamMode.ON_DEMAND,
-            },
             StreamEncryption: {
               'Fn::If': [
                 'AwsCdkKinesisEncryptedStreamsUnsupportedRegions',
@@ -568,9 +589,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -659,9 +677,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -741,9 +756,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -834,9 +846,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -919,9 +928,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
             RetentionPeriodHours: 24,
             StreamEncryption: {
               'Fn::If': [
@@ -1024,9 +1030,6 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             ShardCount: 1,
-            StreamModeDetails: {
-              StreamMode: StreamMode.PROVISIONED,
-            },
             RetentionPeriodHours: {
               Ref: 'myretentionperiod',
             },

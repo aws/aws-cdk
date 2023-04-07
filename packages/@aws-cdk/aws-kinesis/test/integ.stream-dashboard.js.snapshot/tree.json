@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "integ-kinesis-stream-dashboard": {
         "id": "integ-kinesis-stream-dashboard",
         "path": "integ-kinesis-stream-dashboard",
@@ -39,9 +31,6 @@
                           "KeyId": "alias/aws/kinesis"
                         }
                       ]
-                    },
-                    "streamModeDetails": {
-                      "streamMode": "PROVISIONED"
                     }
                   }
                 },
@@ -60,8 +49,8 @@
             "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "path": "integ-kinesis-stream-dashboard/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "@aws-cdk/core.CfnCondition",
+              "version": "0.0.0"
             }
           },
           "StreamDashboard": {
@@ -242,17 +231,41 @@
               "fqn": "@aws-cdk/aws-cloudwatch.Dashboard",
               "version": "0.0.0"
             }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-kinesis-stream-dashboard/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-kinesis-stream-dashboard/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "@aws-cdk/core.CfnRule",
+              "version": "0.0.0"
+            }
           }
         },
         "constructInfo": {
+          "fqn": "@aws-cdk/core.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.1.270"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "@aws-cdk/core.App",
+      "version": "0.0.0"
     }
   }
 }

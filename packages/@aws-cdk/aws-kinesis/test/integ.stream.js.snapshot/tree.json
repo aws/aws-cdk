@@ -12,6 +12,14 @@
             "id": "UserRole",
             "path": "integ-kinesis-stream/UserRole",
             "children": {
+              "ImportUserRole": {
+                "id": "ImportUserRole",
+                "path": "integ-kinesis-stream/UserRole/ImportUserRole",
+                "constructInfo": {
+                  "fqn": "@aws-cdk/core.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "integ-kinesis-stream/UserRole/Resource",
@@ -136,9 +144,6 @@
                           "KeyId": "alias/aws/kinesis"
                         }
                       ]
-                    },
-                    "streamModeDetails": {
-                      "streamMode": "PROVISIONED"
                     }
                   }
                 },
@@ -188,7 +193,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.140"
+          "version": "10.1.270"
         }
       }
     },
