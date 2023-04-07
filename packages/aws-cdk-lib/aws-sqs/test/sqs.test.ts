@@ -16,6 +16,7 @@ test('default properties', () => {
     'Resources': {
       'Queue4A7E3555': {
         'Type': 'AWS::SQS::Queue',
+        'Properties': { 'SqsManagedSseEnabled': true },
         'UpdateReplacePolicy': 'Delete',
         'DeletionPolicy': 'Delete',
       },
