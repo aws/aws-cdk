@@ -9,4 +9,7 @@ junit.xml
 coverage
 nyc.config.js
 
+!**/*.snapshot/**/asset.*/*.js
+!**/*.snapshot/**/asset.*/*.d.ts
+
 !**/*.snapshot/**/asset.*/**
