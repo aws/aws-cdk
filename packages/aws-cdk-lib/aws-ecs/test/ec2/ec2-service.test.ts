@@ -1,6 +1,6 @@
 import { Annotations, Match, Template } from '../../../assertions';
 import * as autoscaling from '../../../aws-autoscaling';
-import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as elb from '../../../aws-elasticloadbalancing';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
