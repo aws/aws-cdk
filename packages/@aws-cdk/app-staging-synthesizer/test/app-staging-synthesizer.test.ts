@@ -202,7 +202,26 @@ describe(AppStagingSynthesizer, () => {
     });
 
     test('lifecycle rule on ephemeral assets can be customized', () => {
+      // GIVEN
+      new CfnResource(stack, 'Resource', {
+        type: 'Some::Resource',
+      });
 
+      // WHEN
+      const asm = app.synth();
+
+      // THEN
+      const stagingStackArtifact = asm.getStackArtifact('StagingStack000000000000us-east-1');
+
+      Template.fromJSON(stagingStackArtifact.template).hasResourceProperties('AWS::S3::Bucket', {
+        LifecycleConfiguration: {
+          Rules: [{
+            ExpirationInDays: 10,
+            Prefix: 'eph-',
+            Status: 'Enabled',
+          }],
+        },
+      });
     });
 
     test('lifecycle rule on ephemeral assets can be turned off', () => {

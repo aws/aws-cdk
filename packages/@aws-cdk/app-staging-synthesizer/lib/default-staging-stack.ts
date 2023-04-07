@@ -108,6 +108,8 @@ export interface DefaultStagingStackProps extends StackProps {
    */
   readonly imageAssetPublishingRole?: BootstrapRole;
 
+  readonly deployActionRoleArn?: string;
+
   /**
    * Specify a custom lifecycle rule for ephemeral file assets. If you
    * specify this property, you must set `prefix: 'eph-'` as part of the rule.
@@ -177,6 +179,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   private readonly imageAssetPublishingRoleId = 'CdkImagePublishingRole';
   private readonly ephemeralFileAssetLifecycleRule?: s3.LifecycleRule;
   private readonly retainEphemeralFileAssets?: boolean;
+  private readonly deployActionRoleArn?: string;
   // private readonly repositoryLifecycleRules: Record<string, ecr.LifecycleRule[]>;
 
   constructor(scope: App, id: string, props: DefaultStagingStackProps) {
@@ -188,6 +191,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     this.appId = props.appId;
     this.dependencyStack = this;
 
+    this.deployActionRoleArn = props.deployActionRoleArn;
     this.ephemeralFileAssetLifecycleRule = this.validateEphemeralAssetLifecycleRule(props.ephemeralFileAssetLifecycleRule);
     this.retainEphemeralFileAssets = props.retainEphemeralFileAssets;
     this.stagingBucketName = props.stagingBucketName;
@@ -311,6 +315,18 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     });
     bucket.grantReadWrite(role);
 
+    if (this.deployActionRoleArn) {
+      bucket.addToResourcePolicy(new iam.PolicyStatement({
+        actions: [
+          's3:GetObject*',
+          's3:GetBucket*',
+          's3:List*',
+        ],
+        resources: [bucket.bucketArn, bucket.arnForObjects('*')],
+        principals: [new iam.ArnPrincipal(this.deployActionRoleArn)],
+      }));
+    }
+
     if (this.retainEphemeralFileAssets !== true) {
       const rule = this.ephemeralFileAssetLifecycleRule ?? {
         prefix: EPHEMERAL_PREFIX,
@@ -318,7 +334,6 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
       };
       bucket.addLifecycleRule(rule);
     }
-    // bucket.grantReadWrite(iam.Role.fromRoleArn(this, 'blah', 'arn:aws:iam::489318732371:role/cdk-hnb659fds-cfn-exec-role-489318732371-us-east-2'));
 
     return stagingBucketName;
   }

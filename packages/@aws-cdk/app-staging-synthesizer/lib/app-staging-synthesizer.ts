@@ -151,6 +151,16 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
             throw new Error(`Stack ${boundStack.stackName} must be part of an App`);
           }
 
+          // eslint-disable-next-line max-len
+          const qualifier = props.qualifier ?? boundStack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? BoundAppStagingSynthesizer.DEFAULT_QUALIFIER;
+          const spec = new StringSpecializer(boundStack, qualifier);
+          const specialize = (arn?: string) => {
+            if (!arn) { return undefined; }
+            return spec.specialize(arn);
+          };
+          const deployActionRoleArn = specialize(props.bootstrapRoles?.deploymentActionRole?.roleArn ?
+            props.bootstrapRoles.deploymentActionRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
+
           let stackId = 'StagingStack';
           // Ensure we do not have a scenario where the App includes BOTH
           // environment-agnostic stacks and set environment stacks.
@@ -189,6 +199,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
             stackName,
             fileAssetPublishingRole: props.stagingRoles?.fileAssetPublishingRole,
             imageAssetPublishingRole: props.stagingRoles?.dockerAssetPublishingRole,
+            deployActionRoleArn,
             retainEphemeralFileAssets: props.retainEphemeralFileAssets,
           });
           boundStack.addDependency(stagingStack.dependencyStack, 'stack depends on the staging stack for staging resources');
@@ -304,11 +315,11 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
 
     // Roles are implemented this way because roleArn could be undefined, signifying that we are
     // to use cli credentials instead.
-    this.lookupRoleArn = specialize(props.bootstrapRoles?.lookupRole ?
+    this.lookupRoleArn = specialize(props.bootstrapRoles?.lookupRole?.roleArn ?
       props.bootstrapRoles.lookupRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
-    this.cloudFormationExecutionRoleArn = specialize(props.bootstrapRoles?.cloudFormationExecutionRole ?
+    this.cloudFormationExecutionRoleArn = specialize(props.bootstrapRoles?.cloudFormationExecutionRole?.roleArn ?
       props.bootstrapRoles.cloudFormationExecutionRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
-    this.deploymentActionRoleArn = specialize(props.bootstrapRoles?.deploymentActionRole ?
+    this.deploymentActionRoleArn = specialize(props.bootstrapRoles?.deploymentActionRole?.roleArn ?
       props.bootstrapRoles.deploymentActionRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
 
     this.stagingStack = props.stagingStackFactory.stagingStackFactory(stack);
