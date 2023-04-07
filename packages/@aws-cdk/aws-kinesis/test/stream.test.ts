@@ -476,6 +476,9 @@ describe('Kinesis data streams', () => {
           Type: 'AWS::Kinesis::Stream',
           Properties: {
             RetentionPeriodHours: 24,
+            StreamModeDetails: {
+              StreamMode: StreamMode.ON_DEMAND,
+            },
             StreamEncryption: {
               'Fn::If': [
                 'AwsCdkKinesisEncryptedStreamsUnsupportedRegions',
