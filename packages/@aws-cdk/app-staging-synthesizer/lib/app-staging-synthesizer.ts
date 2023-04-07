@@ -13,7 +13,7 @@ import {
   StackSynthesizer,
   Token,
 } from 'aws-cdk-lib';
-import { StringSpecializer } from 'aws-cdk-lib/core/lib/stack-synthesizers/_shared';
+import { StringSpecializer, translateAssetTokenToCfnToken } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { BootstrapRoles, StagingRoles } from './bootstrap-roles';
 import { IStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
@@ -154,12 +154,14 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
           // eslint-disable-next-line max-len
           const qualifier = props.qualifier ?? boundStack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? BoundAppStagingSynthesizer.DEFAULT_QUALIFIER;
           const spec = new StringSpecializer(boundStack, qualifier);
-          const specialize = (arn?: string) => {
-            if (!arn) { return undefined; }
-            return spec.specialize(arn);
-          };
-          const deployActionRoleArn = specialize(props.bootstrapRoles?.deploymentActionRole?.roleArn ?
-            props.bootstrapRoles.deploymentActionRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
+          let deployActionRoleArn = undefined;
+          if (props.bootstrapRoles?.deploymentActionRole === undefined || props.bootstrapRoles.deploymentActionRole.roleArn) {
+            deployActionRoleArn = translateAssetTokenToCfnToken(
+              spec.specialize(
+                props.bootstrapRoles?.deploymentActionRole?.roleArn ?? BoundAppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN,
+              ),
+            );
+          }
 
           let stackId = 'StagingStack';
           // Ensure we do not have a scenario where the App includes BOTH
