@@ -379,7 +379,7 @@ describe('Alarm', () => {
     // THEN
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::CloudWatch::Alarm', {
-      bier: 'bier',
+      ExtendedStatistic: 'p100',
     });
   });
 });
