@@ -422,6 +422,11 @@ function renderIfExtendedStatistic(statistic?: string): string | undefined {
   if (statistic === undefined) { return undefined; }
 
   const parsed = parseStatistic(statistic);
+  if (parsed.type === 'simple') {
+    // This statistic will have been rendered by renderIfSimpleStatistic
+    return undefined;
+  }
+
   if (parsed.type === 'single' || parsed.type === 'pair') {
     return normalizeStatistic(parsed);
   }
