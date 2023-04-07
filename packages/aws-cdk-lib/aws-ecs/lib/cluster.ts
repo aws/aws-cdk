@@ -7,7 +7,7 @@ import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
 import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, FeatureFlags } from '../../core';
-import * as cxapi from '@aws-cdk/cx-api';
+import * as cxapi from '../../cx-api';
 import { Construct, IConstruct } from 'constructs';
 import { BottleRocketImage, EcsOptimizedAmi } from './amis';
 import { InstanceDrainHook } from './drain-hook/instance-drain-hook';
