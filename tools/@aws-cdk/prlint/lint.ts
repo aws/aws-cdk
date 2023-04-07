@@ -206,7 +206,7 @@ export class PullRequestLinter {
       await this.client.pulls.dismissReview({
         ...this.prParams,
         review_id: existingReview.id,
-        message: '✅ Updated pull request passes all PRLinter validations. Dissmissing previous PRLinter review.'
+        message: '✅ Updated pull request passes all PRLinter validations. Dismissing previous PRLinter review.'
       })
     }
   }
@@ -274,7 +274,7 @@ export class PullRequestLinter {
 
   /**
    * Performs validations and communicates results via pull request comments, upon failure.
-   * This also dissmisses previous reviews so they do not remain in REQUEST_CHANGES upon fix of failures.
+   * This also dismisses previous reviews so they do not remain in REQUEST_CHANGES upon fix of failures.
    */
   public async validate(): Promise<void> {
     const number = this.props.number;
