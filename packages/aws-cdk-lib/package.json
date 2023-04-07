@@ -32,7 +32,8 @@
     "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
-    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+    "build+test+extract": "yarn build+test && yarn rosetta:extract",
+    "on-bump": "ts-node ./cx-api/build-tools/update-vnext.ts && ts-node ./cx-api/build-tools/flag-report"
   },
   "awslint": {
     "exclude": [
@@ -47,7 +48,8 @@
     "compressAssembly": true,
     "post": [
       "ts-node ./scripts/verify-imports-resolve-same.ts",
-      "ts-node ./scripts/verify-imports-shielded.ts"
+      "ts-node ./scripts/verify-imports-shielded.ts",
+      "ts-node ./cx-api/build-tools/flag-report.ts"
     ],
     "pre": [
       "npx ts-node region-info/build-tools/generate-static-data.ts",
