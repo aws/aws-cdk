@@ -396,10 +396,6 @@ export class Queue extends QueueBase {
         encryption = QueueEncryption.KMS; // KMS is implied by specifying an encryption key
       }
 
-      if (!encryption) {
-        return { encryptionProps: {} };
-      }
-
       if (encryption === QueueEncryption.UNENCRYPTED) {
         return {
           encryptionProps: {
@@ -431,7 +427,8 @@ export class Queue extends QueueBase {
         };
       }
 
-      if (encryption === QueueEncryption.SQS_MANAGED) {
+      // Default encryption is SQS_MANAGED
+      if (!encryption || encryption === QueueEncryption.SQS_MANAGED) {
         return {
           encryptionProps: {
             sqsManagedSseEnabled: true,
