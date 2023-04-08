@@ -93,7 +93,7 @@ test('With Node.js 18.x', () => {
   // WHEN
   const task = new tasks.EvaluateExpression(stack, 'Task', {
     expression: '$.a + $.b',
-    runtime: new Runtime('nodejs.18x', RuntimeFamily.NODEJS),
+    runtime: new Runtime('nodejs18.x', RuntimeFamily.NODEJS),
   });
   new sfn.StateMachine(stack, 'SM', {
     definition: task,
