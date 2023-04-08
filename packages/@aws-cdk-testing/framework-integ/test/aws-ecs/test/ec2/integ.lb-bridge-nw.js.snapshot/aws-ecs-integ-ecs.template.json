@@ -946,7 +946,8 @@
    },
    "DependsOn": [
     "LBPublicListenerECSGroupD6A32205",
-    "LBPublicListener6E1F3D94"
+    "LBPublicListener6E1F3D94",
+    "TaskDefTaskRole1EDB4A67"
    ]
   },
   "LB8A12904C": {

@@ -598,10 +598,16 @@
     "TaskDefinition": {
      "Ref": "TaskDef54694570"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   },
   "svcLogGroup25CAF347": {
    "Type": "AWS::Logs::LogGroup",
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ],
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
@@ -619,7 +625,10 @@
     "VpcId": {
      "Ref": "EcsClusterVpc779914AB"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefTaskRole1EDB4A67"
+   ]
   }
  },
  "Parameters": {

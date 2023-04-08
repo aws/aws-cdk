@@ -44,6 +44,27 @@ describe('When import an ECS Service', () => {
       ecs.BaseService.fromServiceArnWithCluster(stack, 'Service', 'arn:aws:ecs:service-region:service-account:service/my-http-service');
     }).toThrowError(/is not using the ARN cluster format/);
   });
+
+  test('should add a dependency on task role', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+
+    // WHEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::ECS::Service', {
+      DependsOn: ['FargateTaskDefTaskRole0B257552'],
+    });
+  });
 });
 
 test.each([

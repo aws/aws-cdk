@@ -933,7 +933,10 @@
     "TaskDefinition": {
      "Ref": "frontendTDB289C8FA"
     }
-   }
+   },
+   "DependsOn": [
+    "frontendTDTaskRole638562A0"
+   ]
   },
   "FrontendServiceCloudmapService6FE76C06": {
    "Type": "AWS::ServiceDiscovery::Service",
@@ -963,7 +966,10 @@
       "Id"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "frontendTDTaskRole638562A0"
+   ]
   }
  },
  "Parameters": {

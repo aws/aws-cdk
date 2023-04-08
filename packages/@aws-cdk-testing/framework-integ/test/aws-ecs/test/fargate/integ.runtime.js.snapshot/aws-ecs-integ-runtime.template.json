@@ -672,7 +672,10 @@
     "TaskDefinition": {
      "Ref": "TaskDefWindows46D24ABF"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefWindowsTaskRole87844D4F"
+   ]
   },
   "FargateServiceWindowsRuntimeSecurityGroupABEA7E23": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -688,7 +691,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefWindowsTaskRole87844D4F"
+   ]
   },
   "FargateServiceGraviton2RuntimeService2BDDD2C2": {
    "Type": "AWS::ECS::Service",
@@ -726,7 +732,10 @@
     "TaskDefinition": {
      "Ref": "TaskDefGraviton21BE43931"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefGraviton2TaskRole32C7B421"
+   ]
   },
   "FargateServiceGraviton2RuntimeSecurityGroup9D707C93": {
    "Type": "AWS::EC2::SecurityGroup",
@@ -742,7 +751,10 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   }
+   },
+   "DependsOn": [
+    "TaskDefGraviton2TaskRole32C7B421"
+   ]
   }
  },
  "Parameters": {
