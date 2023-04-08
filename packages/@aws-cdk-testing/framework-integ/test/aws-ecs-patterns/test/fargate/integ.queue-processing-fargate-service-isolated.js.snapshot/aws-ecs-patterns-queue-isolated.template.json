@@ -1061,6 +1061,8 @@
     }
    },
    "DependsOn": [
+    "IsolatedQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicyD52E156B",
+    "IsolatedQueueServiceQueueProcessingTaskDefTaskRoleCFCB7511",
     "VPCCloudWatchLogsEndpointE175AF65",
     "VPCCloudWatchLogsEndpointSecurityGroup967DBC94",
     "VPCEcrEndpointB4F98F37",
@@ -1100,6 +1102,8 @@
     "Threshold": 0
    },
    "DependsOn": [
+    "IsolatedQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicyD52E156B",
+    "IsolatedQueueServiceQueueProcessingTaskDefTaskRoleCFCB7511",
     "VPCCloudWatchLogsEndpointE175AF65",
     "VPCCloudWatchLogsEndpointSecurityGroup967DBC94",
     "VPCEcrEndpointB4F98F37",
@@ -1135,6 +1139,8 @@
     }
    },
    "DependsOn": [
+    "IsolatedQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicyD52E156B",
+    "IsolatedQueueServiceQueueProcessingTaskDefTaskRoleCFCB7511",
     "VPCCloudWatchLogsEndpointE175AF65",
     "VPCCloudWatchLogsEndpointSecurityGroup967DBC94",
     "VPCEcrEndpointB4F98F37",
@@ -1174,6 +1180,8 @@
     "Threshold": 100
    },
    "DependsOn": [
+    "IsolatedQueueServiceQueueProcessingTaskDefTaskRoleDefaultPolicyD52E156B",
+    "IsolatedQueueServiceQueueProcessingTaskDefTaskRoleCFCB7511",
     "VPCCloudWatchLogsEndpointE175AF65",
     "VPCCloudWatchLogsEndpointSecurityGroup967DBC94",
     "VPCEcrEndpointB4F98F37",
