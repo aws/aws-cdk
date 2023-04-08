@@ -78,7 +78,7 @@ export class BatchJob implements events.IRuleTarget {
    */
   public bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
     this.validateJobName(this.props.jobName);
-    const jobName = this.props.jobName ?? Names.uniqueResourceName(this.jobDefinitionScope, {
+    const jobName = this.props.jobName ?? Names.uniqueResourceName(rule, {
       maxLength: 128,
     });
     const batchParameters: events.CfnRule.BatchParametersProperty = {
