@@ -6443,7 +6443,7 @@
         "ComputeEnvironmentArn": "Returns the compute environment ARN, such as `batch: *us-east-1* : *111122223333* :compute-environment/ *ComputeEnvironmentName*` .",
         "Ref": "`Ref` returns the compute environment ARN, such as `batch: *us-east-1* : *555555555555* :compute-environment/ *M4OnDemand*` ."
       },
-      "description": "The `AWS::Batch::ComputeEnvironment` resource defines your AWS Batch compute environment. You can define `MANAGED` or `UNMANAGED` compute environments. `MANAGED` compute environments can use Amazon EC2 or AWS Fargate resources. `UNMANAGED` compute environments can only use EC2 resources. For more information, see [Compute Environments](https://docs.aws.amazon.com/batch/latest/userguide/compute_environments.html) in the ** .\n\nIn a managed compute environment, AWS Batch manages the capacity and instance types of the compute resources within the environment. This is based on the compute resource specification that you define or the [launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) that you specify when you create the compute environment. You can choose either to use EC2 On-Demand Instances and EC2 Spot Instances, or to use Fargate and Fargate Spot capacity in your managed compute environment. You can optionally set a maximum price so that Spot Instances only launch when the Spot Instance price is below a specified percentage of the On-Demand price.\n\n> Multi-node parallel jobs are not supported on Spot Instances. \n\nIn an unmanaged compute environment, you can manage your own EC2 compute resources and have a lot of flexibility with how you configure your compute resources. For example, you can use custom AMI. However, you need to verify that your AMI meets the Amazon ECS container instance AMI specification. For more information, see [container instance AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_instance_AMIs.html) in the *Amazon Elastic Container Service Developer Guide* . After you have created your unmanaged compute environment, you can use the [DescribeComputeEnvironments](https://docs.aws.amazon.com/batch/latest/APIReference/API_DescribeComputeEnvironments.html) operation to find the Amazon ECS cluster that is associated with it. Then, manually launch your container instances into that Amazon ECS cluster. For more information, see [Launching an Amazon ECS container instance](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_container_instance.html) in the *Amazon Elastic Container Service Developer Guide* .\n\n> To create a compute environment that uses EKS resources, the caller must have permissions to call `eks:DescribeCluster` . > AWS Batch doesn't upgrade the AMIs in a compute environment after it's created except under specific conditions. For example, it doesn't automatically update the AMIs when a newer version of the Amazon ECS optimized AMI is available. Therefore, you're responsible for the management of the guest operating system (including updates and security patches) and any additional application software or utilities that you install on the compute resources. There are two ways to use a new AMI for your AWS Batch jobs. The original method is to complete these steps:\n> \n> - Create a new compute environment with the new AMI.\n> - Add the compute environment to an existing job queue.\n> - Remove the earlier compute environment from your job queue.\n> - Delete the earlier compute environment.\n> \n> In April 2022, AWS Batch added enhanced support for updating compute environments. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* . To use the enhanced updating of compute environments to update AMIs, follow these rules:\n> \n> - Either do not set the [ServiceRole](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-servicerole) property or set it to the *AWSServiceRoleForBatch* service-linked role.\n> - Set the [AllocationStrategy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-allocationstrategy) property to `BEST_FIT_PROGRESSIVE` or `SPOT_CAPACITY_OPTIMIZED` .\n> - Set the [ReplaceComputeEnvironment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment) property to `false` .\n> - Set the [UpdateToLatestImageVersion](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-updatetolatestimageversion) property to `true` .\n> - Either do not specify an image ID in [ImageId](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-imageid) or [ImageIdOverride](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-ec2configurationobject.html#cfn-batch-computeenvironment-ec2configurationobject-imageidoverride) properties, or in the launch template identified by the [Launch Template](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-launchtemplate) property. In that case AWS Batch will select the latest Amazon ECS optimized AMI supported by AWS Batch at the time the infrastructure update is initiated. Alternatively you can specify the AMI ID in the `ImageId` or `ImageIdOverride` properties, or the launch template identified by the `LaunchTemplate` properties. Changing any of these properties will trigger an infrastructure update.\n> \n> If these rules are followed, any update that triggers an infrastructure update will cause the AMI ID to be re-selected. If the [Version](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-launchtemplatespecification.html#cfn-batch-computeenvironment-launchtemplatespecification-version) property of the [LaunchTemplateSpecification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-launchtemplatespecification.html) is set to `$Latest` or `$Default` , the latest or default version of the launch template will be evaluated up at the time of the infrastructure update, even if the `LaunchTemplateSpecification` was not updated.",
+      "description": "The `AWS::Batch::ComputeEnvironment` resource defines your AWS Batch compute environment. You can define `MANAGED` or `UNMANAGED` compute environments. `MANAGED` compute environments can use Amazon EC2 or AWS Fargate resources. `UNMANAGED` compute environments can only use EC2 resources. For more information, see [Compute Environments](https://docs.aws.amazon.com/batch/latest/userguide/compute_environments.html) in the ** .\n\nIn a managed compute environment, AWS Batch manages the capacity and instance types of the compute resources within the environment. This is based on the compute resource specification that you define or the [launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) that you specify when you create the compute environment. You can choose either to use EC2 On-Demand Instances and EC2 Spot Instances, or to use Fargate and Fargate Spot capacity in your managed compute environment. You can optionally set a maximum price so that Spot Instances only launch when the Spot Instance price is below a specified percentage of the On-Demand price.\n\n> Multi-node parallel jobs are not supported on Spot Instances. \n\nIn an unmanaged compute environment, you can manage your own EC2 compute resources and have a lot of flexibility with how you configure your compute resources. For example, you can use custom AMI. However, you need to verify that your AMI meets the Amazon ECS container instance AMI specification. For more information, see [container instance AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_instance_AMIs.html) in the *Amazon Elastic Container Service Developer Guide* . After you have created your unmanaged compute environment, you can use the [DescribeComputeEnvironments](https://docs.aws.amazon.com/batch/latest/APIReference/API_DescribeComputeEnvironments.html) operation to find the Amazon ECS cluster that is associated with it. Then, manually launch your container instances into that Amazon ECS cluster. For more information, see [Launching an Amazon ECS container instance](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_container_instance.html) in the *Amazon Elastic Container Service Developer Guide* .\n\n> To create a compute environment that uses EKS resources, the caller must have permissions to call `eks:DescribeCluster` . > AWS Batch doesn't upgrade the AMIs in a compute environment after it's created except under specific conditions. For example, it doesn't automatically update the AMIs when a newer version of the Amazon ECS optimized AMI is available. Therefore, you're responsible for the management of the guest operating system (including updates and security patches) and any additional application software or utilities that you install on the compute resources. There are two ways to use a new AMI for your AWS Batch jobs. The original method is to complete these steps:\n> \n> - Create a new compute environment with the new AMI.\n> - Add the compute environment to an existing job queue.\n> - Remove the earlier compute environment from your job queue.\n> - Delete the earlier compute environment.\n> \n> In April 2022, AWS Batch added enhanced support for updating compute environments. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* . To use the enhanced updating of compute environments to update AMIs, follow these rules:\n> \n> - Either do not set the [ServiceRole](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-servicerole) property or set it to the *AWSServiceRoleForBatch* service-linked role.\n> - Set the [AllocationStrategy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-allocationstrategy) property to `BEST_FIT_PROGRESSIVE` or `SPOT_CAPACITY_OPTIMIZED` .\n> - Set the [ReplaceComputeEnvironment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment) property to `false` .\n> \n> > If the `replaceComputeEnvironment` property is set to `false` , you might receive an error message when you update the CFN template for a compute environment. This issue occurs if the updated `desiredvcpus` value is less than the current `desiredvcpus` value. As a workaround, delete the `desiredvcpus` value from the updated template or use the `minvcpus` property to manage the number of vCPUs. For information, see [Error message when you update the `DesiredvCpus` setting](https://docs.aws.amazon.com/batch/latest/userguide/troubleshooting.html#error-desired-vcpus-update) .\n> - Set the [UpdateToLatestImageVersion](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-updatetolatestimageversion) property to `true` . This property is used when you update a compute environment. The [UpdateToLatestImageVersion](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-updatetolatestimageversion) property is ignored when you create a compute environment.\n> - Either do not specify an image ID in [ImageId](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-imageid) or [ImageIdOverride](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-ec2configurationobject.html#cfn-batch-computeenvironment-ec2configurationobject-imageidoverride) properties, or in the launch template identified by the [Launch Template](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-launchtemplate) property. In that case AWS Batch will select the latest Amazon ECS optimized AMI supported by AWS Batch at the time the infrastructure update is initiated. Alternatively you can specify the AMI ID in the `ImageId` or `ImageIdOverride` properties, or the launch template identified by the `LaunchTemplate` properties. Changing any of these properties will trigger an infrastructure update.\n> \n> If these rules are followed, any update that triggers an infrastructure update will cause the AMI ID to be re-selected. If the [Version](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-launchtemplatespecification.html#cfn-batch-computeenvironment-launchtemplatespecification-version) property of the [LaunchTemplateSpecification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-launchtemplatespecification.html) is set to `$Latest` or `$Default` , the latest or default version of the launch template will be evaluated up at the time of the infrastructure update, even if the `LaunchTemplateSpecification` was not updated.",
       "properties": {
         "ComputeEnvironmentName": "The name for your compute environment. It can be up to 128 characters long. It can contain uppercase and lowercase letters, numbers, hyphens (-), and underscores (_).",
         "ComputeResources": "The ComputeResources property type specifies details of the compute resources managed by the compute environment. This parameter is required for managed compute environments. For more information, see [Compute Environments](https://docs.aws.amazon.com/batch/latest/userguide/compute_environments.html) in the ** .",
@@ -9644,7 +9644,7 @@
       },
       "description": "This resource configures how Amazon CodeGuru Reviewer retrieves the source code to be reviewed. You can use an AWS CloudFormation template to create an association with the following repository types:\n\n- AWS CodeCommit - For more information, see [Create an AWS CodeCommit repository association](https://docs.aws.amazon.com/codeguru/latest/reviewer-ug/create-codecommit-association.html) in the *Amazon CodeGuru Reviewer User Guide* .\n- Bitbucket - For more information, see [Create a Bitbucket repository association](https://docs.aws.amazon.com/codeguru/latest/reviewer-ug/create-bitbucket-association.html) in the *Amazon CodeGuru Reviewer User Guide* .\n- GitHub Enterprise Server - For more information, see [Create a GitHub Enterprise Server repository association](https://docs.aws.amazon.com/codeguru/latest/reviewer-ug/create-github-enterprise-association.html) in the *Amazon CodeGuru Reviewer User Guide* .\n- S3Bucket - For more information, see [Create code reviews with GitHub Actions](https://docs.aws.amazon.com/codeguru/latest/reviewer-ug/working-with-cicd.html) in the *Amazon CodeGuru Reviewer User Guide* .\n\n> You cannot use a CloudFormation template to create an association with a GitHub repository.",
       "properties": {
-        "BucketName": "The name of the bucket. This is required for your S3Bucket repositoryThe name must start with the prefix, `codeguru-reviewer-*` .",
+        "BucketName": "The name of the bucket. This is required for your S3Bucket repository. The name must start with the prefix `codeguru-reviewer-*` .",
         "ConnectionArn": "The Amazon Resource Name (ARN) of an AWS CodeStar Connections connection. Its format is `arn:aws:codestar-connections:region-id:aws-account_id:connection/connection-id` . For more information, see [Connection](https://docs.aws.amazon.com/codestar-connections/latest/APIReference/API_Connection.html) in the *AWS CodeStar Connections API Reference* .\n\n`ConnectionArn` must be specified for Bitbucket and GitHub Enterprise Server repositories. It has no effect if it is specified for an AWS CodeCommit repository.",
         "Name": "The name of the repository.",
         "Owner": "The owner of the repository. For a GitHub Enterprise Server or Bitbucket repository, this is the username for the account that owns the repository.\n\n`Owner` must be specified for Bitbucket and GitHub Enterprise Server repositories. It has no effect if it is specified for an AWS CodeCommit repository.",
@@ -15156,7 +15156,7 @@
         "Monitoring": "The monitoring for the instance.",
         "NetworkInterfaces": "One or more network interfaces. If you specify a network interface, you must specify any security groups and subnets as part of the network interface.",
         "Placement": "The placement for the instance.",
-        "PrivateDnsNameOptions": "The options for the instance hostname. The default values are inherited from the subnet.",
+        "PrivateDnsNameOptions": "The hostname type for EC2 instances launched into this subnet and how DNS A and AAAA record queries should be handled. For more information, see [Amazon EC2 instance hostname types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-naming.html) in the *Amazon Elastic Compute Cloud User Guide* .",
         "RamDiskId": "The ID of the RAM disk.\n\n> We recommend that you use PV-GRUB instead of kernels and RAM disks. For more information, see [User provided kernels](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UserProvidedkernels.html) in the *Amazon Elastic Compute Cloud User Guide* .",
         "SecurityGroupIds": "One or more security group IDs. You can create a security group using [CreateSecurityGroup](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateSecurityGroup.html) . You cannot specify both a security group ID and security name in the same request.",
         "SecurityGroups": "One or more security group names. For a nondefault VPC, you must use security group IDs instead. You cannot specify both a security group ID and security name in the same request.",
@@ -15233,7 +15233,7 @@
       "description": "The minimum and maximum amount of network bandwidth, in gigabits per second (Gbps).\n\n> Setting the minimum bandwidth does not guarantee that your instance will achieve the minimum bandwidth. Amazon EC2 will identify instance types that support the specified minimum bandwidth, but the actual bandwidth of your instance might go below the specified minimum at times. For more information, see [Available instance bandwidth](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html#available-instance-bandwidth) in the *Amazon EC2 User Guide* .",
       "properties": {
         "Max": "The maximum amount of network bandwidth, in Gbps. To specify no maximum limit, omit this parameter.",
-        "Min": "The minimum amount of network bandwidth, in Gbps. To specify no minimum limit, omit this parameter."
+        "Min": "The minimum amount of network bandwidth, in Gbps. If this parameter is not specified, there is no minimum limit."
       }
     },
     "AWS::EC2::LaunchTemplate.NetworkInterface": {
@@ -15286,7 +15286,7 @@
     },
     "AWS::EC2::LaunchTemplate.PrivateDnsNameOptions": {
       "attributes": {},
-      "description": "Describes the options for instance hostnames.",
+      "description": "The hostname type for EC2 instances launched into this subnet and how DNS A and AAAA record queries should be handled. For more information, see [Amazon EC2 instance hostname types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-naming.html) in the *Amazon Elastic Compute Cloud User Guide* .",
       "properties": {
         "EnableResourceNameDnsAAAARecord": "Indicates whether to respond to DNS queries for instance hostnames with DNS AAAA records.",
         "EnableResourceNameDnsARecord": "Indicates whether to respond to DNS queries for instance hostnames with DNS A records.",
@@ -15996,7 +15996,7 @@
         "SourcePrefixListId": "[EC2-VPC only] The ID of a prefix list.",
         "SourceSecurityGroupId": "The ID of the security group. You must specify either the security group ID or the security group name. For security groups in a nondefault VPC, you must specify the security group ID.",
         "SourceSecurityGroupName": "[EC2-Classic, default VPC] The name of the source security group. You can't specify this parameter in combination with an IP address range. Creates rules that grant full ICMP, UDP, and TCP access.\n\nYou must specify the `GroupName` property or the `GroupId` property. For security groups that are in a VPC, you must use the `GroupId` property.",
-        "SourceSecurityGroupOwnerId": "[nondefault VPC] The AWS account ID for the source security group, if the source security group is in a different account. You can't specify this property with an IP address range. Creates rules that grant full ICMP, UDP, and TCP access.\n\nIf you specify `SourceSecurityGroupName` or `SourceSecurityGroupId` and that security group is owned by a different account than the account creating the stack, you must specify the `SourceSecurityGroupOwnerId` ; otherwise, this property is optional.",
+        "SourceSecurityGroupOwnerId": "[nondefault VPC] The AWS account ID for the source security group, if the source security group is in a different account. You can't specify this property with an IP address range. Creates rules that grant full ICMP, UDP, and TCP access.\n\nIf you specify `SourceSecurityGroupName` or `SourceSecurityGroupId` and that security group is owned by a different account than the account creating the stack, you must specify `SourceSecurityGroupOwnerId` ; otherwise, this property is optional.",
         "ToPort": "The end of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 code. A value of `-1` indicates all ICMP/ICMPv6 codes for the specified ICMP type. If you specify all ICMP/ICMPv6 types, you must specify all codes.\n\nUse this for ICMP and any protocol that uses ports."
       }
     },
@@ -16193,7 +16193,7 @@
     },
     "AWS::EC2::SpotFleet.NetworkBandwidthGbpsRequest": {
       "attributes": {},
-      "description": "The minimum and maximum amount of network bandwidth, in gigabits per second (Gbps).\n\n> Setting the minimum bandwidth does not guarantee that your instance will achieve the minimum bandwidth. Amazon EC2 will identify instance types that support the specified minimum bandwidth, but the actual bandwidth of your instance might go below the specified minimum at times. For more information, see [Available instance bandwidth](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html#available-instance-bandwidth) in the *Amazon EC2 User Guide* .",
+      "description": "The minimum and maximum amount of network bandwidth, in gigabits per second (Gbps).\n\nDefault: No minimum or maximum limits",
       "properties": {
         "Max": "The maximum amount of network bandwidth, in Gbps. To specify no maximum limit, omit this parameter.",
         "Min": "The minimum amount of network bandwidth, in Gbps. To specify no minimum limit, omit this parameter."
@@ -25086,15 +25086,33 @@
         "ProcessingStatusInfo": "Additional information about the health of the data processing for the monitor.",
         "Ref": "`Ref` returns the ARN of the monitor, such as `arn:aws:internetmonitor:us-east-1:111122223333:monitor/TestMonitor` ."
       },
-      "description": "The `AWS::InternetMonitor::Monitor` resource is an Internet Monitor resource type that contains information about how you create a monitor in Amazon CloudWatch Internet Monitor. A monitor in Internet Monitor provides visibility into performance and availability between your applications hosted on AWS and your end users, using a traffic profile that it creates based on the application resources that you add: Virtual Private Clouds (VPCs), Amazon CloudFront distributions, or WorkSpaces directories.\n\nInternet Monitor also alerts you to internet issues that impact your application in the city-networks (geographies and networks) where your end users use it. With Internet Monitor, you can quickly pinpoint the locations and providers that are affected, so that you can address the issue.\n\nFor more information, see [Using Amazon CloudWatch Internet Monitor](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-InternetMonitor.html) in the *Amazon CloudWatch User Guide* .",
+      "description": "The `AWS::InternetMonitor::Monitor` resource contains information about how you create a monitor in Amazon CloudWatch Internet Monitor. A monitor in Internet Monitor provides visibility into performance and availability between your applications hosted on AWS and your end users, using a traffic profile that it creates based on the application resources that you add: Virtual Private Clouds (VPCs), Amazon CloudFront distributions, or WorkSpaces directories.\n\nInternet Monitor also alerts you to internet issues that impact your application in the city-networks (locations and ASNs, typically internet service providers or ISPs) where your end users use it. With Internet Monitor, you can quickly pinpoint the locations and ASNs that are affected, so that you can address the issue.\n\nFor more information, see [Using Amazon CloudWatch Internet Monitor](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-InternetMonitor.html) in the *Amazon CloudWatch User Guide* .",
       "properties": {
-        "MaxCityNetworksToMonitor": "The maximum number of city-networks to monitor for your resources. A city-network is the location (city) where clients access your application resources from and the network, such as an internet service provider, that clients access the resources through.\n\nFor more information, see [Choosing a city-network maximum value](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/IMCityNetworksMaximum.html) in *Using Amazon CloudWatch Internet Monitor* .",
+        "InternetMeasurementsLogDelivery": "Publish internet measurements for a monitor for all city-networks (up to the 500,000 service limit) to another location, such as an Amazon S3 bucket. Measurements are also published to Amazon CloudWatch Logs for the first 500 (by traffic volume) city-networks (client locations and ASNs, typically internet service providers or ISPs).",
+        "MaxCityNetworksToMonitor": "The maximum number of city-networks to monitor for your resources. A city-network is the location (city) where clients access your application resources from and the ASN, typically an internet service provider, that clients access the resources through.\n\nThe city-network maximum that you choose sets a cap on the total that *can* be included when Internet Monitor monitors traffic with your monitor. You only pay for the number of city-networks that are actually monitored, not this maximum limit, and you can change the maximum at any time, by updating your monitor.\n\nFor more information, see [Choosing a city-network maximum value](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/IMCityNetworksMaximum.html) in *Using Amazon CloudWatch Internet Monitor* .",
         "MonitorName": "The name of the monitor. A monitor name can contain only alphanumeric characters, dashes (-), periods (.), and underscores (_).",
         "Resources": "The resources that have been added for the monitor, listed by their Amazon Resource Names (ARNs).",
         "ResourcesToAdd": "The resources to add to a monitor, which you provide as a set of Amazon Resource Names (ARNs).\n\nYou can add a combination of Virtual Private Clouds (VPCs) and Amazon CloudFront distributions, or you can add WorkSpaces directories. You can't add all three types of resources.\n\n> If you add only VPC resources, at least one VPC must have an Internet Gateway attached to it, to make sure that it has internet connectivity.",
-        "ResourcesToRemove": "The resources to remove from a monitor, which you provide as a set of Amazon Resource Names (ARNs).",
+        "ResourcesToRemove": "The resources to remove from a monitor. Provide the resources as a set of Amazon Resource Names (ARNs).",
         "Status": "The status of a monitor. The accepted values that you can specify for `Status` are `ACTIVE` and `INACTIVE` .",
-        "Tags": "The tags for a monitor, listed as a set of *key:value* pairs."
+        "Tags": "The tags for a monitor, listed as a set of *key:value* pairs.",
+        "TrafficPercentageToMonitor": ""
+      }
+    },
+    "AWS::InternetMonitor::Monitor.InternetMeasurementsLogDelivery": {
+      "attributes": {},
+      "description": "The internet measurements for Amazon CloudWatch Internet Monitor published to another location, such as an Amazon S3 bucket. Measurements are automatically published to Amazon CloudWatch Logs for the top 500 city-networks (by traffic volume).",
+      "properties": {
+        "S3Config": "The configuration information for publishing Amazon CloudWatch Internet Monitor internet measurements to Amazon S3. The configuration includes the bucket name and (optionally) bucket prefix for the S3 bucket to store the measurements, and the delivery status. The delivery status is `ENABLED` if you choose to deliver internet measurements to an S3 bucket, and `DISABLED` otherwise."
+      }
+    },
+    "AWS::InternetMonitor::Monitor.S3Config": {
+      "attributes": {},
+      "description": "The configuration for publishing Amazon CloudWatch Internet Monitor internet measurements to Amazon S3. The configuration includes the bucket name and (optionally) bucket prefix for the S3 bucket to store the measurements, and the delivery status. The delivery status is `ENABLED` if you choose to deliver internet measurements to S3 logs, and `DISABLED` otherwise.",
+      "properties": {
+        "BucketName": "The Amazon S3 bucket name for internet measurements publishing.",
+        "BucketPrefix": "An optional Amazon S3 bucket prefix for internet measurements publishing.",
+        "LogDeliveryStatus": "The status of publishing Internet Monitor internet measurements to an Amazon S3 bucket. The delivery status is `ENABLED` if you choose to deliver internet measurements to an S3 bucket, and `DISABLED` otherwise."
       }
     },
     "AWS::IoT1Click::Device": {
@@ -28177,10 +28195,10 @@
     },
     "AWS::IoTWireless::NetworkAnalyzerConfiguration.TraceContent": {
       "attributes": {},
-      "description": "",
+      "description": "Trace content for your wireless gateway and wireless device resources.",
       "properties": {
-        "LogLevel": "",
-        "WirelessDeviceFrameInfo": ""
+        "LogLevel": "The log level for a log message. The log levels can be disabled, or set to `ERROR` to display less verbose logs containing only error information, or to `INFO` for more detailed logs",
+        "WirelessDeviceFrameInfo": "`FrameInfo` of your wireless device resources for the trace content. Use FrameInfo to debug the communication between your LoRaWAN end devices and the network server."
       }
     },
     "AWS::IoTWireless::PartnerAccount": {
@@ -28283,7 +28301,7 @@
       },
       "description": "Creates a gateway task definition.",
       "properties": {
-        "AutoCreateTasks": "Whether to automatically create tasks using this task definition for all gateways with the specified current version. If `false` , the task must be created by calling `CreateWirelessGatewayTask` .",
+        "AutoCreateTasks": "Whether to automatically create tasks using this task definition for all gateways with the specified current version. If `false` , the task must me created by calling `CreateWirelessGatewayTask` .",
         "Name": "The name of the new resource.",
         "Tags": "The tags are an array of key-value pairs to attach to the specified resource. Tags can have a minimum of 0 and a maximum of 50 items.",
         "Update": "Information about the gateways to update."
@@ -28406,6 +28424,36 @@
         "FNwkSIntKey": "The FNwkSIntKey is a secret key, which you should handle in a similar way as you would an application password. You can protect the FNwkSIntKey value by storing it in the AWS Secrets Manager and use the [secretsmanager](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-secretsmanager) to reference this value.",
         "NwkSEncKey": "The NwkSEncKey is a secret key, which you should handle in a similar way as you would an application password. You can protect the NwkSEncKey value by storing it in the AWS Secrets Manager and use the [secretsmanager](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-secretsmanager) to reference this value.",
         "SNwkSIntKey": "The SNwkSIntKey is a secret key, which you should handle in a similar way as you would an application password. You can protect the SNwkSIntKey value by storing it in the AWS Secrets Manager and use the [secretsmanager](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-secretsmanager) to reference this value."
+      }
+    },
+    "AWS::IoTWireless::WirelessDeviceImportTask": {
+      "attributes": {
+        "Arn": "The ARN (Amazon Resource Name) of the import task.",
+        "CreationDate": "The date and time at which the wireless device import task was created.",
+        "FailedImportedDevicesCount": "The summary information of count of wireless devices that failed to onboard to the import task.",
+        "Id": "The import task ID.",
+        "InitializedImportedDevicesCount": "The summary information of count of wireless devices that are waiting for the control log to be added to an import task.",
+        "OnboardedImportedDevicesCount": "The summary information of count of wireless devices that have been onboarded to the import task.",
+        "PendingImportedDevicesCount": "The summary information of count of wireless devices that are waiting in the queue to be onboarded to the import task.",
+        "Ref": "`Ref` returns the wireless device import task.",
+        "Status": "The status of a wireless device import task. The status can be `INITIALIZING` , `INITIALIZED` , `PENDING` , `COMPLETE` , `FAILED` , or `DELETING` .",
+        "StatusReason": "The reason that provides additional information about the import task status."
+      },
+      "description": "Information about an import task for wireless devices. When creating the resource, either create a single wireless device import task using the Sidewalk manufacturing serial number (SMSN) of the wireless device, or create an import task for multiple devices by specifying both the `DeviceCreationFile` and the `Role` .",
+      "properties": {
+        "DestinationName": "The name of the destination that describes the IoT rule to route messages from the Sidewalk devices in the import task to other applications.",
+        "Sidewalk": "The Sidewalk-related information of the wireless device import task.",
+        "Tags": "Adds to or modifies the tags of the given resource. Tags are metadata that you can use to manage a resource."
+      }
+    },
+    "AWS::IoTWireless::WirelessDeviceImportTask.Sidewalk": {
+      "attributes": {},
+      "description": "Sidewalk-related information about a wireless device import task.",
+      "properties": {
+        "DeviceCreationFile": "The CSV file contained in an S3 bucket that's used for adding devices to an import task.",
+        "DeviceCreationFileList": "List of Sidewalk devices that are added to the import task.",
+        "Role": "The IAM role that allows AWS IoT Wireless to access the CSV file in the S3 bucket.",
+        "SidewalkManufacturingSn": "The Sidewalk manufacturing serial number (SMSN) of the Sidewalk device."
       }
     },
     "AWS::IoTWireless::WirelessGateway": {
@@ -31216,7 +31264,7 @@
       "properties": {
         "AuthType": "The type of authentication that your function URL uses. Set to `AWS_IAM` if you want to restrict access to authenticated users only. Set to `NONE` if you want to bypass IAM authentication to create a public endpoint. For more information, see [Security and auth model for Lambda function URLs](https://docs.aws.amazon.com/lambda/latest/dg/urls-auth.html) .",
         "Cors": "The [Cross-Origin Resource Sharing (CORS)](https://docs.aws.amazon.com/https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) settings for your function URL.",
-        "InvokeMode": "",
+        "InvokeMode": "Use one of the following options:\n\n- `BUFFERED` \u2013 This is the default option. Lambda invokes your function using the `Invoke` API operation. Invocation results are available when the payload is complete. The maximum payload size is 6 MB.\n- `RESPONSE_STREAM` \u2013 Your function streams payload results as they become available. Lambda invokes your function using the `InvokeWithResponseStream` API operation. The maximum response payload size is 20 MB, however, you can [request a quota increase](https://docs.aws.amazon.com/servicequotas/latest/userguide/request-quota-increase.html) .",
         "Qualifier": "The alias name.",
         "TargetFunctionArn": "The name of the Lambda function.\n\n**Name formats** - *Function name* - `my-function` .\n- *Function ARN* - `arn:aws:lambda:us-west-2:123456789012:function:my-function` .\n- *Partial ARN* - `123456789012:function:my-function` .\n\nThe length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length."
       }
@@ -53596,6 +53644,7 @@
         "PreferredMaintenanceWindow": "The weekly time range during which system maintenance can occur, in Universal Coordinated Time (UTC).\n\nFormat: `ddd:hh24:mi-ddd:hh24:mi`\n\nThe default is a 30-minute window selected at random from an 8-hour block of time for each AWS Region, occurring on a random day of the week. To see the time blocks available, see [Adjusting the Preferred DB Cluster Maintenance Window](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#AdjustingTheMaintenanceWindow.Aurora) in the *Amazon Aurora User Guide.*\n\nValid Days: Mon, Tue, Wed, Thu, Fri, Sat, Sun.\n\nConstraints: Minimum 30-minute window.\n\nValid for: Aurora DB clusters and Multi-AZ DB clusters",
         "PubliclyAccessible": "A value that indicates whether the DB cluster is publicly accessible.\n\nWhen the DB cluster is publicly accessible, its Domain Name System (DNS) endpoint resolves to the private IP address from within the DB cluster's virtual private cloud (VPC). It resolves to the public IP address from outside of the DB cluster's VPC. Access to the DB cluster is ultimately controlled by the security group it uses. That public access isn't permitted if the security group assigned to the DB cluster doesn't permit it.\n\nWhen the DB cluster isn't publicly accessible, it is an internal DB cluster with a DNS name that resolves to a private IP address.\n\nDefault: The default behavior varies depending on whether `DBSubnetGroupName` is specified.\n\nIf `DBSubnetGroupName` isn't specified, and `PubliclyAccessible` isn't specified, the following applies:\n\n- If the default VPC in the target Region doesn\u2019t have an internet gateway attached to it, the DB cluster is private.\n- If the default VPC in the target Region has an internet gateway attached to it, the DB cluster is public.\n\nIf `DBSubnetGroupName` is specified, and `PubliclyAccessible` isn't specified, the following applies:\n\n- If the subnets are part of a VPC that doesn\u2019t have an internet gateway attached to it, the DB cluster is private.\n- If the subnets are part of a VPC that has an internet gateway attached to it, the DB cluster is public.\n\nValid for: Multi-AZ DB clusters only",
         "ReplicationSourceIdentifier": "The Amazon Resource Name (ARN) of the source DB instance or DB cluster if this DB cluster is created as a read replica.\n\nValid for: Aurora DB clusters only",
+        "RestoreToTime": "The date and time to restore the DB cluster to.\n\nValid Values: Value must be a time in Universal Coordinated Time (UTC) format\n\nConstraints:\n\n- Must be before the latest restorable time for the DB instance\n- Must be specified if `UseLatestRestorableTime` parameter isn't provided\n- Can't be specified if the `UseLatestRestorableTime` parameter is enabled\n- Can't be specified if the `RestoreType` parameter is `copy-on-write`\n\nExample: `2015-03-07T23:45:00Z`\n\nValid for: Aurora DB clusters and Multi-AZ DB clusters",
         "RestoreType": "The type of restore to be performed. You can specify one of the following values:\n\n- `full-copy` - The new DB cluster is restored as a full copy of the source DB cluster.\n- `copy-on-write` - The new DB cluster is restored as a clone of the source DB cluster.\n\nConstraints: You can't specify `copy-on-write` if the engine version of the source DB cluster is earlier than 1.11.\n\nIf you don't specify a `RestoreType` value, then the new DB cluster is restored as a full copy of the source DB cluster.\n\nValid for: Aurora DB clusters and Multi-AZ DB clusters",
         "ScalingConfiguration": "The `ScalingConfiguration` property type specifies the scaling configuration of an Aurora Serverless DB cluster.\n\nThis property is only supported for Aurora Serverless v1. For Aurora Serverless v2, use `ServerlessV2ScalingConfiguration` property.\n\nValid for: Aurora DB clusters only",
         "ServerlessV2ScalingConfiguration": "The `ServerlessV2ScalingConfiguration` property type specifies the scaling configuration of an Aurora Serverless V2 DB cluster.\n\nThis property is only supported for Aurora Serverless v2. For Aurora Serverless v1, use `ScalingConfiguration` property.\n\nValid for: Aurora DB clusters only",
@@ -55004,14 +55053,14 @@
     "AWS::RolesAnywhere::CRL": {
       "attributes": {
         "CrlId": "The unique primary identifier of the Crl",
-        "Ref": "The name of the CRL."
+        "Ref": "`Ref` returns `CrlId` ."
       },
-      "description": "Creates a Crl.",
+      "description": "Imports the certificate revocation list (CRL). A CRL is a list of certificates that have been revoked by the issuing certificate Authority (CA). IAM Roles Anywhere validates against the CRL before issuing credentials.\n\n*Required permissions:* `rolesanywhere:ImportCrl` .",
       "properties": {
-        "CrlData": "x509 v3 Certificate Revocation List to revoke auth for corresponding certificates presented in CreateSession operations",
-        "Enabled": "The enabled status of the resource.",
-        "Name": "The customer specified name of the resource.",
-        "Tags": "A list of Tags.",
+        "CrlData": "The x509 v3 specified certificate revocation list (CRL).",
+        "Enabled": "Specifies whether the certificate revocation list (CRL) is enabled.",
+        "Name": "The name of the certificate revocation list (CRL).",
+        "Tags": "A list of tags to attach to the certificate revocation list (CRL).",
         "TrustAnchorArn": "The ARN of the TrustAnchor the certificate revocation list (CRL) will provide revocation for."
       }
     },
@@ -55019,18 +55068,18 @@
       "attributes": {
         "ProfileArn": "The ARN of the profile.",
         "ProfileId": "The unique primary identifier of the Profile",
-        "Ref": "The name of the Profile"
+        "Ref": "`Ref` returns `ProfileId` ."
       },
-      "description": "Creates a Profile.",
+      "description": "Creates a *profile* , a list of the roles that Roles Anywhere service is trusted to assume. You use profiles to intersect permissions with IAM managed policies.\n\n*Required permissions:* `rolesanywhere:CreateProfile` .",
       "properties": {
-        "DurationSeconds": "The number of seconds vended session credentials will be valid for",
-        "Enabled": "The enabled status of the resource.",
-        "ManagedPolicyArns": "A list of managed policy ARNs. Managed policies identified by this list will be applied to the vended session credentials.",
-        "Name": "The customer specified name of the resource.",
-        "RequireInstanceProperties": "Specifies whether instance properties are required in CreateSession requests with this profile.",
-        "RoleArns": "A list of IAM role ARNs that can be assumed when this profile is specified in a CreateSession request.",
-        "SessionPolicy": "A session policy that will applied to the trust boundary of the vended session credentials.",
-        "Tags": "A list of Tags."
+        "DurationSeconds": "Sets the maximum number of seconds that vended temporary credentials through [CreateSession](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/authentication-create-session.html) will be valid for, between 900 and 3600.",
+        "Enabled": "Indicates whether the profile is enabled.",
+        "ManagedPolicyArns": "A list of managed policy ARNs that apply to the vended session credentials.",
+        "Name": "The name of the profile.",
+        "RequireInstanceProperties": "Specifies whether instance properties are required in temporary credential requests with this profile.",
+        "RoleArns": "A list of IAM role ARNs. During `CreateSession` , if a matching role ARN is provided, the properties in this profile will be applied to the intersection session policy.",
+        "SessionPolicy": "A session policy that applies to the trust boundary of the vended session credentials.",
+        "Tags": "The tags to attach to the profile."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor": {
@@ -55039,7 +55088,7 @@
         "TrustAnchorArn": "The ARN of the trust anchor.",
         "TrustAnchorId": "The unique identifier of the trust anchor."
       },
-      "description": "Creates a TrustAnchor.",
+      "description": "Creates a trust anchor to establish trust between IAM Roles Anywhere and your certificate authority (CA). You can define a trust anchor as a reference to an AWS Private Certificate Authority ( AWS Private CA ) or by uploading a CA certificate. Your AWS workloads can authenticate with the trust anchor using certificates issued by the CA in exchange for temporary AWS credentials.\n\n*Required permissions:* `rolesanywhere:CreateTrustAnchor` .",
       "properties": {
         "Enabled": "Indicates whether the trust anchor is enabled.",
         "Name": "The name of the trust anchor.",
@@ -55049,15 +55098,15 @@
     },
     "AWS::RolesAnywhere::TrustAnchor.Source": {
       "attributes": {},
-      "description": "Object representing the TrustAnchor type and its related certificate data.",
+      "description": "The trust anchor type and its related certificate data.",
       "properties": {
-        "SourceData": "A union object representing the data field of the TrustAnchor depending on its type",
-        "SourceType": "The type of the TrustAnchor."
+        "SourceData": "The data field of the trust anchor depending on its type.",
+        "SourceType": "The type of the TrustAnchor.\n\n> `AWS_ACM_PCA` is not an allowed value in your region."
       }
     },
     "AWS::RolesAnywhere::TrustAnchor.SourceData": {
       "attributes": {},
-      "description": "A union object representing the data field of the TrustAnchor depending on its type",
+      "description": "The data field of the trust anchor depending on its type.",
       "properties": {
         "AcmPcaArn": "The root certificate of the AWS Private Certificate Authority specified by this ARN is used in trust validation for temporary credential requests. Included for trust anchors of type `AWS_ACM_PCA` .\n\n> This field is not supported in your region.",
         "X509CertificateData": "The PEM-encoded data for the certificate anchor. Included for trust anchors of type `CERTIFICATE_BUNDLE` ."
@@ -57614,6 +57663,109 @@
         "ChannelType": "The type of the contact channel. Incident Manager supports three contact methods:\n\n- SMS\n- VOICE\n- EMAIL",
         "ContactId": "The Amazon Resource Name (ARN) of the contact you are adding the contact channel to.",
         "DeferActivation": "If you want to activate the channel at a later time, you can choose to defer activation. Incident Manager can't engage your contact channel until it has been activated."
+      }
+    },
+    "AWS::SSMContacts::Plan": {
+      "attributes": {
+        "Arn": "The Amazon Resource Name (ARN) of the `Plan` resource.",
+        "Ref": ""
+      },
+      "description": "Information about the stages and on-call rotation teams associated with an escalation plan or engagement plan.",
+      "properties": {
+        "ContactId": "The Amazon Resource Name (ARN) of the contact.",
+        "RotationIds": "",
+        "Stages": "A list of stages that the escalation plan or engagement plan uses to engage contacts and contact methods."
+      }
+    },
+    "AWS::SSMContacts::Plan.ChannelTargetInfo": {
+      "attributes": {},
+      "description": "Information about the contact channel that Incident Manager uses to engage the contact.",
+      "properties": {
+        "ChannelId": "The Amazon Resource Name (ARN) of the contact channel.",
+        "RetryIntervalInMinutes": "The number of minutes to wait before retrying to send engagement if the engagement initially failed."
+      }
+    },
+    "AWS::SSMContacts::Plan.ContactTargetInfo": {
+      "attributes": {},
+      "description": "The contact that Incident Manager is engaging during an incident.",
+      "properties": {
+        "ContactId": "The Amazon Resource Name (ARN) of the contact.",
+        "IsEssential": "A Boolean value determining if the contact's acknowledgement stops the progress of stages in the plan."
+      }
+    },
+    "AWS::SSMContacts::Plan.Stage": {
+      "attributes": {},
+      "description": "A set amount of time that an escalation plan or engagement plan engages the specified contacts or contact methods.",
+      "properties": {
+        "DurationInMinutes": "The time to wait until beginning the next stage. The duration can only be set to 0 if a target is specified.",
+        "Targets": "The contacts or contact methods that the escalation plan or engagement plan is engaging."
+      }
+    },
+    "AWS::SSMContacts::Plan.Targets": {
+      "attributes": {},
+      "description": "The contact or contact channel that's being engaged.",
+      "properties": {
+        "ChannelTargetInfo": "Information about the contact channel that Incident Manager engages.",
+        "ContactTargetInfo": "Information about the contact that Incident Manager engages."
+      }
+    },
+    "AWS::SSMContacts::Rotation": {
+      "attributes": {
+        "Arn": "The Amazon Resource Name (ARN) of the `Rotation` resource.",
+        "Ref": ""
+      },
+      "description": "Specifies a rotation in an on-call schedule.",
+      "properties": {
+        "ContactIds": "The Amazon Resource Names (ARNs) of the contacts to add to the rotation.\n\nThe order in which you list the contacts is their shift order in the rotation schedule.",
+        "Name": "The name for the rotation.",
+        "Recurrence": "Information about the rule that specifies when shift team members rotate.",
+        "StartTime": "The date and time the rotation goes into effect.",
+        "Tags": "Optional metadata to assign to the rotation. Tags enable you to categorize a resource in different ways, such as by purpose, owner, or environment. For more information, see [Tagging Incident Manager resources](https://docs.aws.amazon.com/incident-manager/latest/userguide/tagging.html) in the *Incident Manager User Guide* .",
+        "TimeZoneId": "The time zone to base the rotation\u2019s activity on, in Internet Assigned Numbers Authority (IANA) format. For example: \"America/Los_Angeles\", \"UTC\", or \"Asia/Seoul\". For more information, see the [Time Zone Database](https://docs.aws.amazon.com/https://www.iana.org/time-zones) on the IANA website."
+      }
+    },
+    "AWS::SSMContacts::Rotation.CoverageTime": {
+      "attributes": {},
+      "description": "Information about when an on-call shift begins and ends.",
+      "properties": {
+        "EndTime": "Information about when an on-call rotation shift ends.",
+        "StartTime": "Information about when an on-call rotation shift begins."
+      }
+    },
+    "AWS::SSMContacts::Rotation.MonthlySetting": {
+      "attributes": {},
+      "description": "Information about on-call rotations that recur monthly.",
+      "properties": {
+        "DayOfMonth": "The day of the month when monthly recurring on-call rotations begin.",
+        "HandOffTime": "The time of day when a monthly recurring on-call shift rotation begins."
+      }
+    },
+    "AWS::SSMContacts::Rotation.RecurrenceSettings": {
+      "attributes": {},
+      "description": "Information about when an on-call rotation is in effect and how long the rotation period lasts.",
+      "properties": {
+        "DailySettings": "Information about on-call rotations that recur daily.",
+        "MonthlySettings": "Information about on-call rotations that recur monthly.",
+        "NumberOfOnCalls": "The number of contacts, or shift team members designated to be on call concurrently during a shift. For example, in an on-call schedule that contains ten contacts, a value of `2` designates that two of them are on call at any given time.",
+        "RecurrenceMultiplier": "The number of days, weeks, or months a single rotation lasts.",
+        "ShiftCoverages": "Information about the days of the week included in on-call rotation coverage.",
+        "WeeklySettings": "Information about on-call rotations that recur weekly."
+      }
+    },
+    "AWS::SSMContacts::Rotation.ShiftCoverage": {
+      "attributes": {},
+      "description": "Information about the days of the week that the on-call rotation coverage includes.",
+      "properties": {
+        "CoverageTimes": "The start and end times of the shift.",
+        "DayOfWeek": "A list of days on which the schedule is active."
+      }
+    },
+    "AWS::SSMContacts::Rotation.WeeklySetting": {
+      "attributes": {},
+      "description": "Information about rotations that recur weekly.",
+      "properties": {
+        "DayOfWeek": "The day of the week when weekly recurring on-call shift rotations begins.",
+        "HandOffTime": "The time of day when a weekly recurring on-call shift rotation begins."
       }
     },
     "AWS::SSMIncidents::ReplicationSet": {
