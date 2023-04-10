@@ -1,3 +1,5 @@
+import { StringSpecializer, translateAssetTokenToCfnToken, translateCfnTokenToAssetToken } from 'aws-cdk-lib/core/lib/helpers-internal';
+
 /**
  * Bootstrapped role specifier. These roles must exist already.
  * This class does not create new IAM Roles.
@@ -7,7 +9,7 @@ export class BootstrapRole {
    * Use the currently assumed role/credentials
    */
   public static cliCredentials() {
-    return new BootstrapRole(undefined);
+    return new BootstrapRole(BootstrapRole.CLI_CREDS);
   }
 
   /**
@@ -17,8 +19,32 @@ export class BootstrapRole {
     return new BootstrapRole(arn);
   }
 
-  private constructor(/** Bootstrap role arn */ public readonly roleArn: string | undefined) {}
+  private static CLI_CREDS = 'cli-credentials';
+
+  private constructor(private readonly roleArn: string) {}
+
+  public isCliCredentials() {
+    return this.roleArn === BootstrapRole.CLI_CREDS;
+  }
+
+  public renderRoleArn(options: {
+    spec?: StringSpecializer,
+    tokenType?: 'asset' | 'cfn',
+  } = {}) {
+    if (this.isCliCredentials()) { return undefined; }
+    if (!options.spec) { return this.roleArn; }
+
+    const arn = options.spec.specialize(this.roleArn);
+    if (options.tokenType === 'asset') {
+      return translateCfnTokenToAssetToken(arn);
+    } else if (options.tokenType === 'cfn') {
+      return translateAssetTokenToCfnToken(arn);
+    } else {
+      return arn;
+    }
+  }
 }
+
 
 /**
  * Roles that are bootstrapped to your account.

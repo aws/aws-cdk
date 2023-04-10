@@ -195,15 +195,16 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
     this.ephemeralFileAssetLifecycleRule = this.validateEphemeralAssetLifecycleRule(props.ephemeralFileAssetLifecycleRule);
     this.retainEphemeralFileAssets = props.retainEphemeralFileAssets;
     this.stagingBucketName = props.stagingBucketName;
-    this.fileAssetPublishingRoleArn = props.fileAssetPublishingRole ? this.validateStagingRole(props.fileAssetPublishingRole).roleArn : undefined;
+    this.fileAssetPublishingRoleArn = props.fileAssetPublishingRole ?
+      this.validateStagingRole(props.fileAssetPublishingRole).renderRoleArn() : undefined;
     this.imageAssetPublishingRoleArn = props.imageAssetPublishingRole ?
-      this.validateStagingRole(props.imageAssetPublishingRole).roleArn : undefined;
+      this.validateStagingRole(props.imageAssetPublishingRole).renderRoleArn() : undefined;
     // this.repositoryLifecycleRules = this.processLifecycleRules(props.repositoryLifecycleRules ?? []);
     this.stagingRepos = {};
   }
 
   private validateStagingRole(stagingRole: BootstrapRole) {
-    if (stagingRole.roleArn === undefined) {
+    if (stagingRole.isCliCredentials()) {
       throw new Error('fileAssetPublishingRole and dockerAssetPublishingRole cannot be specified as cliCredentials(). Please supply an arn to reference an existing IAM role.');
     }
     return stagingRole;

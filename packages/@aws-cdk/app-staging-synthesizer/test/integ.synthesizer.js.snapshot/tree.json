@@ -102,7 +102,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-489318732371-us-east-2-app-id",
+                      "s3Bucket": "cdk-489318732371-us-east-2-newid3",
                       "s3Key": "47bef23db368c64788bca777543a7c0374db287baed4c18c990b4af1444d8d53.zip"
                     },
                     "role": {
@@ -166,7 +166,7 @@
                       ],
                       "Version": "2012-10-17"
                     },
-                    "roleName": "cdk-file-publishing-role-us-east-2-app-id"
+                    "roleName": "cdk-file-publishing-role-us-east-2-newId3"
                   }
                 },
                 "constructInfo": {
@@ -330,7 +330,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
                       "aws:cdk:cloudformation:props": {
-                        "aliasName": "alias/CdkStagingBucketKey489318732371-us-east-2-app-id",
+                        "aliasName": "alias/CdkStagingBucketKey489318732371-us-east-2-newId3",
                         "targetKeyId": {
                           "Fn::GetAtt": [
                             "BucketKey7092080A",
@@ -381,11 +381,95 @@
                         }
                       ]
                     },
-                    "bucketName": "cdk-489318732371-us-east-2-app-id"
+                    "bucketName": "cdk-489318732371-us-east-2-newid3",
+                    "lifecycleConfiguration": {
+                      "rules": [
+                        {
+                          "expirationInDays": 10,
+                          "prefix": "eph-",
+                          "status": "Enabled"
+                        }
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "StagingStack489318732371us-east-2/CdkStagingBucket/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "StagingStack489318732371us-east-2/CdkStagingBucket/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "CdkStagingBucket1636058C"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetBucket*",
+                                "s3:GetObject*",
+                                "s3:List*"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":iam::489318732371:role/cdk-hnb659fds-deploy-role-489318732371-us-east-2"
+                                    ]
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "CdkStagingBucket1636058C",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "CdkStagingBucket1636058C",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
                   "version": "0.0.0"
                 }
               }
@@ -397,7 +481,7 @@
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/app-staging-synthesizer.DefaultStagingStack",
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },
@@ -445,14 +529,14 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.1.270"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.1.270"
         }
       },
       "Tree": {

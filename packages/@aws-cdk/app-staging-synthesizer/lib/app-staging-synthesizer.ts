@@ -13,9 +13,9 @@ import {
   StackSynthesizer,
   Token,
 } from 'aws-cdk-lib';
-import { StringSpecializer, translateAssetTokenToCfnToken } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cxapi from 'aws-cdk-lib/cx-api';
-import { BootstrapRoles, StagingRoles } from './bootstrap-roles';
+import { BootstrapRole, BootstrapRoles, StagingRoles } from './bootstrap-roles';
 import { IStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
 
 /**
@@ -151,17 +151,14 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
             throw new Error(`Stack ${boundStack.stackName} must be part of an App`);
           }
 
-          // eslint-disable-next-line max-len
-          const qualifier = props.qualifier ?? boundStack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? BoundAppStagingSynthesizer.DEFAULT_QUALIFIER;
+          const qualifier = props.qualifier ??
+            boundStack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ??
+            BoundAppStagingSynthesizer.DEFAULT_QUALIFIER;
+
           const spec = new StringSpecializer(boundStack, qualifier);
-          let deployActionRoleArn = undefined;
-          if (props.bootstrapRoles?.deploymentActionRole === undefined || props.bootstrapRoles.deploymentActionRole.roleArn) {
-            deployActionRoleArn = translateAssetTokenToCfnToken(
-              spec.specialize(
-                props.bootstrapRoles?.deploymentActionRole?.roleArn ?? BoundAppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN,
-              ),
-            );
-          }
+          const deployActionRole = props.bootstrapRoles?.deploymentActionRole
+            ?? BootstrapRole.fromRoleArn(BoundAppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
+          const deployActionRoleArn = !deployActionRole.isCliCredentials() ? deployActionRole.renderRoleArn({ spec, tokenType: 'cfn' }) : undefined;
 
           let stackId = 'StagingStack';
           // Ensure we do not have a scenario where the App includes BOTH
@@ -310,19 +307,18 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
 
     this.qualifier = props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? BoundAppStagingSynthesizer.DEFAULT_QUALIFIER;
     const spec = new StringSpecializer(stack, this.qualifier);
-    const specialize = (arn?: string) => {
-      if (!arn) { return undefined; }
-      return spec.specialize(arn);
-    };
 
-    // Roles are implemented this way because roleArn could be undefined, signifying that we are
-    // to use cli credentials instead.
-    this.lookupRoleArn = specialize(props.bootstrapRoles?.lookupRole?.roleArn ?
-      props.bootstrapRoles.lookupRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
-    this.cloudFormationExecutionRoleArn = specialize(props.bootstrapRoles?.cloudFormationExecutionRole?.roleArn ?
-      props.bootstrapRoles.cloudFormationExecutionRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
-    this.deploymentActionRoleArn = specialize(props.bootstrapRoles?.deploymentActionRole?.roleArn ?
-      props.bootstrapRoles.deploymentActionRole.roleArn : BoundAppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
+    const lookupRole = props.bootstrapRoles?.lookupRole ?? BootstrapRole.fromRoleArn(BoundAppStagingSynthesizer.DEFAULT_LOOKUP_ROLE_ARN);
+    this.lookupRoleArn = !lookupRole.isCliCredentials() ? lookupRole.renderRoleArn({ spec }) : undefined;
+
+    const cloudFormationExecutionRole = props.bootstrapRoles?.cloudFormationExecutionRole ??
+      BootstrapRole.fromRoleArn(BoundAppStagingSynthesizer.DEFAULT_CLOUDFORMATION_ROLE_ARN);
+    this.cloudFormationExecutionRoleArn = !cloudFormationExecutionRole.isCliCredentials() ?
+      cloudFormationExecutionRole.renderRoleArn({ spec }) : undefined;
+
+    const deploymentActionRole = props.bootstrapRoles?.deploymentActionRole ??
+      BootstrapRole.fromRoleArn(BoundAppStagingSynthesizer.DEFAULT_DEPLOY_ROLE_ARN);
+    this.deploymentActionRoleArn = !deploymentActionRole.isCliCredentials() ? deploymentActionRole.renderRoleArn({ spec }) : undefined;
 
     this.stagingStack = props.stagingStackFactory.stagingStackFactory(stack);
   }

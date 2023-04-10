@@ -13,14 +13,14 @@
       "properties": {
         "templateFile": "app-scoped-staging-test.template.json",
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-deploy-role-489318732371-us-east-2",
         "additionalDependencies": [
           "app-scoped-staging-test.assets"
         ],
-        "stackTemplateAssetObjectUrl": "s3://cdk-489318732371-us-east-2-app-id/041f053398069413175306d7e2e5dd7fe62b1f288bf8efb64288eefbdcb23d8a.json",
-        "cloudFormationExecutionRoleArn": "arn:aws:iam::489318732371:role/cdk-hnb659fds-cfn-exec-role-489318732371-us-east-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-489318732371-us-east-2-newid3/3721bf9337687fef9ff88a4b3d490d60c51c3261d2c060cea7ce7d33780fd99a.json",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-cfn-exec-role-489318732371-us-east-2",
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}"
+          "arn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-lookup-role-489318732371-us-east-2"
         }
       },
       "dependencies": [
@@ -51,7 +51,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-deploy-role-489318732371-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-hnb659fds-cfn-exec-role-489318732371-us-east-2",
-        "stackName": "StagingStackapp-id"
+        "stackName": "StagingStacknewId3"
       },
       "metadata": {
         "/StagingStack489318732371us-east-2/CdkFilePublishingRole/Resource": [
@@ -82,6 +82,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CdkStagingBucket1636058C"
+          }
+        ],
+        "/StagingStack489318732371us-east-2/CdkStagingBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CdkStagingBucketPolicy42BD1F92"
           }
         ]
       },

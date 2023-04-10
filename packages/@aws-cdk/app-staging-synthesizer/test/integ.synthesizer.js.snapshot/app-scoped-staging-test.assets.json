@@ -8,24 +8,24 @@
       },
       "destinations": {
         "489318732371-us-east-2": {
-          "bucketName": "cdk-489318732371-us-east-2-app-id",
+          "bucketName": "cdk-489318732371-us-east-2-newid3",
           "objectKey": "47bef23db368c64788bca777543a7c0374db287baed4c18c990b4af1444d8d53.zip",
           "region": "us-east-2",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-file-publishing-role-us-east-2-app-id"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-file-publishing-role-us-east-2-newId3"
         }
       }
     },
-    "041f053398069413175306d7e2e5dd7fe62b1f288bf8efb64288eefbdcb23d8a": {
+    "3721bf9337687fef9ff88a4b3d490d60c51c3261d2c060cea7ce7d33780fd99a": {
       "source": {
         "path": "app-scoped-staging-test.template.json",
         "packaging": "file"
       },
       "destinations": {
         "489318732371-us-east-2": {
-          "bucketName": "cdk-489318732371-us-east-2-app-id",
-          "objectKey": "041f053398069413175306d7e2e5dd7fe62b1f288bf8efb64288eefbdcb23d8a.json",
+          "bucketName": "cdk-489318732371-us-east-2-newid3",
+          "objectKey": "3721bf9337687fef9ff88a4b3d490d60c51c3261d2c060cea7ce7d33780fd99a.json",
           "region": "us-east-2",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-file-publishing-role-us-east-2-app-id"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::489318732371:role/cdk-file-publishing-role-us-east-2-newId3"
         }
       }
     }

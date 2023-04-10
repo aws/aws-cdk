@@ -15,7 +15,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "RoleName": "cdk-file-publishing-role-us-east-2-app-id"
+    "RoleName": "cdk-file-publishing-role-us-east-2-newId3"
    }
   },
   "CdkFilePublishingRoleDefaultPolicyE914275E": {
@@ -133,7 +133,7 @@
   "BucketKeyAlias69A0886F": {
    "Type": "AWS::KMS::Alias",
    "Properties": {
-    "AliasName": "alias/CdkStagingBucketKey489318732371-us-east-2-app-id",
+    "AliasName": "alias/CdkStagingBucketKey489318732371-us-east-2-newId3",
     "TargetKeyId": {
      "Fn::GetAtt": [
       "BucketKey7092080A",
@@ -160,10 +160,76 @@
       }
      ]
     },
-    "BucketName": "cdk-489318732371-us-east-2-app-id"
+    "BucketName": "cdk-489318732371-us-east-2-newid3",
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "ExpirationInDays": 10,
+       "Prefix": "eph-",
+       "Status": "Enabled"
+      }
+     ]
+    }
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
+  },
+  "CdkStagingBucketPolicy42BD1F92": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "CdkStagingBucket1636058C"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::489318732371:role/cdk-hnb659fds-deploy-role-489318732371-us-east-2"
+          ]
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "CdkStagingBucket1636058C",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "CdkStagingBucket1636058C",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
   }
  }
 }
