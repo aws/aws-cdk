@@ -198,3 +198,40 @@ const app = new App({
   }),
 });
 ```
+
+### Ephemeral Assets
+
+Some assets that get put into the staging S3 Bucket are ephemeral - they are only necessary
+during CloudFormation deployment and not after. As long as you know what assets are ephemeral,
+you can tag them as such and they will be marked with an `eph-` prefix when they are staged.
+This allows configuration of a lifecycle rule specifically for ephemeral assets.
+
+A good example is a Lambda Function asset. The asset is only useful in the S3 Bucket at deploy
+time, because the source code gets copied into Lambda itself. So we can mark Lambda assets
+as ephemeral:
+
+```ts
+new lambda.Function(stack, 'lambda', {
+  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'assets'), {
+    ephemeral: true,
+  }),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.PYTHON_3_9,
+});
+```
+
+This means that the asset will go into the S3 Bucket with the prefix `eph-`. It will also be 
+subject to the lifecycle rule set on ephemeral assets. By default, the rule is `expiration: Duration.days(10)`.
+You can specify your own rule like this:
+
+```ts
+const app = new App({
+  defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
+    ephemeralFileAssetLifecycleRule: {
+      prefix: 'eph-', // required
+      objectSizeGreaterThan: 10000,
+      expiration: Duration.days(1),
+    },
+  }),
+});
+```

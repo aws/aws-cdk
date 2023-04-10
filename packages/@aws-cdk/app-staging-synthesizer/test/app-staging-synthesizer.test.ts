@@ -154,8 +154,59 @@ describe(AppStagingSynthesizer, () => {
     expect(evalCFN(location1.bucketName)).toEqual(evalCFN(location2.bucketName));
   });
 
+  test('can configure bucket prefix', () => {
+    // GIVEN
+    app = new App({
+      defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
+        bucketPrefix: 'prefix',
+      }),
+    });
+    stack = new Stack(app, 'Stack', {
+      env: {
+        account: '000000000000',
+        region: 'us-west-2',
+      },
+    });
+
+    // WHEN
+    const location = stack.synthesizer.addFileAsset({
+      fileName: __filename,
+      packaging: FileAssetPackaging.FILE,
+      sourceHash: 'abcdef',
+    });
+
+    // THEN - assets have the same location
+    expect(evalCFN(location.objectKey)).toEqual('prefixabcdef.js');
+  });
+
   describe('ephemeral assets', () => {
-    test('ephemeral assets have the \'eph\' prefix', () => {
+    test('ephemeral assets have the \'eph-\' prefix', () => {
+      // WHEN
+      const location = stack.synthesizer.addFileAsset({
+        fileName: __filename,
+        packaging: FileAssetPackaging.FILE,
+        sourceHash: 'abcdef',
+        ephemeral: true,
+      });
+
+      // THEN - asset has bucket prefix
+      expect(evalCFN(location.objectKey)).toEqual('eph-abcdef.js');
+    });
+
+    test('ephemeral assets do not get specified bucketPrefix', () => {
+      // GIVEN
+      app = new App({
+        defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
+          bucketPrefix: 'prefix',
+        }),
+      });
+      stack = new Stack(app, 'Stack', {
+        env: {
+          account: '000000000000',
+          region: 'us-west-2',
+        },
+      });
+
       // WHEN
       const location = stack.synthesizer.addFileAsset({
         fileName: __filename,

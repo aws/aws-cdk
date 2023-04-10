@@ -55,6 +55,8 @@ export interface StackPerEnvProps {
    */
   readonly qualifier?: string;
 
+  readonly bucketPrefix?: string;
+
   /**
    * Retain all assets in the s3 bucket, even the ones that have been
    * marked ephemeral.
@@ -128,6 +130,8 @@ interface AppStagingSynthesizerProps {
    * @default - Value of context key '@aws-cdk/core:bootstrapQualifier' if set, otherwise `DEFAULT_QUALIFIER`
    */
   readonly qualifier?: string;
+
+  readonly bucketPrefix?: string;
 }
 
 /**
@@ -160,6 +164,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
     return new AppStagingSynthesizer({
       qualifier: props.qualifier,
       bootstrapRoles: props.bootstrapRoles,
+      bucketPrefix: props.bucketPrefix,
       stagingStackFactory: {
         stagingStackFactory(boundStack: Stack) {
           const app = App.of(boundStack);
@@ -317,11 +322,13 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
   private readonly cloudFormationExecutionRoleArn?: string;
   private readonly deploymentActionRoleArn?: string;
   private readonly qualifier: string;
+  private readonly bucketPrefix?: string;
 
   constructor(stack: Stack, props: AppStagingSynthesizerProps) {
     super();
     super.bind(stack);
 
+    this.bucketPrefix = props.bucketPrefix;
     this.qualifier = props.qualifier ?? stack.node.tryGetContext(BOOTSTRAP_QUALIFIER_CONTEXT) ?? BoundAppStagingSynthesizer.DEFAULT_QUALIFIER;
     const spec = new StringSpecializer(stack, this.qualifier);
 
@@ -371,7 +378,7 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const { bucketName, assumeRoleArn } = this.stagingStack.addFile(asset);
     const location = this.assetManifest.defaultAddFileAsset(this.boundStack, asset, {
       bucketName: bucketName,
-      bucketPrefix: asset.ephemeral ? EPHEMERAL_PREFIX : undefined,
+      bucketPrefix: asset.ephemeral ? EPHEMERAL_PREFIX : this.bucketPrefix,
       role: {
         assumeRoleArn,
       },
