@@ -3,10 +3,9 @@ import * as fs from 'fs';
 import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy } from 'aws-cdk-lib';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { evaluateCFN } from 'aws-cdk-lib/core/test/evaluate-cfn';
-import * as cxapi from 'aws-cdk-lib/cx-api';
-import { AppStagingSynthesizer, BootstrapRole, StackPerEnvProps } from '../lib';
+import { AppStagingSynthesizer } from '../lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
-import { APP_ID, CFN_CONTEXT, CLOUDFORMATION_EXECUTION_ROLE, DEPLOY_ACTION_ROLE, LOOKUP_ROLE } from './util';
+import { APP_ID, CFN_CONTEXT, TestAppScopedStagingSynthesizer, isAssetManifest, last } from './util';
 // import { Repository } from 'aws-cdk-lib/aws-ecr';
 // import { Bucket } from 'aws-cdk-lib/aws-s3';
 
@@ -342,25 +341,3 @@ describe(AppStagingSynthesizer, () => {
     return evaluateCFN(stack.resolve(value), CFN_CONTEXT);
   }
 });
-
-function isAssetManifest(x: cxapi.CloudArtifact): x is cxapi.AssetManifestArtifact {
-  return x instanceof cxapi.AssetManifestArtifact;
-}
-
-function last<A>(xs?: A[]): A | undefined {
-  return xs ? xs[xs.length - 1] : undefined;
-}
-
-class TestAppScopedStagingSynthesizer {
-  public static stackPerEnv(props: Partial<StackPerEnvProps> = {}): AppStagingSynthesizer {
-    return AppStagingSynthesizer.stackPerEnv({
-      appId: props.appId ?? APP_ID,
-      bootstrapRoles: {
-        cloudFormationExecutionRole: BootstrapRole.fromRoleArn(CLOUDFORMATION_EXECUTION_ROLE),
-        deploymentActionRole: BootstrapRole.fromRoleArn(DEPLOY_ACTION_ROLE),
-        lookupRole: BootstrapRole.fromRoleArn(LOOKUP_ROLE),
-      },
-      ...props,
-    });
-  }
-}
