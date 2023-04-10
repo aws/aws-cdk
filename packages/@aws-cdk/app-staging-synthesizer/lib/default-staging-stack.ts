@@ -213,7 +213,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   private validateEphemeralAssetLifecycleRule(rule?: s3.LifecycleRule) {
     if (!rule) { return rule; }
     if (rule.prefix !== EPHEMERAL_PREFIX) {
-      throw new Error(`ephemeralAssetLifecycleRule must contain "prefix: '${EPHEMERAL_PREFIX}'" but got 'prefix: ${rule.prefix}. This prefix is the only way to identify ephemeral assets.`);
+      throw new Error(`ephemeralAssetLifecycleRule must contain "prefix: '${EPHEMERAL_PREFIX}'" but got "prefix: ${rule.prefix}". This prefix is the only way to identify ephemeral assets.`);
     }
     return rule;
   }

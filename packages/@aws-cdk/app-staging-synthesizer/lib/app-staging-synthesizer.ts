@@ -17,6 +17,7 @@ import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { BootstrapRole, BootstrapRoles, StagingRoles } from './bootstrap-roles';
 import { IStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 
 /**
  * @internal
@@ -54,7 +55,22 @@ export interface StackPerEnvProps {
    */
   readonly qualifier?: string;
 
+  /**
+   * Retain all assets in the s3 bucket, even the ones that have been
+   * marked ephemeral.
+   *
+   * @default false
+   */
   readonly retainEphemeralFileAssets?: boolean;
+
+  /**
+   * Specify a custom lifecycle rule for ephemeral file assets. If you
+   * specify this property, you must set `prefix: 'eph-'` as part of the rule.
+   * This is the only way to identify ephemeral assets.
+   *
+   * @default - ephemeral assets will be deleted after 10 days
+   */
+  readonly ephemeralFileAssetLifecycleRule?: s3.LifecycleRule;
 }
 
 /**
@@ -200,6 +216,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
             imageAssetPublishingRole: props.stagingRoles?.dockerAssetPublishingRole,
             deployActionRoleArn,
             retainEphemeralFileAssets: props.retainEphemeralFileAssets,
+            ephemeralFileAssetLifecycleRule: props.ephemeralFileAssetLifecycleRule,
           });
           boundStack.addDependency(stagingStack.dependencyStack, 'stack depends on the staging stack for staging resources');
 

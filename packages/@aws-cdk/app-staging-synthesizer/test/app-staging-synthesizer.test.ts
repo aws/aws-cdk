@@ -1,6 +1,6 @@
 /* eslint-disable jest/no-commented-out-tests */
 import * as fs from 'fs';
-import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy } from 'aws-cdk-lib';
+import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, Duration } from 'aws-cdk-lib';
 import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { evaluateCFN } from 'aws-cdk-lib/core/test/evaluate-cfn';
 import { AppStagingSynthesizer } from '../lib';
@@ -193,6 +193,21 @@ describe(AppStagingSynthesizer, () => {
 
     test('lifecycle rule on ephemeral assets can be customized', () => {
       // GIVEN
+      app = new App({
+        defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
+          ephemeralFileAssetLifecycleRule: {
+            prefix: 'eph-',
+            objectSizeGreaterThan: 10000,
+            expiration: Duration.days(1),
+          },
+        }),
+      });
+      stack = new Stack(app, 'Stack', {
+        env: {
+          account: '000000000000',
+          region: 'us-west-2',
+        },
+      });
       new CfnResource(stack, 'Resource', {
         type: 'Some::Resource',
       });
@@ -201,38 +216,59 @@ describe(AppStagingSynthesizer, () => {
       const asm = app.synth();
 
       // THEN
-      const stagingStackArtifact = asm.getStackArtifact('StagingStack000000000000us-east-1');
+      const stagingStackArtifact = asm.getStackArtifact('StagingStack000000000000us-west-2');
 
       Template.fromJSON(stagingStackArtifact.template).hasResourceProperties('AWS::S3::Bucket', {
         LifecycleConfiguration: {
           Rules: [{
-            ExpirationInDays: 10,
+            ExpirationInDays: 1,
             Prefix: 'eph-',
             Status: 'Enabled',
+            ObjectSizeGreaterThan: 10000,
           }],
         },
       });
     });
 
+    test('customized lifecycle rule must have correct prefix', () => {
+      // GIVEN
+      app = new App({
+        defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
+          ephemeralFileAssetLifecycleRule: {
+            objectSizeGreaterThan: 10000,
+            expiration: Duration.days(1),
+          },
+        }),
+      });
+      expect(() => {
+        new Stack(app, 'Stack', {
+          env: {
+            account: '000000000000',
+            region: 'us-west-2',
+          },
+        });
+      }).toThrowError('ephemeralAssetLifecycleRule must contain "prefix: \'eph-\'" but got "prefix: undefined". This prefix is the only way to identify ephemeral assets.');
+    });
+
     test('lifecycle rule on ephemeral assets can be turned off', () => {
       // GIVEN
-      const app2 = new App({
+      app = new App({
         defaultStackSynthesizer: TestAppScopedStagingSynthesizer.stackPerEnv({
           retainEphemeralFileAssets: true,
         }),
       });
-      const stack2 = new Stack(app2, 'Stack', {
+      stack = new Stack(app, 'Stack', {
         env: {
           account: '000000000000',
           region: 'us-west-2',
         },
       });
-      new CfnResource(stack2, 'Resource', {
+      new CfnResource(stack, 'Resource', {
         type: 'Some::Resource',
       });
 
       // WHEN
-      const asm = app2.synth();
+      const asm = app.synth();
 
       // THEN
       const stagingStackArtifact = asm.getStackArtifact('StagingStack000000000000us-west-2');
