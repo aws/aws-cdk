@@ -6,6 +6,8 @@ runtarget="build"
 run_tests="true"
 check_prereqs="true"
 check_compat="true"
+ci="false"
+scope=""
 while [[ "${1:-}" != "" ]]; do
     case $1 in
         -h|--help)
@@ -27,6 +29,9 @@ while [[ "${1:-}" != "" ]]; do
         --skip-compat)
             check_compat="false"
             ;;
+        --ci)
+          ci=true
+          ;;
         *)
             echo "Unrecognized parameter: $1"
             exit 1
@@ -76,12 +81,17 @@ if [ "$run_tests" == "true" ]; then
     runtarget="$runtarget,test"
 fi
 
-# Limit top-level concurrency to available CPUs - 1 to limit CPU load.
-concurrency=$(node -p 'Math.max(1, require("os").cpus().length - 1)')
+# for some reason increasing this above 5 can double the time it takes
+concurrency=5
+
+flags=""
+if [ "$ci" == "true" ]; then
+  flags="--stream --no-progress --skip-nx-cache"
+fi
 
 echo "============================================================================================="
 echo "building..."
-time npx lerna run $bail --concurrency=$concurrency $runtarget --skip-nx-cache || fail
+time npx lerna run $bail --concurrency=$concurrency $runtarget $flags || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
