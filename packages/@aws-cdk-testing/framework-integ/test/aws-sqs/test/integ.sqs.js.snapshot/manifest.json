@@ -1,12 +1,6 @@
 {
-  "version": "21.0.0",
+  "version": "31.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "aws-cdk-sqs.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -23,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7fd5f7d37f2f344aa43e18636af702436c91c871b1380d772857c431c603bb27.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2c018414a00bf8a489d14b999d53d4c379138d020cae8a247aef73b311f9609a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -69,10 +63,10 @@
             "data": "HighThroughputFifoQueue40A0EEE4"
           }
         ],
-        "/aws-cdk-sqs/SqsManagedEncryptedQueue/Resource": [
+        "/aws-cdk-sqs/kmsManagedEncryptedQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SqsManagedEncryptedQueue587679B3"
+            "data": "kmsManagedEncryptedQueueCC71F0DD"
           }
         ],
         "/aws-cdk-sqs/UnencryptedQueue/Resource": [
@@ -111,6 +105,12 @@
             "data": "QueueUrl"
           }
         ],
+        "/aws-cdk-sqs/Exports/Output{\"Ref\":\"Queue4A7E3555\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefQueue4A7E3555425E8BD3"
+          }
+        ],
         "/aws-cdk-sqs/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -121,6 +121,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "SqsManagedEncryptedQueue587679B3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SqsManagedEncryptedQueue587679B3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -142,7 +151,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e05e1fd21bffb53f1e3f241978709e508620d8aefa6edd4afd1504ebea1bd780.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -155,9 +164,34 @@
         }
       },
       "dependencies": [
+        "aws-cdk-sqs",
         "SqsTestDefaultTestDeployAssert659366A6.assets"
       ],
       "metadata": {
+        "/SqsTest/DefaultTest/DeployAssert/AwsApiCallSQSgetQueueAttributes/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSQSgetQueueAttributes"
+          }
+        ],
+        "/SqsTest/DefaultTest/DeployAssert/AwsApiCallSQSgetQueueAttributes/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSQSgetQueueAttributes"
+          }
+        ],
+        "/SqsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/SqsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
         "/SqsTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -172,6 +206,12 @@
         ]
       },
       "displayName": "SqsTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }

@@ -2,13 +2,15 @@
  "Resources": {
   "DeadLetterQueue9F481546": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
   "Queue4A7E3555": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
-    "KmsMasterKeyId": "alias/aws/sqs",
     "RedrivePolicy": {
      "deadLetterTargetArn": {
       "Fn::GetAtt": [
@@ -17,7 +19,8 @@
       ]
      },
      "maxReceiveCount": 5
-    }
+    },
+    "SqsManagedSseEnabled": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -76,15 +79,16 @@
    "Properties": {
     "DeduplicationScope": "messageGroup",
     "FifoQueue": true,
-    "FifoThroughputLimit": "perMessageGroupId"
+    "FifoThroughputLimit": "perMessageGroupId",
+    "SqsManagedSseEnabled": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "SqsManagedEncryptedQueue587679B3": {
+  "kmsManagedEncryptedQueueCC71F0DD": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
-    "SqsManagedSseEnabled": true
+    "KmsMasterKeyId": "alias/aws/sqs"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -99,6 +103,9 @@
   },
   "SSLQueue4E9BF022": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -214,13 +221,13 @@
         },
         {
          "Fn::GetAtt": [
-          "SqsManagedEncryptedQueue587679B3",
+          "UnencryptedQueue57F92F9C",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "UnencryptedQueue57F92F9C",
+          "kmsManagedEncryptedQueueCC71F0DD",
           "Arn"
          ]
         }
@@ -252,6 +259,14 @@
   "QueueUrl": {
    "Value": {
     "Ref": "Queue4A7E3555"
+   }
+  },
+  "ExportsOutputRefQueue4A7E3555425E8BD3": {
+   "Value": {
+    "Ref": "Queue4A7E3555"
+   },
+   "Export": {
+    "Name": "aws-cdk-sqs:ExportsOutputRefQueue4A7E3555425E8BD3"
    }
   }
  },
