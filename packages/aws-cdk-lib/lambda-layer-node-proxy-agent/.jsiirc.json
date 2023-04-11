@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.lambda.layer.node.proxy.agent"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.LambdaLayer.NodeProxyAgent"
+    },
+    "python": {
+      "module": "aws_cdk.lambda_layer_node_proxy_agent"
+    }
+  }
+}

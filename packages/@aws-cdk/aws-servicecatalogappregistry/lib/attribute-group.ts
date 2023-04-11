@@ -1,11 +1,10 @@
-import { CfnResourceShare } from '@aws-cdk/aws-ram';
-import * as cdk from '@aws-cdk/core';
-import { Names } from '@aws-cdk/core';
+import { CfnResourceShare } from 'aws-cdk-lib/aws-ram';
+import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IApplication } from './application';
 import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
 import { InputValidator } from './private/validation';
-import { CfnAttributeGroup, CfnAttributeGroupAssociation } from './servicecatalogappregistry.generated';
+import { CfnAttributeGroup, CfnAttributeGroupAssociation } from 'aws-cdk-lib/aws-servicecatalogappregistry';
 
 const ATTRIBUTE_GROUP_READ_ONLY_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupReadOnly';
 const ATTRIBUTE_GROUP_ALLOW_ACCESS_RAM_PERMISSION_ARN = 'arn:aws:ram::aws:permission/AWSRAMPermissionServiceCatalogAppRegistryAttributeGroupAllowAssociation';
@@ -29,9 +28,16 @@ export interface IAttributeGroup extends cdk.IResource {
   /**
    * Share the attribute group resource with other IAM entities, accounts, or OUs.
    *
+   * @param id The construct name for the share.
    * @param shareOptions The options for the share.
    */
-  shareAttributeGroup(shareOptions: ShareOptions): void;
+  shareAttributeGroup(id: string, shareOptions: ShareOptions): void;
+
+  /**
+   * Associate an application with attribute group
+   * If the attribute group is already associated, it will ignore duplicate request.
+   */
+  associateWith(application: IApplication): void;
 }
 
 /**
@@ -61,10 +67,6 @@ abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGrou
   public abstract readonly attributeGroupId: string;
   private readonly associatedApplications: Set<string> = new Set();
 
-  /**
-   * Associate an application with attribute group
-   * If the attribute group is already associated, it will ignore duplicate request.
-   */
   public associateWith(application: IApplication): void {
     if (!this.associatedApplications.has(application.node.addr)) {
       const hashId = this.generateUniqueHash(application.node.addr);
@@ -77,11 +79,10 @@ abstract class AttributeGroupBase extends cdk.Resource implements IAttributeGrou
     }
   }
 
-  public shareAttributeGroup(shareOptions: ShareOptions): void {
+  public shareAttributeGroup(id: string, shareOptions: ShareOptions): void {
     const principals = getPrincipalsforSharing(shareOptions);
-    const shareName = `RAMShare${hashValues(Names.nodeUniqueId(this.node), this.node.children.length.toString())}`;
-    new CfnResourceShare(this, shareName, {
-      name: shareName,
+    new CfnResourceShare(this, id, {
+      name: shareOptions.name,
       allowExternalPrincipals: false,
       principals: principals,
       resourceArns: [this.attributeGroupArn],

@@ -1,0 +1,65 @@
+import * as dynamodb from '../../aws-dynamodb';
+import * as ec2 from '../../aws-ec2';
+import * as efs from '../../aws-efs';
+import * as rds from '../../aws-rds';
+import { ArnFormat, IAspect, Stack } from '../../core';
+import { IConstruct } from 'constructs';
+
+export class BackupableResourcesCollector implements IAspect {
+  public readonly resources: string[] = [];
+
+  public visit(node: IConstruct) {
+    if (node instanceof efs.CfnFileSystem) {
+      this.resources.push(Stack.of(node).formatArn({
+        service: 'elasticfilesystem',
+        resource: 'file-system',
+        resourceName: node.ref,
+      }));
+    }
+
+    if (node instanceof dynamodb.CfnTable) {
+      this.resources.push(Stack.of(node).formatArn({
+        service: 'dynamodb',
+        resource: 'table',
+        resourceName: node.ref,
+      }));
+    }
+
+    if (node instanceof ec2.CfnInstance) {
+      this.resources.push(Stack.of(node).formatArn({
+        service: 'ec2',
+        resource: 'instance',
+        resourceName: node.ref,
+      }));
+    }
+
+    if (node instanceof ec2.CfnVolume) {
+      this.resources.push(Stack.of(node).formatArn({
+        service: 'ec2',
+        resource: 'volume',
+        resourceName: node.ref,
+      }));
+    }
+
+    if (node instanceof rds.CfnDBInstance) {
+      const dbInstance = node as rds.CfnDBInstance;
+      if (!dbInstance.dbClusterIdentifier) {
+        this.resources.push(Stack.of(node).formatArn({
+          service: 'rds',
+          resource: 'db',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          resourceName: node.ref,
+        }));
+      }
+    }
+
+    if (node instanceof rds.CfnDBCluster) {
+      this.resources.push(Stack.of(node).formatArn({
+        service: 'rds',
+        resource: 'cluster',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        resourceName: node.ref,
+      }));
+    }
+  }
+}

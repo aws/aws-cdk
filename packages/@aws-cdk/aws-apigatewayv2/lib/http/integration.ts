@@ -1,9 +1,9 @@
-import { IRole } from '@aws-cdk/aws-iam';
-import { Resource } from '@aws-cdk/core';
+import { IRole } from 'aws-cdk-lib/aws-iam';
+import { Resource } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { IHttpApi } from './api';
 import { HttpMethod, IHttpRoute } from './route';
-import { CfnIntegration } from '../apigatewayv2.generated';
+import { CfnIntegration } from 'aws-cdk-lib/aws-apigatewayv2';
 import { IIntegration } from '../common';
 import { ParameterMapping } from '../parameter-mapping';
 
