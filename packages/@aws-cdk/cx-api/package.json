@@ -38,7 +38,7 @@
     }
   },
   "scripts": {
-    "build": "cdk-build --skip-lint",
+    "build": "yarn gen && cdk-build --skip-lint",
     "gen": "cdk-copy cx-api",
     "watch": "cdk-watch",
     "lint": "cdk-lint && madge --circular --extensions js lib",
