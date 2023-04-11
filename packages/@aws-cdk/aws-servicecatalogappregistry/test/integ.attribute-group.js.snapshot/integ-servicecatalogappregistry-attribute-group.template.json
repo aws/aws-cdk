@@ -1,5 +1,12 @@
 {
  "Resources": {
+  "TestApplication2FBC585F": {
+   "Type": "AWS::ServiceCatalogAppRegistry::Application",
+   "Properties": {
+    "Name": "TestApplication",
+    "Description": "My application description"
+   }
+  },
   "TestAttributeGroupB1CB284F": {
    "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroup",
    "Properties": {
@@ -17,6 +24,23 @@
     },
     "Name": "myFirstAttributeGroup",
     "Description": "test attribute group description"
+   }
+  },
+  "TestAttributeGroupApplicationAttributeGroupAssociation73d834483ae31BB2BA9A": {
+   "Type": "AWS::ServiceCatalogAppRegistry::AttributeGroupAssociation",
+   "Properties": {
+    "Application": {
+     "Fn::GetAtt": [
+      "TestApplication2FBC585F",
+      "Id"
+     ]
+    },
+    "AttributeGroup": {
+     "Fn::GetAtt": [
+      "TestAttributeGroupB1CB284F",
+      "Id"
+     ]
+    }
    }
   },
   "TestAttributeGroupMyShareIdBAA9E628": {
