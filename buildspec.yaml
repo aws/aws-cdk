@@ -27,6 +27,7 @@ phases:
       - /bin/bash ./scripts/cache-load.sh
   build:
     commands:
+      - codebuild-breakpoint
       - 'if ${BUMP_CANDIDATE:-false}; then env NODE_OPTIONS="--max-old-space-size=8196 ${NODE_OPTIONS:-}" /bin/bash ./scripts/bump-candidate.sh; fi'
       - /bin/bash ./scripts/align-version.sh
       - /bin/bash ./build.sh --ci
