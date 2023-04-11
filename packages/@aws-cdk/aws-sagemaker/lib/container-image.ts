@@ -3,6 +3,9 @@ import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import { Construct } from 'constructs';
 import { Model } from './model';
 import { hashcode } from './private/util';
+import { RegionInfo, FactName } from 'aws-cdk-lib/region-info';
+import { Fn, CfnMapping, Aws, Stack } from 'aws-cdk-lib/core';
+
 
 /**
  * The configuration for creating a container image.
@@ -36,6 +39,13 @@ export abstract class ContainerImage {
    */
   public static fromAsset(directory: string, options: assets.DockerImageAssetOptions = {}): ContainerImage {
     return new AssetImage(directory, options);
+  }
+
+  /**
+   * Reference an AWS Deep Learning Container image
+   */
+  public static fromDlc(repositoryName: string, tag : string, account?: string): ContainerImage {
+    return new DlcEcrImage(repositoryName, tag, account);
   }
 
   /**
@@ -79,5 +89,59 @@ class AssetImage extends ContainerImage {
     return {
       imageName: this.asset.imageUri,
     };
+  }
+}
+
+export class DlcEcrImage extends ContainerImage {
+
+  constructor(private readonly repositoryName: string, private readonly tag: string, private readonly account?: string) {
+    super();
+  }
+
+  public bind(scope: Construct, model: Model): ContainerImageConfig {
+    const accountId = this.getAwsAccountId(scope);
+
+    // Example of image ids: https://docs.aws.amazon.com/sagemaker/latest/dg/ecr-us-east-2.html
+    const imageId = `${accountId}.dkr.ecr.${Aws.REGION}.${Aws.URL_SUFFIX}/${this.repositoryName}:${this.tag}`;
+
+    const repository = ecr.Repository.fromRepositoryAttributes(scope, 'DlcRepository', {
+      repositoryName: this.repositoryName,
+      repositoryArn: ecr.Repository.arnForLocalRepository(
+        this.repositoryName,
+        scope,
+        accountId,
+      ),
+    });
+
+    repository.grantPull(model);
+
+    return { imageName: imageId };
+  }
+
+  private getAwsAccountId(scope: Construct): string {
+    const MAPPING_NAME: string = 'AwsDeepLearningContainersRepositoriesAccounts';
+    const REPOSITORY_ACCOUNT: string = 'repositoryAccount';
+
+    if (!this.account) {
+      const scopeStack = Stack.of(scope);
+
+      // Unfortunately, the account IDs of the DLC repositories are not the same in all regions.
+      // For that reason, use a (singleton) Mapping to find the correct account.
+      if (!scopeStack.node.tryFindChild(MAPPING_NAME)) {
+        const mapping: { [k1: string]: { [k2: string]: any } } = {};
+
+        const regionToAccounts = RegionInfo.regionMap(FactName.DLC_REPOSITORY_ACCOUNT);
+
+        for (const [region, account] of Object.entries(regionToAccounts)) {
+          mapping[region] = { [REPOSITORY_ACCOUNT]: account };
+        }
+
+        new CfnMapping(scopeStack, MAPPING_NAME, { mapping });
+      }
+
+      return Fn.findInMap(MAPPING_NAME, Aws.REGION, REPOSITORY_ACCOUNT);
+    } else {
+      return this.account;
+    }
   }
 }

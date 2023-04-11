@@ -68,6 +68,7 @@ const artifactFilePath = path.join(__dirname, 'test-artifacts', 'valid-artifact.
  * Exercise different variations of ContainerImages, including:
  * - EcrImage as vended by ContainerImage.fromEcrRepository
  * - AssetImage as vended by ContainerImage.fromAsset
+ * - DlcImage as vended by ContainerImage.fromDlc
  */
 
 const ecrImageAsset = new ecr_assets.DockerImageAsset(stack, 'EcrImage', {
@@ -79,6 +80,12 @@ const ecrImage = sagemaker.ContainerImage.fromEcrRepository(
 );
 
 const localImage = sagemaker.ContainerImage.fromAsset(dockerfileDirectory);
+
+// AWS DLC Images: https://github.com/aws/deep-learning-containers/blob/master/available_images.md
+const dlcImage = sagemaker.ContainerImage.fromDlc(
+  'huggingface-pytorch-training',
+  '1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04',
+);
 
 /*
  * Exercise different variations of ModelData, including:
@@ -115,6 +122,12 @@ new sagemaker.Model(stack, 'InferencePipelineModel', {
     { image: localImage },
     { image: localImage, modelData: localModelData },
     { image: localImage, modelData: localModelData },
+  ],
+});
+
+new sagemaker.Model(stack, 'Hugging Face Model', {
+  containers: [
+    { image: dlcImage },
   ],
 });
 

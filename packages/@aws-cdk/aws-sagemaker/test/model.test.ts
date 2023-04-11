@@ -295,3 +295,39 @@ test('When importing a model by name, the ARN is constructed correctly', () => {
   // THEN
   expect(model.modelArn).toMatch(/arn:.+:sagemaker:us-west-2:123456789012:model\/my-name/);
 });
+
+test('sagemaker model with deep learning container images', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new sagemaker.Model(stack, 'Model', {
+    containers: [{
+      image: sagemaker.ContainerImage.fromDlc('anyRepositoryName', 'anyTag', 'anyAwsAccount'),
+    }],
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+
+  template.hasResourceProperties('AWS::SageMaker::Model', {
+    PrimaryContainer: {
+      Image: {
+        'Fn::Join': [
+          '',
+          [
+            'anyAwsAccount.dkr.ecr.',
+            {
+              Ref: 'AWS::Region',
+            },
+            '.',
+            {
+              Ref: 'AWS::URLSuffix',
+            },
+            '/anyRepositoryName:anyTag',
+          ],
+        ],
+      },
+    },
+  });
+});
