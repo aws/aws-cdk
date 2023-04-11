@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8a254813bfd390e4aa7a095363c5f9d1d598e6843952f6997f85521aeebc3d24.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/80c9b86592d03915bffa7ab9b70f25bda8a3b0877d0535b5dcb37e1e94b967e9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -228,17 +228,16 @@
         "/aws-cdk-sagemaker-model/Hugging Face Model/Model": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HuggingFaceModelD53E0910"
+            "data": "HuggingFaceModelD53E0910",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
-        "/aws-cdk-sagemaker-model/AwsDeepLearningContainersRepositoriesAccounts": [
+        "/aws-cdk-sagemaker-model/DlcRepositoryAccountMap": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsDeepLearningContainersRepositoriesAccounts"
-          },
-          {
-            "type": "aws:cdk:info",
-            "data": "Consider making this CfnMapping a lazy mapping by providing `lazy: true`: either no findInMap was called or every findInMap could be immediately resolved without using Fn::FindInMap"
+            "data": "DlcRepositoryAccountMap"
           }
         ],
         "/aws-cdk-sagemaker-model/BootstrapVersion": [

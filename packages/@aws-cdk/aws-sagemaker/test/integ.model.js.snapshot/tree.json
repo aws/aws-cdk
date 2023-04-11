@@ -1358,11 +1358,11 @@
                                         ":",
                                         {
                                           "Fn::FindInMap": [
-                                            "AwsDeepLearningContainersRepositoriesAccounts",
+                                            "DlcRepositoryAccountMap",
                                             {
                                               "Ref": "AWS::Region"
                                             },
-                                            "repositoryAccount"
+                                            "value"
                                           ]
                                         },
                                         ":repository/huggingface-pytorch-training"
@@ -1430,11 +1430,11 @@
                           [
                             {
                               "Fn::FindInMap": [
-                                "AwsDeepLearningContainersRepositoriesAccounts",
+                                "DlcRepositoryAccountMap",
                                 {
                                   "Ref": "AWS::Region"
                                 },
-                                "repositoryAccount"
+                                "value"
                               ]
                             },
                             ".dkr.ecr.",
@@ -1463,9 +1463,9 @@
               "version": "0.0.0"
             }
           },
-          "AwsDeepLearningContainersRepositoriesAccounts": {
-            "id": "AwsDeepLearningContainersRepositoriesAccounts",
-            "path": "aws-cdk-sagemaker-model/AwsDeepLearningContainersRepositoriesAccounts",
+          "DlcRepositoryAccountMap": {
+            "id": "DlcRepositoryAccountMap",
+            "path": "aws-cdk-sagemaker-model/DlcRepositoryAccountMap",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
