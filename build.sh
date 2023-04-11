@@ -83,7 +83,7 @@ concurrency=$(node -p 'Math.max(1, require("os").cpus().length - 1)')
 
 echo "============================================================================================="
 echo "building..."
-time npx lerna run $bail --stream $runtarget || fail
+time npx lerna run $bail --stream --concurrency=$concurrency $runtarget || fail
 
 if [ "$check_compat" == "true" ]; then
   /bin/bash scripts/check-api-compatibility.sh
