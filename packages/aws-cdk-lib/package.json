@@ -20,7 +20,7 @@
   "stability": "stable",
   "maturity": "stable",
   "scripts": {
-    "gen": "ts-node scripts/gen.ts",
+    "gen": "ts-node -P tsconfig.dev.json scripts/gen.ts",
     "build": "cdk-build",
     "lint": "cdk-lint",
     "test": "jest --maxWorkers=50%",
@@ -30,9 +30,11 @@
     "build+test+package": "yarn build+test && yarn package",
     "watch": "cdk-watch",
     "compat": "cdk-compat",
+    "update-schema": "bash cloud-assembly-schema/scripts/update-schema.sh",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
-    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+    "build+test+extract": "yarn build+test && yarn rosetta:extract",
+    "on-bump": "ts-node -P tsconfig.dev.json ./cx-api/build-tools/update-vnext.ts && ts-node -P tsconfig.dev.json ./cx-api/build-tools/flag-report"
   },
   "awslint": {
     "exclude": [
@@ -47,7 +49,8 @@
     "compressAssembly": true,
     "post": [
       "ts-node ./scripts/verify-imports-resolve-same.ts",
-      "ts-node ./scripts/verify-imports-shielded.ts"
+      "ts-node ./scripts/verify-imports-shielded.ts",
+      "ts-node ./cx-api/build-tools/flag-report.ts"
     ],
     "pre": [
       "npx ts-node -P tsconfig.dev.json region-info/build-tools/generate-static-data.ts",
