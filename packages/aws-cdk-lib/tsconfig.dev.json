@@ -1,7 +1,6 @@
 {
   "$": "Config file for ts-node",
   "ts-node": {
-    "files": true,
     "preferTsExts": true
   },
   "compilerOptions": {
@@ -33,6 +32,7 @@
   ],
   "exclude": [
     "node_modules",
-    ".types-compat"
+    ".types-compat",
+    "**/*.d.ts"
   ]
 }
