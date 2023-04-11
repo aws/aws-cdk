@@ -6443,7 +6443,7 @@
         "ComputeEnvironmentArn": "Returns the compute environment ARN, such as `batch: *us-east-1* : *111122223333* :compute-environment/ *ComputeEnvironmentName*` .",
         "Ref": "`Ref` returns the compute environment ARN, such as `batch: *us-east-1* : *555555555555* :compute-environment/ *M4OnDemand*` ."
       },
-      "description": "The `AWS::Batch::ComputeEnvironment` resource defines your AWS Batch compute environment. You can define `MANAGED` or `UNMANAGED` compute environments. `MANAGED` compute environments can use Amazon EC2 or AWS Fargate resources. `UNMANAGED` compute environments can only use EC2 resources. For more information, see [Compute Environments](https://docs.aws.amazon.com/batch/latest/userguide/compute_environments.html) in the ** .\n\nIn a managed compute environment, AWS Batch manages the capacity and instance types of the compute resources within the environment. This is based on the compute resource specification that you define or the [launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) that you specify when you create the compute environment. You can choose either to use EC2 On-Demand Instances and EC2 Spot Instances, or to use Fargate and Fargate Spot capacity in your managed compute environment. You can optionally set a maximum price so that Spot Instances only launch when the Spot Instance price is below a specified percentage of the On-Demand price.\n\n> Multi-node parallel jobs are not supported on Spot Instances. \n\nIn an unmanaged compute environment, you can manage your own EC2 compute resources and have a lot of flexibility with how you configure your compute resources. For example, you can use custom AMI. However, you need to verify that your AMI meets the Amazon ECS container instance AMI specification. For more information, see [container instance AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_instance_AMIs.html) in the *Amazon Elastic Container Service Developer Guide* . After you have created your unmanaged compute environment, you can use the [DescribeComputeEnvironments](https://docs.aws.amazon.com/batch/latest/APIReference/API_DescribeComputeEnvironments.html) operation to find the Amazon ECS cluster that is associated with it. Then, manually launch your container instances into that Amazon ECS cluster. For more information, see [Launching an Amazon ECS container instance](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_container_instance.html) in the *Amazon Elastic Container Service Developer Guide* .\n\n> To create a compute environment that uses EKS resources, the caller must have permissions to call `eks:DescribeCluster` . > AWS Batch doesn't upgrade the AMIs in a compute environment after it's created except under specific conditions. For example, it doesn't automatically update the AMIs when a newer version of the Amazon ECS optimized AMI is available. Therefore, you're responsible for the management of the guest operating system (including updates and security patches) and any additional application software or utilities that you install on the compute resources. There are two ways to use a new AMI for your AWS Batch jobs. The original method is to complete these steps:\n> \n> - Create a new compute environment with the new AMI.\n> - Add the compute environment to an existing job queue.\n> - Remove the earlier compute environment from your job queue.\n> - Delete the earlier compute environment.\n> \n> In April 2022, AWS Batch added enhanced support for updating compute environments. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* . To use the enhanced updating of compute environments to update AMIs, follow these rules:\n> \n> - Either do not set the [ServiceRole](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-servicerole) property or set it to the *AWSServiceRoleForBatch* service-linked role.\n> - Set the [AllocationStrategy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-allocationstrategy) property to `BEST_FIT_PROGRESSIVE` or `SPOT_CAPACITY_OPTIMIZED` .\n> - Set the [ReplaceComputeEnvironment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment) property to `false` .\n> \n> > If the `replaceComputeEnvironment` property is set to `false` , you might receive an error message when you update the CFN template for a compute environment. This issue occurs if the updated `desiredvcpus` value is less than the current `desiredvcpus` value. As a workaround, delete the `desiredvcpus` value from the updated template or use the `minvcpus` property to manage the number of vCPUs. For information, see [Error message when you update the `DesiredvCpus` setting](https://docs.aws.amazon.com/batch/latest/userguide/troubleshooting.html#error-desired-vcpus-update) .\n> - Set the [UpdateToLatestImageVersion](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-updatetolatestimageversion) property to `true` . This property is used when you update a compute environment. The [UpdateToLatestImageVersion](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-updatetolatestimageversion) property is ignored when you create a compute environment.\n> - Either do not specify an image ID in [ImageId](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-imageid) or [ImageIdOverride](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-ec2configurationobject.html#cfn-batch-computeenvironment-ec2configurationobject-imageidoverride) properties, or in the launch template identified by the [Launch Template](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-launchtemplate) property. In that case AWS Batch will select the latest Amazon ECS optimized AMI supported by AWS Batch at the time the infrastructure update is initiated. Alternatively you can specify the AMI ID in the `ImageId` or `ImageIdOverride` properties, or the launch template identified by the `LaunchTemplate` properties. Changing any of these properties will trigger an infrastructure update.\n> \n> If these rules are followed, any update that triggers an infrastructure update will cause the AMI ID to be re-selected. If the [Version](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-launchtemplatespecification.html#cfn-batch-computeenvironment-launchtemplatespecification-version) property of the [LaunchTemplateSpecification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-launchtemplatespecification.html) is set to `$Latest` or `$Default` , the latest or default version of the launch template will be evaluated up at the time of the infrastructure update, even if the `LaunchTemplateSpecification` was not updated.",
+      "description": "The `AWS::Batch::ComputeEnvironment` resource defines your AWS Batch compute environment. You can define `MANAGED` or `UNMANAGED` compute environments. `MANAGED` compute environments can use Amazon EC2 or AWS Fargate resources. `UNMANAGED` compute environments can only use EC2 resources. For more information, see [Compute Environments](https://docs.aws.amazon.com/batch/latest/userguide/compute_environments.html) in the ** .\n\nIn a managed compute environment, AWS Batch manages the capacity and instance types of the compute resources within the environment. This is based on the compute resource specification that you define or the [launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) that you specify when you create the compute environment. You can choose either to use EC2 On-Demand Instances and EC2 Spot Instances, or to use Fargate and Fargate Spot capacity in your managed compute environment. You can optionally set a maximum price so that Spot Instances only launch when the Spot Instance price is below a specified percentage of the On-Demand price.\n\n> Multi-node parallel jobs are not supported on Spot Instances. \n\nIn an unmanaged compute environment, you can manage your own EC2 compute resources and have a lot of flexibility with how you configure your compute resources. For example, you can use custom AMI. However, you need to verify that your AMI meets the Amazon ECS container instance AMI specification. For more information, see [container instance AMIs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/container_instance_AMIs.html) in the *Amazon Elastic Container Service Developer Guide* . After you have created your unmanaged compute environment, you can use the [DescribeComputeEnvironments](https://docs.aws.amazon.com/batch/latest/APIReference/API_DescribeComputeEnvironments.html) operation to find the Amazon ECS cluster that is associated with it. Then, manually launch your container instances into that Amazon ECS cluster. For more information, see [Launching an Amazon ECS container instance](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_container_instance.html) in the *Amazon Elastic Container Service Developer Guide* .\n\n> To create a compute environment that uses EKS resources, the caller must have permissions to call `eks:DescribeCluster` . > AWS Batch doesn't upgrade the AMIs in a compute environment after it's created except under specific conditions. For example, it doesn't automatically update the AMIs when a newer version of the Amazon ECS optimized AMI is available. Therefore, you're responsible for the management of the guest operating system (including updates and security patches) and any additional application software or utilities that you install on the compute resources. There are two ways to use a new AMI for your AWS Batch jobs. The original method is to complete these steps:\n> \n> - Create a new compute environment with the new AMI.\n> - Add the compute environment to an existing job queue.\n> - Remove the earlier compute environment from your job queue.\n> - Delete the earlier compute environment.\n> \n> In April 2022, AWS Batch added enhanced support for updating compute environments. For more information, see [Updating compute environments](https://docs.aws.amazon.com/batch/latest/userguide/updating-compute-environments.html) in the *AWS Batch User Guide* . To use the enhanced updating of compute environments to update AMIs, follow these rules:\n> \n> - Either do not set the [ServiceRole](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-servicerole) property or set it to the *AWSServiceRoleForBatch* service-linked role.\n> - Set the [AllocationStrategy](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-allocationstrategy) property to `BEST_FIT_PROGRESSIVE` or `SPOT_CAPACITY_OPTIMIZED` .\n> - Set the [ReplaceComputeEnvironment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-batch-computeenvironment.html#cfn-batch-computeenvironment-replacecomputeenvironment) property to `false` .\n> \n> > Set the `ReplaceComputeEnvironment` property to `false` if the compute environment uses the `BEST_FIT` allocation strategy. > If the `ReplaceComputeEnvironment` property is set to `false` , you might receive an error message when you update the CFN template for a compute environment. This issue occurs if the updated `desiredvcpus` value is less than the current `desiredvcpus` value. As a workaround, delete the `desiredvcpus` value from the updated template or use the `minvcpus` property to manage the number of vCPUs. For information, see [Error message when you update the `DesiredvCpus` setting](https://docs.aws.amazon.com/batch/latest/userguide/troubleshooting.html#error-desired-vcpus-update) .\n> - Set the [UpdateToLatestImageVersion](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-updatetolatestimageversion) property to `true` . This property is used when you update a compute environment. The [UpdateToLatestImageVersion](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-updatetolatestimageversion) property is ignored when you create a compute environment.\n> - Either do not specify an image ID in [ImageId](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-imageid) or [ImageIdOverride](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-ec2configurationobject.html#cfn-batch-computeenvironment-ec2configurationobject-imageidoverride) properties, or in the launch template identified by the [Launch Template](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-computeresources.html#cfn-batch-computeenvironment-computeresources-launchtemplate) property. In that case AWS Batch will select the latest Amazon ECS optimized AMI supported by AWS Batch at the time the infrastructure update is initiated. Alternatively you can specify the AMI ID in the `ImageId` or `ImageIdOverride` properties, or the launch template identified by the `LaunchTemplate` properties. Changing any of these properties will trigger an infrastructure update.\n> \n> If these rules are followed, any update that triggers an infrastructure update will cause the AMI ID to be re-selected. If the [Version](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-launchtemplatespecification.html#cfn-batch-computeenvironment-launchtemplatespecification-version) property of the [LaunchTemplateSpecification](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-launchtemplatespecification.html) is set to `$Latest` or `$Default` , the latest or default version of the launch template will be evaluated up at the time of the infrastructure update, even if the `LaunchTemplateSpecification` was not updated.",
       "properties": {
         "ComputeEnvironmentName": "The name for your compute environment. It can be up to 128 characters long. It can contain uppercase and lowercase letters, numbers, hyphens (-), and underscores (_).",
         "ComputeResources": "The ComputeResources property type specifies details of the compute resources managed by the compute environment. This parameter is required for managed compute environments. For more information, see [Compute Environments](https://docs.aws.amazon.com/batch/latest/userguide/compute_environments.html) in the ** .",
@@ -14480,11 +14480,11 @@
       },
       "description": "Associates an Elastic IP address with an instance or a network interface. Before you can use an Elastic IP address, you must allocate it to your account. For more information about working with Elastic IP addresses, see [Elastic IP address concepts and rules](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-eips.html#vpc-eip-overview) .\n\nAn Elastic IP address can be used in EC2-Classic and EC2-VPC accounts. There are differences between an Elastic IP address that you use in a VPC and one that you use in EC2-Classic. For more information, see [Differences between instances in EC2-Classic and a VPC](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-classic-platform.html#differences-ec2-classic-vpc) .\n\n[EC2-VPC] You must specify `AllocationId` and either `InstanceId` , `NetworkInterfaceId` , or `PrivateIpAddress` .\n\n[EC2-Classic] You must specify `EIP` and `InstanceId` .",
       "properties": {
-        "AllocationId": "[EC2-VPC] The allocation ID. This is required for EC2-VPC.",
-        "EIP": "[EC2-Classic] The Elastic IP address to associate with the instance. This is required for EC2-Classic.",
-        "InstanceId": "The ID of the instance. The instance must have exactly one attached network interface. For EC2-VPC, you can specify either the instance ID or the network interface ID, but not both. For EC2-Classic, you must specify an instance ID and the instance must be in the running state.",
-        "NetworkInterfaceId": "[EC2-VPC] The ID of the network interface. If the instance has more than one network interface, you must specify a network interface ID.\n\nFor EC2-VPC, you can specify either the instance ID or the network interface ID, but not both.",
-        "PrivateIpAddress": "[EC2-VPC] The primary or secondary private IP address to associate with the Elastic IP address. If no private IP address is specified, the Elastic IP address is associated with the primary private IP address."
+        "AllocationId": "The allocation ID. This is required.",
+        "EIP": "Deprecated.",
+        "InstanceId": "The ID of the instance. The instance must have exactly one attached network interface. You can specify either the instance ID or the network interface ID, but not both.",
+        "NetworkInterfaceId": "The ID of the network interface. If the instance has more than one network interface, you must specify a network interface ID.\n\nYou can specify either the instance ID or the network interface ID, but not both.",
+        "PrivateIpAddress": "The primary or secondary private IP address to associate with the Elastic IP address. If no private IP address is specified, the Elastic IP address is associated with the primary private IP address."
       }
     },
     "AWS::EC2::EgressOnlyInternetGateway": {
@@ -14559,6 +14559,7 @@
       "properties": {
         "AutoPlacement": "Indicates whether the host accepts any untargeted instance launches that match its instance type configuration, or if it only accepts Host tenancy instance launches that specify its unique host ID. For more information, see [Understanding auto-placement and affinity](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/how-dedicated-hosts-work.html#dedicated-hosts-understanding) in the *Amazon EC2 User Guide* .\n\nDefault: `on`",
         "AvailabilityZone": "The Availability Zone in which to allocate the Dedicated Host.",
+        "HostMaintenance": "Indicates whether host maintenance is enabled or disabled for the Dedicated Host.",
         "HostRecovery": "Indicates whether to enable or disable host recovery for the Dedicated Host. Host recovery is disabled by default. For more information, see [Host recovery](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/dedicated-hosts-recovery.html) in the *Amazon EC2 User Guide* .\n\nDefault: `off`",
         "InstanceFamily": "The instance family supported by the Dedicated Host. For example, `m5` .",
         "InstanceType": "Specifies the instance type to be supported by the Dedicated Hosts. If you specify an instance type, the Dedicated Hosts support instances of the specified instance type only.",
@@ -14744,8 +14745,8 @@
         "ImageId": "The ID of the AMI. An AMI ID is required to launch an instance and must be specified here or in a launch template.",
         "InstanceInitiatedShutdownBehavior": "Indicates whether an instance stops or terminates when you initiate shutdown from the instance (using the operating system command for system shutdown).\n\nDefault: `stop`",
         "InstanceType": "The instance type. For more information, see [Instance types](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-types.html) in the *Amazon EC2 User Guide* .\n\nDefault: `m1.small`",
-        "Ipv6AddressCount": "[EC2-VPC] The number of IPv6 addresses to associate with the primary network interface. Amazon EC2 chooses the IPv6 addresses from the range of your subnet. You cannot specify this option and the option to assign specific IPv6 addresses in the same request. You can specify this option if you've specified a minimum number of instances to launch.\n\nYou cannot specify this option and the network interfaces option in the same request.",
-        "Ipv6Addresses": "[EC2-VPC] The IPv6 addresses from the range of the subnet to associate with the primary network interface. You cannot specify this option and the option to assign a number of IPv6 addresses in the same request. You cannot specify this option if you've specified a minimum number of instances to launch.\n\nYou cannot specify this option and the network interfaces option in the same request.",
+        "Ipv6AddressCount": "The number of IPv6 addresses to associate with the primary network interface. Amazon EC2 chooses the IPv6 addresses from the range of your subnet. You cannot specify this option and the option to assign specific IPv6 addresses in the same request. You can specify this option if you've specified a minimum number of instances to launch.\n\nYou cannot specify this option and the network interfaces option in the same request.",
+        "Ipv6Addresses": "The IPv6 addresses from the range of the subnet to associate with the primary network interface. You cannot specify this option and the option to assign a number of IPv6 addresses in the same request. You cannot specify this option if you've specified a minimum number of instances to launch.\n\nYou cannot specify this option and the network interfaces option in the same request.",
         "KernelId": "The ID of the kernel.\n\n> We recommend that you use PV-GRUB instead of kernels and RAM disks. For more information, see [PV-GRUB](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/UserProvidedkernels.html) in the *Amazon EC2 User Guide* .",
         "KeyName": "The name of the key pair. You can create a key pair using [CreateKeyPair](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_CreateKeyPair.html) or [ImportKeyPair](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_ImportKeyPair.html) .\n\n> If you do not specify a key pair, you can't connect to the instance unless you choose an AMI that is configured to allow users another way to log in.",
         "LaunchTemplate": "The launch template to use to launch the instances. Any parameters that you specify in the AWS CloudFormation template override the same parameters in the launch template. You can specify either the name or ID of a launch template, but not both.",
@@ -14761,7 +14762,7 @@
         "SecurityGroups": "[EC2-Classic, default VPC] The names of the security groups. For a nondefault VPC, you must use security group IDs instead.\n\nYou cannot specify this option and the network interfaces option in the same request. The list can contain both the name of existing Amazon EC2 security groups or references to AWS::EC2::SecurityGroup resources created in the template.\n\nDefault: Amazon EC2 uses the default security group.",
         "SourceDestCheck": "Enable or disable source/destination checks, which ensure that the instance is either the source or the destination of any traffic that it receives. If the value is `true` , source/destination checks are enabled; otherwise, they are disabled. The default value is `true` . You must disable source/destination checks if the instance runs services such as network address translation, routing, or firewalls.",
         "SsmAssociations": "The SSM [document](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-document.html) and parameter values in AWS Systems Manager to associate with this instance. To use this property, you must specify an IAM instance profile role for the instance. For more information, see [Create an IAM instance profile for Systems Manager](https://docs.aws.amazon.com/systems-manager/latest/userguide/sysman-configuring-access-role.html) in the *AWS Systems Manager User Guide* .\n\n> You can currently associate only one document with an instance.",
-        "SubnetId": "[EC2-VPC] The ID of the subnet to launch the instance into.\n\nIf you specify a network interface, you must specify any subnets as part of the network interface.",
+        "SubnetId": "The ID of the subnet to launch the instance into.\n\nIf you specify a network interface, you must specify any subnets as part of the network interface.",
         "Tags": "The tags to add to the instance. These tags are not applied to the EBS volumes, such as the root volume, unless [PropagateTagsToVolumeOnCreation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-instance.html#cfn-ec2-instance-propagatetagstovolumeoncreation) is `true` .",
         "Tenancy": "The tenancy of the instance (if the instance is running in a VPC). An instance with a tenancy of `dedicated` runs on single-tenant hardware.",
         "UserData": "The user data script to make available to the instance. User data is limited to 16 KB. You must provide base64-encoded text. For more information, see [Fn::Base64](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-base64.html) .\n\nUser data runs only at instance launch. For more information, see [Run commands on your Linux instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html) and [Run commands on your Windows instance at launch](https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/ec2-windows-user-data.html) .",
@@ -15407,7 +15408,7 @@
         "ConnectivityType": "Indicates whether the NAT gateway supports public or private connectivity. The default is public connectivity.",
         "MaxDrainDurationSeconds": "The maximum amount of time to wait (in seconds) before forcibly releasing the IP addresses if connections are still in progress. Default value is 350 seconds.",
         "PrivateIpAddress": "The private IPv4 address to assign to the NAT gateway. If you don't provide an address, a private IPv4 address will be automatically assigned.",
-        "SecondaryAllocationIds": "Secondary EIP allocation IDs. For more information about secondary addresses, see [Create a NAT gateway](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating) in the *Amazon Virtual Private Cloud User Guide* .",
+        "SecondaryAllocationIds": "Secondary EIP allocation IDs. For more information, see [Create a NAT gateway](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating) in the *Amazon VPC User Guide* .",
         "SecondaryPrivateIpAddressCount": "[Private NAT gateway only] The number of secondary private IPv4 addresses you want to assign to the NAT gateway. For more information about secondary addresses, see [Create a NAT gateway](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating) in the *Amazon Virtual Private Cloud User Guide* .\n\n> `SecondaryPrivateIpAddressCount` and `SecondaryPrivateIpAddresses` cannot be set at the same time.",
         "SecondaryPrivateIpAddresses": "Secondary private IPv4 addresses. For more information about secondary addresses, see [Create a NAT gateway](https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html#nat-gateway-creating) in the *Amazon Virtual Private Cloud User Guide* .\n\n> `SecondaryPrivateIpAddressCount` and `SecondaryPrivateIpAddresses` cannot be set at the same time.",
         "SubnetId": "The ID of the subnet in which the NAT gateway is located.",
@@ -15927,8 +15928,8 @@
       },
       "description": "Specifies a security group. To create a security group, use the [VpcId](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html#cfn-ec2-securitygroup-vpcid) property to specify the VPC for which to create the security group.\n\nThis type supports updates. For more information about updating stacks, see [AWS CloudFormation Stacks Updates](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks.html) .\n\n> To cross-reference two security groups in the ingress and egress rules of those security groups, use the [AWS::EC2::SecurityGroupEgress](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-security-group-egress.html) and [AWS::EC2::SecurityGroupIngress](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-security-group-ingress.html) resources to define your rules. Do not use the embedded ingress and egress rules in the `AWS::EC2::SecurityGroup` . Doing so creates a circular dependency, which AWS CloudFormation doesn't allow.",
       "properties": {
-        "GroupDescription": "A description for the security group.\n\nConstraints: Up to 255 characters in length\n\nConstraints for EC2-Classic: ASCII characters\n\nConstraints for EC2-VPC: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
-        "GroupName": "The name of the security group.\n\nConstraints: Up to 255 characters in length. Cannot start with `sg-` .\n\nConstraints for EC2-Classic: ASCII characters\n\nConstraints for EC2-VPC: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
+        "GroupDescription": "A description for the security group.\n\nConstraints: Up to 255 characters in length\n\nValid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
+        "GroupName": "The name of the security group.\n\nConstraints: Up to 255 characters in length. Cannot start with `sg-` .\n\nValid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
         "SecurityGroupEgress": "[VPC only] The outbound rules associated with the security group. There is a short interruption during which you cannot connect to the security group.",
         "SecurityGroupIngress": "The inbound rules associated with the security group. There is a short interruption during which you cannot connect to the security group.",
         "Tags": "Any tags assigned to the security group.",
@@ -15991,7 +15992,7 @@
         "Description": "Updates the description of an ingress (inbound) security group rule. You can replace an existing description, or add a description to a rule that did not have one previously.\n\nConstraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}!$*",
         "FromPort": "The start of port range for the TCP and UDP protocols, or an ICMP/ICMPv6 type number. A value of `-1` indicates all ICMP/ICMPv6 types. If you specify all ICMP/ICMPv6 types, you must specify all codes.\n\nUse this for ICMP and any protocol that uses ports.",
         "GroupId": "The ID of the security group. You must specify either the security group ID or the security group name in the request. For security groups in a nondefault VPC, you must specify the security group ID.\n\nYou must specify the `GroupName` property or the `GroupId` property. For security groups that are in a VPC, you must use the `GroupId` property.",
-        "GroupName": "The name of the security group.\n\nConstraints: Up to 255 characters in length. Cannot start with `sg-` .\n\nConstraints for EC2-Classic: ASCII characters\n\nConstraints for EC2-VPC: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
+        "GroupName": "The name of the security group.\n\nConstraints: Up to 255 characters in length. Cannot start with `sg-` .\n\nValid characters: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&;{}!$*",
         "IpProtocol": "The IP protocol name ( `tcp` , `udp` , `icmp` , `icmpv6` ) or number (see [Protocol Numbers](https://docs.aws.amazon.com/http://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml) ).\n\n[VPC only] Use `-1` to specify all protocols. When authorizing security group rules, specifying `-1` or a protocol number other than `tcp` , `udp` , `icmp` , or `icmpv6` allows traffic on all ports, regardless of any port range you specify. For `tcp` , `udp` , and `icmp` , you must specify a port range. For `icmpv6` , the port range is optional; if you omit the port range, traffic for all types and codes is allowed.",
         "SourcePrefixListId": "[EC2-VPC only] The ID of a prefix list.",
         "SourceSecurityGroupId": "The ID of the security group. You must specify either the security group ID or the security group name. For security groups in a nondefault VPC, you must specify the security group ID.",
@@ -16239,7 +16240,7 @@
         "NetworkInterfaces": "One or more network interfaces. If you specify a network interface, you must specify subnet IDs and security group IDs using the network interface.\n\n> `SpotFleetLaunchSpecification` currently does not support Elastic Fabric Adapter (EFA). To specify an EFA, you must use [LaunchTemplateConfig](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/API_LaunchTemplateConfig.html) .",
         "Placement": "The placement information.",
         "RamdiskId": "The ID of the RAM disk. Some kernels require additional drivers at launch. Check the kernel requirements for information about whether you need to specify a RAM disk. To find kernel requirements, refer to the AWS Resource Center and search for the kernel ID.",
-        "SecurityGroups": "One or more security groups. When requesting instances in a VPC, you must specify the IDs of the security groups. When requesting instances in EC2-Classic, you can specify the names or the IDs of the security groups.",
+        "SecurityGroups": "The security groups.",
         "SpotPrice": "The maximum price per unit hour that you are willing to pay for a Spot Instance. We do not recommend using this parameter because it can lead to increased interruptions. If you do not specify this parameter, you will pay the current Spot price.\n\n> If you specify a maximum price, your instances will be interrupted more frequently than if you do not specify this parameter.",
         "SubnetId": "The IDs of the subnets in which to launch the instances. To specify multiple subnets, separate them using commas; for example, \"subnet-1234abcdeexample1, subnet-0987cdef6example2\".",
         "TagSpecifications": "The tags to apply during creation.",
@@ -17061,12 +17062,12 @@
       "properties": {
         "AutoScalingGroupArn": "The Amazon Resource Name (ARN) that identifies the Auto Scaling group.",
         "ManagedScaling": "The managed scaling settings for the Auto Scaling group capacity provider.",
-        "ManagedTerminationProtection": "The managed termination protection setting to use for the Auto Scaling group capacity provider. This determines whether the Auto Scaling group has managed termination protection. The default is off.\n\n> When using managed termination protection, managed scaling must also be used otherwise managed termination protection doesn't work. \n\nWhen managed termination protection is on, Amazon ECS prevents the Amazon EC2 instances in an Auto Scaling group that contain tasks from being terminated during a scale-in action. The Auto Scaling group and each instance in the Auto Scaling group must have instance protection from scale-in actions enabled as well. For more information, see [Instance Protection](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termination.html#instance-protection) in the *AWS Auto Scaling User Guide* .\n\nWhen managed termination protection is off, your Amazon EC2 instances aren't protected from termination when the Auto Scaling group scales in."
+        "ManagedTerminationProtection": "The managed termination protection setting to use for the Auto Scaling group capacity provider. This determines whether the Auto Scaling group has managed termination protection. The default is off.\n\n> When using managed termination protection, managed scaling must also be used otherwise managed termination protection doesn't work. \n\nWhen managed termination protection is on, Amazon ECS prevents the Amazon EC2 instances in an Auto Scaling group that contain tasks from being terminated during a scale-in action. The Auto Scaling group and each instance in the Auto Scaling group must have instance protection from scale-in actions on as well. For more information, see [Instance Protection](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-instance-termination.html#instance-protection) in the *AWS Auto Scaling User Guide* .\n\nWhen managed termination protection is off, your Amazon EC2 instances aren't protected from termination when the Auto Scaling group scales in."
       }
     },
     "AWS::ECS::CapacityProvider.ManagedScaling": {
       "attributes": {},
-      "description": "The managed scaling settings for the Auto Scaling group capacity provider.\n\nWhen managed scaling is enabled, Amazon ECS manages the scale-in and scale-out actions of the Auto Scaling group. Amazon ECS manages a target tracking scaling policy using an Amazon ECS managed CloudWatch metric with the specified `targetCapacity` value as the target value for the metric. For more information, see [Using managed scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html#asg-capacity-providers-managed-scaling) in the *Amazon Elastic Container Service Developer Guide* .\n\nIf managed scaling is off, the user must manage the scaling of the Auto Scaling group.",
+      "description": "The managed scaling settings for the Auto Scaling group capacity provider.\n\nWhen managed scaling is turned on, Amazon ECS manages the scale-in and scale-out actions of the Auto Scaling group. Amazon ECS manages a target tracking scaling policy using an Amazon ECS managed CloudWatch metric with the specified `targetCapacity` value as the target value for the metric. For more information, see [Using managed scaling](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/asg-capacity-providers.html#asg-capacity-providers-managed-scaling) in the *Amazon Elastic Container Service Developer Guide* .\n\nIf managed scaling is off, the user must manage the scaling of the Auto Scaling group.",
       "properties": {
         "InstanceWarmupPeriod": "The period of time, in seconds, after a newly launched Amazon EC2 instance can contribute to CloudWatch metrics for Auto Scaling group. If this parameter is omitted, the default value of `300` seconds is used.",
         "MaximumScalingStepSize": "The maximum number of Amazon EC2 instances that Amazon ECS will scale out at one time. The scale in process is not affected by this parameter. If this parameter is omitted, the default value of `1` is used.",
@@ -17111,8 +17112,8 @@
       "attributes": {},
       "description": "The settings to use when creating a cluster. This parameter is used to turn on CloudWatch Container Insights for a cluster.",
       "properties": {
-        "Name": "The name of the cluster setting. The only supported value is `containerInsights` .",
-        "Value": "The value to set for the cluster setting. The supported values are `enabled` and `disabled` . If `enabled` is specified, CloudWatch Container Insights will be enabled for the cluster, otherwise it will be off unless the `containerInsights` account setting is turned on. If a cluster value is specified, it will override the `containerInsights` value set with [PutAccountSetting](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PutAccountSetting.html) or [PutAccountSettingDefault](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PutAccountSettingDefault.html) ."
+        "Name": "The name of the cluster setting. The value is `containerInsights` .",
+        "Value": "The value to set for the cluster setting. The supported values are `enabled` and `disabled` .\n\nIf you set `name` to `containerInsights` and `value` to `enabled` , CloudWatch Container Insights will be on for the cluster, otherwise it will be off unless the `containerInsights` account setting is turned on. If a cluster value is specified, it will override the `containerInsights` value set with [PutAccountSetting](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PutAccountSetting.html) or [PutAccountSettingDefault](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_PutAccountSettingDefault.html) ."
       }
     },
     "AWS::ECS::Cluster.ExecuteCommandConfiguration": {
@@ -17139,7 +17140,7 @@
       "attributes": {},
       "description": "Use this parameter to set a default Service Connect namespace. After you set a default Service Connect namespace, any new services with Service Connect turned on that are created in the cluster are added as client services in the namespace. This setting only applies to new services that set the `enabled` parameter to `true` in the `ServiceConnectConfiguration` . You can set the namespace of each service individually in the `ServiceConnectConfiguration` to override this default parameter.\n\nTasks that run in a namespace can use short names to connect to services in the namespace. Tasks can connect to services across all of the clusters in the namespace. Tasks connect through a managed proxy container that collects logs and metrics for increased visibility. Only the tasks that Amazon ECS services create are supported with Service Connect. For more information, see [Service Connect](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect.html) in the *Amazon Elastic Container Service Developer Guide* .",
       "properties": {
-        "Namespace": "The namespace name or full Amazon Resource Name (ARN) of the AWS Cloud Map namespace that's used when you create a service and don't specify a Service Connect configuration. The namespace name can include up to 1024 characters. The name is case-sensitive. The name can't include hyphens (-), tilde (~), greater than (>), less than (<), or slash (/).\n\nIf you enter an existing namespace name or ARN, then that namespace will be used. Any namespace type is supported. The namespace must be in this account and this AWS Region.\n\nIf you enter a new name, a AWS Cloud Map namespace will be created. Amazon ECS creates a AWS Cloud Map namespace with the \"API calls\" method of instance discovery only. This instance discovery method is the \"HTTP\" namespace type in the AWS Command Line Interface . Other types of instance discovery aren't used by Service Connect.\n\nIf you update the service with an empty string `\"\"` for the namespace name, the cluster configuration for Service Connect is removed. Note that the namespace will remain in AWS Cloud Map and must be deleted separately.\n\nFor more information about AWS Cloud Map , see [Working with Services](https://docs.aws.amazon.com/) in the *AWS Cloud Map Developer Guide* ."
+        "Namespace": "The namespace name or full Amazon Resource Name (ARN) of the AWS Cloud Map namespace that's used when you create a service and don't specify a Service Connect configuration. The namespace name can include up to 1024 characters. The name is case-sensitive. The name can't include hyphens (-), tilde (~), greater than (>), less than (<), or slash (/).\n\nIf you enter an existing namespace name or ARN, then that namespace will be used. Any namespace type is supported. The namespace must be in this account and this AWS Region.\n\nIf you enter a new name, a AWS Cloud Map namespace will be created. Amazon ECS creates a AWS Cloud Map namespace with the \"API calls\" method of instance discovery only. This instance discovery method is the \"HTTP\" namespace type in the AWS Command Line Interface . Other types of instance discovery aren't used by Service Connect.\n\nIf you update the service with an empty string `\"\"` for the namespace name, the cluster configuration for Service Connect is removed. Note that the namespace will remain in AWS Cloud Map and must be deleted separately.\n\nFor more information about AWS Cloud Map , see [Working with Services](https://docs.aws.amazon.com/cloud-map/latest/dg/working-with-services.html) in the *AWS Cloud Map Developer Guide* ."
       }
     },
     "AWS::ECS::ClusterCapacityProviderAssociations": {
@@ -17187,7 +17188,7 @@
         "DeploymentController": "The deployment controller to use for the service. If no deployment controller is specified, the default value of `ECS` is used.",
         "DesiredCount": "The number of instantiations of the specified task definition to place and keep running on your cluster.\n\nFor new services, if a desired count is not specified, a default value of `1` is used. When using the `DAEMON` scheduling strategy, the desired count is not required.\n\nFor existing services, if a desired count is not specified, it is omitted from the operation.",
         "EnableECSManagedTags": "Specifies whether to turn on Amazon ECS managed tags for the tasks within the service. For more information, see [Tagging your Amazon ECS resources](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-using-tags.html) in the *Amazon Elastic Container Service Developer Guide* .",
-        "EnableExecuteCommand": "Determines whether the execute command functionality is enabled for the service. If `true` , the execute command functionality is enabled for all containers in tasks as part of the service.",
+        "EnableExecuteCommand": "Determines whether the execute command functionality is turned on for the service. If `true` , the execute command functionality is turned on for all containers in tasks as part of the service.",
         "HealthCheckGracePeriodSeconds": "The period of time, in seconds, that the Amazon ECS service scheduler ignores unhealthy Elastic Load Balancing target health checks after a task has first started. This is only used when your service is configured to use a load balancer. If your service has a load balancer defined and you don't specify a health check grace period value, the default value of `0` is used.\n\nIf you do not use an Elastic Load Balancing, we recommend that you use the `startPeriod` in the task definition health check parameters. For more information, see [Health check](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_HealthCheck.html) .\n\nIf your service's tasks take a while to start and respond to Elastic Load Balancing health checks, you can specify a health check grace period of up to 2,147,483,647 seconds (about 69 years). During that time, the Amazon ECS service scheduler ignores health check status. This grace period can prevent the service scheduler from marking tasks as unhealthy and stopping them before they have time to come up.",
         "LaunchType": "The launch type on which to run your service. For more information, see [Amazon ECS Launch Types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html) in the *Amazon Elastic Container Service Developer Guide* .",
         "LoadBalancers": "A list of load balancer objects to associate with the service. If you specify the `Role` property, `LoadBalancers` must be specified as well. For information about the number of load balancers that you can specify per service, see [Service Load Balancing](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-load-balancing.html) in the *Amazon Elastic Container Service Developer Guide* .",
@@ -17202,7 +17203,7 @@
         "ServiceName": "The name of your service. Up to 255 letters (uppercase and lowercase), numbers, underscores, and hyphens are allowed. Service names must be unique within a cluster, but you can have similarly named services in multiple clusters within a Region or across multiple Regions.\n\n> The stack update fails if you change any properties that require replacement and the `ServiceName` is configured. This is because AWS CloudFormation creates the replacement service first, but each `ServiceName` must be unique in the cluster.",
         "ServiceRegistries": "The details of the service discovery registry to associate with this service. For more information, see [Service discovery](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-discovery.html) .\n\n> Each service may be associated with one service registry. Multiple service registries for each service isn't supported.",
         "Tags": "The metadata that you apply to the service to help you categorize and organize them. Each tag consists of a key and an optional value, both of which you define. When a service is deleted, the tags are deleted as well.\n\nThe following basic restrictions apply to tags:\n\n- Maximum number of tags per resource - 50\n- For each resource, each tag key must be unique, and each tag key can have only one value.\n- Maximum key length - 128 Unicode characters in UTF-8\n- Maximum value length - 256 Unicode characters in UTF-8\n- If your tagging schema is used across multiple services and resources, remember that other services may have restrictions on allowed characters. Generally allowed characters are: letters, numbers, and spaces representable in UTF-8, and the following characters: + - = . _ : / @.\n- Tag keys and values are case-sensitive.\n- Do not use `aws:` , `AWS:` , or any upper or lowercase combination of such as a prefix for either keys or values as it is reserved for AWS use. You cannot edit or delete tag keys or values with this prefix. Tags with this prefix do not count against your tags per resource limit.",
-        "TaskDefinition": "The `family` and `revision` ( `family:revision` ) or full ARN of the task definition to run in your service. If a `revision` isn't specified, the latest `ACTIVE` revision is used.\n\nA task definition must be specified if the service uses either the `ECS` or `CODE_DEPLOY` deployment controllers."
+        "TaskDefinition": "The `family` and `revision` ( `family:revision` ) or full ARN of the task definition to run in your service. If a `revision` isn't specified, the latest `ACTIVE` revision is used.\n\nA task definition must be specified if the service uses either the `ECS` or `CODE_DEPLOY` deployment controllers.\n\nFor more information about deployment types, see [Amazon ECS deployment types](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-types.html) ."
       }
     },
     "AWS::ECS::Service.AwsVpcConfiguration": {
@@ -17234,7 +17235,7 @@
     },
     "AWS::ECS::Service.DeploymentCircuitBreaker": {
       "attributes": {},
-      "description": "> The deployment circuit breaker can only be used for services using the rolling update ( `ECS` ) deployment type. \n\nThe *deployment circuit breaker* determines whether a service deployment will fail if the service can't reach a steady state. If enabled, a service deployment will transition to a failed state and stop launching new tasks. You can also configure Amazon ECS to roll back your service to the last completed deployment after a failure. For more information, see [Rolling update](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html) in the *Amazon Elastic Container Service Developer Guide* .",
+      "description": "> The deployment circuit breaker can only be used for services using the rolling update ( `ECS` ) deployment type. \n\nThe *deployment circuit breaker* determines whether a service deployment will fail if the service can't reach a steady state. If it is turned on, a service deployment will transition to a failed state and stop launching new tasks. You can also configure Amazon ECS to roll back your service to the last completed deployment after a failure. For more information, see [Rolling update](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html) in the *Amazon Elastic Container Service Developer Guide* .",
       "properties": {
         "Enable": "Determines whether to use the deployment circuit breaker logic for the service.",
         "Rollback": "Determines whether to configure Amazon ECS to roll back the service if a service deployment fails. If rollback is on, when a service deployment fails, the service is rolled back to the last deployment that completed successfully."
@@ -17321,7 +17322,7 @@
       "properties": {
         "Enabled": "Specifies whether to use Service Connect with this service.",
         "LogConfiguration": "",
-        "Namespace": "The namespace name or full Amazon Resource Name (ARN) of the AWS Cloud Map namespace for use with Service Connect. The namespace must be in the same AWS Region as the Amazon ECS service and cluster. The type of namespace doesn't affect Service Connect. For more information about AWS Cloud Map , see [Working with Services](https://docs.aws.amazon.com/) in the *AWS Cloud Map Developer Guide* .",
+        "Namespace": "The namespace name or full Amazon Resource Name (ARN) of the AWS Cloud Map namespace for use with Service Connect. The namespace must be in the same AWS Region as the Amazon ECS service and cluster. The type of namespace doesn't affect Service Connect. For more information about AWS Cloud Map , see [Working with Services](https://docs.aws.amazon.com/cloud-map/latest/dg/working-with-services.html) in the *AWS Cloud Map Developer Guide* .",
         "Services": "The list of Service Connect service objects. These are names and aliases (also known as endpoints) that are used by other Amazon ECS services to connect to this service.\n\nThis field is not required for a \"client\" Amazon ECS service that's a member of a namespace only to connect to other services within the namespace. An example of this would be a frontend application that accepts incoming requests from either a load balancer that's attached to the service or by other means.\n\nAn object selects a port from the task definition, assigns a name for the AWS Cloud Map service, and a list of aliases (endpoints) and ports for client applications to refer to this service."
       }
     },
@@ -17374,8 +17375,8 @@
       "attributes": {},
       "description": "The authorization configuration details for the Amazon EFS file system.",
       "properties": {
-        "AccessPointId": "The Amazon EFS access point ID to use. If an access point is specified, the root directory value specified in the `EFSVolumeConfiguration` must either be omitted or set to `/` which will enforce the path set on the EFS access point. If an access point is used, transit encryption must be enabled in the `EFSVolumeConfiguration` . For more information, see [Working with Amazon EFS access points](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html) in the *Amazon Elastic File System User Guide* .",
-        "IAM": "Determines whether to use the Amazon ECS task role defined in a task definition when mounting the Amazon EFS file system. If enabled, transit encryption must be enabled in the `EFSVolumeConfiguration` . If this parameter is omitted, the default value of `DISABLED` is used. For more information, see [Using Amazon EFS access points](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#efs-volume-accesspoints) in the *Amazon Elastic Container Service Developer Guide* ."
+        "AccessPointId": "The Amazon EFS access point ID to use. If an access point is specified, the root directory value specified in the `EFSVolumeConfiguration` must either be omitted or set to `/` which will enforce the path set on the EFS access point. If an access point is used, transit encryption must be on in the `EFSVolumeConfiguration` . For more information, see [Working with Amazon EFS access points](https://docs.aws.amazon.com/efs/latest/ug/efs-access-points.html) in the *Amazon Elastic File System User Guide* .",
+        "IAM": "Determines whether to use the Amazon ECS task role defined in a task definition when mounting the Amazon EFS file system. If it is turned on, transit encryption must be turned on in the `EFSVolumeConfiguration` . If this parameter is omitted, the default value of `DISABLED` is used. For more information, see [Using Amazon EFS access points](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/efs-volumes.html#efs-volume-accesspoints) in the *Amazon Elastic Container Service Developer Guide* ."
       }
     },
     "AWS::ECS::TaskDefinition.ContainerDefinition": {
@@ -17458,7 +17459,7 @@
         "AuthorizationConfig": "The authorization configuration details for the Amazon EFS file system.",
         "FilesystemId": "The Amazon EFS file system ID to use.",
         "RootDirectory": "The directory within the Amazon EFS file system to mount as the root directory inside the host. If this parameter is omitted, the root of the Amazon EFS volume will be used. Specifying `/` will have the same effect as omitting this parameter.\n\n> If an EFS access point is specified in the `authorizationConfig` , the root directory parameter must either be omitted or set to `/` which will enforce the path set on the EFS access point.",
-        "TransitEncryption": "Determines whether to use encryption for Amazon EFS data in transit between the Amazon ECS host and the Amazon EFS server. Transit encryption must be enabled if Amazon EFS IAM authorization is used. If this parameter is omitted, the default value of `DISABLED` is used. For more information, see [Encrypting data in transit](https://docs.aws.amazon.com/efs/latest/ug/encryption-in-transit.html) in the *Amazon Elastic File System User Guide* .",
+        "TransitEncryption": "Determines whether to use encryption for Amazon EFS data in transit between the Amazon ECS host and the Amazon EFS server. Transit encryption must be turned on if Amazon EFS IAM authorization is used. If this parameter is omitted, the default value of `DISABLED` is used. For more information, see [Encrypting data in transit](https://docs.aws.amazon.com/efs/latest/ug/encryption-in-transit.html) in the *Amazon Elastic File System User Guide* .",
         "TransitEncryptionPort": "The port to use when sending encrypted data between the Amazon ECS host and the Amazon EFS server. If you do not specify a transit encryption port, it will use the port selection strategy that the Amazon EFS mount helper uses. For more information, see [EFS mount helper](https://docs.aws.amazon.com/efs/latest/ug/efs-mount-helper.html) in the *Amazon Elastic File System User Guide* ."
       }
     },
@@ -17472,7 +17473,7 @@
     },
     "AWS::ECS::TaskDefinition.EphemeralStorage": {
       "attributes": {},
-      "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate . For more information, see [Fargate task storage](https://docs.aws.amazon.com/AmazonECS/latest/userguide/using_data_volumes.html) in the *Amazon ECS User Guide for AWS Fargate* .\n\n> This parameter is only supported for tasks hosted on Fargate using Linux platform version `1.4.0` or later. This parameter is not supported for Windows containers on Fargate.",
+      "description": "The amount of ephemeral storage to allocate for the task. This parameter is used to expand the total amount of ephemeral storage available, beyond the default amount, for tasks hosted on AWS Fargate . For more information, see [Fargate task storage](https://docs.aws.amazon.com/AmazonECS/latest/userguide/using_data_volumes.html) in the *Amazon ECS User Guide for AWS Fargate* .\n\n> For tasks using the Fargate launch type, the task requires the following platforms:\n> \n> - Linux platform version `1.4.0` or later.",
       "properties": {
         "SizeInGiB": "The total amount, in GiB, of ephemeral storage to set for the task. The minimum supported value is `21` GiB and the maximum supported value is `200` GiB."
       }
@@ -17573,7 +17574,7 @@
         "AppProtocol": "The application protocol that's used for the port mapping. This parameter only applies to Service Connect. We recommend that you set this parameter to be consistent with the protocol that your application uses. If you set this parameter, Amazon ECS adds protocol-specific connection handling to the Service Connect proxy. If you set this parameter, Amazon ECS adds protocol-specific telemetry in the Amazon ECS console and CloudWatch.\n\nIf you don't set a value for this parameter, then TCP is used. However, Amazon ECS doesn't add protocol-specific telemetry for TCP.\n\nTasks that run in a namespace can use short names to connect to services in the namespace. Tasks can connect to services across all of the clusters in the namespace. Tasks connect through a managed proxy container that collects logs and metrics for increased visibility. Only the tasks that Amazon ECS services create are supported with Service Connect. For more information, see [Service Connect](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect.html) in the *Amazon Elastic Container Service Developer Guide* .",
         "ContainerPort": "The port number on the container that's bound to the user-specified or automatically assigned host port.\n\nIf you use containers in a task with the `awsvpc` or `host` network mode, specify the exposed ports using `containerPort` .\n\nIf you use containers in a task with the `bridge` network mode and you specify a container port and not a host port, your container automatically receives a host port in the ephemeral port range. For more information, see `hostPort` . Port mappings that are automatically assigned in this way do not count toward the 100 reserved ports limit of a container instance.",
         "ContainerPortRange": "The port number range on the container that's bound to the dynamically mapped host port range.\n\nThe following rules apply when you specify a `containerPortRange` :\n\n- You must use either the `bridge` network mode or the `awsvpc` network mode.\n- This parameter is available for both the EC2 and AWS Fargate launch types.\n- This parameter is available for both the Linux and Windows operating systems.\n- The container instance must have at least version 1.67.0 of the container agent and at least version 1.67.0-1 of the `ecs-init` package\n- You can specify a maximum of 100 port ranges per container.\n- You do not specify a `hostPortRange` . The value of the `hostPortRange` is set as follows:\n\n- For containers in a task with the `awsvpc` network mode, the `hostPort` is set to the same value as the `containerPort` . This is a static mapping strategy.\n- For containers in a task with the `bridge` network mode, the Amazon ECS agent finds open host ports from the default ephemeral range and passes it to docker to bind them to the container ports.\n- The `containerPortRange` valid values are between 1 and 65535.\n- A port can only be included in one port mapping per container.\n- You cannot specify overlapping port ranges.\n- The first port in the range must be less than last port in the range.\n- Docker recommends that you turn off the docker-proxy in the Docker daemon config file when you have a large number of ports.\n\nFor more information, see [Issue #11185](https://docs.aws.amazon.com/https://github.com/moby/moby/issues/11185) on the Github website.\n\nFor information about how to turn off the docker-proxy in the Docker daemon config file, see [Docker daemon](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/bootstrap_container_instance.html#bootstrap_docker_daemon) in the *Amazon ECS Developer Guide* .\n\nYou can call [`DescribeTasks`](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeTasks.html) to view the `hostPortRange` which are the host ports that are bound to the container ports.",
-        "HostPort": "The port number on the container instance to reserve for your container.\n\nIf you specify a `containerPortRange` , leave this field empty and the value of the `hostPort` is set as follows:\n\n- For containers in a task with the `awsvpc` network mode, the `hostPort` is set to the same value as the `containerPort` . This is a static mapping strategy.\n- For containers in a task with the `bridge` network mode, the Amazon ECS agent finds open ports on the host and automaticaly binds them to the container ports. This is a dynamic mapping strategy.\n\nIf you use containers in a task with the `awsvpc` or `host` network mode, the `hostPort` can either be left blank or set to the same value as the `containerPort` .\n\nIf you use containers in a task with the `bridge` network mode, you can specify a non-reserved host port for your container port mapping, or you can omit the `hostPort` (or set it to `0` ) while specifying a `containerPort` and your container automatically receives a port in the ephemeral port range for your container instance operating system and Docker version.\n\nThe default ephemeral port range for Docker version 1.6.0 and later is listed on the instance under `/proc/sys/net/ipv4/ip_local_port_range` . If this kernel parameter is unavailable, the default ephemeral port range from 49153 through 65535 is used. Do not attempt to specify a host port in the ephemeral port range as these are reserved for automatic assignment. In general, ports below 32768 are outside of the ephemeral port range.\n\nThe default reserved ports are 22 for SSH, the Docker ports 2375 and 2376, and the Amazon ECS container agent ports 51678-51680. Any host port that was previously specified in a running task is also reserved while the task is running. That is, after a task stops, the host port is released. The current reserved ports are displayed in the `remainingResources` of [DescribeContainerInstances](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeContainerInstances.html) output. A container instance can have up to 100 reserved ports at a time. This number includes the default reserved ports. Automatically assigned ports aren't included in the 100 reserved ports quota.",
+        "HostPort": "The port number on the container instance to reserve for your container.\n\nIf you specify a `containerPortRange` , leave this field empty and the value of the `hostPort` is set as follows:\n\n- For containers in a task with the `awsvpc` network mode, the `hostPort` is set to the same value as the `containerPort` . This is a static mapping strategy.\n- For containers in a task with the `bridge` network mode, the Amazon ECS agent finds open ports on the host and automatically binds them to the container ports. This is a dynamic mapping strategy.\n\nIf you use containers in a task with the `awsvpc` or `host` network mode, the `hostPort` can either be left blank or set to the same value as the `containerPort` .\n\nIf you use containers in a task with the `bridge` network mode, you can specify a non-reserved host port for your container port mapping, or you can omit the `hostPort` (or set it to `0` ) while specifying a `containerPort` and your container automatically receives a port in the ephemeral port range for your container instance operating system and Docker version.\n\nThe default ephemeral port range for Docker version 1.6.0 and later is listed on the instance under `/proc/sys/net/ipv4/ip_local_port_range` . If this kernel parameter is unavailable, the default ephemeral port range from 49153 through 65535 is used. Do not attempt to specify a host port in the ephemeral port range as these are reserved for automatic assignment. In general, ports below 32768 are outside of the ephemeral port range.\n\nThe default reserved ports are 22 for SSH, the Docker ports 2375 and 2376, and the Amazon ECS container agent ports 51678-51680. Any host port that was previously specified in a running task is also reserved while the task is running. That is, after a task stops, the host port is released. The current reserved ports are displayed in the `remainingResources` of [DescribeContainerInstances](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DescribeContainerInstances.html) output. A container instance can have up to 100 reserved ports at a time. This number includes the default reserved ports. Automatically assigned ports aren't included in the 100 reserved ports quota.",
         "Name": "The name that's used for the port mapping. This parameter only applies to Service Connect. This parameter is the name that you use in the `serviceConnectConfiguration` of a service. The name can include up to 64 characters. The characters can include lowercase letters, numbers, underscores (_), and hyphens (-). The name can't start with a hyphen.\n\nFor more information, see [Service Connect](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect.html) in the *Amazon Elastic Container Service Developer Guide* .",
         "Protocol": "The protocol used for the port mapping. Valid values are `tcp` and `udp` . The default is `tcp` ."
       }
@@ -17596,7 +17597,7 @@
     },
     "AWS::ECS::TaskDefinition.ResourceRequirement": {
       "attributes": {},
-      "description": "The type and amount of a resource to assign to a container. The supported resource types are GPUs and Elastic Inference accelerators. For more information, see [Working with GPUs on Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-gpu.html) or [Working with Amazon Elastic Inference on Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/url-ecs-dev;ecs-inference.html) in the *Amazon Elastic Container Service Developer Guide*",
+      "description": "The type and amount of a resource to assign to a container. The supported resource types are GPUs and Elastic Inference accelerators. For more information, see [Working with GPUs on Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-gpu.html) or [Working with Amazon Elastic Inference on Amazon ECS](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-inference.html) in the *Amazon Elastic Container Service Developer Guide*",
       "properties": {
         "Type": "The type of resource to assign to a container. The supported values are `GPU` or `InferenceAccelerator` .",
         "Value": "The value for the specified resource type.\n\nIf the `GPU` type is used, the value is the number of physical `GPUs` the Amazon ECS container agent reserves for the container. The number of GPUs that's reserved for all containers in a task can't exceed the number of available GPUs on the container instance that the task is launched on.\n\nIf the `InferenceAccelerator` type is used, the `value` matches the `deviceName` for an [InferenceAccelerator](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_InferenceAccelerator.html) specified in a task definition."
@@ -17628,7 +17629,7 @@
     },
     "AWS::ECS::TaskDefinition.TaskDefinitionPlacementConstraint": {
       "attributes": {},
-      "description": "An object representing a constraint on task placement in the task definition. For more information, see [Task placement constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html) in the *Amazon Elastic Container Service Developer Guide* .\n\n> Task placement constraints aren't supported for tasks run on AWS Fargate .",
+      "description": "The constraint on task placement in the task definition. For more information, see [Task placement constraints](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-placement-constraints.html) in the *Amazon Elastic Container Service Developer Guide* .\n\n> Task placement constraints aren't supported for tasks run on AWS Fargate .",
       "properties": {
         "Expression": "A cluster query language expression to apply to the constraint. For more information, see [Cluster query language](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-query-language.html) in the *Amazon Elastic Container Service Developer Guide* .",
         "Type": "The type of constraint. The `MemberOf` constraint restricts selection to be from a group of valid candidates."
@@ -22745,7 +22746,7 @@
       },
       "description": "Specifies a *workspace* . In a workspace, you can create Grafana dashboards and visualizations to analyze your metrics, logs, and traces. You don't have to build, package, or deploy any hardware to run the Grafana server.",
       "properties": {
-        "AccountAccessType": "Specifies whether the workspace can access AWS resources in this AWS account only, or whether it can also access AWS resources in other accounts in the same organization. If this is `ORGANIZATION` , the `workspaceOrganizationalUnits` parameter specifies which organizational units the workspace can access.",
+        "AccountAccessType": "Specifies whether the workspace can access AWS resources in this AWS account only, or whether it can also access AWS resources in other accounts in the same organization. If this is `ORGANIZATION` , the `OrganizationalUnits` parameter specifies which organizational units the workspace can access.",
         "AuthenticationProviders": "Specifies whether this workspace uses SAML 2.0, AWS IAM Identity Center (successor to AWS Single Sign-On) , or both to authenticate users for using the Grafana console within a workspace. For more information, see [User authentication in Amazon Managed Grafana](https://docs.aws.amazon.com/grafana/latest/userguide/authentication-in-AMG.html) .",
         "ClientToken": "A unique, case-sensitive, user-provided identifier to ensure the idempotency of the request.",
         "DataSources": "Specifies the AWS data sources that have been configured to have IAM roles and permissions created to allow Amazon Managed Grafana to read data from these sources.\n\nThis list is only used when the workspace was created through the AWS console, and the `permissionType` is `SERVICE_MANAGED` .",
@@ -23854,6 +23855,25 @@
         "Tags": "Tags assigned to a resource."
       }
     },
+    "AWS::GroundStation::DataflowEndpointGroup.AwsGroundStationAgentEndpoint": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "AgentStatus": "",
+        "AuditResults": "",
+        "EgressAddress": "",
+        "IngressAddress": "",
+        "Name": ""
+      }
+    },
+    "AWS::GroundStation::DataflowEndpointGroup.ConnectionDetails": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Mtu": "",
+        "SocketAddress": ""
+      }
+    },
     "AWS::GroundStation::DataflowEndpointGroup.DataflowEndpoint": {
       "attributes": {},
       "description": "Contains information such as socket address and name that defines an endpoint.",
@@ -23867,8 +23887,33 @@
       "attributes": {},
       "description": "The security details and endpoint information.",
       "properties": {
+        "AwsGroundStationAgentEndpoint": "",
         "Endpoint": "Information about the endpoint such as name and the endpoint address.",
         "SecurityDetails": "The role ARN, and IDs for security groups and subnets."
+      }
+    },
+    "AWS::GroundStation::DataflowEndpointGroup.IntegerRange": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Maximum": "",
+        "Minimum": ""
+      }
+    },
+    "AWS::GroundStation::DataflowEndpointGroup.RangedConnectionDetails": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Mtu": "",
+        "SocketAddress": ""
+      }
+    },
+    "AWS::GroundStation::DataflowEndpointGroup.RangedSocketAddress": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "Name": "",
+        "PortRange": ""
       }
     },
     "AWS::GroundStation::DataflowEndpointGroup.SecurityDetails": {
@@ -23902,6 +23947,8 @@
         "DataflowEdges": "A list containing lists of config ARNs. Each list of config ARNs is an edge, with a \"from\" config and a \"to\" config.",
         "MinimumViableContactDurationSeconds": "Minimum length of a contact in seconds that Ground Station will return when listing contacts. Ground Station will not return contacts shorter than this duration.",
         "Name": "The name of the mission profile.",
+        "StreamsKmsKey": "",
+        "StreamsKmsRole": "",
         "Tags": "Tags assigned to the mission profile.",
         "TrackingConfigArn": "The ARN of a tracking config objects that defines how to track the satellite through the sky during a contact."
       }
@@ -23912,6 +23959,14 @@
       "properties": {
         "Destination": "The ARN of the destination for this dataflow edge. For example, specify the ARN of a dataflow endpoint config for a downlink edge or an antenna uplink config for an uplink edge.",
         "Source": "The ARN of the source for this dataflow edge. For example, specify the ARN of an antenna downlink config for a downlink edge or a dataflow endpoint config for an uplink edge."
+      }
+    },
+    "AWS::GroundStation::MissionProfile.StreamsKmsKey": {
+      "attributes": {},
+      "description": "",
+      "properties": {
+        "KmsAliasArn": "",
+        "KmsKeyArn": ""
       }
     },
     "AWS::GuardDuty::Detector": {
@@ -33759,7 +33814,6 @@
     "AWS::Macie::FindingsFilter": {
       "attributes": {
         "Arn": "The Amazon Resource Name (ARN) of the findings filter.",
-        "FindingsFilterListItems": "An array of `FindingsFilterListItem` objects, one for each findings filter that's associated with the account.",
         "Id": "The unique identifier for the findings filter.",
         "Ref": "`Ref` returns the ID of the `FindingsFilter` . For example, `{ \"Ref\": \"FindingsFilter\" }` ."
       },
@@ -33789,14 +33843,6 @@
       "description": "Specifies, as a map, one or more property-based conditions that filter the results of a query for findings. For more information, see [Filtering findings](https://docs.aws.amazon.com/macie/latest/user/findings-filter-overview.html) in the *Amazon Macie User Guide* .",
       "properties": {
         "Criterion": "Specifies a condition that defines the property, operator, and one or more values to use to filter the results."
-      }
-    },
-    "AWS::Macie::FindingsFilter.FindingsFilterListItem": {
-      "attributes": {},
-      "description": "Specifies the unique identifier and custom name of a findings filter.",
-      "properties": {
-        "Id": "The unique identifier for the findings filter.",
-        "Name": "The custom name of the findings filter."
       }
     },
     "AWS::Macie::Session": {
@@ -34159,7 +34205,7 @@
       "properties": {
         "Priority": "Optional. When you set up a job to use queue hopping, you can specify a different relative priority for the job in the destination queue. If you don't specify, the relative priority will remain the same as in the previous queue.",
         "Queue": "Optional unless the job is submitted on the default queue. When you set up a job to use queue hopping, you can specify a destination queue. This queue cannot be the original queue to which the job is submitted. If the original queue isn't the default queue and you don't specify the destination queue, the job will move to the default queue.",
-        "WaitMinutes": "Required for setting up a job to use queue hopping. Minimum wait time in minutes until the job can hop to the destination queue. Valid range is 1 to 1440 minutes, inclusive."
+        "WaitMinutes": "Required for setting up a job to use queue hopping. Minimum wait time in minutes until the job can hop to the destination queue. Valid range is 1 to 4320 minutes, inclusive."
       }
     },
     "AWS::MediaConvert::Preset": {
@@ -36495,7 +36541,6 @@
         "EngineVersion": "Indicates the database engine version.",
         "IamAuthEnabled": "True if mapping of Amazon Identity and Access Management (IAM) accounts to database accounts is enabled, and otherwise false.",
         "KmsKeyId": "If `StorageEncrypted` is true, the Amazon KMS key identifier for the encrypted DB cluster.",
-        "Port": "Specifies the port that the database engine is listening on.",
         "PreferredBackupWindow": "Specifies the daily time range during which automated backups are created if automated backups are enabled, as determined by the `BackupRetentionPeriod` .\n\nAn update may require some interruption.",
         "PreferredMaintenanceWindow": "Specifies the weekly time range during which system maintenance can occur, in Universal Coordinated Time (UTC).",
         "RestoreToTime": "Creates a new DB cluster from a DB snapshot or DB cluster snapshot.\n\nIf a DB snapshot is specified, the target DB cluster is created from the source DB snapshot with a default configuration and default security group.\n\nIf a DB cluster snapshot is specified, the target DB cluster is created from the source DB cluster restore point with the same configuration as the original source DB cluster, except that the new DB cluster is created with the default security group.",
@@ -57667,13 +57712,13 @@
     },
     "AWS::SSMContacts::Plan": {
       "attributes": {
-        "Arn": "The Amazon Resource Name (ARN) of the `Plan` resource.",
+        "Arn": "",
         "Ref": ""
       },
       "description": "Information about the stages and on-call rotation teams associated with an escalation plan or engagement plan.",
       "properties": {
         "ContactId": "The Amazon Resource Name (ARN) of the contact.",
-        "RotationIds": "",
+        "RotationIds": "The Amazon Resource Names (ARNs) of the on-call rotations associated with the plan.",
         "Stages": "A list of stages that the escalation plan or engagement plan uses to engage contacts and contact methods."
       }
     },
@@ -57681,7 +57726,7 @@
       "attributes": {},
       "description": "Information about the contact channel that Incident Manager uses to engage the contact.",
       "properties": {
-        "ChannelId": "The Amazon Resource Name (ARN) of the contact channel.",
+        "ChannelId": "",
         "RetryIntervalInMinutes": "The number of minutes to wait before retrying to send engagement if the engagement initially failed."
       }
     },
@@ -57703,33 +57748,33 @@
     },
     "AWS::SSMContacts::Plan.Targets": {
       "attributes": {},
-      "description": "The contact or contact channel that's being engaged.",
+      "description": "",
       "properties": {
-        "ChannelTargetInfo": "Information about the contact channel that Incident Manager engages.",
-        "ContactTargetInfo": "Information about the contact that Incident Manager engages."
+        "ChannelTargetInfo": "",
+        "ContactTargetInfo": ""
       }
     },
     "AWS::SSMContacts::Rotation": {
       "attributes": {
-        "Arn": "The Amazon Resource Name (ARN) of the `Rotation` resource.",
+        "Arn": "",
         "Ref": ""
       },
-      "description": "Specifies a rotation in an on-call schedule.",
+      "description": "Creates a rotation in an on-call schedule.",
       "properties": {
-        "ContactIds": "The Amazon Resource Names (ARNs) of the contacts to add to the rotation.\n\nThe order in which you list the contacts is their shift order in the rotation schedule.",
-        "Name": "The name for the rotation.",
-        "Recurrence": "Information about the rule that specifies when shift team members rotate.",
-        "StartTime": "The date and time the rotation goes into effect.",
-        "Tags": "Optional metadata to assign to the rotation. Tags enable you to categorize a resource in different ways, such as by purpose, owner, or environment. For more information, see [Tagging Incident Manager resources](https://docs.aws.amazon.com/incident-manager/latest/userguide/tagging.html) in the *Incident Manager User Guide* .",
-        "TimeZoneId": "The time zone to base the rotation\u2019s activity on, in Internet Assigned Numbers Authority (IANA) format. For example: \"America/Los_Angeles\", \"UTC\", or \"Asia/Seoul\". For more information, see the [Time Zone Database](https://docs.aws.amazon.com/https://www.iana.org/time-zones) on the IANA website."
+        "ContactIds": "The Amazon Resource Names (ARNs) of the contacts assigned to the rotation team.",
+        "Name": "The name of the rotation.",
+        "Recurrence": "Information about when an on-call rotation is in effect and how long the rotation period lasts.",
+        "StartTime": "The date and time the rotation becomes active.",
+        "Tags": "",
+        "TimeZoneId": "The time zone the rotation\u2019s activity is based on, in Internet Assigned Numbers Authority (IANA) format. For example: \"America/Los_Angeles\", \"UTC\", or \"Asia/Seoul\"."
       }
     },
     "AWS::SSMContacts::Rotation.CoverageTime": {
       "attributes": {},
       "description": "Information about when an on-call shift begins and ends.",
       "properties": {
-        "EndTime": "Information about when an on-call rotation shift ends.",
-        "StartTime": "Information about when an on-call rotation shift begins."
+        "EndTime": "",
+        "StartTime": ""
       }
     },
     "AWS::SSMContacts::Rotation.MonthlySetting": {
@@ -57748,16 +57793,16 @@
         "MonthlySettings": "Information about on-call rotations that recur monthly.",
         "NumberOfOnCalls": "The number of contacts, or shift team members designated to be on call concurrently during a shift. For example, in an on-call schedule that contains ten contacts, a value of `2` designates that two of them are on call at any given time.",
         "RecurrenceMultiplier": "The number of days, weeks, or months a single rotation lasts.",
-        "ShiftCoverages": "Information about the days of the week included in on-call rotation coverage.",
+        "ShiftCoverages": "Information about the days of the week that the on-call rotation coverage includes.",
         "WeeklySettings": "Information about on-call rotations that recur weekly."
       }
     },
     "AWS::SSMContacts::Rotation.ShiftCoverage": {
       "attributes": {},
-      "description": "Information about the days of the week that the on-call rotation coverage includes.",
+      "description": "",
       "properties": {
-        "CoverageTimes": "The start and end times of the shift.",
-        "DayOfWeek": "A list of days on which the schedule is active."
+        "CoverageTimes": "",
+        "DayOfWeek": ""
       }
     },
     "AWS::SSMContacts::Rotation.WeeklySetting": {
@@ -57872,7 +57917,7 @@
     },
     "AWS::SSMIncidents::ResponsePlan.PagerDutyIncidentConfiguration": {
       "attributes": {},
-      "description": "",
+      "description": "Details about the PagerDuty service where the response plan creates an incident.",
       "properties": {
         "ServiceId": "The ID of the PagerDuty service that the response plan associates with an incident when it launches."
       }
@@ -57907,7 +57952,7 @@
         "PermissionSetArn": "The ARN of the permission set.",
         "PrincipalId": "An identifier for an object in IAM Identity Center, such as a user or group. PrincipalIds are GUIDs (For example, f81d4fae-7dec-11d0-a765-00a0c91e6bf6). For more information about PrincipalIds in IAM Identity Center, see the [IAM Identity Center Identity Store API Reference](https://docs.aws.amazon.com//singlesignon/latest/IdentityStoreAPIReference/welcome.html) .",
         "PrincipalType": "The entity type for which the assignment will be created.",
-        "TargetId": "TargetID is an AWS account identifier, typically a 10-12 digit string (For example, 123456789012).",
+        "TargetId": "TargetID is an AWS account identifier, (For example, 123456789012).",
         "TargetType": "The entity type for which the assignment will be created."
       }
     },
@@ -58617,6 +58662,7 @@
       "properties": {
         "AcceleratorType": "The size of the Elastic Inference (EI) instance to use for the production variant. EI instances provide on-demand GPU computing for inference. For more information, see [Using Elastic Inference in Amazon SageMaker](https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html) . For more information, see [Using Elastic Inference in Amazon SageMaker](https://docs.aws.amazon.com/sagemaker/latest/dg/ei.html) .",
         "ContainerStartupHealthCheckTimeoutInSeconds": "",
+        "EnableSSMAccess": "You can use this parameter to turn on native AWS Systems Manager (SSM) access for a production variant behind an endpoint. By default, SSM access is disabled for all production variants behind an endpoint. You can turn on or turn off SSM access for a production variant behind an existing endpoint by creating a new endpoint configuration and calling `UpdateEndpoint` .",
         "InitialInstanceCount": "Number of instances to launch initially.",
         "InitialVariantWeight": "Determines initial traffic distribution among all of the models that you specify in the endpoint configuration. The traffic to a production variant is determined by the ratio of the `VariantWeight` to the sum of all `VariantWeight` values across all ProductionVariants. If unspecified, it defaults to 1.0.",
         "InstanceType": "The ML compute instance type.",
@@ -60662,7 +60708,7 @@
     },
     "AWS::SecretsManager::ResourcePolicy": {
       "attributes": {
-        "Ref": "When you pass the logical ID of an `AWS::SecretsManager::ResourcePolicy` resource to the intrinsic `Ref` function, the function returns the ARN of the configured secret, such as:\n\n`arn:aws:secretsmanager: *us-west-2* : *123456789012* :secret: *my-path/my-secret-name* - *1a2b3c*`\n\nThis enables you to reference a secret you created in one part of the stack template from within the definition of another resource later, in the same template. You would typically use this with the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource type.\n\nFor more information about using the Ref function, see [Ref](https://docs.aws.amazon.com/url-doc-domain/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
+        "Ref": "When you pass the logical ID of an `AWS::SecretsManager::ResourcePolicy` resource to the intrinsic `Ref` function, the function returns the ARN of the configured secret, such as:\n\n`arn:aws:secretsmanager: *us-west-2* : *123456789012* :secret: *my-path/my-secret-name* - *1a2b3c*`\n\nThis enables you to reference a secret you created in one part of the stack template from within the definition of another resource later, in the same template. You would typically use this with the [AWS::SecretsManager::SecretTargetAttachment](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-secretsmanager-secrettargetattachment.html) resource type.\n\nFor more information about using the Ref function, see [Ref](https://docs.aws.amazon.com//AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html) ."
       },
       "description": "Attaches a resource-based permission policy to a secret. A resource-based policy is optional. For more information, see [Authentication and access control for Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access.html)\n\nFor information about attaching a policy in the console, see [Attach a permissions policy to a secret](https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access_resource-based-policies.html) .\n\n*Required permissions:* `secretsmanager:PutResourcePolicy` . For more information, see [IAM policy actions for Secrets Manager](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awssecretsmanager.html#awssecretsmanager-actions-as-permissions) and [Authentication and access control in Secrets Manager](https://docs.aws.amazon.com/secretsmanager/latest/userguide/auth-and-access.html) .",
       "properties": {
@@ -61742,8 +61788,7 @@
     },
     "AWS::Transfer::Agreement": {
       "attributes": {
-        "AgreementId": "",
-        "Arn": "",
+        "AgreementId": "The unique identifier for the AS2 agreement, returned after the API call succeeds.",
         "Ref": ""
       },
       "description": "Creates an agreement. An agreement is a bilateral trading partner agreement, or partnership, between an AWS Transfer Family server and an AS2 process. The agreement defines the file and message transfer relationship between the server and the AS2 process. To define an agreement, Transfer Family combines a server, local profile, partner profile, certificate, and other attributes.\n\nThe partner is identified with the `PartnerProfileId` , and the AS2 process is identified with the `LocalProfileId` .",
@@ -61783,8 +61828,6 @@
     },
     "AWS::Transfer::Connector": {
       "attributes": {
-        "Arn": "",
-        "ConnectorId": "",
         "Ref": ""
       },
       "description": "Creates the connector, which captures the parameters for an outbound connection for the AS2 protocol. The connector is required for sending files to an externally hosted AS2 server. For more details about connectors, see [Create AS2 connectors](https://docs.aws.amazon.com/transfer/latest/userguide/create-b2b-server.html#configure-as2-connector) .",
@@ -61798,22 +61841,22 @@
     },
     "AWS::Transfer::Connector.As2Config": {
       "attributes": {},
-      "description": "",
+      "description": "A structure that contains the parameters for a connector object.",
       "properties": {
-        "Compression": "",
-        "EncryptionAlgorithm": "",
-        "LocalProfileId": "",
-        "MdnResponse": "",
-        "MdnSigningAlgorithm": "",
-        "MessageSubject": "",
-        "PartnerProfileId": "",
-        "SigningAlgorithm": ""
+        "Compression": "Specifies whether the AS2 file is compressed.",
+        "EncryptionAlgorithm": "The algorithm that is used to encrypt the file.\n\n> You can only specify `NONE` if the URL for your connector uses HTTPS. This ensures that no traffic is sent in clear text.",
+        "LocalProfileId": "A unique identifier for the AS2 local profile.",
+        "MdnResponse": "Used for outbound requests (from an AWS Transfer Family server to a partner AS2 server) to determine whether the partner response for transfers is synchronous or asynchronous. Specify either of the following values:\n\n- `SYNC` : The system expects a synchronous MDN response, confirming that the file was transferred successfully (or not).\n- `NONE` : Specifies that no MDN response is required.",
+        "MdnSigningAlgorithm": "The signing algorithm for the MDN response.\n\n> If set to DEFAULT (or not set at all), the value for `SigningAlgorithm` is used.",
+        "MessageSubject": "Used as the `Subject` HTTP header attribute in AS2 messages that are being sent with the connector.",
+        "PartnerProfileId": "A unique identifier for the partner profile for the connector.",
+        "SigningAlgorithm": "The algorithm that is used to sign the AS2 messages sent with the connector."
       }
     },
     "AWS::Transfer::Profile": {
       "attributes": {
-        "Arn": "",
-        "ProfileId": "",
+        "Arn": "The Amazon Resource Name associated with the profile, in the form `arn:aws:transfer:region:account-id:profile/profile-id/` .",
+        "ProfileId": "The unique identifier for the AS2 profile, returned after the API call succeeds.",
         "Ref": ""
       },
       "description": "Creates the local or partner profile to use for AS2 transfers.",
@@ -61963,72 +62006,72 @@
     },
     "AWS::Transfer::Workflow.CopyStepDetails": {
       "attributes": {},
-      "description": "",
+      "description": "Details for a step that performs a file copy.\n\nConsists of the following values:\n\n- A description\n- An Amazon S3 location for the destination of the file copy.\n- A flag that indicates whether to overwrite an existing file of the same name. The default is `FALSE` .",
       "properties": {
-        "DestinationFileLocation": "",
-        "Name": "",
-        "OverwriteExisting": "",
-        "SourceFileLocation": ""
+        "DestinationFileLocation": "Specifies the location for the file being copied. Use `${Transfer:UserName}` or `${Transfer:UploadDate}` in this field to parametrize the destination prefix by username or uploaded date.\n\n- Set the value of `DestinationFileLocation` to `${Transfer:UserName}` to copy uploaded files to an Amazon S3 bucket that is prefixed with the name of the Transfer Family user that uploaded the file.\n- Set the value of `DestinationFileLocation` to `${Transfer:UploadDate}` to copy uploaded files to an Amazon S3 bucket that is prefixed with the date of the upload.\n\n> The system resolves `UploadDate` to a date format of *YYYY-MM-DD* , based on the date the file is uploaded in UTC.",
+        "Name": "The name of the step, used as an identifier.",
+        "OverwriteExisting": "A flag that indicates whether to overwrite an existing file of the same name. The default is `FALSE` .\n\nIf the workflow is processing a file that has the same name as an existing file, the behavior is as follows:\n\n- If `OverwriteExisting` is `TRUE` , the existing file is replaced with the file being processed.\n- If `OverwriteExisting` is `FALSE` , nothing happens, and the workflow processing stops.",
+        "SourceFileLocation": "Specifies which file to use as input to the workflow step: either the output from the previous step, or the originally uploaded file for the workflow.\n\n- To use the previous file as the input, enter `${previous.file}` . In this case, this workflow step uses the output file from the previous workflow step as input. This is the default value.\n- To use the originally uploaded file location as input for this step, enter `${original.file}` ."
       }
     },
     "AWS::Transfer::Workflow.CustomStepDetails": {
       "attributes": {},
-      "description": "",
+      "description": "Details for a step that invokes an AWS Lambda function.\n\nConsists of the Lambda function's name, target, and timeout (in seconds).",
       "properties": {
-        "Name": "",
-        "SourceFileLocation": "",
-        "Target": "",
-        "TimeoutSeconds": ""
+        "Name": "The name of the step, used as an identifier.",
+        "SourceFileLocation": "Specifies which file to use as input to the workflow step: either the output from the previous step, or the originally uploaded file for the workflow.\n\n- To use the previous file as the input, enter `${previous.file}` . In this case, this workflow step uses the output file from the previous workflow step as input. This is the default value.\n- To use the originally uploaded file location as input for this step, enter `${original.file}` .",
+        "Target": "The ARN for the lambda function that is being called.",
+        "TimeoutSeconds": "Timeout, in seconds, for the step."
       }
     },
     "AWS::Transfer::Workflow.DecryptStepDetails": {
       "attributes": {},
-      "description": "",
+      "description": "Details for a step that decrypts an encrypted file.\n\nConsists of the following values:\n\n- A descriptive name\n- An Amazon S3 or Amazon Elastic File System (Amazon EFS) location for the source file to decrypt.\n- An S3 or Amazon EFS location for the destination of the file decryption.\n- A flag that indicates whether to overwrite an existing file of the same name. The default is `FALSE` .\n- The type of encryption that's used. Currently, only PGP encryption is supported.",
       "properties": {
-        "DestinationFileLocation": "",
-        "Name": "",
-        "OverwriteExisting": "",
-        "SourceFileLocation": "",
-        "Type": ""
+        "DestinationFileLocation": "Specifies the location for the file being decrypted. Use `${Transfer:UserName}` or `${Transfer:UploadDate}` in this field to parametrize the destination prefix by username or uploaded date.\n\n- Set the value of `DestinationFileLocation` to `${Transfer:UserName}` to decrypt uploaded files to an Amazon S3 bucket that is prefixed with the name of the Transfer Family user that uploaded the file.\n- Set the value of `DestinationFileLocation` to `${Transfer:UploadDate}` to decrypt uploaded files to an Amazon S3 bucket that is prefixed with the date of the upload.\n\n> The system resolves `UploadDate` to a date format of *YYYY-MM-DD* , based on the date the file is uploaded in UTC.",
+        "Name": "The name of the step, used as an identifier.",
+        "OverwriteExisting": "A flag that indicates whether to overwrite an existing file of the same name. The default is `FALSE` .\n\nIf the workflow is processing a file that has the same name as an existing file, the behavior is as follows:\n\n- If `OverwriteExisting` is `TRUE` , the existing file is replaced with the file being processed.\n- If `OverwriteExisting` is `FALSE` , nothing happens, and the workflow processing stops.",
+        "SourceFileLocation": "Specifies which file to use as input to the workflow step: either the output from the previous step, or the originally uploaded file for the workflow.\n\n- To use the previous file as the input, enter `${previous.file}` . In this case, this workflow step uses the output file from the previous workflow step as input. This is the default value.\n- To use the originally uploaded file location as input for this step, enter `${original.file}` .",
+        "Type": "The type of encryption used. Currently, this value must be `PGP` ."
       }
     },
     "AWS::Transfer::Workflow.DeleteStepDetails": {
       "attributes": {},
-      "description": "",
+      "description": "An object that contains the name and file location for a file being deleted by a workflow.",
       "properties": {
-        "Name": "",
-        "SourceFileLocation": ""
+        "Name": "The name of the step, used as an identifier.",
+        "SourceFileLocation": "Specifies which file to use as input to the workflow step: either the output from the previous step, or the originally uploaded file for the workflow.\n\n- To use the previous file as the input, enter `${previous.file}` . In this case, this workflow step uses the output file from the previous workflow step as input. This is the default value.\n- To use the originally uploaded file location as input for this step, enter `${original.file}` ."
       }
     },
     "AWS::Transfer::Workflow.EfsInputFileLocation": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the Amazon EFS identifier and the path for the file being used.",
       "properties": {
-        "FileSystemId": "",
-        "Path": ""
+        "FileSystemId": "The identifier of the file system, assigned by Amazon EFS.",
+        "Path": "The pathname for the folder being used by a workflow."
       }
     },
     "AWS::Transfer::Workflow.InputFileLocation": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the location for the file that's being processed.",
       "properties": {
-        "EfsFileLocation": "",
-        "S3FileLocation": ""
+        "EfsFileLocation": "Specifies the details for the Amazon Elastic File System (Amazon EFS) file that's being decrypted.",
+        "S3FileLocation": "Specifies the details for the Amazon S3 file that's being copied or decrypted."
       }
     },
     "AWS::Transfer::Workflow.S3FileLocation": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the S3 details for the file being used, such as bucket, ETag, and so forth.",
       "properties": {
         "S3FileLocation": ""
       }
     },
     "AWS::Transfer::Workflow.S3InputFileLocation": {
       "attributes": {},
-      "description": "",
+      "description": "Specifies the details for the Amazon S3 location for an input file to a workflow.",
       "properties": {
-        "Bucket": "",
-        "Key": ""
+        "Bucket": "Specifies the S3 bucket for the customer input file.",
+        "Key": "The name assigned to the file when it was created in Amazon S3. You use the object key to retrieve the object."
       }
     },
     "AWS::Transfer::Workflow.S3Tag": {
@@ -62041,11 +62084,11 @@
     },
     "AWS::Transfer::Workflow.TagStepDetails": {
       "attributes": {},
-      "description": "",
+      "description": "Details for a step that creates one or more tags.\n\nYou specify one or more tags. Each tag contains a key-value pair.",
       "properties": {
-        "Name": "",
-        "SourceFileLocation": "",
-        "Tags": ""
+        "Name": "The name of the step, used as an identifier.",
+        "SourceFileLocation": "Specifies which file to use as input to the workflow step: either the output from the previous step, or the originally uploaded file for the workflow.\n\n- To use the previous file as the input, enter `${previous.file}` . In this case, this workflow step uses the output file from the previous workflow step as input. This is the default value.\n- To use the originally uploaded file location as input for this step, enter `${original.file}` .",
+        "Tags": "Array that contains from 1 to 10 key/value pairs."
       }
     },
     "AWS::Transfer::Workflow.WorkflowStep": {
@@ -62054,7 +62097,7 @@
       "properties": {
         "CopyStepDetails": "Details for a step that performs a file copy.\n\nConsists of the following values:\n\n- A description\n- An Amazon S3 location for the destination of the file copy.\n- A flag that indicates whether to overwrite an existing file of the same name. The default is `FALSE` .",
         "CustomStepDetails": "Details for a step that invokes an AWS Lambda function.\n\nConsists of the Lambda function's name, target, and timeout (in seconds).",
-        "DecryptStepDetails": "",
+        "DecryptStepDetails": "Details for a step that decrypts an encrypted file.\n\nConsists of the following values:\n\n- A descriptive name\n- An Amazon S3 or Amazon Elastic File System (Amazon EFS) location for the source file to decrypt.\n- An S3 or Amazon EFS location for the destination of the file decryption.\n- A flag that indicates whether to overwrite an existing file of the same name. The default is `FALSE` .\n- The type of encryption that's used. Currently, only PGP encryption is supported.",
         "DeleteStepDetails": "Details for a step that deletes the file.",
         "TagStepDetails": "Details for a step that creates one or more tags.\n\nYou specify one or more tags. Each tag contains a key-value pair.",
         "Type": "Currently, the following step types are supported.\n\n- *`COPY`* - Copy the file to another location.\n- *`CUSTOM`* - Perform a custom step with an AWS Lambda function target.\n- *`DECRYPT`* - Decrypt a file that was encrypted before it was uploaded.\n- *`DELETE`* - Delete the file.\n- *`TAG`* - Add a tag to the file."
