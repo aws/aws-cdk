@@ -1,4 +1,5 @@
 import { Template } from '../../assertions';
+import { Runtime, RuntimeFamily } from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
 import { Stack } from '../../core';
 import * as tasks from '../lib';
@@ -85,5 +86,20 @@ test('with dash and underscore in path', () => {
         ],
       ],
     },
+  });
+});
+
+test('With Node.js 18.x', () => {
+  // WHEN
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '$.a + $.b',
+    runtime: new Runtime('nodejs18.x', RuntimeFamily.NODEJS),
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definition: task,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs18.x',
   });
 });
