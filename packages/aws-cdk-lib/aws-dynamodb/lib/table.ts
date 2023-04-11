@@ -275,10 +275,17 @@ export interface TableOptions extends SchemaOptions {
    * created and replication will be completed asynchronously. This property is
    * ignored if replicationRegions property is not set.
    *
+   * WARNING:
    * DO NOT UNSET this property if adding/removing multiple replicationRegions
    * in one deployment, as CloudFormation only supports one region replication
    * at a time. CDK overcomes this limitation by waiting for replication to
    * finish before starting new replicationRegion.
+   * 
+   * If the custom resource which handles replication has a physical resource
+   * ID with the format `region` instead of `tablename-region` (this would happen 
+   * if the custom resource hasn't received an event since v1.91.0), DO NOT SET 
+   * this property to false without making a change to the table name. 
+   * This will cause the existing replicas to be deleted.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-globaltable.html#cfn-dynamodb-globaltable-replicas
    * @default true
