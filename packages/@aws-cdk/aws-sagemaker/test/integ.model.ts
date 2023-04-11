@@ -125,7 +125,7 @@ new sagemaker.Model(stack, 'InferencePipelineModel', {
   ],
 });
 
-new sagemaker.Model(stack, 'Hugging Face Model', {
+new sagemaker.Model(stack, 'HuggingFaceModel', {
   containers: [
     { image: dlcImage },
   ],

@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/80c9b86592d03915bffa7ab9b70f25bda8a3b0877d0535b5dcb37e1e94b967e9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/be0577003620b4cc844de880dc7d01b90719400dea1cc12c03d93a3ac8e451a3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -213,25 +213,22 @@
             "data": "InferencePipelineModel3564F141"
           }
         ],
-        "/aws-cdk-sagemaker-model/Hugging Face Model/Role/Resource": [
+        "/aws-cdk-sagemaker-model/HuggingFaceModel/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HuggingFaceModelRole8CE687FE"
+            "data": "HuggingFaceModelRoleDA17DA00"
           }
         ],
-        "/aws-cdk-sagemaker-model/Hugging Face Model/Role/DefaultPolicy/Resource": [
+        "/aws-cdk-sagemaker-model/HuggingFaceModel/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HuggingFaceModelRoleDefaultPolicy365BBC22"
+            "data": "HuggingFaceModelRoleDefaultPolicy50587D35"
           }
         ],
-        "/aws-cdk-sagemaker-model/Hugging Face Model/Model": [
+        "/aws-cdk-sagemaker-model/HuggingFaceModel/Model": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HuggingFaceModelD53E0910",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "HuggingFaceModel8E13DAA5"
           }
         ],
         "/aws-cdk-sagemaker-model/DlcRepositoryAccountMap": [
@@ -250,6 +247,33 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "HuggingFaceModelRole8CE687FE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HuggingFaceModelRole8CE687FE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "HuggingFaceModelRoleDefaultPolicy365BBC22": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HuggingFaceModelRoleDefaultPolicy365BBC22",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "HuggingFaceModelD53E0910": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HuggingFaceModelD53E0910",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

@@ -771,7 +771,7 @@
     "InferencePipelineModelRole6A99C5B3"
    ]
   },
-  "HuggingFaceModelRole8CE687FE": {
+  "HuggingFaceModelRoleDA17DA00": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -802,7 +802,7 @@
     ]
    }
   },
-  "HuggingFaceModelRoleDefaultPolicy365BBC22": {
+  "HuggingFaceModelRoleDefaultPolicy50587D35": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -849,20 +849,20 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "HuggingFaceModelRoleDefaultPolicy365BBC22",
+    "PolicyName": "HuggingFaceModelRoleDefaultPolicy50587D35",
     "Roles": [
      {
-      "Ref": "HuggingFaceModelRole8CE687FE"
+      "Ref": "HuggingFaceModelRoleDA17DA00"
      }
     ]
    }
   },
-  "HuggingFaceModelD53E0910": {
+  "HuggingFaceModel8E13DAA5": {
    "Type": "AWS::SageMaker::Model",
    "Properties": {
     "ExecutionRoleArn": {
      "Fn::GetAtt": [
-      "HuggingFaceModelRole8CE687FE",
+      "HuggingFaceModelRoleDA17DA00",
       "Arn"
      ]
     },
@@ -895,8 +895,8 @@
     }
    },
    "DependsOn": [
-    "HuggingFaceModelRoleDefaultPolicy365BBC22",
-    "HuggingFaceModelRole8CE687FE"
+    "HuggingFaceModelRoleDefaultPolicy50587D35",
+    "HuggingFaceModelRoleDA17DA00"
    ]
   }
  },

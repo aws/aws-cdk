@@ -1269,17 +1269,17 @@
               "version": "0.0.0"
             }
           },
-          "Hugging Face Model": {
-            "id": "Hugging Face Model",
-            "path": "aws-cdk-sagemaker-model/Hugging Face Model",
+          "HuggingFaceModel": {
+            "id": "HuggingFaceModel",
+            "path": "aws-cdk-sagemaker-model/HuggingFaceModel",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-sagemaker-model/Hugging Face Model/Role",
+                "path": "aws-cdk-sagemaker-model/HuggingFaceModel/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-cdk-sagemaker-model/Hugging Face Model/Role/ImportRole",
+                    "path": "aws-cdk-sagemaker-model/HuggingFaceModel/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -1287,7 +1287,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-sagemaker-model/Hugging Face Model/Role/Resource",
+                    "path": "aws-cdk-sagemaker-model/HuggingFaceModel/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1326,11 +1326,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-sagemaker-model/Hugging Face Model/Role/DefaultPolicy",
+                    "path": "aws-cdk-sagemaker-model/HuggingFaceModel/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-sagemaker-model/Hugging Face Model/Role/DefaultPolicy/Resource",
+                        "path": "aws-cdk-sagemaker-model/HuggingFaceModel/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1378,10 +1378,10 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "HuggingFaceModelRoleDefaultPolicy365BBC22",
+                            "policyName": "HuggingFaceModelRoleDefaultPolicy50587D35",
                             "roles": [
                               {
-                                "Ref": "HuggingFaceModelRole8CE687FE"
+                                "Ref": "HuggingFaceModelRoleDA17DA00"
                               }
                             ]
                           }
@@ -1405,7 +1405,7 @@
               },
               "DlcRepository": {
                 "id": "DlcRepository",
-                "path": "aws-cdk-sagemaker-model/Hugging Face Model/DlcRepository",
+                "path": "aws-cdk-sagemaker-model/HuggingFaceModel/DlcRepository",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
                   "version": "0.0.0"
@@ -1413,13 +1413,13 @@
               },
               "Model": {
                 "id": "Model",
-                "path": "aws-cdk-sagemaker-model/Hugging Face Model/Model",
+                "path": "aws-cdk-sagemaker-model/HuggingFaceModel/Model",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SageMaker::Model",
                   "aws:cdk:cloudformation:props": {
                     "executionRoleArn": {
                       "Fn::GetAtt": [
-                        "HuggingFaceModelRole8CE687FE",
+                        "HuggingFaceModelRoleDA17DA00",
                         "Arn"
                       ]
                     },
