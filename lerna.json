@@ -6,6 +6,7 @@
     "packages/cdk-cli-wrapper",
     "packages/cdk-assets",
     "packages/aws-cdk",
+    "packages/cdk",
     "packages/@aws-cdk/*",
     "packages/awslint",
     "packages/@aws-cdk-containers/*",
