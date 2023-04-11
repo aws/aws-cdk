@@ -1662,6 +1662,32 @@ describe('auto scaling group', () => {
     }).toThrow('You cannot add security groups when the Auto Scaling Group is created from a Launch Template.');
   });
 
+  test('Should not throw when LaunchTemplate is used with CloudformationInit', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = new LaunchTemplate(stack, 'LaunchTemplate', {
+      machineImage: new AmazonLinuxImage(),
+      instanceType: new ec2.InstanceType('t3.micro'),
+      userData: ec2.UserData.forLinux(),
+      securityGroup: ec2.SecurityGroup.fromSecurityGroupId(stack, 'ImportedSg', 'securityGroupId'),
+      role: iam.Role.fromRoleArn(stack, 'ImportedRole', 'arn:aws:iam::123456789012:role/MockRole'),
+    });
+
+    const cfInit = ec2.CloudFormationInit.fromElements(
+      ec2.InitCommand.shellCommand('/bash'),
+    );
+
+    // THEN
+    expect(() => new autoscaling.AutoScalingGroup(stack, 'Asg', {
+      launchTemplate: lt,
+      init: cfInit,
+      vpc: mockVpc(stack),
+      signals: autoscaling.Signals.waitForAll(),
+    })).not.toThrow();
+
+  });
+
   test('Should throw when accessing inferred fields with in-stack Launch Template not having corresponding properties', () => {
     // GIVEN
     const stack = new cdk.Stack();
