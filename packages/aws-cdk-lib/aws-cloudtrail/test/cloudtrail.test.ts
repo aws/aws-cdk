@@ -258,8 +258,8 @@ describe('cloudtrail', () => {
         trailName: 'KmsKeyTrail',
         encryptionKey: key,
       });
-      new Trail(stack, 'DefauleTrail', {
-        trailName: 'DefauleTrail',
+      new Trail(stack, 'DefaultTrail', {
+        trailName: 'DefaultTrail',
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
