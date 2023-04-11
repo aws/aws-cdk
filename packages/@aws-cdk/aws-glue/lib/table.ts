@@ -47,15 +47,6 @@ export interface ITable extends IResource {
  */
 export enum TableEncryption {
   /**
-   * Previous option. Tables can not be unencrypted now.
-   *
-   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html
-   * @deprecated S3 applies server-side encryption with an Amazon S3-managed key
-   * for every bucket that default encryption is not configured.
-   */
-  UNENCRYPTED = 'Unencrypted',
-
-  /**
    * Server side encryption (SSE) with an Amazon S3-managed key.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html
@@ -162,7 +153,7 @@ export interface TableProps {
    * If you choose `SSE-KMS`, you *can* provide an un-managed KMS key with `encryptionKey`.
    * If you choose `CSE-KMS`, you *must* provide an un-managed KMS key with `encryptionKey`.
    *
-   * @default Unencrypted
+   * @default BucketEncryption.S3_MANAGED
    */
   readonly encryption?: TableEncryption;
 
@@ -513,7 +504,6 @@ const encryptionMappings = {
   [TableEncryption.KMS_MANAGED]: s3.BucketEncryption.KMS_MANAGED,
   [TableEncryption.KMS]: s3.BucketEncryption.KMS,
   [TableEncryption.CLIENT_SIDE_KMS]: s3.BucketEncryption.S3_MANAGED,
-  [TableEncryption.UNENCRYPTED]: s3.BucketEncryption.S3_MANAGED,
 };
 
 // create the bucket to store a table's data depending on the `encryption` and `encryptionKey` properties.
