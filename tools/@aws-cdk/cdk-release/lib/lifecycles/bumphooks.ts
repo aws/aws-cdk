@@ -34,10 +34,16 @@ export async function runBumpHooks(args: BumpOptions): Promise<Set<string>> {
         cwd: pkg.location,
       });
 
-      // Find changed files
-      const gitStatus = await runExecFile(args, 'git', ['status', '--porcelain=v1', pkg.location], {
-        cwd: args.repoRoot,
-      });
+      // Find changed files (may fail if we're not in a git repo, in which case ignore)
+      let gitStatus;
+      try {
+        gitStatus = await runExecFile(args, 'git', ['status', '--porcelain=v1', pkg.location], {
+          cwd: args.repoRoot,
+        });
+      } catch (e: any) {
+        notify(args, '%s', e.message);
+      }
+
       if (gitStatus) {
         for (const line of gitStatus.split('\n')) {
           const status = line.substring(0, 2);
