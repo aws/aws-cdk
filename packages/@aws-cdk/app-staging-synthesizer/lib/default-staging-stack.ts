@@ -288,7 +288,7 @@ export class DefaultStagingStack extends Stack implements IStagingStack {
   private createBucketKey(): kms.IKey {
     const bucketKeyId = 'BucketKey';
     const key = this.node.tryFindChild(bucketKeyId) as kms.IKey ?? new kms.Key(this, bucketKeyId, {
-      alias: `CdkStagingBucketKey${this.account}-${this.region}-${this.appId}`,
+      alias: `alias/cdkstagingkey/${this.account}-${this.region}-${this.appId}`,
       admins: [new iam.AccountPrincipal(this.account)],
     });
     return key;

@@ -50,8 +50,8 @@ const ASSET_TOKENS = ['${AWS::Partition}', '${AWS::Region}', '${AWS::AccountId}'
 const CFN_TOKENS = [Aws.PARTITION, Aws.REGION, Aws.ACCOUNT_ID];
 
 /**
- * Replaces CloudFormation Tokens ('Aws.PARTITION') with corresponding
- * Asset Tokens ('${AWS::Partition}').
+ * Replaces CloudFormation Tokens (i.e. 'Aws.PARTITION') with corresponding
+ * Asset Tokens (i.e. '${AWS::Partition}').
  */
 export function translateCfnTokenToAssetToken(arn: string) {
   for (let i = 0; i < CFN_TOKENS.length; i++) {
@@ -61,8 +61,8 @@ export function translateCfnTokenToAssetToken(arn: string) {
 }
 
 /**
- * Replaces Asset Tokens ('${AWS::Partition}') with corresponding
- * CloudFormation Tokens ('Aws.PARTITION').
+ * Replaces Asset Tokens (i.e. '${AWS::Partition}') with corresponding
+ * CloudFormation Tokens (i.e. 'Aws.PARTITION').
  */
 export function translateAssetTokenToCfnToken(arn: string) {
   for (let i = 0; i < ASSET_TOKENS.length; i++) {
