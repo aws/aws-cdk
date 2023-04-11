@@ -29,11 +29,6 @@ export async function runBumpHooks(args: BumpOptions): Promise<Set<string>> {
     if (pj?.scripts?.['on-bump']) {
       notify(args, '%s: on-bump: %s', [pkg.name, pj?.scripts?.['on-bump']]);
 
-      // Build up to this package
-      await runExecFile(args, 'npx', ['lerna', 'run', 'build', '--include-dependencies', '--scope', pkg.name], {
-        cwd: args.repoRoot,
-      });
-
       // Run the on-bump script
       await runExecFile(args, 'yarn', ['on-bump'], {
         cwd: pkg.location,

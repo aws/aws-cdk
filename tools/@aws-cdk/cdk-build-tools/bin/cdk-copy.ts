@@ -102,31 +102,64 @@ async function duplicateModule(config: DuplicateConfig) {
   );
 }
 
-const importRegex = new RegExp('from [\'"](.*)[\'"]');
-const libRegx = new RegExp('(?<=.*from ["\'].*)(\/lib.*)(?=["\'])');
+/**
+ * Find a package reference
+ *
+ * ```
+ * import * as xyz from "<somewhere>";
+ * import { xyz }  from '<somewhere>';
+ *                 ^^^^^^^^^^^^^^^^^^^
+ * ```
+ */
+const importRegex = new RegExp('^(.*from [\'"])([^\'"]*)([\'"].*)');
+
 export async function rewriteFileTo(source: string, target: string, relativeDepth: number) {
   const lines = (await fs.readFile(source, 'utf8'))
     .split('\n')
     .map((line) => {
       const importMatches = importRegex.exec(line);
-      const importPath = importMatches?.[1];
 
-      if (importPath) {
-        const newPath = rewritePath(importPath, relativeDepth);
-        return line.replace(/(?<=.*from ["'])(.*)(?=["'])/, `${newPath}`).replace(libRegx, '');
+      if (importMatches) {
+        const newPath = rewriteImportPath(importMatches[2], relativeDepth);
+        return importMatches[1] + newPath + importMatches[3];
       }
 
-      return line.replace(libRegx, '');
+      return line;
     });
 
   await fs.writeFile(target, lines.join('\n'));
 }
 
-function rewritePath(importPath: string, relativeDepth: number) {
+/**
+ * Rewrite monopackage-relative imports to imports that import from the monopackage
+ *
+ * E.g., turn
+ *
+ * ```
+ * import { blah } from '../../aws-something';
+ * ```
+ *
+ * Into
+ *
+ * ```
+ * import { blah } from 'aws-cdk-lib/aws-something';
+ * ```
+ *
+ * Make an exception for packages that are `cdk-copied` (only
+ * cloud-assembly-schema and cx-api).
+ */
+function rewriteImportPath(importPath: string, relativeDepth: number) {
   const otherImportPath = new Array(relativeDepth).fill('..').join('/');
 
   if (importPath.startsWith(otherImportPath)) {
-    return importPath.replace(otherImportPath, 'aws-cdk-lib');
+    const remainder = importPath.substring(otherImportPath.length + 1);
+
+    let newPrefix = 'aws-cdk-lib'; // aws-cdk-lib/aws-mypackage
+    if (remainder.startsWith('cloud-assembly-schema') || remainder.startsWith('cx-api')) {
+      newPrefix = '@aws-cdk'; // @aws-cdk/aws-mypackage
+    }
+
+    return importPath.replace(otherImportPath, newPrefix);
   }
 
   return importPath;
