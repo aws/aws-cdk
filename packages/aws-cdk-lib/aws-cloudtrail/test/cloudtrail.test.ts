@@ -275,7 +275,7 @@ describe('cloudtrail', () => {
         },
       });
       Template.fromStack(stack).hasResourceProperties('AWS::CloudTrail::Trail', {
-        TrailName: 'DefauleTrail',
+        TrailName: 'DefaultTrail',
         KMSKeyId: Match.absent(),
       });
     });
