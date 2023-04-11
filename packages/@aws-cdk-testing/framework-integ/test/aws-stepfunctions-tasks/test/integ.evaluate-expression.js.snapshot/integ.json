@@ -1,14 +1,12 @@
 {
-  "version": "30.0.0",
+  "version": "31.0.0",
   "testCases": {
-    "integ.evaluate-expression": {
+    "EvaluateExpressionInteg/DefaultTest": {
       "stacks": [
-        "aws-stepfunctions-integ"
+        "cdk-sfn-evaluate-expression-integ"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "EvaluateExpressionInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "EvaluateExpressionIntegDefaultTestDeployAssert03097648"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }
