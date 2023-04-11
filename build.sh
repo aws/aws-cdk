@@ -81,8 +81,8 @@ if [ "$run_tests" == "true" ]; then
     runtarget="$runtarget,test"
 fi
 
-# for some reason increasing this above 5 can double the time it takes
-concurrency=5
+# Limit top-level concurrency to available CPUs - 1 to limit CPU load.
+concurrency=$(node -p 'Math.max(1, require("os").cpus().length - 1)')
 
 flags=""
 if [ "$ci" == "true" ]; then
