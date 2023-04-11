@@ -3,7 +3,6 @@ import * as fs from 'fs-extra';
 import { notify } from '../private/print';
 import { runExecFile } from '../private/run-exec-file';
 import { LifecyclesSkip, PackageInfo } from '../types';
-import { debug } from 'console';
 
 export interface BumpOptions {
   skip?: LifecyclesSkip;
