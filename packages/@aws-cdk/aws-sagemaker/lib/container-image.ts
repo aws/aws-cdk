@@ -6,7 +6,6 @@ import { hashcode } from './private/util';
 import { RegionInfo, FactName } from 'aws-cdk-lib/region-info';
 import { Fn, CfnMapping, Aws, Stack } from 'aws-cdk-lib/core';
 
-
 /**
  * The configuration for creating a container image.
  */
