@@ -20,7 +20,7 @@
   "stability": "stable",
   "maturity": "stable",
   "scripts": {
-    "gen": "ts-node -p tsconfig.dev.json scripts/gen.ts",
+    "gen": "ts-node -P tsconfig.dev.json scripts/gen.ts",
     "build": "cdk-build",
     "lint": "cdk-lint",
     "test": "jest --maxWorkers=50%",
@@ -34,7 +34,7 @@
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract",
-    "on-bump": "ts-node -p tsconfig.dev.json ./cx-api/build-tools/update-vnext.ts && ts-node -p tsconfig.dev.json ./cx-api/build-tools/flag-report"
+    "on-bump": "ts-node -P tsconfig.dev.json ./cx-api/build-tools/update-vnext.ts && ts-node -P tsconfig.dev.json ./cx-api/build-tools/flag-report"
   },
   "awslint": {
     "exclude": [

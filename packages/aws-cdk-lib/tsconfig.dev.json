@@ -1,21 +1,17 @@
 {
   "$": "Config file for ts-node",
   "ts-node": {
+    "files": true,
     "preferTsExts": true
   },
   "compilerOptions": {
-    "declarationMap": false,
-    "inlineSourceMap": true,
-    "inlineSources": true,
     "alwaysStrict": true,
-    "declaration": true,
     "experimentalDecorators": true,
     "incremental": true,
     "lib": [
       "es2020"
     ],
     "module": "CommonJS",
-    "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
@@ -37,7 +33,6 @@
   ],
   "exclude": [
     "node_modules",
-    ".types-compat",
-    "scripts"
+    ".types-compat"
   ]
 }
