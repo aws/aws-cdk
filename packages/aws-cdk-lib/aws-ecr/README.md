@@ -126,3 +126,18 @@ const repository = new Repository(this, 'MyTempRepo', {
   autoDeleteImages: true,
 });
 ```
+
+## Managing the Resource Policy
+
+You can add statements to the resource policy of the repository using the
+`addToResourcePolicy` method. However, be advised that you must not include
+a `resources` section in the `PolicyStatement`.
+
+```ts
+declare const repository: ecr.Repository;
+repository.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['ecr:GetDownloadUrlForLayer'],
+  // resources: ['*'], // not currently allowed!
+  principals: [new iam.AnyPrincipal()],
+}));
+```
