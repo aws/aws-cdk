@@ -54,7 +54,11 @@ export class AssetEnvironmentFile extends EnvironmentFile {
   public bind(scope: Construct): EnvironmentFileConfig {
     // If the same AssetCode is used multiple times, retain only the first instantiation.
     if (!this.asset) {
-      this.asset = new Asset(scope, 'EnvironmentFile', {
+      // Look for adjacent EnvironmentFile constructs and increment if there are more than one
+      const adjacentEnvironmentFileCount = scope.node.children.filter(construct => construct.node.id.startsWith('EnvironmentFile')).length
+      const environmentFileConstructId = adjacentEnvironmentFileCount > 0 ? `EnvironmentFile${adjacentEnvironmentFileCount}` : 'EnvironmentFile';
+
+      this.asset = new Asset(scope, environmentFileConstructId, {
         path: this.path,
         ...this.options,
       });
