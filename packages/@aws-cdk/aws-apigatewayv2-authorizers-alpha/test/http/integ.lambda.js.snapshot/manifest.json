@@ -1,0 +1,130 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "AuthorizerInteg.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AuthorizerInteg.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AuthorizerInteg": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AuthorizerInteg.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4eca206174995529e6f14fd5d16aaf201875882e3a7cdf7c049110c2ae2772dd.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AuthorizerInteg.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AuthorizerInteg.assets"
+      ],
+      "metadata": {
+        "/AuthorizerInteg/MyHttpApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApi8AEAAC21"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiDefaultStageDCB9BC49"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi/GET--/RootIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiGETRootIntegration5068C5B0"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi/GET--/RootIntegration-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiGETRootIntegrationPermission81613491"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi/GET--/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiGETE0EFC6F8"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi/LambdaAuthorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiLambdaAuthorizerB8A0E2A4"
+          }
+        ],
+        "/AuthorizerInteg/MyHttpApi/AuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7-Permission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyHttpApiAuthorizerIntegMyHttpApiLambdaAuthorizerB89228D7Permission82260331"
+          }
+        ],
+        "/AuthorizerInteg/auth-function/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "authfunctionServiceRoleFCB72198"
+          }
+        ],
+        "/AuthorizerInteg/auth-function/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "authfunction96361832"
+          }
+        ],
+        "/AuthorizerInteg/lambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaServiceRole494E4CA6"
+          }
+        ],
+        "/AuthorizerInteg/lambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambda8B5974B5"
+          }
+        ],
+        "/AuthorizerInteg/URL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL"
+          }
+        ],
+        "/AuthorizerInteg/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AuthorizerInteg/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AuthorizerInteg"
+    }
+  }
+}
