@@ -283,6 +283,7 @@ A_{Jobs} * 32 / 1 = B_{Jobs} * 64 / 1
 ```math
 A_{Jobs} * 32 = B_{Jobs} * 64
 ```
+
 ```math
 A_{Jobs} = B_{Jobs} * 2
 ```
