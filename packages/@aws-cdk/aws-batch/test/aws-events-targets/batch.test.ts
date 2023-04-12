@@ -310,4 +310,37 @@ describe('Batch job event target', () => {
       ],
     });
   });
+
+  test('should validate jobName minimum and maximum length', () => {
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.expression('rate(1 min)'),
+    });
+
+    expect(() => {
+      rule.addTarget(
+        new targets.BatchJob(
+          jobQueue.jobQueueArn,
+          jobQueue,
+          jobDefinition.jobDefinitionArn,
+          jobDefinition,
+          {
+            jobName: '',
+          },
+        ),
+      );
+    }).toThrowError(/must have length between 1 and 128/);
+    expect(() => {
+      rule.addTarget(
+        new targets.BatchJob(
+          jobQueue.jobQueueArn,
+          jobQueue,
+          jobDefinition.jobDefinitionArn,
+          jobDefinition,
+          {
+            jobName: 'a'.repeat(200),
+          },
+        ),
+      );
+    }).toThrowError(/must have length between 1 and 128/);
+  });
 });
