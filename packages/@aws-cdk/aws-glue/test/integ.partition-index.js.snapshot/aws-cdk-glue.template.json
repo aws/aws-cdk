@@ -30,7 +30,7 @@
      "Name": "csv_table",
      "Parameters": {
       "classification": "csv",
-      "has_encrypted_data": false
+      "has_encrypted_data": true
      },
      "PartitionKeys": [
       {
@@ -352,7 +352,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a268caa53756f51bda8ad5f499be4ed8484a81b314811806fbb66f874837c476.zip"
+     "S3Key": "a9d3d4d1afa000946b9863b3e7578a5a5ad86d88274b3639938aa2baebf822ce.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -383,7 +383,7 @@
      "Name": "json_table",
      "Parameters": {
       "classification": "json",
-      "has_encrypted_data": false
+      "has_encrypted_data": true
      },
      "PartitionKeys": [
       {
