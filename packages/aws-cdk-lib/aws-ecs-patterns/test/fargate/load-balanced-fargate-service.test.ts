@@ -22,6 +22,7 @@ test('setting loadBalancerType to Network creates an NLB Public', () => {
     cluster,
     taskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      ephemeralStorageGiB: 100,
     },
   });
 
@@ -224,6 +225,7 @@ test('setting healthCheckGracePeriod works', () => {
   new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
     taskImageOptions: {
       image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+      ephemeralStorageGiB: 100,
     },
     healthCheckGracePeriod: cdk.Duration.seconds(600),
   });

@@ -108,6 +108,9 @@ export class ApplicationLoadBalancedEc2Service extends ApplicationLoadBalancedSe
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
       const taskImageOptions = props.taskImageOptions;
+      if (taskImageOptions.ephemeralStorageGiB) {
+        throw new Error('ephemeralStorageGiB is only supported for Fargate service.');
+      }
       this.taskDefinition = new Ec2TaskDefinition(this, 'TaskDef', {
         executionRole: taskImageOptions.executionRole,
         taskRole: taskImageOptions.taskRole,

@@ -69,6 +69,7 @@ export class ApplicationMultipleTargetGroupsFargateService extends ApplicationMu
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,
         runtimePlatform: props.runtimePlatform,
+        ephemeralStorageGiB: taskImageOptions.ephemeralStorageGiB,
       });
 
       const containerName = taskImageOptions.containerName ?? 'web';

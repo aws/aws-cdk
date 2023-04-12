@@ -71,6 +71,7 @@ export class ApplicationLoadBalancedFargateService extends ApplicationLoadBalanc
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,
         runtimePlatform: props.runtimePlatform,
+        ephemeralStorageGiB: taskImageOptions.ephemeralStorageGiB,
       });
 
       // Create log driver if logging is enabled

@@ -149,6 +149,7 @@ test('test fargate queue worker service construct - with optional props for queu
     maxReceiveCount: 42,
     retentionPeriod: cdk.Duration.days(7),
     visibilityTimeout: cdk.Duration.minutes(5),
+    ephemeralStorageGiB: 100,
   });
 
   // THEN - QueueWorker is of FARGATE launch type, an SQS queue is created and all default properties are set.

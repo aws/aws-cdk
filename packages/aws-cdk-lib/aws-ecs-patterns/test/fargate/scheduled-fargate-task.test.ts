@@ -93,6 +93,7 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
       memoryLimitMiB: 512,
       cpu: 2,
       environment: { TRIGGER: 'CloudWatch Events' },
+      ephemeralStorageGiB: 100,
     },
     desiredTaskCount: 2,
     schedule: events.Schedule.expression('rate(1 minute)'),

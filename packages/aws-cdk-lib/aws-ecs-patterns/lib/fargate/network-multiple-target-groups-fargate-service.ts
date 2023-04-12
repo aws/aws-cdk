@@ -69,6 +69,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,
         runtimePlatform: props.runtimePlatform,
+        ephemeralStorageGiB: taskImageOptions.ephemeralStorageGiB,
       });
 
       const containerName = taskImageOptions.containerName ?? 'web';
