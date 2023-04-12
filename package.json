@@ -12,8 +12,7 @@
     "pack": "./pack.sh",
     "compat": "./scripts/check-api-compatibility.sh",
     "bump": "./bump.sh",
-    "build-all": "tsc -b",
-    "postinstall": "patch-package --error-on-fail"
+    "build-all": "tsc -b"
   },
   "devDependencies": {
     "@types/node": "18.11.19",
