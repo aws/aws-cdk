@@ -100,6 +100,49 @@
   "engines": {
     "node": ">= 14.15.0"
   },
+  "awslint": {
+    "exclude": [
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.DEFAULTS",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.RO",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.RW",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.SUID",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.NOSUID",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.DEV",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.NODEV",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.EXEC",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.NOEXEC",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.SYNC",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.ASYNC",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.DIRSYNC",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.REMOUNT",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.MAND",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.NOMAND",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.ATIME",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.NOATIME",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.DIRATIME",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.NODIRATIME",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.BIND",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.RBIND",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.UNBINDABLE",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.RUNBINDABLE",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.PRIVATE",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.RPRIVATE",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.SHARED",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.RSHARED",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.SLAVE",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.RSLAVE",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.RELATIME",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.NORELATIME",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.STRICTATIME",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.NOSTRICTATIME",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.MODE",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.UID",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.GID",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.NR_INODES",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.NR_BLOCKS",
+      "docs-public-apis:@aws-cdk/aws-batch-alpha.TmpfsMountOption.MPOL"
+    ]
+  },
   "stability": "experimental",
   "maturity": "experimental",
   "awscdkio": {
@@ -107,11 +150,6 @@
   },
   "publishConfig": {
     "tag": "latest"
-  },
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
   },
   "pkglint": {
     "exclude": [
