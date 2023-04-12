@@ -1,27 +1,28 @@
 {
-  "name": "@aws-cdk/aws-cognito-identitypool-alpha",
+  "name": "@aws-cdk/integ-tests-alpha",
+  "description": "CDK Integration Testing Constructs",
   "version": "0.0.0",
-  "description": "The CDK Construct Library for AWS::Cognito Identity Pools",
+  "private": false,
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
     "targets": {
       "java": {
-        "package": "software.amazon.awscdk.services.cognito.identitypool.alpha",
+        "package": "software.amazon.awscdk.integtests.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "cognito-identitypool-alpha"
+          "artifactId": "cdk-integ-tests-alpha"
         }
       },
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Cognito.IdentityPool.Alpha",
-        "packageId": "Amazon.CDK.AWS.Cognito.IdentityPool.Alpha",
+        "namespace": "Amazon.CDK.IntegTests.Alpha",
+        "packageId": "Amazon.CDK.IntegTests.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "python": {
-        "distName": "aws-cdk.aws-cognito-identitypool-alpha",
-        "module": "aws_cdk.aws_cognito_identitypool_alpha",
+        "distName": "aws-cdk.integ-tests-alpha",
+        "module": "aws_cdk.integ_tests_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -29,7 +30,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkcognitoidentitypoolalpha"
+        "packageName": "awscdkintegtestsalpha"
       }
     },
     "projectReferences": true,
@@ -41,39 +42,23 @@
       }
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-cognito-identitypool"
-  },
   "scripts": {
     "build": "cdk-build",
-    "watch": "cdk-watch",
+    "bundle": "esbuild --bundle lib/assertions/providers/lambda-handler/index.ts --target=node14 --platform=node --external:aws-sdk --outfile=lib/assertions/providers/lambda-handler.bundle/index.js",
     "lint": "cdk-lint",
-    "test": "cdk-test",
-    "integ": "integ-runner",
-    "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
-    "build+test+package": "yarn build+test && yarn package",
+    "pkglint": "pkglint -f",
+    "test": "cdk-test",
+    "integ": "integ-runner",
+    "watch": "cdk-watch",
     "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
     "compat": "cdk-compat",
     "rosetta:extract": "yarn --silent jsii-rosetta extract",
     "build+extract": "yarn build && yarn rosetta:extract",
     "build+test+extract": "yarn build+test && yarn rosetta:extract"
   },
-  "cdk-build": {
-    "env": {
-      "AWSLINT_BASE_CONSTRUCT": true
-    }
-  },
-  "keywords": [
-    "aws",
-    "cdk",
-    "constructs",
-    "cognito",
-    "identitypool"
-  ],
   "author": {
     "name": "Amazon Web Services",
     "url": "https://aws.amazon.com",
@@ -84,34 +69,62 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
+    "@types/fs-extra": "^9.0.13",
     "@types/jest": "^27.5.2",
+    "aws-sdk": "^2.1329.0",
+    "aws-sdk-mock": "5.6.0",
     "jest": "^27.5.1",
+    "nock": "^13.3.0",
+    "sinon": "^9.2.4",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0"
   },
   "dependencies": {},
-  "homepage": "https://github.com/aws/aws-cdk",
   "peerDependencies": {
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
+  "repository": {
+    "url": "https://github.com/aws/aws-cdk.git",
+    "type": "git",
+    "directory": "packages/@aws-cdk/integ-tests-alpha"
+  },
+  "keywords": [
+    "aws",
+    "cdk"
+  ],
+  "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
     "node": ">= 14.15.0"
+  },
+  "cdk-build": {
+    "pre": [
+      "yarn bundle"
+    ],
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
   },
   "awslint": {
     "exclude": [
       "*:*"
     ]
   },
+  "nozem": {
+    "ostools": [
+      "unzip",
+      "diff",
+      "rm"
+    ]
+  },
   "stability": "experimental",
   "maturity": "experimental",
-  "awscdkio": {
-    "announce": false
-  },
   "publishConfig": {
     "tag": "latest"
   },
-  "private": false,
+  "awscdkio": {
+    "announce": false
+  },
   "pkglint": {
     "exclude": [
       "naming/package-matches-directory",
