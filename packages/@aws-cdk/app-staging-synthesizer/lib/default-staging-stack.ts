@@ -18,67 +18,6 @@ import { EPHEMERAL_PREFIX } from './app-staging-synthesizer';
 import { BootstrapRole } from './bootstrap-roles';
 
 /**
- * Information returned by the Staging Stack for each file asset.
- */
-export interface FileAssetInfo {
-  /**
-   * The name of the staging bucket
-   */
-  readonly bucketName: string;
-
-  /**
-   * The arn to assume (fileAssetPublishingRole)
-   */
-  readonly assumeRoleArn: string;
-}
-
-/**
- * Information returned by the Staging Stack for each image asset
- */
-export interface ImageAssetInfo {
-  /**
-   * The name of the staging repository
-   */
-  readonly repoName: string;
-
-  /**
-   * The arn to assume (imageAssetPublishingRole)
-   */
-  readonly assumeRoleArn: string;
-}
-
-/**
- * Information on how a Staging Stack should look.
- */
-export interface IStagingStack extends IConstruct {
-  /**
-   * The app-scoped, environment-keyed bucket created in this staging stack.
-   */
-  readonly stagingBucket?: s3.Bucket;
-
-  /**
-   * The app-scoped, environment-keyed repositories created in this staging stack.
-   * A repository is created per image asset family.
-   */
-  readonly stagingRepos: Record<string, ecr.Repository>;
-
-  /**
-   * The stack to add dependencies to.
-   */
-  readonly dependencyStack: Stack;
-
-  /**
-   * Return staging resource information for a file asset.
-   */
-  addFile(asset: FileAssetSource): FileAssetInfo;
-
-  /**
-   * Return staging resource information for a docker asset.
-   */
-  addDockerImage(asset: DockerImageAssetSource): ImageAssetInfo;
-}
-
-/**
  * Default Staging Stack Properties
  */
 export interface DefaultStagingStackProps extends StackProps {

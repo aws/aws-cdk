@@ -16,7 +16,7 @@ import {
 import { StringSpecializer } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import { BootstrapRole, BootstrapRoles, StagingRoles } from './bootstrap-roles';
-import { IStagingStack as IStagingStack, DefaultStagingStack } from './default-staging-stack';
+import { IStagingStack, DefaultStagingStack } from './default-staging-stack';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 
 /**
