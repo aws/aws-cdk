@@ -1,32 +1,28 @@
 {
-  "name": "@aws-cdk/aws-apigatewayv2-alpha",
+  "name": "@aws-cdk/aws-apigatewayv2-integrations-alpha",
   "version": "0.0.0",
   "private": false,
-  "description": "The CDK Construct Library for AWS::APIGatewayv2",
+  "description": "Integrations for AWS APIGateway V2",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
     "outdir": "dist",
-    "diagnostics": {
-      "language-compatibility/member-name-conflicts-with-type-name": "error",
-      "language-compatibility/reserved-word": "error"
-    },
     "targets": {
       "dotnet": {
-        "namespace": "Amazon.CDK.AWS.Apigatewayv2.Alpha",
-        "packageId": "Amazon.CDK.AWS.APIGatewayv2.Alpha",
+        "namespace": "Amazon.CDK.AWS.Apigatewayv2.Integrations.Alpha",
+        "packageId": "Amazon.CDK.AWS.APIGatewayv2.Integrations.Alpha",
         "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
       },
       "java": {
-        "package": "software.amazon.awscdk.services.apigatewayv2.alpha",
+        "package": "software.amazon.awscdk.services.apigatewayv2.integrations.alpha",
         "maven": {
           "groupId": "software.amazon.awscdk",
-          "artifactId": "apigatewayv2-alpha"
+          "artifactId": "apigatewayv2-integrations-alpha"
         }
       },
       "python": {
-        "distName": "aws-cdk.aws-apigatewayv2-alpha",
-        "module": "aws_cdk.aws_apigatewayv2_alpha",
+        "distName": "aws-cdk.aws-apigatewayv2-integrations-alpha",
+        "module": "aws_cdk.aws_apigatewayv2_integrations_alpha",
         "classifiers": [
           "Framework :: AWS CDK",
           "Framework :: AWS CDK :: 2"
@@ -34,7 +30,7 @@
       },
       "go": {
         "moduleName": "github.com/aws/aws-cdk-go",
-        "packageName": "awscdkapigatewayv2alpha"
+        "packageName": "awscdkapigatewayv2integrationsalpha"
       }
     },
     "projectReferences": true,
@@ -49,7 +45,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-apigatewayv2"
+    "directory": "packages/@aws-cdk/aws-apigatewayv2-integrations-alpha"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
@@ -88,42 +84,34 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
-    "@aws-cdk/cfn2ts": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^27.5.2",
     "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.0.0"
+    "constructs": "^10.0.0",
+    "@aws-cdk/integ-tests-alpha": "0.0.0",
+    "@aws-cdk/aws-apigatewayv2-alpha": "0.0.0"
   },
   "dependencies": {},
   "peerDependencies": {
+    "@aws-cdk/aws-apigatewayv2-alpha": "0.0.0",
     "aws-cdk-lib": "^0.0.0",
     "constructs": "^10.0.0"
   },
   "engines": {
     "node": ">= 14.15.0"
   },
-  "awslint": {
-    "exclude": [
-      "*:*"
-    ]
-  },
   "stability": "experimental",
   "maturity": "experimental",
-  "features": [
-    {
-      "name": "Higher level constructs for HTTP APIs",
-      "stability": "Experimental"
-    },
-    {
-      "name": "Higher level constructs for Websocket APIs",
-      "stability": "Experimental"
-    }
-  ],
   "awscdkio": {
     "announce": false
   },
   "publishConfig": {
     "tag": "latest"
+  },
+  "awslint": {
+    "exclude": [
+      "*:*"
+    ]
   },
   "pkglint": {
     "exclude": [
