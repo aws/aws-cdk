@@ -45,7 +45,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/aws-neptune"
+    "directory": "packages/@aws-cdk/aws-neptune-alpha"
   },
   "homepage": "https://github.com/aws/aws-cdk",
   "scripts": {
