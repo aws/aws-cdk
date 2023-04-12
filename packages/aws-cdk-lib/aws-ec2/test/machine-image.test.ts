@@ -269,6 +269,68 @@ test('cached lookups of Amazon Linux 2022 with kernel 5.x', () => {
   ]);
 });
 
+describe('latest amazon linux', () => {
+  test('latestAmazonLinux2', () => {
+    // WHEN
+    ec2.MachineImage.latestAmazonLinux2().getImage(stack);
+    new ec2.AmazonLinux2Image({
+      cpuType: ec2.AmazonLinuxCpuType.ARM_64,
+      edition: ec2.AmazonLinuxEdition.MINIMAL,
+      virtualization: ec2.AmazonLinuxVirt.PV,
+      storage: ec2.AmazonLinuxStorage.EBS,
+      kernel: ec2.AmazonLinux2Kernel.DEFAULT,
+    }).getImage(stack);
+
+    // THEN
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2',
+    });
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-minimal-pv-arm64-ebs',
+    });
+  });
+  test('latestAmazonLinux2022', () => {
+    // WHEN
+    ec2.MachineImage.latestAmazonLinux2022().getImage(stack);
+    new ec2.AmazonLinux2022Image({
+      cpuType: ec2.AmazonLinuxCpuType.ARM_64,
+      edition: ec2.AmazonLinuxEdition.MINIMAL,
+      kernel: ec2.AmazonLinux2022Kernel.DEFAULT,
+    }).getImage(stack);
+
+    // THEN
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ami-amazon-linux-latest/al2022-ami-minimal-kernel-default-arm64',
+    });
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-5.15-x86_64',
+    });
+  });
+  test('latestAmazonLinux2023', () => {
+    // WHEN
+    ec2.MachineImage.latestAmazonLinux2023().getImage(stack);
+    new ec2.AmazonLinux2023Image({
+      cpuType: ec2.AmazonLinuxCpuType.ARM_64,
+      edition: ec2.AmazonLinuxEdition.MINIMAL,
+      kernel: ec2.AmazonLinux2023Kernel.DEFAULT,
+    }).getImage(stack);
+
+    // THEN
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-arm64',
+    });
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64',
+    });
+  });
+});
+
 function isWindowsUserData(ud: ec2.UserData) {
   return ud.render().indexOf('powershell') > -1;
 }
