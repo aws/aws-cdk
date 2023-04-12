@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
-import { AmazonLinux2022Image, AmazonLinux2022ImageProps, AmazonLinux2022Kernel } from './amazon-linux-2022';
-import { AmazonLinux2023Image, AmazonLinux2023ImageProps, AmazonLinux2023Kernel } from './amazon-linux-2023';
-import { AmazonLinux2Image, AmazonLinux2ImageProps, AmazonLinux2Kernel } from './amazon-linux2';
+import { AmazonLinux2022ImageSsmParameter, AmazonLinux2022ImageSsmParameterProps, AmazonLinux2022Kernel } from './amazon-linux-2022';
+import { AmazonLinux2023ImageSsmParameter, AmazonLinux2023ImageSsmParameterProps, AmazonLinux2023Kernel } from './amazon-linux-2023';
+import { AmazonLinux2ImageSsmParameter, AmazonLinux2ImageSsmParameterProps, AmazonLinux2Kernel } from './amazon-linux2';
 import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxStorage, AmazonLinuxVirt, IMachineImage, MachineImageConfig, OperatingSystemType } from './common';
 import { lookupImage } from './utils';
 import * as ssm from '../../../aws-ssm';
@@ -36,10 +36,11 @@ export abstract class MachineImage {
    * new version of the image becomes available. Do not store stateful information
    * on the instance if you are using this image.
    */
-  public static latestAmazonLinux2(props?: AmazonLinux2ImageProps): IMachineImage {
-    return new AmazonLinux2Image({
+  public static latestAmazonLinux2(props?: AmazonLinux2ImageSsmParameterProps): IMachineImage {
+    return new AmazonLinux2ImageSsmParameter({
+      cachedInContext: false,
       ...props,
-      kernel: AmazonLinux2Kernel.LATEST,
+      kernel: AmazonLinux2Kernel.CDK_LATEST,
     });
   }
 
@@ -51,10 +52,11 @@ export abstract class MachineImage {
    * new version of the image becomes available. Do not store stateful information
    * on the instance if you are using this image.
    */
-  public static latestAmazonLinux2022(props?: AmazonLinux2022ImageProps): IMachineImage {
-    return new AmazonLinux2022Image({
+  public static latestAmazonLinux2022(props?: AmazonLinux2022ImageSsmParameterProps): IMachineImage {
+    return new AmazonLinux2022ImageSsmParameter({
+      cachedInContext: false,
       ...props,
-      kernel: AmazonLinux2022Kernel.LATEST,
+      kernel: AmazonLinux2022Kernel.CDK_LATEST,
     });
   }
 
@@ -66,10 +68,11 @@ export abstract class MachineImage {
    * new version of the image becomes available. Do not store stateful information
    * on the instance if you are using this image.
    */
-  public static latestAmazonLinux2023(props?: AmazonLinux2023ImageProps): IMachineImage {
-    return new AmazonLinux2023Image({
+  public static latestAmazonLinux2023(props?: AmazonLinux2023ImageSsmParameterProps): IMachineImage {
+    return new AmazonLinux2023ImageSsmParameter({
+      cachedInContext: false,
       ...props,
-      kernel: AmazonLinux2023Kernel.LATEST,
+      kernel: AmazonLinux2023Kernel.CDK_LATEST,
     });
   }
 
@@ -94,6 +97,7 @@ export abstract class MachineImage {
    *   generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
    * })
    * ```
+   * @deprecated use MachineImage.latestAmazonLinux2 instead
    */
   public static latestAmazonLinux(props?: AmazonLinuxImageProps): IMachineImage {
     return new AmazonLinuxImage(props);

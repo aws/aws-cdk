@@ -1,11 +1,16 @@
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageBase, AmazonLinuxImageCommonOptions } from './common';
+import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterCommonOptions, AmazonLinuxImageSsmParameterBase } from './common';
 
 
 export class AmazonLinux2023Kernel {
   /**
    * The latest kernel version currently available in a published AMI.
+   *
+   * When a new kernel version is available for an al2023 AMI this will be
+   * updated to contain the latest kernel version and will cause your instances
+   * to be replaced. Do not store stateful information on the instance if you are
+   * using this version.
    */
-  public static readonly LATEST = new AmazonLinux2023Kernel('6.1');
+  public static readonly CDK_LATEST = new AmazonLinux2023Kernel('6.1');
 
   /**
    * The default kernel version for Amazon Linux 2023 is 6.1 and
@@ -31,7 +36,7 @@ export class AmazonLinux2023Kernel {
 /**
  * Storage doesn't apply to al2023 for example
  */
-export interface AmazonLinux2023ImageProps extends AmazonLinuxImageCommonOptions {
+export interface AmazonLinux2023ImageSsmParameterProps extends AmazonLinuxImageSsmParameterCommonOptions {
   /**
    * What kernel version of Amazon Linux to use
    *
@@ -41,7 +46,7 @@ export interface AmazonLinux2023ImageProps extends AmazonLinuxImageCommonOptions
 }
 
 
-export class AmazonLinux2023Image extends AmazonLinuxImageBase {
+export class AmazonLinux2023ImageSsmParameter extends AmazonLinuxImageSsmParameterBase {
   /**
    * Generates a SSM Parameter name for a specific amazon linux 2022 AMI
    *
@@ -56,7 +61,7 @@ export class AmazonLinux2023Image extends AmazonLinuxImageBase {
    *     "/aws/service/ami-amazon-linux-latest/al2023-ami-minimal-kernel-default-x86_64",
    *     "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64",
    */
-  public static ssmParameterName(props: AmazonLinux2023ImageProps): string {
+  public static ssmParameterName(props: AmazonLinux2023ImageSsmParameterProps): string {
     const edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
 
     const parts: Array<string|undefined> = [
@@ -70,9 +75,9 @@ export class AmazonLinux2023Image extends AmazonLinuxImageBase {
     return '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
   }
 
-  constructor(props: AmazonLinux2023ImageProps) {
+  constructor(props: AmazonLinux2023ImageSsmParameterProps) {
     super({
-      parameterName: AmazonLinux2023Image.ssmParameterName(props),
+      parameterName: AmazonLinux2023ImageSsmParameter.ssmParameterName(props),
       cachedInContext: props.cachedInContext,
       userData: props.userData,
     });

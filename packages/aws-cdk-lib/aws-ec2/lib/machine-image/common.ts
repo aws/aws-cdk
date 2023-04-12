@@ -5,7 +5,7 @@ import { UserData } from '../user-data';
 /**
  * Common options across all generations.
  */
-export interface AmazonLinuxImageCommonOptions extends AmazonLinuxImageBaseOptions {
+export interface AmazonLinuxImageSsmParameterCommonOptions extends AmazonLinuxImageSsmParameterBaseOptions {
   /**
    * What edition of Amazon Linux to use
    *
@@ -21,7 +21,7 @@ export interface AmazonLinuxImageCommonOptions extends AmazonLinuxImageBaseOptio
   readonly cpuType?: AmazonLinuxCpuType;
 }
 
-export interface AmazonLinuxImageBaseOptions {
+export interface AmazonLinuxImageSsmParameterBaseOptions {
   /**
    * Whether the AMI ID is cached to be stable between deployments
    *
@@ -51,17 +51,17 @@ export interface AmazonLinuxImageBaseOptions {
   readonly userData?: UserData;
 }
 
-export interface AmazonLinuxImageBaseProps extends AmazonLinuxImageBaseOptions {
+export interface AmazonLinuxImageSsmParameterBaseProps extends AmazonLinuxImageSsmParameterBaseOptions {
   /**
    * The name of the SSM parameter that contains the AMI value
    */
   readonly parameterName: string;
 }
 
-export abstract class AmazonLinuxImageBase implements IMachineImage {
+export abstract class AmazonLinuxImageSsmParameterBase implements IMachineImage {
   private readonly cachedInContext: boolean;
-  constructor(private readonly props: AmazonLinuxImageBaseProps) {
-    this.cachedInContext = this.props.cachedInContext ?? false;
+  constructor(private readonly props: AmazonLinuxImageSsmParameterBaseProps) {
+    this.cachedInContext = this.props.cachedInContext ?? true;
   }
 
   getImage(scope: Construct): MachineImageConfig {

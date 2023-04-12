@@ -1,10 +1,15 @@
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageBase, AmazonLinuxImageCommonOptions } from './common';
+import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterCommonOptions, AmazonLinuxImageSsmParameterBase } from './common';
 
 export class AmazonLinux2022Kernel {
   /**
    * The latest kernel version currently available in a published AMI.
+   *
+   * When a new kernel version is available for an al2022 AMI this will be
+   * updated to contain the latest kernel version and will cause your instances
+   * to be replaced. Do not store stateful information on the instance if you are
+   * using this version.
    */
-  public static readonly LATEST = new AmazonLinux2022Kernel('5.15');
+  public static readonly CDK_LATEST = new AmazonLinux2022Kernel('5.15');
 
   /**
    * The default kernel version for Amazon Linux 2022 is 5.15 and
@@ -31,7 +36,7 @@ export class AmazonLinux2022Kernel {
 /**
  * Properties specific to al2022 images
  */
-export interface AmazonLinux2022ImageProps extends AmazonLinuxImageCommonOptions {
+export interface AmazonLinux2022ImageSsmParameterProps extends AmazonLinuxImageSsmParameterCommonOptions {
   /**
    * What kernel version of Amazon Linux to use
    *
@@ -40,7 +45,7 @@ export interface AmazonLinux2022ImageProps extends AmazonLinuxImageCommonOptions
   readonly kernel?: AmazonLinux2022Kernel;
 }
 
-export class AmazonLinux2022Image extends AmazonLinuxImageBase {
+export class AmazonLinux2022ImageSsmParameter extends AmazonLinuxImageSsmParameterBase {
   /**
    * Generates a SSM Parameter name for a specific amazon linux 2022 AMI
    *
@@ -55,7 +60,7 @@ export class AmazonLinux2022Image extends AmazonLinuxImageBase {
    *     "/aws/service/ami-amazon-linux-latest/al2022-ami-minimal-kernel-default-x86_64",
    *     "/aws/service/ami-amazon-linux-latest/al2022-ami-kernel-default-arm64",
    */
-  public static ssmParameterName(props: AmazonLinux2022ImageProps): string {
+  public static ssmParameterName(props: AmazonLinux2022ImageSsmParameterProps): string {
     const edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
 
     const parts: Array<string|undefined> = [
@@ -69,9 +74,9 @@ export class AmazonLinux2022Image extends AmazonLinuxImageBase {
     return '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
   }
 
-  constructor(props: AmazonLinux2022ImageProps) {
+  constructor(props: AmazonLinux2022ImageSsmParameterProps) {
     super({
-      parameterName: AmazonLinux2022Image.ssmParameterName(props),
+      parameterName: AmazonLinux2022ImageSsmParameter.ssmParameterName(props),
       cachedInContext: props.cachedInContext,
       userData: props.userData,
     });

@@ -1,11 +1,16 @@
-import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageBase, AmazonLinuxImageCommonOptions, AmazonLinuxStorage, AmazonLinuxVirt } from './common';
+import { AmazonLinuxCpuType, AmazonLinuxEdition, AmazonLinuxGeneration, AmazonLinuxImageSsmParameterBase, AmazonLinuxImageSsmParameterCommonOptions, AmazonLinuxStorage, AmazonLinuxVirt } from './common';
 
 
 export class AmazonLinux2Kernel {
   /**
    * The latest kernel version currently available in a published AMI.
+   *
+   * When a new kernel version is available for an amzn2 AMI this will be
+   * updated to contain the latest kernel version and will cause your instances
+   * to be replaced. Do not store stateful information on the instance if you are
+   * using this version.
    */
-  public static readonly LATEST = new AmazonLinux2Kernel('5.10');
+  public static readonly CDK_LATEST = new AmazonLinux2Kernel('5.10');
 
   /**
    * The default kernel version for Amazon Linux 2 is 4.14 and
@@ -35,7 +40,7 @@ export class AmazonLinux2Kernel {
 /**
  * Storage doesn't apply to al2022 for example
  */
-export interface AmazonLinux2ImageProps extends AmazonLinuxImageCommonOptions {
+export interface AmazonLinux2ImageSsmParameterProps extends AmazonLinuxImageSsmParameterCommonOptions {
   /**
    * What storage backed image to use
    *
@@ -58,7 +63,7 @@ export interface AmazonLinux2ImageProps extends AmazonLinuxImageCommonOptions {
   readonly virtualization?: AmazonLinuxVirt;
 }
 
-export class AmazonLinux2Image extends AmazonLinuxImageBase {
+export class AmazonLinux2ImageSsmParameter extends AmazonLinuxImageSsmParameterBase {
   /**
    * Generates a SSM Parameter name for a specific amazon linux 2 AMI
    *
@@ -73,7 +78,7 @@ export class AmazonLinux2Image extends AmazonLinuxImageBase {
    *     "/aws/service/ami-amazon-linux-latest/amzn2-ami-kernel-5.10-hvm-x86_64-gp2",
    *     "/aws/service/ami-amazon-linux-latest/amzn2-ami-minimal-hvm-x86_64-ebs"
    */
-  public static ssmParameterName(props: AmazonLinux2ImageProps): string {
+  public static ssmParameterName(props: AmazonLinux2ImageSsmParameterProps): string {
     const edition = (props && props.edition) || AmazonLinuxEdition.STANDARD;
 
     const parts: Array<string|undefined> = [
@@ -89,9 +94,9 @@ export class AmazonLinux2Image extends AmazonLinuxImageBase {
     return '/aws/service/ami-amazon-linux-latest/' + parts.join('-');
   }
 
-  constructor(props: AmazonLinux2ImageProps) {
+  constructor(props: AmazonLinux2ImageSsmParameterProps) {
     super({
-      parameterName: AmazonLinux2Image.ssmParameterName(props),
+      parameterName: AmazonLinux2ImageSsmParameter.ssmParameterName(props),
       cachedInContext: props.cachedInContext,
       userData: props.userData,
     });
