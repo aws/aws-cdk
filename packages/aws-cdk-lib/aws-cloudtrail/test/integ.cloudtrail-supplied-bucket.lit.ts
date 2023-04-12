@@ -22,7 +22,6 @@ const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
 const cloudTrailPrincipal = new iam.ServicePrincipal('cloudtrail.amazonaws.com');
 
 const Trailbucket = new s3.Bucket(stack, 'S3', {
-  encryption: s3.BucketEncryption.UNENCRYPTED,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
 });
